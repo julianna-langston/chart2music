@@ -18,7 +18,7 @@ export type dataSet = {
 export type StatBundle = {
     high?: number;
     low?: number;
-}
+};
 
 /**
  * Data and metadata for an individual point

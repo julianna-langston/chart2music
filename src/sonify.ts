@@ -7,7 +7,13 @@ import {
     defaultFormat
 } from "./utils.js";
 import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
-import type { SonifyTypes, AxisData, dataPoint, KeyActionMap, StatBundle } from "./types";
+import type {
+    SonifyTypes,
+    AxisData,
+    dataPoint,
+    KeyActionMap,
+    StatBundle
+} from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 
 let context: null | AudioContext = null;
@@ -18,18 +24,22 @@ const generateKeypressDescription = (e: KeyboardEvent) => {
     }${e.key}`;
 };
 
-const generatePointDescription = (point: dataPoint, xAxis: AxisData, yAxis: AxisData) => {
-    if(typeof point.y === "number"){
-        return `${xAxis.format(point.x)}, ${yAxis.format(
-            point.y
-        )}`;
-    }else{
-        if("high" in point.y && "low" in point.y){
-            return `${xAxis.format(point.x)}, ${yAxis.format(point.y.high)} - ${yAxis.format(point.y.low)}`;
+const generatePointDescription = (
+    point: dataPoint,
+    xAxis: AxisData,
+    yAxis: AxisData
+) => {
+    if (typeof point.y === "number") {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
+    } else {
+        if ("high" in point.y && "low" in point.y) {
+            return `${xAxis.format(point.x)}, ${yAxis.format(
+                point.y.high
+            )} - ${yAxis.format(point.y.low)}`;
         }
     }
     return "";
-}
+};
 
 /**
  * Manages data and interactions
@@ -294,29 +304,28 @@ export class Sonify {
                 (this._xAxis.maximum - this._xAxis.minimum)
         );
 
-        if(typeof current.y === "number"){
+        if (typeof current.y === "number") {
             const yBin = interpolateBin(
                 current.y,
                 this._yAxis.minimum,
                 this._yAxis.maximum,
                 HERTZ.length - 1
             );
-    
+
             pianist(yBin, xPan);
-        }else{
+        } else {
             (["high", "low"] as (keyof StatBundle)[]).forEach((stat) => {
-                if(stat in (current.y as StatBundle)){
-                    
+                if (stat in (current.y as StatBundle)) {
                     const yBin = interpolateBin(
                         current.y[stat] as number,
                         this._yAxis.minimum,
                         this._yAxis.maximum,
                         HERTZ.length - 1
                     );
-            
+
                     pianist(yBin, xPan);
                 }
-            })
+            });
         }
 
         current.callback?.();
@@ -332,7 +341,11 @@ export class Sonify {
         }
 
         const current = this._data[this._groupIndex][this._pointIndex];
-        const point = generatePointDescription(current, this._xAxis, this._yAxis);
+        const point = generatePointDescription(
+            current,
+            this._xAxis,
+            this._yAxis
+        );
         const text =
             (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") +
             point;

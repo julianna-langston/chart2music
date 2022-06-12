@@ -24,8 +24,8 @@ export const generateSummary = (title: string, x: AxisData, y: AxisData) =>
 
 export const calculateAxisMinimum = (data: dataPoint[][], prop: "x" | "y") => {
     const values: number[] = data.flat().map((point: dataPoint): number => {
-        if(point[prop] instanceof Number){
-            return (point[prop] as number);
+        if (point[prop] instanceof Number) {
+            return point[prop] as number;
         }
         return Math.min(...Object.values(point[prop] as StatBundle));
     });
@@ -33,8 +33,8 @@ export const calculateAxisMinimum = (data: dataPoint[][], prop: "x" | "y") => {
 };
 export const calculateAxisMaximum = (data: dataPoint[][], prop: "x" | "y") => {
     const values: number[] = data.flat().map((point: dataPoint): number => {
-        if(point[prop] instanceof Number){
-            return (point[prop] as number);
+        if (point[prop] instanceof Number) {
+            return point[prop] as number;
         }
         return Math.max(...Object.values(point[prop] as StatBundle));
     });
