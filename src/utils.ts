@@ -1,4 +1,4 @@
-import type { AxisData, dataPoint } from "./types";
+import type { AxisData, dataPoint, StatBundle } from "./types";
 
 export const array_minimum = (numbers: number[]) =>
     numbers.reduce((acc, item) => Math.min(acc, item));
@@ -23,11 +23,21 @@ export const generateSummary = (title: string, x: AxisData, y: AxisData) =>
     )} to ${y.format(y.maximum)}`;
 
 export const calculateAxisMinimum = (data: dataPoint[][], prop: "x" | "y") => {
-    const values = data.flat().map((point) => point[prop]);
+    const values: number[] = data.flat().map((point: dataPoint): number => {
+        if(point[prop] instanceof Number){
+            return (point[prop] as number);
+        }
+        return Math.min(...Object.values(point[prop] as StatBundle));
+    });
     return Math.min(...values);
 };
 export const calculateAxisMaximum = (data: dataPoint[][], prop: "x" | "y") => {
-    const values = data.flat().map((point) => point[prop]);
+    const values: number[] = data.flat().map((point: dataPoint): number => {
+        if(point[prop] instanceof Number){
+            return (point[prop] as number);
+        }
+        return Math.max(...Object.values(point[prop] as StatBundle));
+    });
     return Math.max(...values);
 };
 

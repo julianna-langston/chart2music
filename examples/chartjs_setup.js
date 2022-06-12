@@ -178,6 +178,7 @@ window.addEventListener("load", () => {
     }
   });
   new window.Sonify({
+    type: "bar",
     title: "Raleigh's High/Low Temperatures (2020)",
     element: floatingCanvas,
     cc: document.getElementById("cc-floatingBar"),
@@ -198,7 +199,10 @@ window.addEventListener("load", () => {
     data: highs.map((y, x) => {
       return {
         x,
-        y,
+        y: {
+          high: y,
+          low: lows[x]
+        },
         callback: () => {
           myChart3.setActiveElements([{datasetIndex: 0, index: x}]);
           myChart3.update();
