@@ -2,6 +2,23 @@
     "name": "sonifyjs",
     "version": "0.1.0",
     "main": "dist/index.js",
+    "description": "Turns charts into music so the blind can hear data",
+    "keywords": [
+        "accessibility",
+        "a11y",
+        "chart",
+        "graph",
+        "audio",
+        "audio graph",
+        "data visualization",
+        "dataviz",
+        "screen reader"
+    ],
+    "homepage": "https://github.com/julianna-ciq/chart2music#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/julianna-ciq/chart2music.git"
+    },
     "scripts": {
         "build": "tsc",
         "clean": "rimraf ./dist",

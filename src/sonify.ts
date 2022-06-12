@@ -39,6 +39,9 @@ export class Sonify {
 
     constructor(input: SonifyTypes) {
         this._chartElement = input.element;
+        if(!this._chartElement.hasAttribute("tabIndex")){
+            this._chartElement.setAttribute("tabIndex", "0");
+        }
         this._ccElement = input.cc ?? this._chartElement;
         this._title = input.title ?? "";
 
