@@ -2,16 +2,30 @@ export enum supportedChartTypes {
     LINE
 }
 
+export type dataLine = {
+    label?: string;
+    data: dataPoint[];
+}
+
 export type dataPoint = {
     x: number;
     y: number;
     callback?: () => void;
 }
 
+export type AxisData = {
+    minimum: number;
+    maximum: number;
+    label: string;
+}
+
 export type SonifyTypes = {
-    data: dataPoint[];
+    data: dataPoint[] | dataLine[];
     element: HTMLElement;
-    axes?: any;
+    axes: {
+        x: AxisData;
+        y: AxisData;
+    };
     title?: string;
     cc?: HTMLElement;
     type?: supportedChartTypes;

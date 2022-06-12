@@ -1,4 +1,4 @@
-import { array_maximum, array_minimum, interpolateBin, calcPan } from "./utils.js";
+import { interpolateBin, calcPan } from "./utils.js";
 import { HERTZ } from "./constants.js";
 import { SonifyTypes, AxesRange } from "./types";
 import {ScreenReaderBridge} from "./ScreenReaderBridge.js";
@@ -8,7 +8,21 @@ let sr = null;
 
 export const Sonify = (input: SonifyTypes) => {
     const targetElement = input.element;
-    const {data} = input;
+
+    let data = [];
+
+    if(!("label" in input.data[0])){
+        // Only 1 line of data
+       data = [{
+           label: "",
+           data: input.data
+       }];
+    }else{
+        data = input.data;
+    }
+
+    let focusIndex = 0;
+    let lineFocusIndex = 0;
 
     // Establish SRB
     const srElem = input.cc ?? targetElement;
@@ -19,19 +33,18 @@ export const Sonify = (input: SonifyTypes) => {
     let playListInterval = null;
     let playRate = 250;
 
-    let focusIndex = 0;
-
-    const x_min = array_minimum(data.map((obj) => obj.x));
-    const y_min = array_minimum(data.map((obj) => obj.y));
-    const x_max = array_maximum(data.map((obj) => obj.x));
-    const y_max = array_maximum(data.map((obj) => obj.y));
+    const x_min = input.axes.x.minimum;
+    const x_max = input.axes.x.maximum;
+    const y_min = input.axes.y.minimum;
+    const y_max = input.axes.y.maximum;
 
     // Wire up interactions
     targetElement.addEventListener("focus", () => {
         if(context === null){
             context = new AudioContext();
         }
-        playData(data[focusIndex], {x_min, x_max, y_min, y_max});
+        console.log(data, lineFocusIndex, focusIndex);
+        playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
         sr.render("Sonifiable");
     });
     targetElement.addEventListener("keydown", (e) => {
@@ -41,8 +54,8 @@ export const Sonify = (input: SonifyTypes) => {
                 if(e.shiftKey){
                     playListInterval = setInterval(() => {
                         focusIndex++;
-                        if(focusIndex <= data.length - 1){
-                            playData(data[focusIndex], {x_min, x_max, y_min, y_max});
+                        if(focusIndex <= data[lineFocusIndex].data.length - 1){
+                            playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
                         }else{
                             clearInterval(playListInterval);
                             focusIndex = data.length -1;
@@ -57,7 +70,7 @@ export const Sonify = (input: SonifyTypes) => {
                     playListInterval = setInterval(() => {
                         focusIndex--;
                         if(focusIndex >= 0){
-                            playData(data[focusIndex], {x_min, x_max, y_min, y_max});
+                            playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
                         }else{
                             clearInterval(playListInterval);
                             focusIndex = 0;
@@ -65,6 +78,22 @@ export const Sonify = (input: SonifyTypes) => {
                     }, playRate);
                 }
                 focusIndex--;
+                break;
+            }
+            case "PageUp": {
+                if(lineFocusIndex === 0){
+                    e.preventDefault();
+                    return;
+                }
+                lineFocusIndex--;
+                break;
+            }
+            case "PageDown": {
+                if(lineFocusIndex === data.length - 1){
+                    e.preventDefault();
+                    return;
+                }
+                lineFocusIndex++;
                 break;
             }
             case "Control": {
@@ -86,22 +115,26 @@ export const Sonify = (input: SonifyTypes) => {
                 return;
             }
         }
+        e.preventDefault();
 
         // Restrict for bounds
         if(focusIndex < 0) {
             focusIndex = 0;
-        }else if(focusIndex >= data.length){
-            focusIndex = data.length - 1;
+        }else if(focusIndex >= data[lineFocusIndex].data.length){
+            focusIndex = data[lineFocusIndex].data.length - 1;
         }
 
-        playData(data[focusIndex], {x_min, x_max, y_min, y_max});
-        sr.render(`${data[focusIndex].x}, ${data[focusIndex].y}`);
+
+
+        playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
+        sr.render(`${data[lineFocusIndex].data[focusIndex].x}, ${data[lineFocusIndex].data[focusIndex].y}`);
     });
 };
 
 
 
 const playData = ({x, y, callback = () => {}}, range: AxesRange) => {
+    console.log(x, y, range);
     const noteToPlay = interpolateBin(y, range.y_min, range.y_max, HERTZ.length-1);
     const panning = calcPan((x-range.x_min)/(range.x_max-range.x_min));
     pianist(noteToPlay, panning);
