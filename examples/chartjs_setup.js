@@ -2,7 +2,7 @@ const highs = [72, 73, 88, 83, 88, 91, 97, 93, 93, 83, 79];
 const lows = [25, 23, 25, 34, 38, 55, 67, 64, 44, 41, 29];
 const chartElemId = "myChart";
 const chartElemId2 = "myChart2";
-const labels = [
+const months = [
   'January',
   'February',
   'March',
@@ -31,10 +31,12 @@ const datasets = [
   }
 ];
 
+// Single line plot
+
 const config = {
   type: 'line',
   data: {
-    labels,
+    labels: months,
     datasets: datasets.slice(0, 1)
   },
   options: {
@@ -49,11 +51,19 @@ const config = {
     }
   }
 };
+const singleLineCanvas = document.getElementById("singleLine");
+
+const myChart = new Chart(
+  singleLineCanvas,
+  config
+);
+
+// Mulit-line plot
 
 const config2 = {
   type: 'line',
   data: {
-    labels,
+    labels: months,
     datasets
   },
   options: {
@@ -69,23 +79,52 @@ const config2 = {
   }
 };
 
-const canvas = document.getElementById(chartElemId);
-const canvas2 = document.getElementById(chartElemId2);
+const multiLineCanvas = document.getElementById("multiLine");
 
-const myChart = new Chart(
-  canvas,
-  config
-);
 const myChart2 = new Chart(
-  canvas2,
+  multiLineCanvas,
   config2
+);
+
+
+// Floating bar chart
+const floatingBarData = highs.map((y, index) => ([y, lows[index]]));
+const config3 = {
+  type: "bar",
+  data: {
+    labels: months,
+    datasets: [
+      {
+        backgroundColor: 'rgb(255, 99, 132)',
+        data: floatingBarData,
+        hoverBorderWidth: 5,
+        hoverBorderColor: 'green',
+      }
+    ]
+  },
+  options: {
+    plugins: {
+      title: {
+        display: true,
+        text: "Raleigh's High/Low Temperatures (2020)"
+      },
+      legend: {
+        display: false
+      }
+    }
+  }
+}
+const floatingCanvas = document.getElementById("floatingBar");
+const myChart3 = new Chart(
+  floatingCanvas,
+  config3
 );
 
 window.addEventListener("load", () => {
   new window.Sonify({
     type: "line",
-    element: canvas,
-    cc: document.getElementById("cc"),
+    element: singleLineCanvas,
+    cc: document.getElementById("cc-singleLine"),
     data: highs.map((y, x) => {
       return {
         x,
@@ -99,14 +138,14 @@ window.addEventListener("load", () => {
   });
   new window.Sonify({
     title: "Raleigh's High/Low Temperatures (2020)",
-    element: canvas2,
-    cc: document.getElementById("cc2"),
+    element: multiLineCanvas,
+    cc: document.getElementById("cc-multiLine"),
     axes: {
       x: {
         minimum: 0,
         maximum: 10,
         label: "Month",
-        format: (value) => labels[value]
+        format: (value) => months[value]
       },
       y: {
         minimum: 20,
@@ -137,5 +176,34 @@ window.addEventListener("load", () => {
           }
         })
     }
+  });
+  new window.Sonify({
+    title: "Raleigh's High/Low Temperatures (2020)",
+    element: floatingCanvas,
+    cc: document.getElementById("cc-floatingBar"),
+    axes: {
+      x: {
+        minimum: 0,
+        maximum: 10,
+        label: "Month",
+        format: (value) => months[value]
+      },
+      y: {
+        minimum: 20,
+        maximum: 100,
+        label: "Fahrenheit",
+        format: (value) => value,
+      }
+    },
+    data: highs.map((y, x) => {
+      return {
+        x,
+        y,
+        callback: () => {
+          myChart3.setActiveElements([{datasetIndex: 0, index: x}]);
+          myChart3.update();
+        }
+      }
+    })
   });
 });

@@ -329,7 +329,13 @@ const pianist = (noteIndex: number, positionX: number) => {
     osc.frequency.setValueAtTime(HERTZ[noteIndex], context.currentTime);
     osc.connect(gain);
 
+    // Start the node
     osc.start();
+
+    // Silence the node in .25s
     gain.gain.setValueAtTime(0.01, context.currentTime + NOTE_LENGTH);
+
+    // Stop the node in just over .25s.
+    // If you stop the node without silencing it, you hear clipping.
     osc.stop(context.currentTime + NOTE_LENGTH + 0.1);
 };
