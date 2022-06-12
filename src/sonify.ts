@@ -13,7 +13,9 @@ import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 let context: null | AudioContext = null;
 
 const generateKeypressDescription = (e: KeyboardEvent) => {
-    return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${e.key}`
+    return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${
+        e.shiftKey ? "Shift+" : ""
+    }${e.key}`;
 };
 
 /**
@@ -65,23 +67,26 @@ export class Sonify {
         this._startListening();
     }
 
+    /**
+     * Initialize which keys map to which actions
+     */
     private _initializeKeyActionMap() {
         this._keyActionMap = {
-            "ArrowRight": () => {
+            ArrowRight: () => {
                 this._moveRight();
                 this._playAndSpeak();
             },
             "Shift+ArrowRight": () => {
                 this._playAllRight();
             },
-            "ArrowLeft": () => {
+            ArrowLeft: () => {
                 this._moveLeft();
                 this._playAndSpeak();
             },
             "Shift+ArrowLeft": () => {
                 this._playAllLeft();
             },
-            "PageUp": () => {
+            PageUp: () => {
                 if (this._groupIndex === 0) {
                     return;
                 }
@@ -89,7 +94,7 @@ export class Sonify {
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
-            "PageDown": () => {
+            PageDown: () => {
                 if (this._groupIndex === this._data.length - 1) {
                     return;
                 }
@@ -97,11 +102,11 @@ export class Sonify {
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
-            "Home": () => {
+            Home: () => {
                 this._pointIndex = 0;
                 this._playAndSpeak();
             },
-            "End": () => {
+            End: () => {
                 this._pointIndex = this._data[this._groupIndex].length - 1;
                 this._playAndSpeak();
             },
@@ -109,19 +114,19 @@ export class Sonify {
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
-            "q": () => {
+            q: () => {
                 if (this._speedRateIndex > 0) {
                     this._speedRateIndex--;
                 }
                 this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
             },
-            "e": () => {
+            e: () => {
                 if (this._speedRateIndex < SPEEDS.length - 1) {
                     this._speedRateIndex++;
                 }
                 this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
-            },
-        }  
+            }
+        };
     }
 
     /**
@@ -191,7 +196,7 @@ export class Sonify {
 
             const keyPressDescription = generateKeypressDescription(e);
 
-            if(keyPressDescription in this._keyActionMap){
+            if (keyPressDescription in this._keyActionMap) {
                 this._keyActionMap[keyPressDescription]();
                 e.preventDefault();
             }
@@ -201,7 +206,7 @@ export class Sonify {
     /**
      * Play an individual data point, and then speak its details
      */
-    private _playAndSpeak(){
+    private _playAndSpeak() {
         this._playCurrent();
         setTimeout(() => {
             this._speakCurrent();
