@@ -7,7 +7,13 @@ import {
     defaultFormat
 } from "./utils.js";
 import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
-import type { SonifyTypes, AxisData, dataPoint, KeyActionMap } from "./types";
+import type {
+    SonifyTypes,
+    AxisData,
+    dataPoint,
+    KeyActionMap,
+    StatBundle
+} from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 
 let context: null | AudioContext = null;
@@ -16,6 +22,23 @@ const generateKeypressDescription = (e: KeyboardEvent) => {
     return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${
         e.shiftKey ? "Shift+" : ""
     }${e.key}`;
+};
+
+const generatePointDescription = (
+    point: dataPoint,
+    xAxis: AxisData,
+    yAxis: AxisData
+) => {
+    if (typeof point.y === "number") {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
+    } else {
+        if ("high" in point.y && "low" in point.y) {
+            return `${xAxis.format(point.x)}, ${yAxis.format(
+                point.y.high
+            )} - ${yAxis.format(point.y.low)}`;
+        }
+    }
+    return "";
 };
 
 /**
@@ -276,18 +299,34 @@ export class Sonify {
     private _playCurrent() {
         const current = this._data[this._groupIndex][this._pointIndex];
 
-        const yBin = interpolateBin(
-            current.y,
-            this._yAxis.minimum,
-            this._yAxis.maximum,
-            HERTZ.length - 1
-        );
         const xPan = calcPan(
             (current.x - this._xAxis.minimum) /
                 (this._xAxis.maximum - this._xAxis.minimum)
         );
 
-        pianist(yBin, xPan);
+        if (typeof current.y === "number") {
+            const yBin = interpolateBin(
+                current.y,
+                this._yAxis.minimum,
+                this._yAxis.maximum,
+                HERTZ.length - 1
+            );
+
+            pianist(yBin, xPan);
+        } else {
+            (["high", "low"] as (keyof StatBundle)[]).forEach((stat) => {
+                if (stat in (current.y as StatBundle)) {
+                    const yBin = interpolateBin(
+                        current.y[stat] as number,
+                        this._yAxis.minimum,
+                        this._yAxis.maximum,
+                        HERTZ.length - 1
+                    );
+
+                    pianist(yBin, xPan);
+                }
+            });
+        }
 
         current.callback?.();
     }
@@ -302,9 +341,11 @@ export class Sonify {
         }
 
         const current = this._data[this._groupIndex][this._pointIndex];
-        const point = `${this._xAxis.format(current.x)}, ${this._yAxis.format(
-            current.y
-        )}`;
+        const point = generatePointDescription(
+            current,
+            this._xAxis,
+            this._yAxis
+        );
         const text =
             (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") +
             point;
@@ -340,7 +381,13 @@ const pianist = (noteIndex: number, positionX: number) => {
     osc.frequency.setValueAtTime(HERTZ[noteIndex], context.currentTime);
     osc.connect(gain);
 
+    // Start the node
     osc.start();
+
+    // Silence the node in .25s
     gain.gain.setValueAtTime(0.01, context.currentTime + NOTE_LENGTH);
+
+    // Stop the node in just over .25s.
+    // If you stop the node without silencing it, you hear clipping.
     osc.stop(context.currentTime + NOTE_LENGTH + 0.1);
 };

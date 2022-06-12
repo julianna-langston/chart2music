@@ -83,6 +83,42 @@ data: [{
 }]
 ```
 
+Providing multiple Y-values for a given X-value. For example, when you have a floating bar chart, you would have 1 X-value, and then a high and low y-value. Here's an example of what that could look like:
+
+```
+const highs = [72, 73, 88, 83, 88, 91, 97, 93, 93, 83, 79];
+const lows = [25, 23, 25, 34, 38, 55, 67, 64, 44, 41, 29];
+Sonify({
+    type: "bar",
+    title: "Raleigh's High/Low Temperatures (2020)",
+    element: floatingCanvas,
+    cc: document.getElementById("cc-floatingBar"),
+    axes: {
+      x: {
+        minimum: 0,
+        maximum: 10,
+        label: "Month",
+        format: (value) => months[value]
+      },
+      y: {
+        minimum: 20,
+        maximum: 100,
+        label: "Fahrenheit",
+        format: (value) => value,
+      }
+    },
+    data: highs.map((high, index) => {
+      return {
+        x: index,
+        y: {
+          high: high,
+          low: lows[index]
+        }
+      }
+    })
+});
+```
+
 ### Other options
 
 While C2M only requires 2 options to get started, you can refine your chart with other options:

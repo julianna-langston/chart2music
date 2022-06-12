@@ -13,11 +13,19 @@ export type dataSet = {
 };
 
 /**
+ * Bundle of possible statistics
+ */
+export type StatBundle = {
+    high?: number;
+    low?: number;
+};
+
+/**
  * Data and metadata for an individual point
  */
 export type dataPoint = {
     x: number;
-    y: number;
+    y: number | StatBundle;
     callback?: () => void;
 };
 

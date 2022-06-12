@@ -1,18 +1,25 @@
 <style>
     #examples {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+    }
+    #examples div {
+        width: 500px;
     }
 </style>
 
 <div id="examples">
-    <div style="width: 500px; height: 300px;">
-        <canvas id="myChart"></canvas>
-        <div id="cc"></div>
+    <div>
+        <canvas id="singleLine"></canvas>
+        <div id="cc-singleLine"></div>
     </div>
-    <div style="width: 500px; height: 300px;">
-        <canvas id="myChart2" tabindex="0"></canvas>
-        <div id="cc2"></div>
+    <div>
+        <canvas id="multiLine"></canvas>
+        <div id="cc-multiLine"></div>
+    </div>
+    <div>
+        <canvas id="floatingBar"></canvas>
+        <div id="cc-floatingBar"></div>
     </div>
 </div>
 
