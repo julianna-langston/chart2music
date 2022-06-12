@@ -1,5 +1,5 @@
 import { interpolateBin, calcPan } from "./utils.js";
-import { HERTZ } from "./constants.js";
+import { HERTZ, SPEEDS } from "./constants.js";
 import { SonifyTypes, AxesRange } from "./types";
 import {ScreenReaderBridge} from "./ScreenReaderBridge.js";
 
@@ -31,7 +31,7 @@ export const Sonify = (input: SonifyTypes) => {
 
     // Prep for Play All
     let playListInterval = null;
-    let playRate = 250;
+    let speedIndex = 1;
 
     const x_min = input.axes.x.minimum;
     const x_max = input.axes.x.maximum;
@@ -48,9 +48,15 @@ export const Sonify = (input: SonifyTypes) => {
         sr.render("Sonifiable");
     });
     targetElement.addEventListener("keydown", (e) => {
+        clearInterval(playListInterval);
         // Change index
         switch(e.key){
             case "ArrowRight": {
+                if(focusIndex >= data[lineFocusIndex].data.length - 1){
+                    focusIndex = data[lineFocusIndex].data.length - 1;
+                    e.preventDefault();
+                    return;
+                }
                 if(e.shiftKey){
                     playListInterval = setInterval(() => {
                         focusIndex++;
@@ -58,14 +64,19 @@ export const Sonify = (input: SonifyTypes) => {
                             playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
                         }else{
                             clearInterval(playListInterval);
-                            focusIndex = data.length -1;
+                            focusIndex = data[lineFocusIndex].data.length -1;
                         }
-                    }, playRate);
+                    }, SPEEDS[speedIndex]);
                 }
                 focusIndex++;
                 break;
             }
             case "ArrowLeft": {
+                if(focusIndex <= 0){
+                    focusIndex = 0;
+                    e.preventDefault();
+                    return;
+                }
                 if(e.shiftKey){
                     playListInterval = setInterval(() => {
                         focusIndex--;
@@ -75,7 +86,7 @@ export const Sonify = (input: SonifyTypes) => {
                             clearInterval(playListInterval);
                             focusIndex = 0;
                         }
-                    }, playRate);
+                    }, SPEEDS[speedIndex]);
                 }
                 focusIndex--;
                 break;
@@ -96,10 +107,6 @@ export const Sonify = (input: SonifyTypes) => {
                 lineFocusIndex++;
                 break;
             }
-            case "Control": {
-                clearInterval(playListInterval);
-                break;
-            }
             case "Home": {
                 focusIndex = 0;
                 break;
@@ -110,6 +117,20 @@ export const Sonify = (input: SonifyTypes) => {
             }
             case " ": {
                 break;
+            }
+            case "q": {
+                if(speedIndex > 0){
+                    speedIndex--;
+                }
+                sr.render(`Speed, ${SPEEDS[speedIndex]}`);
+                return;
+            }
+            case "e": {
+                if(speedIndex < SPEEDS.length - 1){
+                    speedIndex++;
+                }
+                sr.render(`Speed, ${SPEEDS[speedIndex]}`);
+                return;
             }
             default: {
                 return;

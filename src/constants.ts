@@ -108,3 +108,11 @@ export const HERTZ = [
     7458.62,
     7902.13,
 ];
+
+export const SPEEDS = [
+    1000,
+    250,
+    100,
+    50,
+    25
+]
