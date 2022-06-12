@@ -82,7 +82,7 @@ const myChart2 = new Chart(
 );
 
 window.addEventListener("load", () => {
-  window.Sonify({
+  new window.Sonify({
     title: "Raleigh's High Temperatures (2020)",
     element: canvas,
     cc: document.getElementById("cc"),
@@ -90,15 +90,17 @@ window.addEventListener("load", () => {
       x: {
         minimum: 0,
         maximum: 10,
-        label: "Month"
+        label: "Month",
+        format: (value) => labels[value]
       },
       y: {
         minimum: 70,
         maximum: 100,
-        label: "Fahrenheit"
+        label: "Fahrenheit",
+        format: (value) => value,
       }
     },
-    data: highs.map((y, x) => {
+    data: {highs: highs.map((y, x) => {
       return {
         x,
         y,
@@ -107,28 +109,28 @@ window.addEventListener("load", () => {
             myChart.update();
         }
       }
-    })
+    })}
   });
-  window.Sonify({
+  new window.Sonify({
     title: "Raleigh's High/Low Temperatures (2020)",
     element: canvas2,
-    cc: document.getElementById("cc"),
+    cc: document.getElementById("cc2"),
     axes: {
       x: {
         minimum: 0,
         maximum: 10,
-        label: "Month"
+        label: "Month",
+        format: (value) => labels[value]
       },
       y: {
         minimum: 20,
         maximum: 100,
-        label: "Fahrenheit"
+        label: "Fahrenheit",
+        format: (value) => value,
       }
     },
-    data: [
-      {
-        label: "Highs",
-        data: highs.map((y, x) => {
+    data: {
+      highs: highs.map((y, x) => {
           return {
             x,
             y,
@@ -137,11 +139,8 @@ window.addEventListener("load", () => {
                 myChart2.update();
             }
           }
-        })
-      },
-      {
-        label: "Lows",
-        data: lows.map((y, x) => {
+        }),
+      lows: lows.map((y, x) => {
           return {
             x,
             y,
@@ -151,7 +150,6 @@ window.addEventListener("load", () => {
             }
           }
         })
-      },
-    ]
+    }
   });
 });

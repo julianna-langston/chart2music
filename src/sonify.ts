@@ -1,165 +1,208 @@
-import { interpolateBin, calcPan } from "./utils.js";
+import { interpolateBin, calcPan, generateSummary } from "./utils.js";
 import { HERTZ, SPEEDS } from "./constants.js";
-import { SonifyTypes, AxesRange } from "./types";
+import { SonifyTypes, AxisData, dataPoint } from "./types";
 import {ScreenReaderBridge} from "./ScreenReaderBridge.js";
 
 let context = null;
-let sr = null;
 
-export const Sonify = (input: SonifyTypes) => {
-    const targetElement = input.element;
+const NOTE_LENGTH = .25;
 
-    let data = [];
 
-    if(!("label" in input.data[0])){
-        // Only 1 line of data
-       data = [{
-           label: "",
-           data: input.data
-       }];
-    }else{
-        data = input.data;
+// {label: [{}, {}]}
+
+export class Sonify {
+    private _chartElement: HTMLElement;
+    private _ccElement: HTMLElement;
+    private _summary: string;
+    private _groups: string[];
+    private _data: dataPoint[][];
+    private _groupIndex = 0;
+    private _pointIndex = 0;
+    private _sr: ScreenReaderBridge;
+    private _xAxis: AxisData;
+    private _yAxis: AxisData;
+    private _title: string;
+    private _playListInterval: number | null = null;
+    private _speedRateIndex = 1;
+    private _flagNewGroup = false;
+
+    constructor(input: SonifyTypes) {
+        this._chartElement = input.element;
+        this._ccElement = input.cc ?? this._chartElement;
+        this._title = input.title ?? "";
+        this._xAxis = input.axes.x;
+        this._yAxis = input.axes.y;
+
+        this._groups = Object.keys(input.data);
+        this._data = Object.values(input.data);
+
+        // Generate summary
+        this._summary = generateSummary(this._title, this._xAxis, this._yAxis);
+
+        // Initialize SRB
+        ScreenReaderBridge.addAriaAttributes(this._ccElement);
+        this._sr = new ScreenReaderBridge(this._ccElement);
+
+        this._startListening();
     }
 
-    let focusIndex = 0;
-    let lineFocusIndex = 0;
+    private _startListening(){
+        this._chartElement.addEventListener("focus", () => {
+            if(context === null){
+                context = new AudioContext();
+            }
+            this._flagNewGroup = true;
+            this._playCurrent();
+            this._sr.render(this._summary);
+        });
 
-    // Establish SRB
-    const srElem = input.cc ?? targetElement;
-    ScreenReaderBridge.addAriaAttributes(srElem);
-    sr = new ScreenReaderBridge(srElem);
+        this._chartElement.addEventListener("keydown", (e) => {
+            clearInterval(this._playListInterval);
 
-    // Prep for Play All
-    let playListInterval = null;
-    let speedIndex = 1;
+            switch(e.key){
+                case "ArrowRight": {
+                    if(e.shiftKey){
+                        this._playAllRight();
+                        e.preventDefault();
+                        return;
+                    }else{
+                        this._moveRight();
+                    }
+                    break;
+                }
+                case "ArrowLeft": {
+                    if(e.shiftKey){
+                        this._playAllLeft();
+                        e.preventDefault();
+                        return;
+                    }else{
+                        this._moveLeft();
+                    }
+                    break;
+                }
+                case "PageUp": {
+                    if(this._groupIndex === 0){
+                        e.preventDefault();
+                        return;
+                    }
+                    this._groupIndex--;
+                    this._flagNewGroup = true;
+                    break;
+                }
+                case "PageDown": {
+                    if(this._groupIndex === this._data.length - 1){
+                        e.preventDefault();
+                        return;
+                    }
+                    this._groupIndex++;
+                    this._flagNewGroup = true;
+                    break;
+                }
+                case "Home": {
+                    this._pointIndex = 0;
+                    break;
+                }
+                case "End": {
+                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                    break;
+                }
+                case " ": {
+                    break;
+                }
+                case "q": {
+                    if(this._speedRateIndex > 0){
+                        this._speedRateIndex--;
+                    }
+                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+                    return;
+                }
+                case "e": {
+                    if(this._speedRateIndex < SPEEDS.length - 1){
+                        this._speedRateIndex++;
+                    }
+                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+                    return;
+                }
+                default: {
+                    return;
+                }
+            }
+            e.preventDefault();
 
-    const x_min = input.axes.x.minimum;
-    const x_max = input.axes.x.maximum;
-    const y_min = input.axes.y.minimum;
-    const y_max = input.axes.y.maximum;
 
-    // Wire up interactions
-    targetElement.addEventListener("focus", () => {
-        if(context === null){
-            context = new AudioContext();
+            this._playCurrent();
+            setTimeout(() => {
+                this._speakCurrent();
+            }, (NOTE_LENGTH * 1000));
+        });
+    }
+
+    private _moveRight() {
+        const max = this._data[this._groupIndex].length - 1;
+        if(this._pointIndex >= max){
+            this._pointIndex = max;
+            return;
         }
-        console.log(data, lineFocusIndex, focusIndex);
-        playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
-        sr.render("Sonifiable");
-    });
-    targetElement.addEventListener("keydown", (e) => {
-        clearInterval(playListInterval);
-        // Change index
-        switch(e.key){
-            case "ArrowRight": {
-                if(focusIndex >= data[lineFocusIndex].data.length - 1){
-                    focusIndex = data[lineFocusIndex].data.length - 1;
-                    e.preventDefault();
-                    return;
-                }
-                if(e.shiftKey){
-                    playListInterval = setInterval(() => {
-                        focusIndex++;
-                        if(focusIndex <= data[lineFocusIndex].data.length - 1){
-                            playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
-                        }else{
-                            clearInterval(playListInterval);
-                            focusIndex = data[lineFocusIndex].data.length -1;
-                        }
-                    }, SPEEDS[speedIndex]);
-                }
-                focusIndex++;
-                break;
-            }
-            case "ArrowLeft": {
-                if(focusIndex <= 0){
-                    focusIndex = 0;
-                    e.preventDefault();
-                    return;
-                }
-                if(e.shiftKey){
-                    playListInterval = setInterval(() => {
-                        focusIndex--;
-                        if(focusIndex >= 0){
-                            playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
-                        }else{
-                            clearInterval(playListInterval);
-                            focusIndex = 0;
-                        }
-                    }, SPEEDS[speedIndex]);
-                }
-                focusIndex--;
-                break;
-            }
-            case "PageUp": {
-                if(lineFocusIndex === 0){
-                    e.preventDefault();
-                    return;
-                }
-                lineFocusIndex--;
-                break;
-            }
-            case "PageDown": {
-                if(lineFocusIndex === data.length - 1){
-                    e.preventDefault();
-                    return;
-                }
-                lineFocusIndex++;
-                break;
-            }
-            case "Home": {
-                focusIndex = 0;
-                break;
-            }
-            case "End": {
-                focusIndex = data.length - 1;
-                break;
-            }
-            case " ": {
-                break;
-            }
-            case "q": {
-                if(speedIndex > 0){
-                    speedIndex--;
-                }
-                sr.render(`Speed, ${SPEEDS[speedIndex]}`);
-                return;
-            }
-            case "e": {
-                if(speedIndex < SPEEDS.length - 1){
-                    speedIndex++;
-                }
-                sr.render(`Speed, ${SPEEDS[speedIndex]}`);
-                return;
-            }
-            default: {
-                return;
-            }
+        this._pointIndex++;
+    }
+
+    private _moveLeft() {
+        if(this._pointIndex <= 0){
+            this._pointIndex = 0;
+            return;
         }
-        e.preventDefault();
+        this._pointIndex--;
+    }
+    
+    private _playAllLeft() {
+        const min = 0;
+        this._playListInterval= setInterval(() => {
+            if(this._pointIndex <= min){
+                this._pointIndex = min;
+                clearInterval(this._playListInterval);
+            }else{
+                this._pointIndex--;
+                this._playCurrent();
+            }
+        }, SPEEDS[this._speedRateIndex]);
+        this._playCurrent();
+    }
+    
+    private _playAllRight() {
+        const max = this._data[this._groupIndex].length - 1;
+        this._playListInterval= setInterval(() => {
+            if(this._pointIndex >= max){
+                this._pointIndex = max;
+                clearInterval(this._playListInterval);
+            }else{
+                this._pointIndex++;
+                this._playCurrent();
+            }
+        }, SPEEDS[this._speedRateIndex]);
+        this._playCurrent();
+    }
 
-        // Restrict for bounds
-        if(focusIndex < 0) {
-            focusIndex = 0;
-        }else if(focusIndex >= data[lineFocusIndex].data.length){
-            focusIndex = data[lineFocusIndex].data.length - 1;
-        }
+    private _playCurrent() {
+        const current = this._data[this._groupIndex][this._pointIndex];
 
+        const yBin = interpolateBin(current.y, this._yAxis.minimum, this._yAxis.maximum, HERTZ.length-1);
+        const xPan = calcPan( (current.x - this._xAxis.minimum) / (this._xAxis.maximum - this._xAxis.minimum) );
+        
+        pianist(yBin, xPan);
 
+        current.callback?.();
+    }
 
-        playData(data[lineFocusIndex].data[focusIndex], {x_min, x_max, y_min, y_max});
-        sr.render(`${data[lineFocusIndex].data[focusIndex].x}, ${data[lineFocusIndex].data[focusIndex].y}`);
-    });
-};
+    private _speakCurrent() {
+        const current = this._data[this._groupIndex][this._pointIndex];
+        const point = `${this._xAxis.format(current.x)}, ${this._yAxis.format(current.y)}`;
+        const text = (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") + point;
 
+        this._sr.render(text);
 
+        this._flagNewGroup = false;
+    }
 
-const playData = ({x, y, callback = () => {}}, range: AxesRange) => {
-    console.log(x, y, range);
-    const noteToPlay = interpolateBin(y, range.y_min, range.y_max, HERTZ.length-1);
-    const panning = calcPan((x-range.x_min)/(range.x_max-range.x_min));
-    pianist(noteToPlay, panning);
-    callback();
 }
 
 const pianist = (noteIndex: number, positionX: number) => {
@@ -178,6 +221,6 @@ const pianist = (noteIndex: number, positionX: number) => {
     osc.connect(gain);
 
     osc.start();
-    gain.gain.setValueAtTime(0.01, context.currentTime + .250);
-    osc.stop(context.currentTime + .260);
+    gain.gain.setValueAtTime(0.01, context.currentTime + NOTE_LENGTH);
+    osc.stop(context.currentTime + NOTE_LENGTH + .1);
 }

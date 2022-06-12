@@ -17,6 +17,7 @@ export type AxisData = {
     minimum: number;
     maximum: number;
     label: string;
+    format: (value: number) => string;
 }
 
 export type SonifyTypes = {
@@ -26,7 +27,7 @@ export type SonifyTypes = {
         x: AxisData;
         y: AxisData;
     };
-    title?: string;
+    title: string;
     cc?: HTMLElement;
     type?: supportedChartTypes;
 }
