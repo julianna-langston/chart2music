@@ -6,7 +6,7 @@
  * The "caption" element must have a specific list of aria attributes to properly work, see the static method
  * "addAriaAttributes" for more details.
  */
- export class ScreenReaderBridge {
+export class ScreenReaderBridge {
     private static readonly PADDING_CHARACTER = "\u00A0"; // no-break space
     private static readonly REMOVAL_DELAY = 25; // Wait 25 ms before removing hidden elements
     public static readonly ORIGINAL_TEXT_ATTRIBUTE = "data-original-text";

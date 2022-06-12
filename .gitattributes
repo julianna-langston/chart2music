@@ -1,0 +1,5 @@
+# Force all text files to use LF line endings.
+* text=auto eol=lf
+
+# Make sure we don't break the most common binary files.
+*.{png,jpg,jpeg,gif,webp,woff,woff2} binary

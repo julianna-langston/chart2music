@@ -1,26 +1,20 @@
-import { interpolateBin, calcPan, generateSummary } from "./utils.js";
-import { HERTZ, SPEEDS } from "./constants.js";
-import { SonifyTypes, AxisData, dataPoint, dataSet } from "./types";
-import {ScreenReaderBridge} from "./ScreenReaderBridge.js";
+import {
+    interpolateBin,
+    calcPan,
+    generateSummary,
+    calculateAxisMinimum,
+    calculateAxisMaximum,
+    defaultFormat
+} from "./utils.js";
+import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
+import type { SonifyTypes, AxisData, dataPoint } from "./types";
+import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 
-let context = null;
+let context: null | AudioContext = null;
 
-const NOTE_LENGTH = .25;
-
-const calculateAxisMinimum = (data: any[][], prop: "x" | "y") => {
-    const values = data.flat().map((point) => point[prop]);
-    return Math.min(...values);
-}
-const calculateAxisMaximum = (data: any[][], prop: "x" | "y") => {
-    const values = data.flat().map((point) => point[prop]);
-    return Math.max(...values);
-}
-
-const defaultFormat = (value: number) => `${value}`;
-
-
-// {label: [{}, {}]}
-
+/**
+ * Manages data and interactions
+ */
 export class Sonify {
     private _chartElement: HTMLElement;
     private _ccElement: HTMLElement;
@@ -37,9 +31,14 @@ export class Sonify {
     private _speedRateIndex = 1;
     private _flagNewGroup = false;
 
+    /**
+     * Constructor
+     *
+     * @param input - data/config provided by the invocation
+     */
     constructor(input: SonifyTypes) {
         this._chartElement = input.element;
-        if(!this._chartElement.hasAttribute("tabIndex")){
+        if (!this._chartElement.hasAttribute("tabIndex")) {
             this._chartElement.setAttribute("tabIndex", "0");
         }
         this._ccElement = input.cc ?? this._chartElement;
@@ -60,40 +59,63 @@ export class Sonify {
         this._startListening();
     }
 
-    private _initializeData(userData: number[] | dataPoint[] | dataSet){
-        if(!Array.isArray(userData)){
+    /**
+     * Initialize internal data strucuture. The user can provide data is several different types of formats,
+     * so those formats will need to be unified here.
+     *
+     * @param userData - data provided by the invocation
+     */
+    private _initializeData(userData: SonifyTypes["data"]) {
+        if (!Array.isArray(userData)) {
             // Data is presumably of type dataSet. No other effort necessary.
             this._groups = Object.keys(userData);
             this._data = Object.values(userData);
             return;
         }
 
-        const massagedData: dataPoint[] = userData.map((point: number | dataPoint, index: number) => {
-            if(typeof point === "number"){
-                return {
-                    x: index,
-                    y: point
-                };
+        const massagedData: dataPoint[] = userData.map(
+            (point: number | dataPoint, index: number) => {
+                if (typeof point === "number") {
+                    return {
+                        x: index,
+                        y: point
+                    };
+                }
+                return point;
             }
-            return point;
-        });
+        );
 
         this._groups = [""];
         this._data = [massagedData];
     }
 
-    private _initializeAxis(axisName: "x" | "y", userAxis?: AxisData): AxisData {
+    /**
+     * Initialize internal representation of axis metadata. Providing metadata is optional, so we
+     * need to generate metadata that hasn't been provided.
+     *
+     * @param axisName - which axis is this? "x" or "y"
+     * @param userAxis - metadata provided by the invocation
+     */
+    private _initializeAxis(
+        axisName: "x" | "y",
+        userAxis?: AxisData
+    ): AxisData {
         return {
-            minimum: userAxis?.minimum ?? calculateAxisMinimum(this._data, axisName),
-            maximum: userAxis?.maximum ?? calculateAxisMaximum(this._data, axisName),
+            minimum:
+                userAxis?.minimum ?? calculateAxisMinimum(this._data, axisName),
+            maximum:
+                userAxis?.maximum ?? calculateAxisMaximum(this._data, axisName),
             label: userAxis?.label ?? "",
             format: userAxis?.format ?? defaultFormat
         };
     }
 
-    private _startListening(){
+    /**
+     * Listen to various events, and drive interactions
+     */
+    private _startListening() {
         this._chartElement.addEventListener("focus", () => {
-            if(context === null){
+            if (context === null) {
                 context = new AudioContext();
             }
             this._sr.render(this._summary);
@@ -102,29 +124,29 @@ export class Sonify {
         this._chartElement.addEventListener("keydown", (e) => {
             clearInterval(this._playListInterval);
 
-            switch(e.key){
+            switch (e.key) {
                 case "ArrowRight": {
-                    if(e.shiftKey){
+                    if (e.shiftKey) {
                         this._playAllRight();
                         e.preventDefault();
                         return;
-                    }else{
+                    } else {
                         this._moveRight();
                     }
                     break;
                 }
                 case "ArrowLeft": {
-                    if(e.shiftKey){
+                    if (e.shiftKey) {
                         this._playAllLeft();
                         e.preventDefault();
                         return;
-                    }else{
+                    } else {
                         this._moveLeft();
                     }
                     break;
                 }
                 case "PageUp": {
-                    if(this._groupIndex === 0){
+                    if (this._groupIndex === 0) {
                         e.preventDefault();
                         return;
                     }
@@ -133,7 +155,7 @@ export class Sonify {
                     break;
                 }
                 case "PageDown": {
-                    if(this._groupIndex === this._data.length - 1){
+                    if (this._groupIndex === this._data.length - 1) {
                         e.preventDefault();
                         return;
                     }
@@ -154,14 +176,14 @@ export class Sonify {
                     break;
                 }
                 case "q": {
-                    if(this._speedRateIndex > 0){
+                    if (this._speedRateIndex > 0) {
                         this._speedRateIndex--;
                     }
                     this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
                     return;
                 }
                 case "e": {
-                    if(this._speedRateIndex < SPEEDS.length - 1){
+                    if (this._speedRateIndex < SPEEDS.length - 1) {
                         this._speedRateIndex++;
                     }
                     this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
@@ -173,52 +195,63 @@ export class Sonify {
             }
             e.preventDefault();
 
-
             this._playCurrent();
             setTimeout(() => {
                 this._speakCurrent();
-            }, (NOTE_LENGTH * 1000));
+            }, NOTE_LENGTH * 1000);
         });
     }
 
+    /**
+     * Move focus to the next data point to the right, if there is one
+     */
     private _moveRight() {
         const max = this._data[this._groupIndex].length - 1;
-        if(this._pointIndex >= max){
+        if (this._pointIndex >= max) {
             this._pointIndex = max;
             return;
         }
         this._pointIndex++;
     }
 
+    /**
+     * Move focus to the next data point to the left, if there is one
+     */
     private _moveLeft() {
-        if(this._pointIndex <= 0){
+        if (this._pointIndex <= 0) {
             this._pointIndex = 0;
             return;
         }
         this._pointIndex--;
     }
-    
+
+    /**
+     * Play all data points to the left, if there are any
+     */
     private _playAllLeft() {
         const min = 0;
-        this._playListInterval= setInterval(() => {
-            if(this._pointIndex <= min){
+        this._playListInterval = setInterval(() => {
+            if (this._pointIndex <= min) {
                 this._pointIndex = min;
                 clearInterval(this._playListInterval);
-            }else{
+            } else {
                 this._pointIndex--;
                 this._playCurrent();
             }
         }, SPEEDS[this._speedRateIndex]);
         this._playCurrent();
     }
-    
+
+    /**
+     * Play all data points to the right, if there are any
+     */
     private _playAllRight() {
         const max = this._data[this._groupIndex].length - 1;
-        this._playListInterval= setInterval(() => {
-            if(this._pointIndex >= max){
+        this._playListInterval = setInterval(() => {
+            if (this._pointIndex >= max) {
                 this._pointIndex = max;
                 clearInterval(this._playListInterval);
-            }else{
+            } else {
                 this._pointIndex++;
                 this._playCurrent();
             }
@@ -226,37 +259,64 @@ export class Sonify {
         this._playCurrent();
     }
 
+    /**
+     * Play the current data point
+     */
     private _playCurrent() {
         const current = this._data[this._groupIndex][this._pointIndex];
 
-        const yBin = interpolateBin(current.y, this._yAxis.minimum, this._yAxis.maximum, HERTZ.length-1);
-        const xPan = calcPan( (current.x - this._xAxis.minimum) / (this._xAxis.maximum - this._xAxis.minimum) );
-        
+        const yBin = interpolateBin(
+            current.y,
+            this._yAxis.minimum,
+            this._yAxis.maximum,
+            HERTZ.length - 1
+        );
+        const xPan = calcPan(
+            (current.x - this._xAxis.minimum) /
+                (this._xAxis.maximum - this._xAxis.minimum)
+        );
+
         pianist(yBin, xPan);
 
         current.callback?.();
     }
 
+    /**
+     * Update the screen reader on the current data point
+     */
     private _speakCurrent() {
         // If we're glagged to announce a new group, but the group name is empty, ignore the flag
-        if(this._flagNewGroup && this._groups[this._groupIndex] === ""){
+        if (this._flagNewGroup && this._groups[this._groupIndex] === "") {
             this._flagNewGroup = false;
         }
 
         const current = this._data[this._groupIndex][this._pointIndex];
-        const point = `${this._xAxis.format(current.x)}, ${this._yAxis.format(current.y)}`;
-        const text = (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") + point;
+        const point = `${this._xAxis.format(current.x)}, ${this._yAxis.format(
+            current.y
+        )}`;
+        const text =
+            (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") +
+            point;
 
         this._sr.render(text);
 
         this._flagNewGroup = false;
     }
-
 }
 
+/**
+ * Play an individual note
+ *
+ * @param noteIndex Which note to play, based on the Hertz list
+ * @param positionX Where the note should be panned (-1 to 1)
+ */
 const pianist = (noteIndex: number, positionX: number) => {
+    if (context === null) {
+        return;
+    }
+
     // Pan note
-    const panner = new PannerNode(context, {positionX});
+    const panner = new PannerNode(context, { positionX });
     panner.connect(context.destination);
 
     // Gain (so that you don't hear clipping)
@@ -271,5 +331,5 @@ const pianist = (noteIndex: number, positionX: number) => {
 
     osc.start();
     gain.gain.setValueAtTime(0.01, context.currentTime + NOTE_LENGTH);
-    osc.stop(context.currentTime + NOTE_LENGTH + .1);
-}
+    osc.stop(context.currentTime + NOTE_LENGTH + 0.1);
+};
