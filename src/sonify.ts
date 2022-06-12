@@ -1,11 +1,22 @@
 import { interpolateBin, calcPan, generateSummary } from "./utils.js";
 import { HERTZ, SPEEDS } from "./constants.js";
-import { SonifyTypes, AxisData, dataPoint } from "./types";
+import { SonifyTypes, AxisData, dataPoint, dataSet } from "./types";
 import {ScreenReaderBridge} from "./ScreenReaderBridge.js";
 
 let context = null;
 
 const NOTE_LENGTH = .25;
+
+const calculateAxisMinimum = (data: any[][], prop: "x" | "y") => {
+    const values = data.flat().map((point) => point[prop]);
+    return Math.min(...values);
+}
+const calculateAxisMaximum = (data: any[][], prop: "x" | "y") => {
+    const values = data.flat().map((point) => point[prop]);
+    return Math.max(...values);
+}
+
+const defaultFormat = (value: number) => `${value}`;
 
 
 // {label: [{}, {}]}
@@ -30,11 +41,11 @@ export class Sonify {
         this._chartElement = input.element;
         this._ccElement = input.cc ?? this._chartElement;
         this._title = input.title ?? "";
-        this._xAxis = input.axes.x;
-        this._yAxis = input.axes.y;
 
-        this._groups = Object.keys(input.data);
-        this._data = Object.values(input.data);
+        this._initializeData(input.data);
+
+        this._xAxis = this._initializeAxis("x", input.axes?.x);
+        this._yAxis = this._initializeAxis("y", input.axes?.y);
 
         // Generate summary
         this._summary = generateSummary(this._title, this._xAxis, this._yAxis);
@@ -46,13 +57,42 @@ export class Sonify {
         this._startListening();
     }
 
+    private _initializeData(userData: number[] | dataPoint[] | dataSet){
+        if(!Array.isArray(userData)){
+            // Data is presumably of type dataSet. No other effort necessary.
+            this._groups = Object.keys(userData);
+            this._data = Object.values(userData);
+            return;
+        }
+
+        const massagedData: dataPoint[] = userData.map((point: number | dataPoint, index: number) => {
+            if(typeof point === "number"){
+                return {
+                    x: index,
+                    y: point
+                };
+            }
+            return point;
+        });
+
+        this._groups = [""];
+        this._data = [massagedData];
+    }
+
+    private _initializeAxis(axisName: "x" | "y", userAxis?: AxisData): AxisData {
+        return {
+            minimum: userAxis?.minimum ?? calculateAxisMinimum(this._data, axisName),
+            maximum: userAxis?.maximum ?? calculateAxisMaximum(this._data, axisName),
+            label: userAxis?.label ?? "",
+            format: userAxis?.format ?? defaultFormat
+        };
+    }
+
     private _startListening(){
         this._chartElement.addEventListener("focus", () => {
             if(context === null){
                 context = new AudioContext();
             }
-            this._flagNewGroup = true;
-            this._playCurrent();
             this._sr.render(this._summary);
         });
 
@@ -107,6 +147,7 @@ export class Sonify {
                     break;
                 }
                 case " ": {
+                    this._flagNewGroup = true;
                     break;
                 }
                 case "q": {
@@ -194,6 +235,11 @@ export class Sonify {
     }
 
     private _speakCurrent() {
+        // If we're glagged to announce a new group, but the group name is empty, ignore the flag
+        if(this._flagNewGroup && this._groups[this._groupIndex] === ""){
+            this._flagNewGroup = false;
+        }
+
         const current = this._data[this._groupIndex][this._pointIndex];
         const point = `${this._xAxis.format(current.x)}, ${this._yAxis.format(current.y)}`;
         const text = (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") + point;

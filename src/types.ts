@@ -1,10 +1,9 @@
 export enum supportedChartTypes {
-    LINE
+    LINE = "line"
 }
 
-export type dataLine = {
-    label?: string;
-    data: dataPoint[];
+export type dataSet = {
+    [groupName: string]: dataPoint[];
 }
 
 export type dataPoint = {
@@ -21,20 +20,13 @@ export type AxisData = {
 }
 
 export type SonifyTypes = {
-    data: dataPoint[] | dataLine[];
+    data: dataSet | dataPoint[];
     element: HTMLElement;
-    axes: {
-        x: AxisData;
-        y: AxisData;
+    axes?: {
+        x?: AxisData;
+        y?: AxisData;
     };
-    title: string;
+    title?: string;
     cc?: HTMLElement;
     type?: supportedChartTypes;
-}
-
-export type AxesRange = {
-    x_min: number;
-    x_max: number;
-    y_min: number;
-    y_max: number;
 }

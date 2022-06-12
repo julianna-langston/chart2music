@@ -83,24 +83,10 @@ const myChart2 = new Chart(
 
 window.addEventListener("load", () => {
   new window.Sonify({
-    title: "Raleigh's High Temperatures (2020)",
+    type: "line",
     element: canvas,
     cc: document.getElementById("cc"),
-    axes: {
-      x: {
-        minimum: 0,
-        maximum: 10,
-        label: "Month",
-        format: (value) => labels[value]
-      },
-      y: {
-        minimum: 70,
-        maximum: 100,
-        label: "Fahrenheit",
-        format: (value) => value,
-      }
-    },
-    data: {highs: highs.map((y, x) => {
+    data: highs.map((y, x) => {
       return {
         x,
         y,
@@ -109,7 +95,7 @@ window.addEventListener("load", () => {
             myChart.update();
         }
       }
-    })}
+    })
   });
   new window.Sonify({
     title: "Raleigh's High/Low Temperatures (2020)",
