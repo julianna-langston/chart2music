@@ -1,0 +1,16 @@
+{
+    "name": "sonifyjs",
+    "version": "0.1.0",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "clean": "rimraf ./dist",
+        "start": "npm run build --watch && http-server ."
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "http-server": "^14.1.1",
+        "rimraf": "^3.0.2",
+        "typescript": "^4.7.3"
+    }
+}

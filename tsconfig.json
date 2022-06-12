@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "outDir": "./dist/",
+        "removeComments": true,
+        "target": "ES2020",
+        "preserveConstEnums": true,
+        "sourceMap": true
+    },
+    "include": ["src/**/*"]
+}
