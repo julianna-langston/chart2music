@@ -7,10 +7,14 @@ import {
     defaultFormat
 } from "./utils.js";
 import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
-import type { SonifyTypes, AxisData, dataPoint } from "./types";
+import type { SonifyTypes, AxisData, dataPoint, KeyActionMap } from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 
 let context: null | AudioContext = null;
+
+const generateKeypressDescription = (e: KeyboardEvent) => {
+    return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${e.key}`
+};
 
 /**
  * Manages data and interactions
@@ -30,6 +34,7 @@ export class Sonify {
     private _playListInterval: number | null = null;
     private _speedRateIndex = 1;
     private _flagNewGroup = false;
+    private _keyActionMap: KeyActionMap;
 
     /**
      * Constructor
@@ -56,7 +61,67 @@ export class Sonify {
         ScreenReaderBridge.addAriaAttributes(this._ccElement);
         this._sr = new ScreenReaderBridge(this._ccElement);
 
+        this._initializeKeyActionMap();
         this._startListening();
+    }
+
+    private _initializeKeyActionMap() {
+        this._keyActionMap = {
+            "ArrowRight": () => {
+                this._moveRight();
+                this._playAndSpeak();
+            },
+            "Shift+ArrowRight": () => {
+                this._playAllRight();
+            },
+            "ArrowLeft": () => {
+                this._moveLeft();
+                this._playAndSpeak();
+            },
+            "Shift+ArrowLeft": () => {
+                this._playAllLeft();
+            },
+            "PageUp": () => {
+                if (this._groupIndex === 0) {
+                    return;
+                }
+                this._groupIndex--;
+                this._flagNewGroup = true;
+                this._playAndSpeak();
+            },
+            "PageDown": () => {
+                if (this._groupIndex === this._data.length - 1) {
+                    return;
+                }
+                this._groupIndex++;
+                this._flagNewGroup = true;
+                this._playAndSpeak();
+            },
+            "Home": () => {
+                this._pointIndex = 0;
+                this._playAndSpeak();
+            },
+            "End": () => {
+                this._pointIndex = this._data[this._groupIndex].length - 1;
+                this._playAndSpeak();
+            },
+            " ": () => {
+                this._flagNewGroup = true;
+                this._playAndSpeak();
+            },
+            "q": () => {
+                if (this._speedRateIndex > 0) {
+                    this._speedRateIndex--;
+                }
+                this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+            },
+            "e": () => {
+                if (this._speedRateIndex < SPEEDS.length - 1) {
+                    this._speedRateIndex++;
+                }
+                this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+            },
+        }  
     }
 
     /**
@@ -124,82 +189,23 @@ export class Sonify {
         this._chartElement.addEventListener("keydown", (e) => {
             clearInterval(this._playListInterval);
 
-            switch (e.key) {
-                case "ArrowRight": {
-                    if (e.shiftKey) {
-                        this._playAllRight();
-                        e.preventDefault();
-                        return;
-                    } else {
-                        this._moveRight();
-                    }
-                    break;
-                }
-                case "ArrowLeft": {
-                    if (e.shiftKey) {
-                        this._playAllLeft();
-                        e.preventDefault();
-                        return;
-                    } else {
-                        this._moveLeft();
-                    }
-                    break;
-                }
-                case "PageUp": {
-                    if (this._groupIndex === 0) {
-                        e.preventDefault();
-                        return;
-                    }
-                    this._groupIndex--;
-                    this._flagNewGroup = true;
-                    break;
-                }
-                case "PageDown": {
-                    if (this._groupIndex === this._data.length - 1) {
-                        e.preventDefault();
-                        return;
-                    }
-                    this._groupIndex++;
-                    this._flagNewGroup = true;
-                    break;
-                }
-                case "Home": {
-                    this._pointIndex = 0;
-                    break;
-                }
-                case "End": {
-                    this._pointIndex = this._data[this._groupIndex].length - 1;
-                    break;
-                }
-                case " ": {
-                    this._flagNewGroup = true;
-                    break;
-                }
-                case "q": {
-                    if (this._speedRateIndex > 0) {
-                        this._speedRateIndex--;
-                    }
-                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
-                    return;
-                }
-                case "e": {
-                    if (this._speedRateIndex < SPEEDS.length - 1) {
-                        this._speedRateIndex++;
-                    }
-                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
-                    return;
-                }
-                default: {
-                    return;
-                }
-            }
-            e.preventDefault();
+            const keyPressDescription = generateKeypressDescription(e);
 
-            this._playCurrent();
-            setTimeout(() => {
-                this._speakCurrent();
-            }, NOTE_LENGTH * 1000);
+            if(keyPressDescription in this._keyActionMap){
+                this._keyActionMap[keyPressDescription]();
+                e.preventDefault();
+            }
         });
+    }
+
+    /**
+     * Play an individual data point, and then speak its details
+     */
+    private _playAndSpeak(){
+        this._playCurrent();
+        setTimeout(() => {
+            this._speakCurrent();
+        }, NOTE_LENGTH * 1000);
     }
 
     /**

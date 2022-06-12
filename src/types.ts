@@ -45,3 +45,7 @@ export type SonifyTypes = {
     cc?: HTMLElement;
     type?: SUPPORTED_CHART_TYPES;
 };
+
+export type KeyActionMap = {
+    [keys: string]: () => void;
+}
