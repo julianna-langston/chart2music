@@ -299,9 +299,9 @@ export class Sonify {
      * Play the current data point
      */
     private _playCurrent() {
-if(!this._audioEngine && context) {
-    this._audioEngine = new OscillatorAudioEngine(context);
-}
+        if (!this._audioEngine && context) {
+            this._audioEngine = new OscillatorAudioEngine(context);
+        }
 
         const current = this._data[this._groupIndex][this._pointIndex];
 
@@ -318,7 +318,7 @@ if(!this._audioEngine && context) {
                 HERTZ.length - 1
             );
 
-            if(this._audioEngine) {
+            if (this._audioEngine) {
                 this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
             }
         } else {
@@ -331,8 +331,12 @@ if(!this._audioEngine && context) {
                         HERTZ.length - 1
                     );
 
-                    if(this._audioEngine) {
-                        this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+                    if (this._audioEngine) {
+                        this._audioEngine.playNote(
+                            HERTZ[yBin],
+                            xPan,
+                            NOTE_LENGTH
+                        );
                     }
                 }
             });
