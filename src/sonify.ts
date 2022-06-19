@@ -15,6 +15,7 @@ import type {
     StatBundle
 } from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
+import { OscillatorAudioEngine } from "./OscillatorAudioEngine.js";
 
 let context: null | AudioContext = null;
 
@@ -60,6 +61,7 @@ export class Sonify {
     private _speedRateIndex = 1;
     private _flagNewGroup = false;
     private _keyActionMap: KeyActionMap;
+    private _audioEngine: OscillatorAudioEngine | null = null;
 
     /**
      * Constructor
@@ -153,7 +155,7 @@ export class Sonify {
     }
 
     /**
-     * Initialize internal data strucuture. The user can provide data is several different types of formats,
+     * Initialize internal data structure. The user can provide data is several different types of formats,
      * so those formats will need to be unified here.
      *
      * @param userData - data provided by the invocation
@@ -208,7 +210,7 @@ export class Sonify {
      */
     private _startListening() {
         this._chartElement.addEventListener("focus", () => {
-            if (context === null) {
+            if (!context) {
                 context = new AudioContext();
             }
             this._sr.render(this._summary);
@@ -297,6 +299,10 @@ export class Sonify {
      * Play the current data point
      */
     private _playCurrent() {
+if(!this._audioEngine && context) {
+    this._audioEngine = new OscillatorAudioEngine(context);
+}
+
         const current = this._data[this._groupIndex][this._pointIndex];
 
         const xPan = calcPan(
@@ -312,7 +318,9 @@ export class Sonify {
                 HERTZ.length - 1
             );
 
-            pianist(yBin, xPan);
+            if(this._audioEngine) {
+                this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+            }
         } else {
             (["high", "low"] as (keyof StatBundle)[]).forEach((stat) => {
                 if (stat in (current.y as StatBundle)) {
@@ -323,7 +331,9 @@ export class Sonify {
                         HERTZ.length - 1
                     );
 
-                    pianist(yBin, xPan);
+                    if(this._audioEngine) {
+                        this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+                    }
                 }
             });
         }
@@ -355,39 +365,3 @@ export class Sonify {
         this._flagNewGroup = false;
     }
 }
-
-/**
- * Play an individual note
- *
- * @param noteIndex Which note to play, based on the Hertz list
- * @param positionX Where the note should be panned (-1 to 1)
- */
-const pianist = (noteIndex: number, positionX: number) => {
-    if (context === null) {
-        return;
-    }
-
-    // Pan note
-    const panner = new PannerNode(context, { positionX });
-    panner.connect(context.destination);
-
-    // Gain (so that you don't hear clipping)
-    const gain = new GainNode(context);
-    gain.gain.setValueAtTime(1, context.currentTime);
-    gain.connect(panner);
-
-    // Oscillator
-    const osc = new OscillatorNode(context);
-    osc.frequency.setValueAtTime(HERTZ[noteIndex], context.currentTime);
-    osc.connect(gain);
-
-    // Start the node
-    osc.start();
-
-    // Silence the node in .25s
-    gain.gain.setValueAtTime(0.01, context.currentTime + NOTE_LENGTH);
-
-    // Stop the node in just over .25s.
-    // If you stop the node without silencing it, you hear clipping.
-    osc.stop(context.currentTime + NOTE_LENGTH + 0.1);
-};
