@@ -16,7 +16,7 @@ export const interpolateBin = (
 export const calcPan = (pct: number) => (pct * 2 - 1) * 0.98;
 
 export const generateSummary = (title: string, x: AxisData, y: AxisData) =>
-    `Sonified line chart "${title}", x is ${x.label} from ${x.format(
+    `Sonified chart "${title}", x is ${x.label} from ${x.format(
         x.minimum
     )} to ${x.format(x.maximum)}, y is ${y.label} from ${y.format(
         y.minimum
@@ -56,3 +56,6 @@ export const calculateAxisMaximum = (
 };
 
 export const defaultFormat = (value: number) => `${value}`;
+
+export const sentenceCase = (str: string) =>
+    `${str.substring(0, 1).toUpperCase()}${str.substring(1).toLowerCase()}`;

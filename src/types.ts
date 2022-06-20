@@ -63,6 +63,8 @@ export type groupedMetadata = {
     minimumPointIndex: number;
     maximumPointIndex: number;
     tenths: number;
+    statIndex: number;
+    availableStats: (keyof StatBundle)[];
 };
 
 /**

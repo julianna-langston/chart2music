@@ -4,7 +4,8 @@ import {
     generateSummary,
     calculateAxisMinimum,
     calculateAxisMaximum,
-    defaultFormat
+    defaultFormat,
+    sentenceCase
 } from "./utils.js";
 import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
 import type {
@@ -12,7 +13,8 @@ import type {
     AxisData,
     dataPoint,
     groupedMetadata,
-    validAxes
+    validAxes,
+    StatBundle
 } from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 import { OscillatorAudioEngine } from "./OscillatorAudioEngine.js";
@@ -20,11 +22,18 @@ import { KeyboardEventManager } from "./keyboardManager.js";
 
 let context: null | AudioContext = null;
 
+const statReadOrder = ["high", "low"] as (keyof StatBundle)[];
+
 const generatePointDescription = (
     point: dataPoint,
     xAxis: AxisData,
-    yAxis: AxisData
+    yAxis: AxisData,
+    stat?: keyof StatBundle
 ) => {
+    if (typeof stat !== "undefined" && typeof point.y !== "number") {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y[stat])}`;
+    }
+
     if (typeof point.y === "number") {
         return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
     } else if (typeof point.y2 === "number") {
@@ -46,6 +55,10 @@ const usesAxis = (data: dataPoint[][], axisName: "x" | "y" | "y2") => {
     return typeof firstUseOfAxis !== "undefined";
 };
 
+const uniqueArray = (arr: unknown[]) => {
+    return [...new Set(arr)];
+};
+
 /**
  * Manages data and interactions
  */
@@ -65,6 +78,7 @@ export class Sonify {
     private _playListInterval: number | null = null;
     private _speedRateIndex = 1;
     private _flagNewGroup = false;
+    private _flagNewStat = false;
     private _keyEventManager: KeyboardEventManager;
     private _audioEngine: OscillatorAudioEngine | null = null;
     private _metadataByGroup: groupedMetadata[];
@@ -141,9 +155,31 @@ export class Sonify {
             },
             {
                 title: "Cancel play all",
-                key: "Control",
+                key: "Ctrl+Control",
                 callback: () => {
                     clearInterval(this._playListInterval);
+                }
+            },
+            {
+                title: "Navigate to previous statistic",
+                key: "ArrowUp",
+                callback: () => {
+                    clearInterval(this._playListInterval);
+                    if (this._movePrevStat()) {
+                        this._flagNewStat = true;
+                        this._playAndSpeak();
+                    }
+                }
+            },
+            {
+                title: "Navigate to next statistic",
+                key: "ArrowDown",
+                callback: () => {
+                    clearInterval(this._playListInterval);
+                    if (this._moveNextStat()) {
+                        this._flagNewStat = true;
+                        this._playAndSpeak();
+                    }
                 }
             },
             {
@@ -192,10 +228,11 @@ export class Sonify {
             },
             {
                 title: "Replay",
-                key: "",
+                key: " ",
                 callback: () => {
                     clearInterval(this._playListInterval);
                     this._flagNewGroup = true;
+                    this._flagNewStat = true;
                     this._playAndSpeak();
                 }
             },
@@ -306,19 +343,34 @@ export class Sonify {
     private _calculateMetadataByGroup() {
         this._metadataByGroup = this._data.map((row) => {
             // Calculate min/max
-            const yValues = row
-                .map(({ y, y2 }) => y ?? y2)
-                .filter((value) => typeof value === "number") as number[];
+            const yPoints = row.map(({ y, y2 }) => y ?? y2);
+            const yValues = yPoints.filter(
+                (value) => typeof value === "number"
+            ) as number[];
             const min = Math.min(...yValues);
             const max = Math.max(...yValues);
 
             // Calculate tenths
             const tenths = Math.round(row.length / 10);
 
+            // Determine stat bundle
+            const stats = uniqueArray(
+                yPoints
+                    .filter((value) => typeof value !== "number")
+                    .map((value) => Object.keys(value))
+                    .flat()
+            );
+            // Sort by reading order
+            const availableStats = statReadOrder.filter(
+                (stat) => stats.indexOf(stat) >= 0
+            );
+
             return {
                 minimumPointIndex: yValues.indexOf(min),
                 maximumPointIndex: yValues.indexOf(max),
-                tenths
+                tenths,
+                availableStats,
+                statIndex: -1
             };
         });
     }
@@ -438,6 +490,35 @@ export class Sonify {
     }
 
     /**
+     * Move to the next stat
+     *
+     * @returns if possible
+     */
+    private _movePrevStat() {
+        const { statIndex } = this._metadataByGroup[this._groupIndex];
+        if (statIndex < 0) {
+            return false;
+        }
+        this._metadataByGroup[this._groupIndex].statIndex = statIndex - 1;
+        return true;
+    }
+
+    /**
+     * Move to the next stat
+     *
+     * @returns if possible
+     */
+    private _moveNextStat() {
+        const { statIndex, availableStats } =
+            this._metadataByGroup[this._groupIndex];
+        if (statIndex >= availableStats.length - 1) {
+            return false;
+        }
+        this._metadataByGroup[this._groupIndex].statIndex = statIndex + 1;
+        return true;
+    }
+
+    /**
      * Play all data points to the left, if there are any
      */
     private _playAllLeft() {
@@ -477,6 +558,9 @@ export class Sonify {
      * Play the current data point
      */
     private _playCurrent() {
+        const { statIndex, availableStats } =
+            this._metadataByGroup[this._groupIndex];
+
         if (!this._audioEngine && context) {
             this._audioEngine = new OscillatorAudioEngine(context);
         }
@@ -491,6 +575,7 @@ export class Sonify {
                 (this._xAxis.maximum - this._xAxis.minimum)
         );
 
+        // Only working with straight-forward numbers
         if (typeof current.y === "number") {
             const yBin = interpolateBin(
                 current.y,
@@ -500,7 +585,10 @@ export class Sonify {
             );
 
             this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
-        } else if (typeof current.y2 === "number") {
+            current.callback?.();
+            return;
+        }
+        if (typeof current.y2 === "number") {
             const yBin = interpolateBin(
                 current.y2,
                 this._y2Axis.minimum,
@@ -509,25 +597,37 @@ export class Sonify {
             );
 
             this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
-        } else if ("high" in current.y && "low" in current.y) {
-            const yBinHigh = interpolateBin(
-                current.y.high,
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                HERTZ.length - 1
-            );
-            const yBinLow = interpolateBin(
-                current.y.low,
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                HERTZ.length - 1
-            );
-
-            this._audioEngine.playNote(HERTZ[yBinHigh], xPan, NOTE_LENGTH);
-            setTimeout(() => {
-                this._audioEngine.playNote(HERTZ[yBinLow], xPan, NOTE_LENGTH);
-            }, SPEEDS[this._speedRateIndex] * 0.25);
+            current.callback?.();
+            return;
         }
+
+        // Only play a single note, because we've drilled into stats
+        if (statIndex >= 0) {
+            const stat = availableStats[statIndex];
+            const yBin = interpolateBin(
+                current.y[stat],
+                this._yAxis.minimum,
+                this._yAxis.maximum,
+                HERTZ.length - 1
+            );
+            this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+            current.callback?.();
+            return;
+        }
+
+        const interval = 1 / (availableStats.length + 1);
+        availableStats.forEach((stat, index) => {
+            const yBin = interpolateBin(
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                current.y[stat],
+                this._yAxis.minimum,
+                this._yAxis.maximum,
+                HERTZ.length - 1
+            );
+            setTimeout(() => {
+                this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+            }, SPEEDS[this._speedRateIndex] * interval * index);
+        });
 
         current.callback?.();
     }
@@ -541,18 +641,29 @@ export class Sonify {
             this._flagNewGroup = false;
         }
 
+        const { statIndex, availableStats } =
+            this._metadataByGroup[this._groupIndex];
+        if (this._flagNewStat && availableStats.length === 0) {
+            this._flagNewStat = false;
+        }
+
         const current = this._data[this._groupIndex][this._pointIndex];
         const point = generatePointDescription(
             current,
             this._xAxis,
-            "y" in current ? this._yAxis : this._y2Axis
+            "y" in current ? this._yAxis : this._y2Axis,
+            availableStats[statIndex]
         );
         const text =
             (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") +
+            (this._flagNewStat
+                ? `${sentenceCase(availableStats[statIndex] ?? "all")}, `
+                : "") +
             point;
 
         this._sr.render(text);
 
         this._flagNewGroup = false;
+        this._flagNewStat = false;
     }
 }
