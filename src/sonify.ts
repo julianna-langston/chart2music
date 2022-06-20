@@ -385,14 +385,20 @@ export class Sonify {
      * Move by a tenth to the left
      */
     private _moveLeftTenths() {
-        this._pointIndex = Math.max(this._pointIndex - this._metadataByGroup[this._groupIndex].tenths, 0);
+        this._pointIndex = Math.max(
+            this._pointIndex - this._metadataByGroup[this._groupIndex].tenths,
+            0
+        );
     }
 
     /**
      * Move by a tenth to the right
      */
     private _moveRightTenths() {
-        this._pointIndex = Math.min(this._pointIndex + this._metadataByGroup[this._groupIndex].tenths, this._data[this._groupIndex].length - 1);
+        this._pointIndex = Math.min(
+            this._pointIndex + this._metadataByGroup[this._groupIndex].tenths,
+            this._data[this._groupIndex].length - 1
+        );
     }
 
     /**
