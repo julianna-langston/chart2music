@@ -19,10 +19,11 @@ export const largeDataLine = (canvas, cc) => {
             labels,
             datasets: [
                 {
-                    backgroundColor: "rgb(255, 99, 132)",
                     data: bitcoin,
+                    borderWidth: 1,
                     hoverBorderWidth: 5,
-                    hoverBorderColor: "green"
+                    borderColor: "red",
+                    pointRadius: 0
                 }
             ]
         },
@@ -30,6 +31,10 @@ export const largeDataLine = (canvas, cc) => {
             plugins: {
                 legend: {
                     display: false
+                },
+                title: {
+                    display: true,
+                    text: "Bitcoin Historical Price"
                 }
             }
         }
