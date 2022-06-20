@@ -90,6 +90,18 @@ export class KeyboardEventManager {
     }
 
     /**
+     * Register multiple key events
+     * Effectively a shortcut to calling .registerKeyEvent multiple times
+     *
+     * @param keyRegistrationList - list of key events to register
+     */
+    registerKeyEvents(keyRegistrationList: KeyRegistration[]) {
+        keyRegistrationList.forEach((kr) => {
+            this.registerKeyEvent(kr);
+        });
+    }
+
+    /**
      * Unregister a key event
      *
      * @param key - the key to remove
@@ -147,10 +159,14 @@ export class KeyboardEventManager {
         km.registerKeyEvent({
             key: "Escape",
             callback: () => {
-                this._preLaunchActiveElement?.focus();
-                document.body.removeChild(dialog);
+                this._preLaunchActiveElement?.focus(); // causes dialog to blur, which closes it
             }
         });
         dialog.focus();
+
+        const closeDialog = () => {
+            dialog.parentNode.removeChild(dialog);
+        };
+        dialog.addEventListener("blur", closeDialog);
     }
 }

@@ -7,23 +7,12 @@ import {
     defaultFormat
 } from "./utils.js";
 import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
-import type {
-    SonifyTypes,
-    AxisData,
-    dataPoint,
-    KeyActionMap,
-    StatBundle
-} from "./types";
+import type { SonifyTypes, AxisData, dataPoint, StatBundle } from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 import { OscillatorAudioEngine } from "./OscillatorAudioEngine.js";
+import { KeyboardEventManager } from "./keyboardManager.js";
 
 let context: null | AudioContext = null;
-
-const generateKeypressDescription = (e: KeyboardEvent) => {
-    return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${
-        e.shiftKey ? "Shift+" : ""
-    }${e.key}`;
-};
 
 const generatePointDescription = (
     point: dataPoint,
@@ -60,7 +49,7 @@ export class Sonify {
     private _playListInterval: number | null = null;
     private _speedRateIndex = 1;
     private _flagNewGroup = false;
-    private _keyActionMap: KeyActionMap;
+    private _keyEventManager: KeyboardEventManager;
     private _audioEngine: OscillatorAudioEngine | null = null;
 
     /**
@@ -70,9 +59,6 @@ export class Sonify {
      */
     constructor(input: SonifyTypes) {
         this._chartElement = input.element;
-        if (!this._chartElement.hasAttribute("tabIndex")) {
-            this._chartElement.setAttribute("tabIndex", "0");
-        }
         this._ccElement = input.cc ?? this._chartElement;
         this._title = input.title ?? "";
 
@@ -96,62 +82,114 @@ export class Sonify {
      * Initialize which keys map to which actions
      */
     private _initializeKeyActionMap() {
-        this._keyActionMap = {
-            ArrowRight: () => {
-                this._moveRight();
-                this._playAndSpeak();
-            },
-            "Shift+ArrowRight": () => {
-                this._playAllRight();
-            },
-            ArrowLeft: () => {
-                this._moveLeft();
-                this._playAndSpeak();
-            },
-            "Shift+ArrowLeft": () => {
-                this._playAllLeft();
-            },
-            PageUp: () => {
-                if (this._groupIndex === 0) {
-                    return;
+        this._keyEventManager = new KeyboardEventManager(this._chartElement);
+        this._keyEventManager.registerKeyEvents([
+            {
+                title: "Go to next point",
+                key: "ArrowRight",
+                callback: () => {
+                    this._moveRight();
+                    this._playAndSpeak();
                 }
-                this._groupIndex--;
-                this._flagNewGroup = true;
-                this._playAndSpeak();
             },
-            PageDown: () => {
-                if (this._groupIndex === this._data.length - 1) {
-                    return;
+            {
+                title: "Play all right",
+                key: "Shift+ArrowRight",
+                callback: () => {
+                    this._playAllRight();
                 }
-                this._groupIndex++;
-                this._flagNewGroup = true;
-                this._playAndSpeak();
             },
-            Home: () => {
-                this._pointIndex = 0;
-                this._playAndSpeak();
-            },
-            End: () => {
-                this._pointIndex = this._data[this._groupIndex].length - 1;
-                this._playAndSpeak();
-            },
-            " ": () => {
-                this._flagNewGroup = true;
-                this._playAndSpeak();
-            },
-            q: () => {
-                if (this._speedRateIndex > 0) {
-                    this._speedRateIndex--;
+            {
+                title: "Go to previous point",
+                key: "ArrowLeft",
+                callback: () => {
+                    this._moveLeft();
+                    this._playAndSpeak();
                 }
-                this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
             },
-            e: () => {
-                if (this._speedRateIndex < SPEEDS.length - 1) {
-                    this._speedRateIndex++;
+            {
+                title: "Play all left",
+                key: "Shift+ArrowLeft",
+                callback: () => {
+                    this._playAllLeft();
                 }
-                this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+            },
+            {
+                title: "Go to previous group",
+                key: "PageUp",
+                callback: () => {
+                    if (this._groupIndex === 0) {
+                        return;
+                    }
+                    this._groupIndex--;
+                    this._flagNewGroup = true;
+                    this._playAndSpeak();
+                }
+            },
+            {
+                title: "Go to next group",
+                key: "PageDown",
+                callback: () => {
+                    if (this._groupIndex === this._data.length - 1) {
+                        return;
+                    }
+                    this._groupIndex++;
+                    this._flagNewGroup = true;
+                    this._playAndSpeak();
+                }
+            },
+            {
+                title: "Go to first point",
+                key: "Home",
+                callback: () => {
+                    this._pointIndex = 0;
+                    this._playAndSpeak();
+                }
+            },
+            {
+                title: "Go to last point",
+                key: "End",
+                callback: () => {
+                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                    this._playAndSpeak();
+                }
+            },
+            {
+                title: "Replay",
+                key: "",
+                callback: () => {
+                    this._flagNewGroup = true;
+                    this._playAndSpeak();
+                }
+            },
+            {
+                title: "Speed up",
+                key: "q",
+                callback: () => {
+                    if (this._speedRateIndex < SPEEDS.length - 1) {
+                        this._speedRateIndex++;
+                    }
+                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+                }
+            },
+            {
+                title: "Slow down",
+                key: "e",
+                callback: () => {
+                    if (this._speedRateIndex > 0) {
+                        this._speedRateIndex--;
+                    }
+                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+                }
+            },
+            {
+                title: "Open help dialog",
+                key: "h",
+                callback: () => {
+                    this._keyEventManager.launchHelpDialog();
+                }
             }
-        };
+        ]);
     }
 
     /**
@@ -214,17 +252,6 @@ export class Sonify {
                 context = new AudioContext();
             }
             this._sr.render(this._summary);
-        });
-
-        this._chartElement.addEventListener("keydown", (e) => {
-            clearInterval(this._playListInterval);
-
-            const keyPressDescription = generateKeypressDescription(e);
-
-            if (keyPressDescription in this._keyActionMap) {
-                this._keyActionMap[keyPressDescription]();
-                e.preventDefault();
-            }
         });
     }
 

@@ -20,7 +20,9 @@ export const generateSummary = (title: string, x: AxisData, y: AxisData) =>
         x.minimum
     )} to ${x.format(x.maximum)}, y is ${y.label} from ${y.format(
         y.minimum
-    )} to ${y.format(y.maximum)}`;
+    )} to ${y.format(
+        y.maximum
+    )}. Use arrow keys to navigate. Press H for more hotkeys.`;
 
 export const calculateAxisMinimum = (data: dataPoint[][], prop: "x" | "y") => {
     const values: number[] = data.flat().map((point: dataPoint): number => {
