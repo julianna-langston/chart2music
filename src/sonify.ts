@@ -12,7 +12,8 @@ import type {
     AxisData,
     dataPoint,
     StatBundle,
-    groupedMetadata
+    groupedMetadata,
+    validAxes
 } from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 import { OscillatorAudioEngine } from "./OscillatorAudioEngine.js";
@@ -27,6 +28,8 @@ const generatePointDescription = (
 ) => {
     if (typeof point.y === "number") {
         return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
+    } else if (typeof point.y2 === "number") {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
     } else {
         if ("high" in point.y && "low" in point.y) {
             return `${xAxis.format(point.x)}, ${yAxis.format(
@@ -35,6 +38,13 @@ const generatePointDescription = (
         }
     }
     return "";
+};
+
+const usesAxis = (data: dataPoint[][], axisName: "x" | "y" | "y2") => {
+    const firstUseOfAxis = data.find((row) => {
+        return row.find((point) => axisName in point);
+    });
+    return typeof firstUseOfAxis !== "undefined";
 };
 
 /**
@@ -51,6 +61,7 @@ export class Sonify {
     private _sr: ScreenReaderBridge;
     private _xAxis: AxisData;
     private _yAxis: AxisData;
+    private _y2Axis: AxisData;
     private _title: string;
     private _playListInterval: number | null = null;
     private _speedRateIndex = 1;
@@ -74,6 +85,9 @@ export class Sonify {
 
         this._xAxis = this._initializeAxis("x", input.axes?.x);
         this._yAxis = this._initializeAxis("y", input.axes?.y);
+        if (usesAxis(this._data, "y2")) {
+            this._y2Axis = this._initializeAxis("y2", input.axes?.y2);
+        }
 
         // Generate summary
         this._summary = generateSummary(this._title, this._xAxis, this._yAxis);
@@ -271,7 +285,7 @@ export class Sonify {
         this._metadataByGroup = this._data.map((row) => {
             // Calculate min/max
             const yValues = row
-                .map(({ y }) => y)
+                .map(({ y, y2 }) => y ?? y2)
                 .filter((value) => typeof value === "number") as number[];
             const min = Math.min(...yValues);
             const max = Math.max(...yValues);
@@ -295,7 +309,7 @@ export class Sonify {
      * @param userAxis - metadata provided by the invocation
      */
     private _initializeAxis(
-        axisName: "x" | "y",
+        axisName: validAxes,
         userAxis?: AxisData
     ): AxisData {
         return {
@@ -461,6 +475,17 @@ export class Sonify {
             if (this._audioEngine) {
                 this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
             }
+        } else if (typeof current.y2 === "number") {
+            const yBin = interpolateBin(
+                current.y2,
+                this._y2Axis.minimum,
+                this._y2Axis.maximum,
+                HERTZ.length - 1
+            );
+
+            if (this._audioEngine) {
+                this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+            }
         } else {
             (["high", "low"] as (keyof StatBundle)[]).forEach((stat) => {
                 if (stat in (current.y as StatBundle)) {
@@ -498,7 +523,7 @@ export class Sonify {
         const point = generatePointDescription(
             current,
             this._xAxis,
-            this._yAxis
+            "y" in current ? this._yAxis : this._y2Axis
         );
         const text =
             (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") +

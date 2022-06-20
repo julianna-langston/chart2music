@@ -25,7 +25,8 @@ export type StatBundle = {
  */
 export type dataPoint = {
     x: number;
-    y: number | StatBundle;
+    y?: number | StatBundle;
+    y2?: number;
     callback?: () => void;
 };
 
@@ -48,6 +49,7 @@ export type SonifyTypes = {
     axes?: {
         x?: AxisData;
         y?: AxisData;
+        y2?: AxisData;
     };
     title?: string;
     cc?: HTMLElement;
@@ -62,3 +64,8 @@ export type groupedMetadata = {
     maximumPointIndex: number;
     tenths: number;
 };
+
+/**
+ * Axes that can be used
+ */
+export type validAxes = "x" | "y" | "y2";

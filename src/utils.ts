@@ -24,22 +24,34 @@ export const generateSummary = (title: string, x: AxisData, y: AxisData) =>
         y.maximum
     )}. Use arrow keys to navigate. Press H for more hotkeys.`;
 
-export const calculateAxisMinimum = (data: dataPoint[][], prop: "x" | "y") => {
-    const values: number[] = data.flat().map((point: dataPoint): number => {
-        if (typeof point[prop] === "number") {
-            return point[prop] as number;
-        }
-        return Math.min(...Object.values(point[prop] as StatBundle));
-    });
+export const calculateAxisMinimum = (
+    data: dataPoint[][],
+    prop: "x" | "y" | "y2"
+) => {
+    const values: number[] = data
+        .flat()
+        .filter((point) => prop in point)
+        .map((point: dataPoint): number => {
+            if (typeof point[prop] === "number") {
+                return point[prop] as number;
+            }
+            return Math.min(...Object.values(point[prop] as StatBundle));
+        });
     return Math.min(...values);
 };
-export const calculateAxisMaximum = (data: dataPoint[][], prop: "x" | "y") => {
-    const values: number[] = data.flat().map((point: dataPoint): number => {
-        if (typeof point[prop] === "number") {
-            return point[prop] as number;
-        }
-        return Math.max(...Object.values(point[prop] as StatBundle));
-    });
+export const calculateAxisMaximum = (
+    data: dataPoint[][],
+    prop: "x" | "y" | "y2"
+) => {
+    const values: number[] = data
+        .flat()
+        .filter((point) => prop in point)
+        .map((point: dataPoint): number => {
+            if (typeof point[prop] === "number") {
+                return point[prop] as number;
+            }
+            return Math.max(...Object.values(point[prop] as StatBundle));
+        });
     return Math.max(...values);
 };
 
