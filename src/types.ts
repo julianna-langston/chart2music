@@ -53,3 +53,11 @@ export type SonifyTypes = {
     cc?: HTMLElement;
     type?: SUPPORTED_CHART_TYPES;
 };
+
+/**
+ * Metadata for a group of chart data
+ */
+export type groupedMetadata = {
+    minimumPointIndex: number;
+    maximumPointIndex: number;
+};

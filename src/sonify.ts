@@ -7,7 +7,7 @@ import {
     defaultFormat
 } from "./utils.js";
 import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
-import type { SonifyTypes, AxisData, dataPoint, StatBundle } from "./types";
+import type { SonifyTypes, AxisData, dataPoint, StatBundle, groupedMetadata } from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 import { OscillatorAudioEngine } from "./OscillatorAudioEngine.js";
 import { KeyboardEventManager } from "./keyboardManager.js";
@@ -51,6 +51,7 @@ export class Sonify {
     private _flagNewGroup = false;
     private _keyEventManager: KeyboardEventManager;
     private _audioEngine: OscillatorAudioEngine | null = null;
+    private _metadataByGroup: groupedMetadata[];
 
     /**
      * Constructor
@@ -63,6 +64,7 @@ export class Sonify {
         this._title = input.title ?? "";
 
         this._initializeData(input.data);
+        this._calculateMetadataByGroup();
 
         this._xAxis = this._initializeAxis("x", input.axes?.x);
         this._yAxis = this._initializeAxis("y", input.axes?.y);
@@ -163,6 +165,24 @@ export class Sonify {
                 }
             },
             {
+                title: "Go to minimum value",
+                key: "[",
+                callback: () => {
+                    if(this._moveToMinimum()){
+                        this._playAndSpeak();
+                    }
+                }
+            },
+            {
+                title: "Go to maximum value",
+                key: "]",
+                callback: () => {
+                    if(this._moveToMaximum()){
+                        this._playAndSpeak();
+                    }
+                }
+            },
+            {
                 title: "Speed up",
                 key: "q",
                 callback: () => {
@@ -188,7 +208,7 @@ export class Sonify {
                 callback: () => {
                     this._keyEventManager.launchHelpDialog();
                 }
-            }
+            },
         ]);
     }
 
@@ -220,6 +240,26 @@ export class Sonify {
 
         this._groups = [""];
         this._data = [massagedData];
+    }
+
+    /**
+     * Determine metadata about data sets, to help users navigate more effectively
+     */
+    private _calculateMetadataByGroup(){
+        this._metadataByGroup = this._data.map((row) => {
+            const yValues = (
+                row.map(
+                    ({y}) => y
+                ).filter((value) => typeof value === "number")
+            ) as number[];
+            const min = Math.min(...yValues);
+            const max = Math.max(...yValues);
+            console.log(yValues, min, yValues.indexOf(min), max, yValues.indexOf(max));
+            return {
+                minimumPointIndex: yValues.indexOf(min),
+                maximumPointIndex: yValues.indexOf(max),
+            }
+        })
     }
 
     /**
@@ -286,6 +326,34 @@ export class Sonify {
             return;
         }
         this._pointIndex--;
+    }
+
+    /**
+     * Move focus to the lowest value data point
+     * 
+     * @returns - if move was completed
+     */
+    private _moveToMinimum() {
+        const index = this._metadataByGroup[this._groupIndex].minimumPointIndex;
+        if(index === -1){
+            return false;
+        }
+        this._pointIndex = index;
+        return true;
+    }
+
+    /**
+     * Move focus to the lowest value data point
+     * 
+     * @returns - if move was completed
+     */
+    private _moveToMaximum() {
+        const index = this._metadataByGroup[this._groupIndex].maximumPointIndex;
+        if(index === -1){
+            return false;
+        }
+        this._pointIndex = index;
+        return true;
     }
 
     /**
