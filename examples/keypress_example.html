@@ -1,0 +1,21 @@
+<div id="target" style="width:400px;height:400px;border:1px solid black"></div>
+<script src="../dist/index.js" type="module"></script>
+<script>
+    window.addEventListener("load", () => {
+        const km = new KeyboardEventManager(document.getElementById("target"));
+        km.registerKeyEvent({ 
+            key: "ArrowDown",
+            title: "Hold my hand",
+            description: "It's a long way down",
+            callback: () => {
+                console.log("minami")
+            }
+        });
+        km.registerKeyEvent({key: "PageUp", callback: () => {
+            km.unregisterKeyEvent("ArrowDown");
+        }});
+        km.registerKeyEvent({key: "h", callback: () => {
+            km.launchHelpDialog();
+        }});
+    });
+</script>
