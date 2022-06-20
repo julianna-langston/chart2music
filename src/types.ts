@@ -60,4 +60,5 @@ export type SonifyTypes = {
 export type groupedMetadata = {
     minimumPointIndex: number;
     maximumPointIndex: number;
+    tenths: number;
 };

@@ -7,7 +7,13 @@ import {
     defaultFormat
 } from "./utils.js";
 import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
-import type { SonifyTypes, AxisData, dataPoint, StatBundle, groupedMetadata } from "./types";
+import type {
+    SonifyTypes,
+    AxisData,
+    dataPoint,
+    StatBundle,
+    groupedMetadata
+} from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
 import { OscillatorAudioEngine } from "./OscillatorAudioEngine.js";
 import { KeyboardEventManager } from "./keyboardManager.js";
@@ -165,10 +171,26 @@ export class Sonify {
                 }
             },
             {
+                title: "Go backward by a tenth",
+                key: "Ctrl+ArrowLeft",
+                callback: () => {
+                    this._moveLeftTenths();
+                    this._playAndSpeak();
+                }
+            },
+            {
+                title: "Go forward by a tenth",
+                key: "Ctrl+ArrowRight",
+                callback: () => {
+                    this._moveRightTenths();
+                    this._playAndSpeak();
+                }
+            },
+            {
                 title: "Go to minimum value",
                 key: "[",
                 callback: () => {
-                    if(this._moveToMinimum()){
+                    if (this._moveToMinimum()) {
                         this._playAndSpeak();
                     }
                 }
@@ -177,7 +199,7 @@ export class Sonify {
                 title: "Go to maximum value",
                 key: "]",
                 callback: () => {
-                    if(this._moveToMaximum()){
+                    if (this._moveToMaximum()) {
                         this._playAndSpeak();
                     }
                 }
@@ -208,7 +230,7 @@ export class Sonify {
                 callback: () => {
                     this._keyEventManager.launchHelpDialog();
                 }
-            },
+            }
         ]);
     }
 
@@ -245,21 +267,24 @@ export class Sonify {
     /**
      * Determine metadata about data sets, to help users navigate more effectively
      */
-    private _calculateMetadataByGroup(){
+    private _calculateMetadataByGroup() {
         this._metadataByGroup = this._data.map((row) => {
-            const yValues = (
-                row.map(
-                    ({y}) => y
-                ).filter((value) => typeof value === "number")
-            ) as number[];
+            // Calculate min/max
+            const yValues = row
+                .map(({ y }) => y)
+                .filter((value) => typeof value === "number") as number[];
             const min = Math.min(...yValues);
             const max = Math.max(...yValues);
-            console.log(yValues, min, yValues.indexOf(min), max, yValues.indexOf(max));
+
+            // Calculate tenths
+            const tenths = Math.round(row.length / 10);
+
             return {
                 minimumPointIndex: yValues.indexOf(min),
                 maximumPointIndex: yValues.indexOf(max),
-            }
-        })
+                tenths
+            };
+        });
     }
 
     /**
@@ -330,12 +355,12 @@ export class Sonify {
 
     /**
      * Move focus to the lowest value data point
-     * 
+     *
      * @returns - if move was completed
      */
     private _moveToMinimum() {
         const index = this._metadataByGroup[this._groupIndex].minimumPointIndex;
-        if(index === -1){
+        if (index === -1) {
             return false;
         }
         this._pointIndex = index;
@@ -344,16 +369,30 @@ export class Sonify {
 
     /**
      * Move focus to the lowest value data point
-     * 
+     *
      * @returns - if move was completed
      */
     private _moveToMaximum() {
         const index = this._metadataByGroup[this._groupIndex].maximumPointIndex;
-        if(index === -1){
+        if (index === -1) {
             return false;
         }
         this._pointIndex = index;
         return true;
+    }
+
+    /**
+     * Move by a tenth to the left
+     */
+    private _moveLeftTenths() {
+        this._pointIndex = Math.max(this._pointIndex - this._metadataByGroup[this._groupIndex].tenths, 0);
+    }
+
+    /**
+     * Move by a tenth to the right
+     */
+    private _moveRightTenths() {
+        this._pointIndex = Math.min(this._pointIndex + this._metadataByGroup[this._groupIndex].tenths, this._data[this._groupIndex].length - 1);
     }
 
     /**
