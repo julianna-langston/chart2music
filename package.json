@@ -1,5 +1,5 @@
 {
-    "name": "sonifyjs",
+    "name": "chart2music",
     "version": "0.1.0",
     "main": "dist/index.js",
     "description": "Turns charts into music so the blind can hear data",
