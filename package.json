@@ -24,7 +24,7 @@
         "clean": "rimraf ./dist",
         "start": "npm run build --watch && http-server .",
         "lint": "eslint src/ --ext .ts --fix",
-        "format": "prettier --config .prettierrc.json src/**/*.ts --write",
+        "format": "prettier --config .prettierrc.json src/**/*.ts --write && prettier examples/**/*.js --write",
         "prepare": "husky install"
     },
     "license": "MIT",
