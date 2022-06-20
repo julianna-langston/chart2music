@@ -14,7 +14,7 @@ window.addEventListener("load", () => {
         floatingBarChart,
         largeDataLine,
         barLinePlot,
-        bandPlot,
+        bandPlot
     ];
 
     chartFn.forEach((fn) => {

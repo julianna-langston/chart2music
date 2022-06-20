@@ -9,7 +9,7 @@ Sonification is the representation of data using sound. Chart2Music provides an 
 
 You can include Chart2Music as a library in the browser like this:
 ```html
-<script src="./sonify.js"></script>
+<script src="sonify.js"></script>
 ```
 
 This will add a global variable, `Sonify`. You can invoke a simple line chart like this:
@@ -85,10 +85,10 @@ data: [{
 
 Providing multiple Y-values for a given X-value. For example, when you have a floating bar chart, you would have 1 X-value, and then a high and low y-value. Here's an example of what that could look like:
 
-```
+```javascript
 const highs = [72, 73, 88, 83, 88, 91, 97, 93, 93, 83, 79];
 const lows = [25, 23, 25, 34, 38, 55, 67, 64, 44, 41, 29];
-Sonify({
+new Sonify({
     type: "bar",
     title: "Raleigh's High/Low Temperatures (2020)",
     element: floatingCanvas,
@@ -199,10 +199,10 @@ Here are the hotkeys users can use to interact with the chart:
 
 ## Contributing
 
-To work with the project, clone the repo, and run `npm install`.
+To work with the project, clone the repo, and run `npm install`. If you plan to commit code, initialize Husky with `npm run prepare`.
 
 In order to build the library and work with the examples, run `npm run build`. Then, in your browser, open: `localhost:8080/examples/chartjs.html`.
 
-To run in watch mode, run `npx tsc --watch`. In a separate window, run `npx http-server .`
+To run in watch mode, run `npm run start`.
 
 Either way, to see the examples, open the following page in your browser: `localhost:8080/examples/chartjs.html`.
