@@ -3,6 +3,7 @@ import { multiLinePlot } from "./charts/multiLine.js";
 import { floatingBarChart } from "./charts/floatingBar.js";
 import { largeDataLine } from "./charts/largeDataLine.js";
 import { barLinePlot } from "./charts/barLine.js";
+import { bandPlot } from "./charts/bandPlot.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -12,7 +13,8 @@ window.addEventListener("load", () => {
         multiLinePlot,
         floatingBarChart,
         largeDataLine,
-        barLinePlot
+        barLinePlot,
+        bandPlot,
     ];
 
     chartFn.forEach((fn) => {

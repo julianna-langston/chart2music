@@ -11,7 +11,6 @@ import type {
     SonifyTypes,
     AxisData,
     dataPoint,
-    StatBundle,
     groupedMetadata,
     validAxes
 } from "./types";
@@ -110,7 +109,17 @@ export class Sonify {
                 title: "Go to next point",
                 key: "ArrowRight",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._moveRight();
+                    this._playAndSpeak();
+                }
+            },
+            {
+                title: "Go to previous point",
+                key: "ArrowLeft",
+                callback: () => {
+                    clearInterval(this._playListInterval);
+                    this._moveLeft();
                     this._playAndSpeak();
                 }
             },
@@ -118,28 +127,30 @@ export class Sonify {
                 title: "Play all right",
                 key: "Shift+ArrowRight",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._playAllRight();
-                }
-            },
-            {
-                title: "Go to previous point",
-                key: "ArrowLeft",
-                callback: () => {
-                    this._moveLeft();
-                    this._playAndSpeak();
                 }
             },
             {
                 title: "Play all left",
                 key: "Shift+ArrowLeft",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._playAllLeft();
+                }
+            },
+            {
+                title: "Cancel play all",
+                key: "Control",
+                callback: () => {
+                    clearInterval(this._playListInterval);
                 }
             },
             {
                 title: "Go to previous group",
                 key: "PageUp",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     if (this._groupIndex === 0) {
                         return;
                     }
@@ -152,6 +163,7 @@ export class Sonify {
                 title: "Go to next group",
                 key: "PageDown",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     if (this._groupIndex === this._data.length - 1) {
                         return;
                     }
@@ -164,6 +176,7 @@ export class Sonify {
                 title: "Go to first point",
                 key: "Home",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._pointIndex = 0;
                     this._playAndSpeak();
                 }
@@ -172,6 +185,7 @@ export class Sonify {
                 title: "Go to last point",
                 key: "End",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._pointIndex = this._data[this._groupIndex].length - 1;
                     this._playAndSpeak();
                 }
@@ -180,6 +194,7 @@ export class Sonify {
                 title: "Replay",
                 key: "",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._flagNewGroup = true;
                     this._playAndSpeak();
                 }
@@ -188,6 +203,7 @@ export class Sonify {
                 title: "Go backward by a tenth",
                 key: "Ctrl+ArrowLeft",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._moveLeftTenths();
                     this._playAndSpeak();
                 }
@@ -196,6 +212,7 @@ export class Sonify {
                 title: "Go forward by a tenth",
                 key: "Ctrl+ArrowRight",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._moveRightTenths();
                     this._playAndSpeak();
                 }
@@ -204,6 +221,7 @@ export class Sonify {
                 title: "Go to minimum value",
                 key: "[",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     if (this._moveToMinimum()) {
                         this._playAndSpeak();
                     }
@@ -213,6 +231,7 @@ export class Sonify {
                 title: "Go to maximum value",
                 key: "]",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     if (this._moveToMaximum()) {
                         this._playAndSpeak();
                     }
@@ -222,6 +241,7 @@ export class Sonify {
                 title: "Speed up",
                 key: "q",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     if (this._speedRateIndex < SPEEDS.length - 1) {
                         this._speedRateIndex++;
                     }
@@ -232,6 +252,7 @@ export class Sonify {
                 title: "Slow down",
                 key: "e",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     if (this._speedRateIndex > 0) {
                         this._speedRateIndex--;
                     }
@@ -242,6 +263,7 @@ export class Sonify {
                 title: "Open help dialog",
                 key: "h",
                 callback: () => {
+                    clearInterval(this._playListInterval);
                     this._keyEventManager.launchHelpDialog();
                 }
             }
@@ -420,6 +442,7 @@ export class Sonify {
      */
     private _playAllLeft() {
         const min = 0;
+        // @ts-ignore
         this._playListInterval = setInterval(() => {
             if (this._pointIndex <= min) {
                 this._pointIndex = min;
@@ -437,6 +460,7 @@ export class Sonify {
      */
     private _playAllRight() {
         const max = this._data[this._groupIndex].length - 1;
+        // @ts-ignore
         this._playListInterval = setInterval(() => {
             if (this._pointIndex >= max) {
                 this._pointIndex = max;
@@ -456,6 +480,9 @@ export class Sonify {
         if (!this._audioEngine && context) {
             this._audioEngine = new OscillatorAudioEngine(context);
         }
+        if (!this._audioEngine) {
+            return;
+        }
 
         const current = this._data[this._groupIndex][this._pointIndex];
 
@@ -472,9 +499,7 @@ export class Sonify {
                 HERTZ.length - 1
             );
 
-            if (this._audioEngine) {
-                this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
-            }
+            this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
         } else if (typeof current.y2 === "number") {
             const yBin = interpolateBin(
                 current.y2,
@@ -483,28 +508,25 @@ export class Sonify {
                 HERTZ.length - 1
             );
 
-            if (this._audioEngine) {
-                this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
-            }
-        } else {
-            (["high", "low"] as (keyof StatBundle)[]).forEach((stat) => {
-                if (stat in (current.y as StatBundle)) {
-                    const yBin = interpolateBin(
-                        current.y[stat] as number,
-                        this._yAxis.minimum,
-                        this._yAxis.maximum,
-                        HERTZ.length - 1
-                    );
+            this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+        } else if ("high" in current.y && "low" in current.y) {
+            const yBinHigh = interpolateBin(
+                current.y.high,
+                this._yAxis.minimum,
+                this._yAxis.maximum,
+                HERTZ.length - 1
+            );
+            const yBinLow = interpolateBin(
+                current.y.low,
+                this._yAxis.minimum,
+                this._yAxis.maximum,
+                HERTZ.length - 1
+            );
 
-                    if (this._audioEngine) {
-                        this._audioEngine.playNote(
-                            HERTZ[yBin],
-                            xPan,
-                            NOTE_LENGTH
-                        );
-                    }
-                }
-            });
+            this._audioEngine.playNote(HERTZ[yBinHigh], xPan, NOTE_LENGTH);
+            setTimeout(() => {
+                this._audioEngine.playNote(HERTZ[yBinLow], xPan, NOTE_LENGTH);
+            }, SPEEDS[this._speedRateIndex] * 0.25);
         }
 
         current.callback?.();

@@ -1,5 +1,3 @@
-import { highs, lows, months } from "../data/data.js";
-
 const barLineLabels = [
     "June 1",
     "June 2",
