@@ -107,9 +107,12 @@ export class c2mChart {
      * @returns - the current group name and data point
      */
     getCurrent() {
+        const { statIndex, availableStats } =
+            this._metadataByGroup[this._groupIndex];
         return {
             group: this._groups[this._groupIndex],
-            point: this._data[this._groupIndex][this._pointIndex]
+            point: this._data[this._groupIndex][this._pointIndex],
+            stat: availableStats[statIndex] ?? ""
         };
     }
 

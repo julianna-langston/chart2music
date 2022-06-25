@@ -32,6 +32,7 @@ test("Move around by single events", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 2");
     expect(chart.getCurrent()).toStrictEqual({
         group: "",
+        stat: "",
         point: {
             x: 1,
             y: 2
@@ -121,6 +122,7 @@ test("Movement for a grouped chart", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2, 2");
     expect(chart.getCurrent()).toStrictEqual({
         group: "a",
+        stat: "",
         point: {
             x: 2,
             y: 2
@@ -139,6 +141,7 @@ test("Movement for a grouped chart", () => {
     );
     expect(chart.getCurrent()).toStrictEqual({
         group: "b",
+        stat: "",
         point: {
             x: 2,
             y: 12
@@ -155,6 +158,7 @@ test("Movement for a grouped chart", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 13");
     expect(chart.getCurrent()).toStrictEqual({
         group: "b",
+        stat: "",
         point: {
             x: 3,
             y: 13
@@ -171,6 +175,7 @@ test("Movement for a grouped chart", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 3, 3");
     expect(chart.getCurrent()).toStrictEqual({
         group: "a",
+        stat: "",
         point: {
             x: 3,
             y: 3
@@ -217,6 +222,7 @@ test("Movement for a chart with stats", () => {
     );
     expect(chart.getCurrent()).toStrictEqual({
         group: "a",
+        stat: "",
         point: { x: 2, y: { high: 11, low: 9 } }
     });
 
@@ -232,6 +238,7 @@ test("Movement for a chart with stats", () => {
     );
     expect(chart.getCurrent()).toStrictEqual({
         group: "a",
+        stat: "high",
         point: { x: 2, y: { high: 11, low: 9 } }
     });
 
@@ -304,6 +311,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2!, $2");
     expect(chart.getCurrent()).toStrictEqual({
         group: "a",
+        stat: "",
         point: {
             x: 2,
             y: 2
@@ -322,6 +330,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     );
     expect(chart.getCurrent()).toStrictEqual({
         group: "b",
+        stat: "",
         point: {
             x: 2,
             y2: 12
@@ -338,6 +347,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3!, 13%");
     expect(chart.getCurrent()).toStrictEqual({
         group: "b",
+        stat: "",
         point: {
             x: 3,
             y2: 13
@@ -356,6 +366,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     );
     expect(chart.getCurrent()).toStrictEqual({
         group: "a",
+        stat: "",
         point: {
             x: 3,
             y: 3
