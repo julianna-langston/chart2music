@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {
-    interpolateBin,
-    calcPan,
-    generateSummary,
-    calculateAxisMinimum,
-    calculateAxisMaximum,
-    defaultFormat,
-    sentenceCase
-} from "./utils";
-import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants";
+import type { AudioEngine } from "./audio";
+import { OscillatorAudioEngine } from "./audio";
+import { HERTZ, NOTE_LENGTH, SPEEDS } from "./constants";
+import { KeyboardEventManager } from "./keyboardManager";
+import { ScreenReaderBridge } from "./ScreenReaderBridge";
 import type {
-    SonifyTypes,
     AxisData,
     dataPoint,
     groupedMetadata,
-    validAxes,
-    StatBundle
+    SonifyTypes,
+    StatBundle,
+    validAxes
 } from "./types";
-import { ScreenReaderBridge } from "./ScreenReaderBridge";
-import type { AudioEngine } from "./audio/AudioEngine";
-import { OscillatorAudioEngine } from "./audio/OscillatorAudioEngine";
-import { KeyboardEventManager } from "./keyboardManager";
+import {
+    calcPan,
+    calculateAxisMaximum,
+    calculateAxisMinimum,
+    defaultFormat,
+    generateSummary,
+    interpolateBin,
+    sentenceCase
+} from "./utils";
 
 let context: null | AudioContext = null;
 
