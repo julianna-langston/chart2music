@@ -71,3 +71,11 @@ export type groupedMetadata = {
  * Axes that can be used
  */
 export type validAxes = "x" | "y" | "y2";
+
+/**
+ * Options available for C2M chart
+ */
+export type c2mOptions = {
+    enableSound?: boolean;
+    enableSpeech?: boolean;
+};

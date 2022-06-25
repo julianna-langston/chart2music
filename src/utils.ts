@@ -80,3 +80,38 @@ export const sentenceCase = (str: string) =>
 
 //     return inflectionIndeces;
 // }
+
+export const generatePointDescription = (
+    point: dataPoint,
+    xAxis: AxisData,
+    yAxis: AxisData,
+    stat?: keyof StatBundle
+) => {
+    if (typeof stat !== "undefined" && typeof point.y !== "number") {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y[stat])}`;
+    }
+
+    if (typeof point.y === "number") {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
+    } else if (typeof point.y2 === "number") {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
+    } else {
+        if ("high" in point.y && "low" in point.y) {
+            return `${xAxis.format(point.x)}, ${yAxis.format(
+                point.y.high
+            )} - ${yAxis.format(point.y.low)}`;
+        }
+    }
+    return "";
+};
+
+export const usesAxis = (data: dataPoint[][], axisName: "x" | "y" | "y2") => {
+    const firstUseOfAxis = data.find((row) => {
+        return row.find((point) => axisName in point);
+    });
+    return typeof firstUseOfAxis !== "undefined";
+};
+
+export const uniqueArray = <T>(arr: T[]) => {
+    return [...new Set(arr)];
+};

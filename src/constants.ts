@@ -1,3 +1,5 @@
+import type { StatBundle } from "./types";
+
 export const HERTZ = [
     16.35, 17.32, 18.35, 19.45, 20.6, 21.83, 23.12, 24.5, 25.96, 27.5, 29.14,
     30.87, 32.7, 34.65, 36.71, 38.89, 41.2, 43.65, 46.25, 49, 51.91, 55, 58.27,
@@ -16,3 +18,8 @@ export const HERTZ = [
 export const SPEEDS = [1000, 250, 100, 50, 25];
 
 export const NOTE_LENGTH = 0.25;
+
+/**
+ * If multiple stats are provided, this determines the order that they should be read in.
+ */
+export const statReadOrder = ["high", "low"] as (keyof StatBundle)[];

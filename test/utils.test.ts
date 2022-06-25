@@ -6,7 +6,10 @@ import {
     defaultFormat,
     generateSummary,
     interpolateBin,
-    sentenceCase
+    sentenceCase,
+    generatePointDescription,
+    usesAxis,
+    uniqueArray
 } from "../src/utils";
 
 test("sentence case", () => {
@@ -90,3 +93,116 @@ test("calculate axis min/max", () => {
 //     expect(calcInflectionPoints([-2,-1,0,1,2,3,15,20,5])).toStrictEqual([8]);
 //     expect(calcInflectionPoints([-2,-1,0,1,2,3,15,20])).toStrictEqual([]);
 // })
+
+test("Generate point description", () => {
+    // point: dataPoint,
+    // xAxis: AxisData,
+    // yAxis: AxisData,
+    // stat?: keyof StatBundle
+
+    // if (typeof stat !== "undefined" && typeof point.y !== "number") {
+    //     return `${xAxis.format(point.x)}, ${yAxis.format(point.y[stat])}`;
+    // }
+
+    // if (typeof point.y === "number") {
+    //     return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
+    // } else if (typeof point.y2 === "number") {
+    //     return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
+    // } else {
+    //     if ("high" in point.y && "low" in point.y) {
+    //         return `${xAxis.format(point.x)}, ${yAxis.format(
+    //             point.y.high
+    //         )} - ${yAxis.format(point.y.low)}`;
+    //     }
+    // }
+    // return "";
+
+    // x/y
+    // x/y2
+    // x/high
+    // formatting x, y
+
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: 1
+            },
+            { format: defaultFormat },
+            { format: defaultFormat }
+        )
+    ).toBe("0, 1");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y2: 1
+            },
+            { format: defaultFormat },
+            { format: defaultFormat }
+        )
+    ).toBe("0, 1");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: {
+                    high: 10,
+                    low: 5
+                }
+            },
+            { format: defaultFormat },
+            { format: defaultFormat }
+        )
+    ).toBe("0, 10 - 5");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: {
+                    high: 10,
+                    low: 5
+                }
+            },
+            { format: defaultFormat },
+            { format: defaultFormat },
+            "high"
+        )
+    ).toBe("0, 10");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: {
+                    high: 10,
+                    low: 5
+                }
+            },
+            { format: defaultFormat },
+            { format: defaultFormat },
+            "low"
+        )
+    ).toBe("0, 5");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: 1
+            },
+            { format: (value) => `$${value}` },
+            { format: defaultFormat }
+        )
+    ).toBe("$0, 1");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: {
+                    high: 10
+                }
+            },
+            { format: defaultFormat },
+            { format: defaultFormat }
+        )
+    ).toBe("");
+});

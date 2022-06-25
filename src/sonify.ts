@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { AudioEngine } from "./audio";
 import { OscillatorAudioEngine } from "./audio";
-import { HERTZ, NOTE_LENGTH, SPEEDS } from "./constants";
+import { HERTZ, NOTE_LENGTH, SPEEDS, statReadOrder } from "./constants";
 import { KeyboardEventManager } from "./keyboardManager";
 import { ScreenReaderBridge } from "./ScreenReaderBridge";
 import type {
@@ -9,8 +9,8 @@ import type {
     dataPoint,
     groupedMetadata,
     SonifyTypes,
-    StatBundle,
-    validAxes
+    validAxes,
+    c2mOptions
 } from "./types";
 import {
     calcPan,
@@ -19,55 +19,13 @@ import {
     defaultFormat,
     generateSummary,
     interpolateBin,
-    sentenceCase
+    sentenceCase,
+    generatePointDescription,
+    usesAxis,
+    uniqueArray
 } from "./utils";
 
 let context: null | AudioContext = null;
-
-const statReadOrder = ["high", "low"] as (keyof StatBundle)[];
-
-const generatePointDescription = (
-    point: dataPoint,
-    xAxis: AxisData,
-    yAxis: AxisData,
-    stat?: keyof StatBundle
-) => {
-    if (typeof stat !== "undefined" && typeof point.y !== "number") {
-        return `${xAxis.format(point.x)}, ${yAxis.format(point.y[stat])}`;
-    }
-
-    if (typeof point.y === "number") {
-        return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
-    } else if (typeof point.y2 === "number") {
-        return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
-    } else {
-        if ("high" in point.y && "low" in point.y) {
-            return `${xAxis.format(point.x)}, ${yAxis.format(
-                point.y.high
-            )} - ${yAxis.format(point.y.low)}`;
-        }
-    }
-    return "";
-};
-
-const usesAxis = (data: dataPoint[][], axisName: "x" | "y" | "y2") => {
-    const firstUseOfAxis = data.find((row) => {
-        return row.find((point) => axisName in point);
-    });
-    return typeof firstUseOfAxis !== "undefined";
-};
-
-const uniqueArray = (arr: unknown[]) => {
-    return [...new Set(arr)];
-};
-
-/**
- * Options available for C2M chart
- */
-type c2mOptions = {
-    enableSound?: boolean;
-    enableSpeech?: boolean;
-};
 
 /**
  * Represents a single chart that should be sonified.
@@ -394,7 +352,7 @@ export class c2mChart {
             const tenths = Math.round(row.length / 10);
 
             // Determine stat bundle
-            const stats = uniqueArray(
+            const stats = uniqueArray<string>(
                 yPoints
                     .filter((value) => typeof value !== "number")
                     .map((value) => Object.keys(value))
