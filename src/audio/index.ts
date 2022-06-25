@@ -1,2 +1,2 @@
-export { AudioEngine } from "./AudioEngine";
+export { AudioEngine, AudioEngineConstructor } from "./AudioEngine";
 export { OscillatorAudioEngine } from "./OscillatorAudioEngine";

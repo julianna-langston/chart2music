@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { OscillatorAudioEngine } from "./audio/OscillatorAudioEngine";
-import type { AudioEngine, AudioEngineConstructor } from "./audio/AudioEngine";
+import { OscillatorAudioEngine } from "./audio/index";
+import type { AudioEngine, AudioEngineConstructor } from "./audio/index";
 import { HERTZ, NOTE_LENGTH, SPEEDS, statReadOrder } from "./constants";
 import { KeyboardEventManager } from "./keyboardManager";
 import { ScreenReaderBridge } from "./ScreenReaderBridge";
