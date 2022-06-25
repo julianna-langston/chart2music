@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import type { AudioEngine } from "./audio";
-import { OscillatorAudioEngine } from "./audio";
+import { OscillatorAudioEngine } from "./audio/OscillatorAudioEngine";
+import type { AudioEngine, AudioEngineConstructor } from "./audio/AudioEngine";
 import { HERTZ, NOTE_LENGTH, SPEEDS, statReadOrder } from "./constants";
 import { KeyboardEventManager } from "./keyboardManager";
 import { ScreenReaderBridge } from "./ScreenReaderBridge";
@@ -54,6 +54,7 @@ export class c2mChart {
         enableSound: true,
         enableSpeech: true
     };
+    private _providedAudioEngine?: AudioEngineConstructor;
 
     /**
      * Constructor
@@ -61,6 +62,7 @@ export class c2mChart {
      * @param input - data/config provided by the invocation
      */
     constructor(input: SonifyTypes) {
+        this._providedAudioEngine = input.audioEngine;
         this._chartElement = input.element;
         this._ccElement = input.cc ?? this._chartElement;
         this._title = input.title ?? "";
@@ -576,7 +578,8 @@ export class c2mChart {
             this._metadataByGroup[this._groupIndex];
 
         if (!this._audioEngine && context) {
-            this._audioEngine = new OscillatorAudioEngine(context);
+            this._audioEngine = new (this._providedAudioEngine ??
+                OscillatorAudioEngine)(context);
         }
         if (!this._audioEngine) {
             return;

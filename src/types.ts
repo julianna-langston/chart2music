@@ -1,3 +1,5 @@
+import type { AudioEngineConstructor } from "./audio/AudioEngine";
+
 /**
  * The chart types available
  */
@@ -54,6 +56,7 @@ export type SonifyTypes = {
     title?: string;
     cc?: HTMLElement;
     type?: SUPPORTED_CHART_TYPES;
+    audioEngine?: AudioEngineConstructor;
 };
 
 /**

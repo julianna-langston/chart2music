@@ -1,5 +1,3 @@
-const { defaults } = require("jest-config");
-
 module.exports = {
     moduleFileExtensions: ["js", "ts"],
     transform: {
@@ -19,7 +17,7 @@ module.exports = {
             statements: 100
         },
         "./src/sonify.ts": {
-            statements: 75
+            statements: 85
         }
     }
 };
