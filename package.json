@@ -18,10 +18,10 @@
         "dataviz",
         "screen reader"
     ],
-    "homepage": "https://github.com/julianna-ciq/chart2music#readme",
+    "homepage": "https://github.com/julianna-langston/chart2music#readme",
     "repository": {
         "type": "git",
-        "url": "https://github.com/julianna-ciq/chart2music.git"
+        "url": "https://github.com/julianna-langston/chart2music.git"
     },
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
