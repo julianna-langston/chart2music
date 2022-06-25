@@ -206,3 +206,5 @@ In order to build the library and work with the examples, run `npm run build`. T
 To run in watch mode, run `npm run start`.
 
 Either way, to see the examples, open the following page in your browser: `localhost:8080/examples/chartjs.html`.
+
+You can run tests with `npm run test`. Note, there's a pre-commit hook that verifies all tests pass before allowing commits.
