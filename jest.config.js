@@ -17,6 +17,9 @@ module.exports = {
             functions: 100,
             lines: 100,
             statements: 100
+        },
+        "./src/sonify.ts": {
+            statements: 75
         }
     }
 };
