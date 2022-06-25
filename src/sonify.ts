@@ -61,9 +61,17 @@ const uniqueArray = (arr: unknown[]) => {
 };
 
 /**
+ * Options available for C2M chart
+ */
+type c2mOptions = {
+    enableSound?: boolean;
+    enableSpeech?: boolean;
+};
+
+/**
  * Represents a single chart that should be sonified.
  */
-export class Sonify {
+export class c2mChart {
     private _chartElement: HTMLElement;
     private _ccElement: HTMLElement;
     private _summary: string;
@@ -83,6 +91,10 @@ export class Sonify {
     private _keyEventManager: KeyboardEventManager;
     private _audioEngine: AudioEngine | null = null;
     private _metadataByGroup: groupedMetadata[];
+    private _options: c2mOptions = {
+        enableSound: true,
+        enableSpeech: true
+    };
 
     /**
      * Constructor
@@ -112,6 +124,20 @@ export class Sonify {
 
         this._initializeKeyActionMap();
         this._startListening();
+    }
+
+    /**
+     * Set options for the interaction model of the chart
+     *
+     * @param option - key/value pairs for options and their possible values
+     * @param [option.enableSound] - enables sound. Set to FALSE to mute.
+     * @param [option.enableSpeech] - enables speech. Set to FALSE to gag.
+     */
+    setOptions(option: c2mOptions) {
+        this._options = {
+            ...this._options,
+            ...option
+        };
     }
 
     /**
@@ -405,7 +431,7 @@ export class Sonify {
             if (!context) {
                 context = new AudioContext();
             }
-            this._sr.render(this._summary);
+            if (this._options.enableSpeech) this._sr.render(this._summary);
         });
     }
 
@@ -559,6 +585,10 @@ export class Sonify {
      * Play the current data point
      */
     private _playCurrent() {
+        if (!this._options.enableSound) {
+            return;
+        }
+
         const { statIndex, availableStats } =
             this._metadataByGroup[this._groupIndex];
 
@@ -637,6 +667,10 @@ export class Sonify {
      * Update the screen reader on the current data point
      */
     private _speakCurrent() {
+        if (!this._options.enableSpeech) {
+            return;
+        }
+
         // If we're glagged to announce a new group, but the group name is empty, ignore the flag
         if (this._flagNewGroup && this._groups[this._groupIndex] === "") {
             this._flagNewGroup = false;

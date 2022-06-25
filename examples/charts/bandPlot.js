@@ -1,3 +1,4 @@
+import { c2mChart } from "../../dist/index.mjs";
 import { movingAverage, upper, lower, days } from "../data/stock.js";
 
 export const bandPlot = (canvas, cc) => {
@@ -50,7 +51,7 @@ export const bandPlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new Sonify({
+    new c2mChart({
         type: "band",
         title: "AAPL",
         element: canvas,

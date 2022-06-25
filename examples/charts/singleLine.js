@@ -1,3 +1,4 @@
+import { c2mChart } from "../../dist/index.mjs";
 import { highs, months } from "../data/data.js";
 
 export const singleLinePlot = (canvas, cc) => {
@@ -30,7 +31,7 @@ export const singleLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new Sonify({
+    chart = new c2mChart({
         type: "line",
         element: canvas,
         cc,

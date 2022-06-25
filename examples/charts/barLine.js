@@ -1,3 +1,4 @@
+import { c2mChart } from "../../dist/index.mjs";
 const barLineLabels = [
     "June 1",
     "June 2",
@@ -75,7 +76,7 @@ export const barLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new Sonify({
+    new c2mChart({
         type: "line",
         title: "AAPL Trades",
         element: canvas,

@@ -1,3 +1,4 @@
+import { c2mChart } from "../../dist/index.mjs";
 import { months } from "../data/data.js";
 import { bitcoin } from "../data/bitcoin.js";
 // global: numeral
@@ -42,7 +43,7 @@ export const largeDataLine = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new Sonify({
+    new c2mChart({
         type: "line",
         title: "Bitcoin",
         element: canvas,

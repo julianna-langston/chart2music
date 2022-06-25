@@ -1,3 +1,4 @@
+import { c2mChart } from "../../dist/index.mjs";
 import { highs, lows, months } from "../data/data.js";
 
 export const floatingBarChart = (canvas, cc) => {
@@ -30,7 +31,7 @@ export const floatingBarChart = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new Sonify({
+    new c2mChart({
         type: "bar",
         title: "Raleigh's High/Low Temperatures (2020)",
         element: canvas,

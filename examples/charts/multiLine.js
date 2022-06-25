@@ -1,3 +1,4 @@
+import { c2mChart } from "../../dist/index.mjs";
 import { highs, lows, months } from "../data/data.js";
 
 export const multiLinePlot = (canvas, cc) => {
@@ -36,7 +37,7 @@ export const multiLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new Sonify({
+    new c2mChart({
         title: "Raleigh's High/Low Temperatures (2020)",
         element: canvas,
         cc,
