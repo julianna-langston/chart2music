@@ -12,5 +12,13 @@ module.exports = {
     collectCoverageFrom: ["src/**/*.{ts,js}"],
     collectCoverage: true,
     coverageDirectory: "coverage",
-    coverageProvider: "v8"
+    coverageProvider: "v8",
+    coverageThreshold: {
+        "./src/utils.ts": {
+            "branches": 100,
+            "functions": 100,
+            "lines": 100,
+            "statements": 100
+        }
+    }
 }
