@@ -2,7 +2,11 @@
     "name": "chart2music",
     "version": "0.1.0",
     "main": "dist/index.js",
+    "types": "dist/dts/*.d.ts",
     "description": "Turns charts into music so the blind can hear data",
+    "files": [
+        "dist/*"
+    ],
     "keywords": [
         "accessibility",
         "a11y",
@@ -30,8 +34,8 @@
     "license": "MIT",
     "devDependencies": {
         "@rollup/plugin-typescript": "^8.3.3",
-        "@typescript-eslint/parser": "^5.10.2",
         "@typescript-eslint/eslint-plugin": "^5.27.1",
+        "@typescript-eslint/parser": "^5.10.2",
         "concurrently": "^7.2.2",
         "eslint": "^8.17.0",
         "eslint-config-prettier": "^8.3.0",
