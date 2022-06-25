@@ -40,6 +40,8 @@ test("Move at boundaries - single line plot", () => {
                     y: 1
                 }
             });
+
+            expect(setTimeout).toHaveBeenCalledTimes(0);
         }
     );
 
@@ -56,6 +58,8 @@ test("Move at boundaries - single line plot", () => {
             y: 3
         }
     });
+    jest.advanceTimersByTime(250);
+    expect(setTimeout).toHaveBeenCalledTimes(1);
 
     // Move right while at far right
     mockElement.dispatchEvent(
@@ -70,6 +74,8 @@ test("Move at boundaries - single line plot", () => {
             y: 3
         }
     });
+    jest.advanceTimersByTime(250);
+    expect(setTimeout).toHaveBeenCalledTimes(1);
 });
 
 test("Move at boundaries - grouped and stat'd", () => {
@@ -98,52 +104,63 @@ test("Move at boundaries - grouped and stat'd", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+    expect(setTimeout).toHaveBeenCalledTimes(1);
 
     [
         {
             key: "ArrowLeft",
-            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } }
+            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } },
+            timer: 1
         },
         {
             key: "ArrowUp",
-            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } }
+            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } },
+            timer: 1
         },
         {
             // High
             key: "ArrowDown",
-            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } }
+            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } },
+            timer: 2
         },
         {
             // Low
             key: "ArrowDown",
-            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } }
+            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } },
+            timer: 3
         },
         {
             // Can't move
             key: "ArrowDown",
-            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } }
+            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } },
+            timer: 3
         },
         {
             // Can't move
             key: "PageUp",
-            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } }
+            point: { group: "a", point: { x: 1, y: { high: 10, low: 8 } } },
+            timer: 3
         },
         {
             // Change to group B
             key: "PageDown",
-            point: { group: "b", point: { x: 1, y: 11 } }
+            point: { group: "b", point: { x: 1, y: 11 } },
+            timer: 4
         },
         {
             // Can't move
             key: "PageDown",
-            point: { group: "b", point: { x: 1, y: 11 } }
+            point: { group: "b", point: { x: 1, y: 11 } },
+            timer: 4
         }
-    ].forEach(({ key, point }) => {
+    ].forEach(({ key, point, timer }) => {
         mockElement.dispatchEvent(
             new KeyboardEvent("keydown", {
                 key
             })
         );
         expect(chart.getCurrent()).toStrictEqual(point);
+        jest.advanceTimersByTime(250);
+        expect(setTimeout).toHaveBeenCalledTimes(timer);
     });
 });

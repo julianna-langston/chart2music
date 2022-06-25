@@ -122,8 +122,9 @@ export class c2mChart {
                 key: "ArrowRight",
                 callback: () => {
                     clearInterval(this._playListInterval);
-                    this._moveRight();
-                    this._playAndSpeak();
+                    if (this._moveRight()) {
+                        this._playAndSpeak();
+                    }
                 }
             },
             {
@@ -131,8 +132,9 @@ export class c2mChart {
                 key: "ArrowLeft",
                 callback: () => {
                     clearInterval(this._playListInterval);
-                    this._moveLeft();
-                    this._playAndSpeak();
+                    if (this._moveLeft()) {
+                        this._playAndSpeak();
+                    }
                 }
             },
             {
@@ -423,9 +425,10 @@ export class c2mChart {
         const max = this._data[this._groupIndex].length - 1;
         if (this._pointIndex >= max) {
             this._pointIndex = max;
-            return;
+            return false;
         }
         this._pointIndex++;
+        return true;
     }
 
     /**
@@ -434,9 +437,10 @@ export class c2mChart {
     private _moveLeft() {
         if (this._pointIndex <= 0) {
             this._pointIndex = 0;
-            return;
+            return false;
         }
         this._pointIndex--;
+        return true;
     }
 
     /**
@@ -471,20 +475,28 @@ export class c2mChart {
      * Move by a tenth to the left
      */
     private _moveLeftTenths() {
+        if (this._pointIndex === 0) {
+            return false;
+        }
         this._pointIndex = Math.max(
             this._pointIndex - this._metadataByGroup[this._groupIndex].tenths,
             0
         );
+        return true;
     }
 
     /**
      * Move by a tenth to the right
      */
     private _moveRightTenths() {
+        if (this._pointIndex === this._data[this._groupIndex].length - 1) {
+            return false;
+        }
         this._pointIndex = Math.min(
             this._pointIndex + this._metadataByGroup[this._groupIndex].tenths,
             this._data[this._groupIndex].length - 1
         );
+        return true;
     }
 
     /**
