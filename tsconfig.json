@@ -1,12 +1,14 @@
 {
     "compilerOptions": {
-        "allowJs": true,
+        "esModuleInterop": true,
         "declaration": true,
-        "declarationDir": "dist/dts",
+        "declarationDir": "./types",
         "outDir": "./dist/",
         "removeComments": true,
         "target": "ES2020",
-        "preserveConstEnums": true
+        "preserveConstEnums": true,
+        "moduleResolution": "Node"
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*"],
+    "exclude": ["test/**/*"]
 }

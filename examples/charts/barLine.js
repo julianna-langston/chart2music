@@ -75,7 +75,7 @@ export const barLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new window.Sonify({
+    new Sonify({
         type: "line",
         title: "AAPL Trades",
         element: canvas,

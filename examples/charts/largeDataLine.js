@@ -42,7 +42,7 @@ export const largeDataLine = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new window.Sonify({
+    new Sonify({
         type: "line",
         title: "Bitcoin",
         element: canvas,

@@ -50,7 +50,7 @@ export const bandPlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new window.Sonify({
+    new Sonify({
         type: "band",
         title: "AAPL",
         element: canvas,

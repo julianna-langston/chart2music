@@ -30,7 +30,7 @@ export const floatingBarChart = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new window.Sonify({
+    new Sonify({
         type: "bar",
         title: "Raleigh's High/Low Temperatures (2020)",
         element: canvas,

@@ -30,7 +30,7 @@ export const singleLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new window.Sonify({
+    new Sonify({
         type: "line",
         element: canvas,
         cc,

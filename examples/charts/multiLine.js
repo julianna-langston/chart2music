@@ -36,7 +36,7 @@ export const multiLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new window.Sonify({
+    new Sonify({
         title: "Raleigh's High/Low Temperatures (2020)",
         element: canvas,
         cc,

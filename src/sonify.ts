@@ -6,8 +6,8 @@ import {
     calculateAxisMaximum,
     defaultFormat,
     sentenceCase
-} from "./utils.js";
-import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants.js";
+} from "./utils";
+import { HERTZ, SPEEDS, NOTE_LENGTH } from "./constants";
 import type {
     SonifyTypes,
     AxisData,
@@ -16,10 +16,10 @@ import type {
     validAxes,
     StatBundle
 } from "./types";
-import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
-import type { AudioEngine } from "./audio/AudioEngine.js";
-import { OscillatorAudioEngine } from "./audio/OscillatorAudioEngine.js";
-import { KeyboardEventManager } from "./keyboardManager.js";
+import { ScreenReaderBridge } from "./ScreenReaderBridge";
+import type { AudioEngine } from "./audio/AudioEngine";
+import { OscillatorAudioEngine } from "./audio/OscillatorAudioEngine";
+import { KeyboardEventManager } from "./keyboardManager";
 
 let context: null | AudioContext = null;
 
