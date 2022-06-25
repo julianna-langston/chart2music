@@ -55,3 +55,28 @@ export const defaultFormat = (value: number) => `${value}`;
 
 export const sentenceCase = (str: string) =>
     `${str.substring(0, 1).toUpperCase()}${str.substring(1).toLowerCase()}`;
+
+// export const calcInflectionPoints = (nums: number[]) => {
+//     const nums2: number[] = [];
+//     for(let j=0; j<nums.length-2; j++){
+//         nums2.push(nums[j+1]-nums[j])
+//     }
+
+//     const inflectionIndeces: number[] = [];
+//     let temp = nums2[0]
+//     for(let i=1; i<nums2.length-2; i++){
+//         if(nums2[i] === 0){
+//             continue;
+//         }
+//         if(temp > 0 && nums2[i] > 0){
+//             continue;
+//         }
+//         if(temp < 0 && nums2[i] < 0){
+//             continue;
+//         }
+//         temp = nums2[i];
+//         inflectionIndeces.push(i);
+//     }
+
+//     return inflectionIndeces;
+// }

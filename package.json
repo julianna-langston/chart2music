@@ -26,7 +26,7 @@
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
         "clean": "rimraf ./dist ./coverage",
-        "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\"",
+        "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\" \"jest -o\"",
         "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
         "format": "prettier --config .prettierrc.json src/**/*.ts --write && prettier examples/**/*.js --write",
@@ -46,6 +46,7 @@
         "http-server": "^14.1.1",
         "husky": "^6.0.0",
         "jest": "^28.1.1",
+        "jest-environment-jsdom": "^28.1.1",
         "lint-staged": "^13.0.3",
         "prettier": "^2.5.1",
         "rimraf": "^3.0.2",

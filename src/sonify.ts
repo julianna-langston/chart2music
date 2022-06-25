@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
     interpolateBin,
     calcPan,
@@ -137,6 +138,18 @@ export class c2mChart {
         this._options = {
             ...this._options,
             ...option
+        };
+    }
+
+    /**
+     * Get the data point that the user is currently focused on
+     *
+     * @returns - the current group name and data point
+     */
+    getCurrent() {
+        return {
+            group: this._groups[this._groupIndex],
+            point: this._data[this._groupIndex][this._pointIndex]
         };
     }
 

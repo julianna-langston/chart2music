@@ -1,5 +1,13 @@
-import { dataPoint } from "../src/types";
-import {calcPan, calculateAxisMaximum, calculateAxisMinimum, defaultFormat, generateSummary, interpolateBin, sentenceCase} from "../src/utils";
+import type { dataPoint } from "../src/types";
+import {
+    calcPan,
+    calculateAxisMaximum,
+    calculateAxisMinimum,
+    defaultFormat,
+    generateSummary,
+    interpolateBin,
+    sentenceCase
+} from "../src/utils";
 
 test("sentence case", () => {
     expect(sentenceCase("test")).toBe("Test");
@@ -22,7 +30,7 @@ test("generating summary", () => {
                 label: "Growth",
                 minimum: 0,
                 maximum: 100,
-                format: (value) => (`${value}%`)
+                format: (value) => `${value}%`
             },
             {
                 label: "Value",
@@ -31,7 +39,9 @@ test("generating summary", () => {
                 format: defaultFormat
             }
         )
-    ).toBe(`Sonified chart "My title", x is Growth from 0% to 100%, y is Value from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`);
+    ).toBe(
+        `Sonified chart "My title", x is Growth from 0% to 100%, y is Value from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
 });
 
 test("adjust percent for panning", () => {
@@ -41,17 +51,27 @@ test("adjust percent for panning", () => {
 });
 
 test("calculate axis min/max", () => {
-    const singleRow: dataPoint[][] = [[1, 5, 2, 0, 3, 6].map((x) => {return {x}})];
-    const multiRow = [
-        [1, 5, 2, 0, 3, 6].map((x) => {return {x}}),
-        [11, 15, 12, 10, 13, 16].map((x) => {return {x}}),
+    const singleRow: dataPoint[][] = [
+        [1, 5, 2, 0, 3, 6].map((x) => {
+            return { x };
+        })
     ];
-    const bundledRow = [[
-        {x: 5, y: {high: 50, low: 20}},
-        {x: 5, y: {high: 51, low: 15}},
-        {x: 5, y: {high: 52, low: 30}},
-        {x: 5, y: {high: 53, low: 45}},
-    ]];
+    const multiRow = [
+        [1, 5, 2, 0, 3, 6].map((x) => {
+            return { x };
+        }),
+        [11, 15, 12, 10, 13, 16].map((x) => {
+            return { x };
+        })
+    ];
+    const bundledRow = [
+        [
+            { x: 5, y: { high: 50, low: 20 } },
+            { x: 5, y: { high: 51, low: 15 } },
+            { x: 5, y: { high: 52, low: 30 } },
+            { x: 5, y: { high: 53, low: 45 } }
+        ]
+    ];
 
     expect(calculateAxisMinimum(singleRow, "x")).toBe(0);
     expect(calculateAxisMinimum(multiRow, "x")).toBe(0);
@@ -62,4 +82,11 @@ test("calculate axis min/max", () => {
     expect(calculateAxisMaximum(multiRow, "x")).toBe(16);
     expect(calculateAxisMaximum(bundledRow, "x")).toBe(5);
     expect(calculateAxisMaximum(bundledRow, "y")).toBe(53);
-})
+});
+
+// test("calculate inflection points", () => {
+//     expect(calcInflectionPoints([1,2,3,4,5,4,3,2,2,2,2])).toStrictEqual([4]);
+//     // expect(calcInflectionPoints([1,2,3,4,5,4,3,2,2,2,3,4])).toStrictEqual([4,9]);
+//     expect(calcInflectionPoints([-2,-1,0,1,2,3,15,20,5])).toStrictEqual([8]);
+//     expect(calcInflectionPoints([-2,-1,0,1,2,3,15,20])).toStrictEqual([]);
+// })

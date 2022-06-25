@@ -2,7 +2,7 @@
     "root": true,
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": "./tsconfig.json"
+        "project": ["./tsconfig.json","./tsconfig.test.json"]
     },
     "plugins": [
         "jsdoc",
@@ -19,7 +19,6 @@
     "rules": {
         "no-console": "warn",
         "no-alert": "warn",
-        "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/consistent-type-imports": "error",
         "no-duplicate-imports": "off",
         "@typescript-eslint/no-duplicate-imports": "error",
