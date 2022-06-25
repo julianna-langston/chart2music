@@ -61,17 +61,17 @@ test("Move around by single events - single line plot", () => {
     [
         {
             key: " ",
-            frequency: 55,
+            frequency: 82,
             panning: -0.98
         },
         {
             key: "ArrowRight",
-            frequency: 185,
+            frequency: 220,
             panning: -0.7
         },
         {
             key: "End",
-            frequency: 659.25,
+            frequency: 554,
             panning: 0.98
         }
     ].forEach(({ frequency, panning, key }) => {
@@ -82,7 +82,7 @@ test("Move around by single events - single line plot", () => {
         );
         jest.advanceTimersByTime(250);
         expect(lastPanning).toBe(panning);
-        expect(lastFrequency).toBe(frequency);
+        expect(Math.round(lastFrequency)).toBe(frequency);
     });
     expect(lastDuration).toBe(0.25);
 });
@@ -122,10 +122,10 @@ test("Move around by single events - plot with stats", () => {
     expect(setTimeout).toHaveBeenCalledTimes(3);
     jest.advanceTimersByTime(50);
     expect(lastPanning).toBe(-0.98);
-    expect(lastFrequency).toBe(185);
+    expect(lastFrequency).toBe(220);
     jest.advanceTimersByTime(250);
     expect(lastPanning).toBe(-0.98);
-    expect(lastFrequency).toBe(16.35);
+    expect(lastFrequency).toBe(32.7032);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -135,6 +135,6 @@ test("Move around by single events - plot with stats", () => {
     expect(setTimeout).toHaveBeenCalledTimes(4);
     jest.advanceTimersByTime(50);
     expect(lastPanning).toBe(-0.98);
-    expect(lastFrequency).toBe(185);
+    expect(lastFrequency).toBe(220);
     jest.advanceTimersByTime(250);
 });
