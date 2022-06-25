@@ -31,7 +31,7 @@ export const singleLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    chart = new c2mChart({
+    new c2mChart({
         type: "line",
         element: canvas,
         cc,
