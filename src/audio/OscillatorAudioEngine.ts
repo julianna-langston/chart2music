@@ -1,7 +1,9 @@
+import type { AudioEngine } from "./AudioEngine";
+
 /**
  * An audio engine which uses oscillators to create sound.
  */
-export class OscillatorAudioEngine {
+export class OscillatorAudioEngine implements AudioEngine {
     private readonly _audioContext: AudioContext;
     private readonly _masterCompressor: DynamicsCompressorNode;
     private readonly _masterGain: GainNode;
@@ -40,13 +42,13 @@ export class OscillatorAudioEngine {
     }
 
     /**
-     * Play a note at the given frequency.
+     * Play a sound to represent a data point.
      *
      * @param frequency - the fundimental frequency
      * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
      * @param duration - the duration of the note in seconds, defaults to 0.2
      */
-    playNote(frequency: number, panning: number, duration = 0.2) {
+    playDataPoint(frequency: number, panning: number, duration = 0.2) {
         const t = this._audioContext.currentTime;
         // Create the main note.
         const mainFreq = this._audioContext.createOscillator();

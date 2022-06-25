@@ -17,7 +17,8 @@ import type {
     StatBundle
 } from "./types";
 import { ScreenReaderBridge } from "./ScreenReaderBridge.js";
-import { OscillatorAudioEngine } from "./OscillatorAudioEngine.js";
+import type { AudioEngine } from "./audio/AudioEngine.js";
+import { OscillatorAudioEngine } from "./audio/OscillatorAudioEngine.js";
 import { KeyboardEventManager } from "./keyboardManager.js";
 
 let context: null | AudioContext = null;
@@ -60,7 +61,7 @@ const uniqueArray = (arr: unknown[]) => {
 };
 
 /**
- * Manages data and interactions
+ * Represents a single chart that should be sonified.
  */
 export class Sonify {
     private _chartElement: HTMLElement;
@@ -80,7 +81,7 @@ export class Sonify {
     private _flagNewGroup = false;
     private _flagNewStat = false;
     private _keyEventManager: KeyboardEventManager;
-    private _audioEngine: OscillatorAudioEngine | null = null;
+    private _audioEngine: AudioEngine | null = null;
     private _metadataByGroup: groupedMetadata[];
 
     /**
@@ -584,7 +585,7 @@ export class Sonify {
                 HERTZ.length - 1
             );
 
-            this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+            this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
             current.callback?.();
             return;
         }
@@ -596,7 +597,7 @@ export class Sonify {
                 HERTZ.length - 1
             );
 
-            this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+            this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
             current.callback?.();
             return;
         }
@@ -610,7 +611,7 @@ export class Sonify {
                 this._yAxis.maximum,
                 HERTZ.length - 1
             );
-            this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+            this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
             current.callback?.();
             return;
         }
@@ -625,7 +626,7 @@ export class Sonify {
                 HERTZ.length - 1
             );
             setTimeout(() => {
-                this._audioEngine.playNote(HERTZ[yBin], xPan, NOTE_LENGTH);
+                this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
             }, SPEEDS[this._speedRateIndex] * interval * index);
         });
 
