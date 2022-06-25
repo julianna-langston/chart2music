@@ -256,6 +256,112 @@ test("Movement for a chart with stats", () => {
     );
 });
 
-// with y2
+test("Movement for a chart with a y2 axis and formatting", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const chart = new c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            b: [
+                { x: 1, y2: 11 },
+                { x: 2, y2: 12 },
+                { x: 3, y2: 13 }
+            ]
+        },
+        axes: {
+            x: {
+                format: (value) => `${value}!`
+            },
+            y: {
+                format: (value) => `$${value}`
+            },
+            y2: {
+                format: (value) => `${value}%`
+            }
+        },
+        element: mockElement,
+        cc: mockElementCC
+    });
+    chart.setOptions({ enableSound: false });
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2!, $2");
+    expect(chart.getCurrent()).toStrictEqual({
+        group: "a",
+        point: {
+            x: 2,
+            y: 2
+        }
+    });
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "b, 2!, 12%"
+    );
+    expect(chart.getCurrent()).toStrictEqual({
+        group: "b",
+        point: {
+            x: 2,
+            y2: 12
+        }
+    });
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3!, 13%");
+    expect(chart.getCurrent()).toStrictEqual({
+        group: "b",
+        point: {
+            x: 3,
+            y2: 13
+        }
+    });
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageUp"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "a, 3!, $3"
+    );
+    expect(chart.getCurrent()).toStrictEqual({
+        group: "a",
+        point: {
+            x: 3,
+            y: 3
+        }
+    });
+});
+
 // with formatting
 // enough data to test moveByTenths

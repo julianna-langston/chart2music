@@ -34,10 +34,10 @@ export type dataPoint = {
  * Metadata for an axis
  */
 export type AxisData = {
-    minimum: number;
-    maximum: number;
-    label: string;
-    format: (value: number) => string;
+    minimum?: number;
+    maximum?: number;
+    label?: string;
+    format?: (value: number) => string;
 };
 
 /**
