@@ -12,10 +12,15 @@ You can include Chart2Music as a library in the browser like this:
 <script src="sonify.js"></script>
 ```
 
+Alternatively, you use the ES6 module in your javascript library, like this:
+```javascript
+import {c2mChart} from "./lib/chart2music.mjs";
+```
+
 This will add a global variable, `Sonify`. You can invoke a simple line chart like this:
 
 ```javascript
-const mySonifier = new Sonify({
+const mySonifier = new c2mChart({
     element: document.getElementById("myChart"),
     data: [1,2,3,4]
   });
@@ -88,7 +93,7 @@ Providing multiple Y-values for a given X-value. For example, when you have a fl
 ```javascript
 const highs = [72, 73, 88, 83, 88, 91, 97, 93, 93, 83, 79];
 const lows = [25, 23, 25, 34, 38, 55, 67, 64, 44, 41, 29];
-new Sonify({
+new c2mChart({
     type: "bar",
     title: "Raleigh's High/Low Temperatures (2020)",
     element: floatingCanvas,
@@ -139,7 +144,7 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const highs = [72, 73, 88, 83, 88, 91, 97, 93, 93, 83, 79];
 const lows = [25, 23, 25, 34, 38, 55, 67, 64, 44, 41, 29];
 
-new window.Sonify({
+new c2mChart({
     title: "Raleigh's High/Low Temperatures (2020)",
     element: document.getElementById("myCanvas"),
     cc: document.getElementById("cc"),
