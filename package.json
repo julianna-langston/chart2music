@@ -26,7 +26,7 @@
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
         "clean": "rimraf ./dist ./coverage",
-        "start": "concurrently \"rollup -c rollup.config.js --silent -w\" \"http-server .\"",
+        "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\"",
         "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
         "format": "prettier --config .prettierrc.json src/**/*.ts --write && prettier examples/**/*.js --write",
