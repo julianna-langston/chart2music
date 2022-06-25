@@ -1,9 +1,5 @@
 import type { AxisData, dataPoint, StatBundle } from "./types";
 
-export const array_minimum = (numbers: number[]) =>
-    numbers.reduce((acc, item) => Math.min(acc, item));
-export const array_maximum = (numbers: number[]) =>
-    numbers.reduce((acc, item) => Math.max(acc, item));
 export const interpolateBin = (
     point: number,
     min: number,
