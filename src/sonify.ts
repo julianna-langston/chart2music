@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { OscillatorAudioEngine } from "./audio/index";
 import type { AudioEngine, AudioEngineConstructor } from "./audio/index";
 import { HERTZ, NOTE_LENGTH, SPEEDS, statReadOrder } from "./constants";
@@ -43,7 +42,7 @@ export class c2mChart {
     private _yAxis: AxisData;
     private _y2Axis: AxisData;
     private _title: string;
-    private _playListInterval: number | null = null;
+    private _playListInterval: NodeJS.Timeout | null = null;
     private _speedRateIndex = 1;
     private _flagNewGroup = false;
     private _flagNewStat = false;
@@ -538,7 +537,6 @@ export class c2mChart {
      */
     private _playAllLeft() {
         const min = 0;
-        // @ts-ignore
         this._playListInterval = setInterval(() => {
             if (this._pointIndex <= min) {
                 this._pointIndex = min;
@@ -547,7 +545,7 @@ export class c2mChart {
                 this._pointIndex--;
                 this._playCurrent();
             }
-        }, SPEEDS[this._speedRateIndex]);
+        }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
         this._playCurrent();
     }
 
@@ -556,7 +554,6 @@ export class c2mChart {
      */
     private _playAllRight() {
         const max = this._data[this._groupIndex].length - 1;
-        // @ts-ignore
         this._playListInterval = setInterval(() => {
             if (this._pointIndex >= max) {
                 this._pointIndex = max;
