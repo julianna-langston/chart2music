@@ -2,6 +2,7 @@
     "name": "chart2music",
     "version": "0.1.0",
     "main": "dist/index.js",
+    "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
     "description": "Turns charts into music so the blind can hear data",
     "files": [
@@ -22,6 +23,9 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/julianna-langston/chart2music.git"
+    },
+    "bugs": {
+        "url": "https://github.com/julianna-langston/chart2music/issues"
     },
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
