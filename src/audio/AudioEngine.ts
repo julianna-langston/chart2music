@@ -17,10 +17,3 @@ export interface AudioEngine {
      */
     playDataPoint(frequency: number, panning: number, duration: number): void;
 }
-
-/**
- * Interface for the AudioEngine
- */
-export interface AudioEngineConstructor {
-    new (context: AudioContext): AudioEngine;
-}

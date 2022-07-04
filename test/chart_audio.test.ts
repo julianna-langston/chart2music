@@ -1,4 +1,4 @@
-import type { AudioEngine } from "../src/audio/AudioEngine";
+import type { AudioEngine } from "../src/audio/";
 import { c2mChart } from "../src/sonify";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 
@@ -29,10 +29,8 @@ class MockAudioEngine implements AudioEngine {
 
     /**
      * Constructor
-     *
-     * @param context - the AudioContext
      */
-    constructor(context: AudioContext) {
+    constructor() {
         lastDuration = -10;
         lastFrequency = -10;
         lastPanning = -10;
@@ -61,7 +59,7 @@ test("Move around by single events - single line plot", () => {
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: MockAudioEngine
+        audioEngine: new MockAudioEngine()
     });
 
     mockElement.dispatchEvent(new Event("focus"));
@@ -118,7 +116,7 @@ test("Move around by single events - plot with stats", () => {
         },
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: MockAudioEngine
+        audioEngine: new MockAudioEngine()
     });
 
     mockElement.dispatchEvent(new Event("focus"));
@@ -158,7 +156,7 @@ test("Check play all", () => {
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: MockAudioEngine
+        audioEngine: new MockAudioEngine()
     });
 
     mockElement.dispatchEvent(new Event("focus"));

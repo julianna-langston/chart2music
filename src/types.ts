@@ -1,4 +1,4 @@
-import type { AudioEngineConstructor } from "./audio/AudioEngine";
+import type { AudioEngine } from "./audio/";
 
 /**
  * Contains the data to describe a chart that should be sonified.
@@ -38,7 +38,7 @@ export type SonifyTypes = {
     /** Optional type for the chart. */
     type?: SUPPORTED_CHART_TYPES;
     /** Optional audio engine to replace the default audio engine. */
-    audioEngine?: AudioEngineConstructor;
+    audioEngine?: AudioEngine;
 };
 
 /**

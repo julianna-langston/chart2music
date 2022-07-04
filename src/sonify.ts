@@ -1,5 +1,5 @@
 import { OscillatorAudioEngine } from "./audio/index";
-import type { AudioEngine, AudioEngineConstructor } from "./audio/index";
+import type { AudioEngine } from "./audio/index";
 import { HERTZ, NOTE_LENGTH, SPEEDS, statReadOrder } from "./constants";
 import { KeyboardEventManager } from "./keyboardManager";
 import { ScreenReaderBridge } from "./ScreenReaderBridge";
@@ -53,7 +53,7 @@ export class c2mChart {
         enableSound: true,
         enableSpeech: true
     };
-    private _providedAudioEngine?: AudioEngineConstructor;
+    private _providedAudioEngine?: AudioEngine;
 
     /**
      * Constructor
@@ -578,8 +578,8 @@ export class c2mChart {
             this._metadataByGroup[this._groupIndex];
 
         if (!this._audioEngine && context) {
-            this._audioEngine = new (this._providedAudioEngine ??
-                OscillatorAudioEngine)(context);
+            this._audioEngine =
+                this._providedAudioEngine ?? new OscillatorAudioEngine(context);
         }
         if (!this._audioEngine) {
             return;
