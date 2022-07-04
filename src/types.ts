@@ -1,25 +1,51 @@
 import type { AudioEngineConstructor } from "./audio/AudioEngine";
 
 /**
- * The chart types available
+ * Contains the data to describe a chart that should be sonified.
+ * Most of the keys of this interface are optional, with the exception of "data" and "element".
  */
-export enum SUPPORTED_CHART_TYPES {
-    LINE = "line"
-}
+export type SonifyTypes = {
+    /**
+     * The data that should be presented in this chart.
+     * This key is required for all charts.
+     */
+    data: dataSet | dataPoint[] | number[];
+    /**
+     * The HTML element in the DOM that represents this chart.
+     * This will be used to handle keyboard events to enable the user to interact with the chart.
+     * This key is required for all charts.
+     */
+    element: HTMLElement;
+    /**
+     * Optional metadata for the chart.
+     * If you do not provide this metadata, it will be calculated automatically from the chart data.
+     */
+    axes?: {
+        /** Optional metadata for the x-axis. */
+        x?: AxisData;
+        /** Optional metadata for the y-axis. */
+        y?: AxisData;
+        /** Optional metadata for the y2-axis. */
+        y2?: AxisData;
+    };
+    /** Optional title for the chart. */
+    title?: string;
+    /**
+     * An optional HTML element that will be used to output messages to a running screen reader.
+     * If you do not provide this key, a suitable HTML will be created for you.
+     */
+    cc?: HTMLElement;
+    /** Optional type for the chart. */
+    type?: SUPPORTED_CHART_TYPES;
+    /** Optional audio engine to replace the default audio engine. */
+    audioEngine?: AudioEngineConstructor;
+};
 
 /**
  * A dictionary of data, where the key is the group name, and the value is the array of data points
  */
 export type dataSet = {
     [groupName: string]: dataPoint[];
-};
-
-/**
- * Bundle of possible statistics
- */
-export type StatBundle = {
-    high?: number;
-    low?: number;
 };
 
 /**
@@ -43,20 +69,18 @@ export type AxisData = {
 };
 
 /**
- * All of the data and metadata that could be provided by the invocation
+ * The chart types available
  */
-export type SonifyTypes = {
-    data: dataSet | dataPoint[] | number[];
-    element: HTMLElement;
-    axes?: {
-        x?: AxisData;
-        y?: AxisData;
-        y2?: AxisData;
-    };
-    title?: string;
-    cc?: HTMLElement;
-    type?: SUPPORTED_CHART_TYPES;
-    audioEngine?: AudioEngineConstructor;
+export enum SUPPORTED_CHART_TYPES {
+    LINE = "line"
+}
+
+/**
+ * Bundle of possible statistics
+ */
+export type StatBundle = {
+    high?: number;
+    low?: number;
 };
 
 /**
