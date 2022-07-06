@@ -1,5 +1,5 @@
 import type { AudioEngine } from "../src/audio/";
-import { c2mChart } from "../src/sonify";
+import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();

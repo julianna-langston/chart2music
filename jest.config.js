@@ -21,7 +21,7 @@ module.exports = {
             lines: 100,
             statements: 100
         },
-        "./src/sonify.ts": {
+        "./src/c2mChart.ts": {
             statements: 85
         }
     }

@@ -6,7 +6,7 @@ import del from "rollup-plugin-delete";
 
 export default [
     {
-        input: "src/sonify.ts",
+        input: "src/c2mChart.ts",
         output: [
             {
                 file: "dist/index.js",
@@ -21,7 +21,7 @@ export default [
         plugins: [typescript({ tsconfig: "./tsconfig.json" })]
     },
     {
-        input: "dist/types/sonify.d.ts",
+        input: "dist/types/c2mChart.d.ts",
         output: [
             {
                 file: "dist/index.d.ts",
