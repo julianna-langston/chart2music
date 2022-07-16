@@ -13,7 +13,7 @@ Chart2Music turns charts into music so the blind can hear data.
 Include the following script tag on your page:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart2music.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart2music@latest/dist/index.min.js"></script>
 ```
 
 On your page, you will also need your chart. For the sake of similicity, here's an example with an image:
