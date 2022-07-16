@@ -1,215 +1,39 @@
-# chart2music
-Turns charts into music so the blind can hear data
+# Chart2Music
+
+Chart2Music turns charts into music so the blind can hear data.
+
+## Key features
+
+* **Accessibility for screen reader users** - Enables blind users to rapidly absorb information about charts and graphs using sound and exploration.
+* **Easier maintenance for accessibility requirements** - Traditionally, charts and graphs would be made accessible using alt text, which can be difficult to generate or maintain, or data tables, which provide a poor end user experience. C2M provides an *automated* solution while *enhancing* the user experience.
+* **Visual agnostic** - Use C2M alongside your charts, regardless of how your visuals were created. ChartJS? D3.js? An image? C2M works in parallel with your visuals.
 
 ## Getting started
 
-Sonification is the representation of data using sound. Chart2Music provides an easy hookup for interactive sonification. Just provide your data and a reference to your chart, and C2M will do the rest.
+Include the following script tag on your page:
 
-### Initialize your data
-
-You can include Chart2Music as a library in the browser like this:
 ```html
-<script src="sonify.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart2music.js"></script>
 ```
 
-Alternatively, you use the ES6 module in your javascript library, like this:
-```javascript
-import {c2mChart} from "./lib/chart2music.mjs";
+On your page, you will also need your chart. For the sake of similicity, here's an example with an image:
+
+```html
+<img src="mychart.png" id="MyChart" />
 ```
 
-This will add a global variable, `Sonify`. You can invoke a simple line chart like this:
-
-```javascript
-const mySonifier = new c2mChart({
-    element: document.getElementById("myChart"),
-    data: [1,2,3,4]
-  });
-})
-```
-
-In this case, you see the 2 required options to pass to `Sonify`:
-1. `element` - the chart that you want to sonify. Ideally, this is a `<canvas>` or `<svg>` element, but it could be a `<div>` or some other container. C2M will wire up event listeners to this element, and give it a `tabIndex="0"` if you haven't already.
-2. `data` - the data associated with your chart. You can provide this data in a number of ways.
-
-Providing only y-values:
-```javascript
-data: [1,2,3,4]
-```
-
-Providing x- and y-values:
-```
-data: [
-    {
-        x: 1990,
-        y: 248709873
-    },
-    {
-        x: 2000,
-        y: 308745538
-    }
-]
-```
-
-Providing multiple lines of data:
-```javascript
-data: {
-    "United States of America": [
-        {
-            x: 1990,
-            y: 20
-        },
-        {
-            x: 2000,
-            y: 21
-        }
-    ],
-    Canada: [
-        {
-            x: 1990,
-            y: 30
-        },
-        {
-            x: 2000,
-            y: 29
-        }
-    ],
-}
-```
-
-C2M is handling keyboard navigation as it relates to an auditory experience. If you would like to update the visuals of your chart to align with the sounds, you can provide callbacks for data points. These callbacks will fired as each data point receives "focus". That would look like this:
-
-```
-data: [{
-    x: 1,
-    y: 2,
-    callback: () => {
-        // Do something to highlight this data point
-    }
-}]
-```
-
-Providing multiple Y-values for a given X-value. For example, when you have a floating bar chart, you would have 1 X-value, and then a high and low y-value. Here's an example of what that could look like:
+Now, in your javascript, you can start a new instance of Chart2Music. In this example, we will include a simple bar chart, and point it to the img element above.
 
 ```javascript
-const highs = [72, 73, 88, 83, 88, 91, 97, 93, 93, 83, 79];
-const lows = [25, 23, 25, 34, 38, 55, 67, 64, 44, 41, 29];
 new c2mChart({
     type: "bar",
-    title: "Raleigh's High/Low Temperatures (2020)",
-    element: floatingCanvas,
-    cc: document.getElementById("cc-floatingBar"),
-    axes: {
-      x: {
-        minimum: 0,
-        maximum: 10,
-        label: "Month",
-        format: (value) => months[value]
-      },
-      y: {
-        minimum: 20,
-        maximum: 100,
-        label: "Fahrenheit",
-        format: (value) => value,
-      }
-    },
-    data: highs.map((high, index) => {
-      return {
-        x: index,
-        y: {
-          high: high,
-          low: lows[index]
-        }
-      }
-    })
+    element: document.getElementById("MyChart"),
+    data: [1,2,3]
 });
 ```
 
-### Other options
+What will the user experience be? When the user navigates to the image, a description will be automatically generated, telling the user that there is interaction available. Then, the user can use arrow keys or keyboard shortcuts to interact with the data.
 
-While C2M only requires 2 options to get started, you can refine your chart with other options:
+## Advanced
 
-* `title` - the title of the chart. This is communicated to screen readers when they first focus on the container element.
-* `cc` - a closed caption element. Information about the chart will be fed to a user's screen reader using the ScreenReaderBridge. This will be done by updating a `<div>` on the page, called a "live region". If you want to control where that element is, and what it looks like, you can provide that element here. Otherwise, C2M will create one for you.
-* `axes` data - provide relevant metadata for each axis in particular
-    * `x` or `y`:
-        * `minimum` - minimum of the chart. If not provided, it will be assumed to be the lowest value in the dataset
-        * `maximum` - maximum of the chart. If not provided, it will be assumed to be the lowest value in the dataset
-        * `label` - the axis label.
-        * `format` - a function for formatting values. If, for example, you are providing money, and want your data read as "$1,235.50" and not "1234.50", you can provide that formatter here. That case could be accomplished in conjunction with a tool like Numeral.js, using something like: `{format: (value) => numeral(value).format("$0,0.00")}`
-
-Here is an example of all of those options being used:
-
-```javascript
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November'];
-const highs = [72, 73, 88, 83, 88, 91, 97, 93, 93, 83, 79];
-const lows = [25, 23, 25, 34, 38, 55, 67, 64, 44, 41, 29];
-
-new c2mChart({
-    title: "Raleigh's High/Low Temperatures (2020)",
-    element: document.getElementById("myCanvas"),
-    cc: document.getElementById("cc"),
-    axes: {
-        x: {
-            minimum: 0,
-            maximum: 10,
-            label: "Month",
-            // Convert X-values (index of the months array) to text
-            format: (value) => months[value]
-        },
-        y: {
-            minimum: 20,
-            maximum: 100,
-            label: "Fahrenheit",
-        }
-    },
-    data: {
-        highs: highs.map((y, index) => {
-            return {
-                x: index,
-                y,
-                callback: () => {
-                    highlight("highs", x);
-                }
-            }
-        }),
-        lows: lows.map((y, index) => {
-            return {
-                x: index,
-                y,
-                callback: () => {
-                    highlight("lows", x);
-                }
-            }
-        })
-    }
-});
-```
-
-## End user experience
-
-Once you've wired everything up, what is the end-user going to experience? What is the interactions that are being wired up?
-
-Here are the hotkeys users can use to interact with the chart:
-* Right arrow - Move to the next point to the right (silent if they're at the far right)
-* Left arrow - Move to the next point to the left (silent if they're at the far left)
-* Home - Move to the far left point
-* End - Move to the far right point
-* Page Down - Cycle forward through the various lines in the chart. (Silent if there are no other lines, of if the user has cycled to the end of list of lines)
-* Page Up - Cycle backward through the mulitple lines in the chart. (Silent if there are no other lines, of if the user has cycled to the front of list of lines.)
-* Spacebar - Replay the current point
-* Shift + Right - Play all data points to the right
-* Shift + Left - Play all data points to the left
-* Q - Speed up the play rate
-* E - Slow down the play rate
-
-## Contributing
-
-To work with the project, clone the repo, and run `npm install`. If you plan to commit code, initialize Husky with `npm run prepare`.
-
-In order to build the library and work with the examples, run `npm run build`. Then, in your browser, open: `localhost:8080/examples/chartjs.html`.
-
-To run in watch mode, run `npm run start`.
-
-Either way, to see the examples, open the following page in your browser: `localhost:8080/examples/chartjs.html`.
-
-You can run tests with `npm run test`. Note, there's a pre-commit hook that verifies all tests pass before allowing commits.
+For more advanced options, see our [examples](./examples/chartjs.html).
