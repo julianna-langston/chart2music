@@ -62,9 +62,20 @@ export class c2mChart {
      */
     constructor(input: SonifyTypes) {
         this._providedAudioEngine = input.audioEngine;
-        this._chartElement = input.element;
-        this._ccElement = input.cc ?? this._chartElement;
         this._title = input.title ?? "";
+        this._chartElement = input.element;
+
+        if (
+            !this._chartElement.hasAttribute("alt") &&
+            !this._chartElement.hasAttribute("aria-label")
+        ) {
+            this._chartElement.setAttribute(
+                "aria-label",
+                `Sonified chart, ${this._title}`
+            );
+        }
+
+        this._ccElement = input.cc ?? this._chartElement;
 
         this._initializeData(input.data);
         this._calculateMetadataByGroup();
