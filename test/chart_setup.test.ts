@@ -49,7 +49,7 @@ test("C2M setup handles partial axis info", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is  from 0 to 5.`);
+    expect(mockElementCC.textContent).toContain(`y is "" from 0 to 5.`);
 });
 
 // with provided X axis

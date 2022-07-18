@@ -76,7 +76,14 @@ export class c2mChart {
         }
 
         // Generate summary
-        this._summary = generateSummary(this._title, this._xAxis, this._yAxis);
+        this._summary = generateSummary({
+            type: input.type,
+            title: this._title,
+            x: this._xAxis,
+            y: this._yAxis,
+            dataRows: this._groups.length,
+            y2: this._y2Axis
+        });
 
         // Initialize SRB
         ScreenReaderBridge.addAriaAttributes(this._ccElement);

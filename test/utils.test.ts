@@ -1,4 +1,5 @@
 import type { dataPoint } from "../src/types";
+import { SUPPORTED_CHART_TYPES } from "../src/types";
 import {
     calcPan,
     calculateAxisMaximum,
@@ -27,23 +28,73 @@ test("interpolate bin", () => {
 
 test("generating summary", () => {
     expect(
-        generateSummary(
-            "My title",
-            {
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
                 label: "Growth",
                 minimum: 0,
                 maximum: 100,
                 format: (value) => `${value}%`
             },
-            {
+            y: {
                 label: "Value",
                 minimum: 10,
                 maximum: 20,
                 format: defaultFormat
-            }
-        )
+            },
+            dataRows: 1
+        })
     ).toBe(
-        `Sonified chart "My title", x is Growth from 0% to 100%, y is Value from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified line chart "My title", x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 100,
+                format: (value) => `${value}%`
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20,
+                format: defaultFormat
+            },
+            dataRows: 5
+        })
+    ).toBe(
+        `Sonified line chart "My title", contains 5 lines, x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 100,
+                format: (value) => `${value}%`
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20,
+                format: defaultFormat
+            },
+            y2: {
+                label: "Volume",
+                minimum: 0,
+                maximum: 100,
+                format: defaultFormat
+            },
+            dataRows: 1
+        })
+    ).toBe(
+        `Sonified line chart "My title", x is "Growth" from 0% to 100%, y is "Value" from 10 to 20, alternative y is "Volume" from 0 to 100. Use arrow keys to navigate. Press H for more hotkeys.`
     );
 });
 

@@ -1,4 +1,9 @@
-import type { AxisData, dataPoint, StatBundle } from "./types";
+import type {
+    AxisData,
+    dataPoint,
+    StatBundle,
+    SUPPORTED_CHART_TYPES
+} from "./types";
 
 export const interpolateBin = (
     point: number,
@@ -11,14 +16,52 @@ export const interpolateBin = (
 };
 export const calcPan = (pct: number) => (pct * 2 - 1) * 0.98;
 
-export const generateSummary = (title: string, x: AxisData, y: AxisData) =>
-    `Sonified chart "${title}", x is ${x.label} from ${x.format(
-        x.minimum
-    )} to ${x.format(x.maximum)}, y is ${y.label} from ${y.format(
-        y.minimum
-    )} to ${y.format(
-        y.maximum
+/**
+ *
+ */
+type SummaryTypes = {
+    type: SUPPORTED_CHART_TYPES;
+    title: string;
+    dataRows: number;
+    x: AxisData;
+    y: AxisData;
+    y2?: AxisData;
+};
+export const generateSummary = ({
+    type,
+    title,
+    dataRows,
+    x,
+    y,
+    y2
+}: SummaryTypes) => {
+    const text = [`Sonified ${type} chart "${title}"`];
+    if (dataRows > 1) {
+        text.push(`contains ${dataRows} ${type}s`);
+    }
+    text.push(
+        `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
+            x.maximum
+        )}`
+    );
+    text.push(
+        `y is "${y.label}" from ${y.format(y.minimum)} to ${y.format(
+            y.maximum
+        )}`
+    );
+
+    if (y2) {
+        text.push(
+            `alternative y is "${y2.label}" from ${y2.format(
+                y2.minimum
+            )} to ${y2.format(y2.maximum)}`
+        );
+    }
+
+    return `${text.join(
+        ", "
     )}. Use arrow keys to navigate. Press H for more hotkeys.`;
+};
 
 export const calculateAxisMinimum = (
     data: dataPoint[][],
