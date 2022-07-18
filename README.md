@@ -36,4 +36,8 @@ What will the user experience be? When the user navigates to the image, a descri
 
 ## Advanced
 
-For more advanced options, see our [examples](./examples/chartjs.html).
+For code examples in action, see the [Chart2Music Examples collection on Codepen](https://codepen.io/collection/BNedqm).
+
+Some of the examples you will find there include:
+* [Multi-line plot](https://codepen.io/chart2music/full/gOegZpm).
+* [Bar-line plot](https://codepen.io/chart2music/full/QWmdpOJ).
