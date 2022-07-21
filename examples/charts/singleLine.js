@@ -1,6 +1,8 @@
 import { c2mChart } from "../../dist/index.mjs";
 import { highs, months } from "../data/data.js";
 
+console.log("reload");
+
 export const singleLinePlot = (canvas, cc) => {
     const datasets = [
         {
@@ -38,12 +40,15 @@ export const singleLinePlot = (canvas, cc) => {
         data: highs.map((y, x) => {
             return {
                 x,
-                y,
-                callback: () => {
-                    myChart.setActiveElements([{ datasetIndex: 0, index: x }]);
-                    myChart.update();
-                }
+                y
             };
-        })
+        }),
+        options: {
+            onFocusCallback: ({ index }) => {
+                console.log(index);
+                myChart.setActiveElements([{ datasetIndex: 0, index }]);
+                myChart.update();
+            }
+        }
     });
 };

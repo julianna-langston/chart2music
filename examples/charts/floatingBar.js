@@ -56,12 +56,14 @@ export const floatingBarChart = (canvas, cc) => {
                 y: {
                     high: y,
                     low: lows[x]
-                },
-                callback: () => {
-                    myChart.setActiveElements([{ datasetIndex: 0, index: x }]);
-                    myChart.update();
                 }
             };
-        })
+        }),
+        options: {
+            onFocusCallback: ({ index }) => {
+                myChart.setActiveElements([{ datasetIndex: 0, index }]);
+                myChart.update();
+            }
+        }
     });
 };

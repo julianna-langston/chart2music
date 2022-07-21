@@ -39,6 +39,7 @@ export type SonifyTypes = {
     type?: SUPPORTED_CHART_TYPES;
     /** Optional audio engine to replace the default audio engine. */
     audioEngine?: AudioEngine;
+    options?: c2mOptions;
 };
 
 /**
@@ -55,7 +56,6 @@ export type dataPoint = {
     x: number;
     y?: number | StatBundle;
     y2?: number;
-    callback?: () => void;
 };
 
 /**
@@ -100,9 +100,18 @@ export type groupedMetadata = {
 export type validAxes = "x" | "y" | "y2";
 
 /**
+ * Data provided for the on focus callback
+ */
+export type c2mCallbackType = {
+    slice: string;
+    index: number;
+};
+
+/**
  * Options available for C2M chart
  */
 export type c2mOptions = {
     enableSound?: boolean;
     enableSpeech?: boolean;
+    onFocusCallback?: (point: c2mCallbackType) => void;
 };

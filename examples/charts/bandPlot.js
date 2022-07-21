@@ -51,6 +51,7 @@ export const bandPlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
+    const slices = ["Moving average", "Bollinger band"];
     new c2mChart({
         type: "band",
         title: "AAPL",
@@ -70,13 +71,7 @@ export const bandPlot = (canvas, cc) => {
             "Moving average": movingAverage.map((y, x) => {
                 return {
                     x,
-                    y,
-                    callback: () => {
-                        myChart.setActiveElements([
-                            { datasetIndex: 0, index: x }
-                        ]);
-                        myChart.update();
-                    }
+                    y
                 };
             }),
             "Bollinger band": upper.map((high, x) => {
@@ -85,16 +80,23 @@ export const bandPlot = (canvas, cc) => {
                     y: {
                         high: high,
                         low: lower[x]
-                    },
-                    callback: () => {
-                        myChart.setActiveElements([
-                            { datasetIndex: 1, index: x },
-                            { datasetIndex: 2, index: x }
-                        ]);
-                        myChart.update();
                     }
                 };
             })
+        },
+        options: {
+            onFocusCallback: ({ slice, index }) => {
+                const datasetIndex = slices.indexOf(slice);
+                if (datasetIndex === 0) {
+                    myChart.setActiveElements([{ datasetIndex, index }]);
+                } else {
+                    myChart.setActiveElements([
+                        { datasetIndex: 1, index },
+                        { datasetIndex: 2, index }
+                    ]);
+                }
+                myChart.update();
+            }
         }
     });
 };

@@ -37,6 +37,7 @@ export const multiLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
+    const slices = ["highs", "lows"];
     new c2mChart({
         title: "Raleigh's High/Low Temperatures (2020)",
         element: canvas,
@@ -59,27 +60,23 @@ export const multiLinePlot = (canvas, cc) => {
             highs: highs.map((y, x) => {
                 return {
                     x,
-                    y,
-                    callback: () => {
-                        myChart.setActiveElements([
-                            { datasetIndex: 0, index: x }
-                        ]);
-                        myChart.update();
-                    }
+                    y
                 };
             }),
             lows: lows.map((y, x) => {
                 return {
                     x,
-                    y,
-                    callback: () => {
-                        myChart.setActiveElements([
-                            { datasetIndex: 1, index: x }
-                        ]);
-                        myChart.update();
-                    }
+                    y
                 };
             })
+        },
+        options: {
+            onFocusCallback: ({ slice, index }) => {
+                myChart.setActiveElements([
+                    { datasetIndex: slices.indexOf(slice), index }
+                ]);
+                myChart.update();
+            }
         }
     });
 };

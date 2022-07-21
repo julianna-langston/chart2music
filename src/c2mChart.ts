@@ -86,6 +86,13 @@ export class c2mChart {
             this._y2Axis = this._initializeAxis("y2", input.axes?.y2);
         }
 
+        if (input?.options) {
+            this._options = {
+                ...this._options,
+                ...input?.options
+            };
+        }
+
         // Generate summary
         this._summary = generateSummary({
             type: input.type,
@@ -620,7 +627,8 @@ export class c2mChart {
             );
 
             this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-            current.callback?.();
+            this._onFocus();
+
             return;
         }
         if (typeof current.y2 === "number") {
@@ -632,7 +640,7 @@ export class c2mChart {
             );
 
             this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-            current.callback?.();
+            this._onFocus();
             return;
         }
 
@@ -646,7 +654,7 @@ export class c2mChart {
                 HERTZ.length - 1
             );
             this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-            current.callback?.();
+            this._onFocus();
             return;
         }
 
@@ -664,7 +672,17 @@ export class c2mChart {
             }, SPEEDS[this._speedRateIndex] * interval * index);
         });
 
-        current.callback?.();
+        this._onFocus();
+    }
+
+    /**
+     * Perform actions when a new data point receives focus
+     */
+    private _onFocus() {
+        this._options?.onFocusCallback?.({
+            slice: this._groups[this._groupIndex],
+            index: this._pointIndex
+        });
     }
 
     /**

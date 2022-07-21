@@ -65,12 +65,14 @@ export const largeDataLine = (canvas, cc) => {
         data: bitcoin.map((y, x) => {
             return {
                 x,
-                y,
-                callback: () => {
-                    myChart.setActiveElements([{ datasetIndex: 0, index: x }]);
-                    myChart.update();
-                }
+                y
             };
-        })
+        }),
+        options: {
+            onFocusCallback: ({ index }) => {
+                myChart.setActiveElements([{ datasetIndex: 0, index }]);
+                myChart.update();
+            }
+        }
     });
 };
