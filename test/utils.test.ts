@@ -8,9 +8,7 @@ import {
     generateSummary,
     interpolateBin,
     sentenceCase,
-    generatePointDescription,
-    usesAxis,
-    uniqueArray
+    generatePointDescription
 } from "../src/utils";
 
 test("sentence case", () => {
@@ -67,7 +65,7 @@ test("generating summary", () => {
             dataRows: 5
         })
     ).toBe(
-        `Sonified line chart "My title", contains 5 lines, x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified line chart "My title", contains 5 categories, x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
     );
     expect(
         generateSummary({

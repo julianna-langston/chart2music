@@ -37,7 +37,7 @@ export const generateSummary = ({
 }: SummaryTypes) => {
     const text = [`Sonified ${type} chart "${title}"`];
     if (dataRows > 1) {
-        text.push(`contains ${dataRows} ${type}s`);
+        text.push(`contains ${dataRows} categories`);
     }
     text.push(
         `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(

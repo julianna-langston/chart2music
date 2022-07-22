@@ -212,7 +212,7 @@ export class c2mChart {
                 }
             },
             {
-                title: "Go to previous group",
+                title: "Go to previous category",
                 key: "PageUp",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -225,7 +225,7 @@ export class c2mChart {
                 }
             },
             {
-                title: "Go to next group",
+                title: "Go to next category",
                 key: "PageDown",
                 callback: () => {
                     clearInterval(this._playListInterval);
