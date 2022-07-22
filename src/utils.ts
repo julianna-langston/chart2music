@@ -3,7 +3,8 @@ import type {
     AxisData,
     dataPoint,
     StatBundle,
-    SUPPORTED_CHART_TYPES
+    SUPPORTED_CHART_TYPES,
+    validAxes
 } from "./types";
 
 export const interpolateBin = (
@@ -198,4 +199,25 @@ export const calculateMetadataByGroup = (data: dataPoint[][]) => {
             statIndex: -1
         };
     });
+};
+
+/**
+ * Initialize internal representation of axis metadata. Providing metadata is optional, so we
+ * need to generate metadata that hasn't been provided.
+ *
+ * @param data - the X/Y values
+ * @param axisName - which axis is this? "x" or "y"
+ * @param userAxis - metadata provided by the invocation
+ */
+export const initializeAxis = (
+    data: dataPoint[][],
+    axisName: validAxes,
+    userAxis?: AxisData
+): AxisData => {
+    return {
+        minimum: userAxis?.minimum ?? calculateAxisMinimum(data, axisName),
+        maximum: userAxis?.maximum ?? calculateAxisMaximum(data, axisName),
+        label: userAxis?.label ?? "",
+        format: userAxis?.format ?? defaultFormat
+    };
 };

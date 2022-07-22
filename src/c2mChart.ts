@@ -1,6 +1,6 @@
 import { OscillatorAudioEngine } from "./audio/index";
 import type { AudioEngine } from "./audio/index";
-import { HERTZ, NOTE_LENGTH, SPEEDS, statReadOrder } from "./constants";
+import { HERTZ, NOTE_LENGTH, SPEEDS } from "./constants";
 import { KeyboardEventManager } from "./keyboardManager";
 import { ScreenReaderBridge } from "./ScreenReaderBridge";
 import type {
@@ -8,21 +8,17 @@ import type {
     dataPoint,
     groupedMetadata,
     SonifyTypes,
-    validAxes,
     c2mOptions
 } from "./types";
 import {
     calcPan,
-    calculateAxisMaximum,
-    calculateAxisMinimum,
-    defaultFormat,
     generateSummary,
     interpolateBin,
     sentenceCase,
     generatePointDescription,
     usesAxis,
-    uniqueArray,
-    calculateMetadataByGroup
+    calculateMetadataByGroup,
+    initializeAxis
 } from "./utils";
 
 let context: null | AudioContext = null;
@@ -82,10 +78,10 @@ export class c2mChart {
 
         this._metadataByGroup = calculateMetadataByGroup(this._data);
 
-        this._xAxis = this._initializeAxis("x", input.axes?.x);
-        this._yAxis = this._initializeAxis("y", input.axes?.y);
+        this._xAxis = initializeAxis(this._data, "x", input.axes?.x);
+        this._yAxis = initializeAxis(this._data, "y", input.axes?.y);
         if (usesAxis(this._data, "y2")) {
-            this._y2Axis = this._initializeAxis("y2", input.axes?.y2);
+            this._y2Axis = initializeAxis(this._data, "y2", input.axes?.y2);
         }
 
         if (input?.options) {
@@ -366,27 +362,6 @@ export class c2mChart {
 
         this._groups = [""];
         this._data = [massagedData];
-    }
-
-    /**
-     * Initialize internal representation of axis metadata. Providing metadata is optional, so we
-     * need to generate metadata that hasn't been provided.
-     *
-     * @param axisName - which axis is this? "x" or "y"
-     * @param userAxis - metadata provided by the invocation
-     */
-    private _initializeAxis(
-        axisName: validAxes,
-        userAxis?: AxisData
-    ): AxisData {
-        return {
-            minimum:
-                userAxis?.minimum ?? calculateAxisMinimum(this._data, axisName),
-            maximum:
-                userAxis?.maximum ?? calculateAxisMaximum(this._data, axisName),
-            label: userAxis?.label ?? "",
-            format: userAxis?.format ?? defaultFormat
-        };
     }
 
     /**
