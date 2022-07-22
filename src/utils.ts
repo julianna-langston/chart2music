@@ -1,3 +1,4 @@
+import { statReadOrder } from "./constants";
 import type {
     AxisData,
     dataPoint,
@@ -157,4 +158,44 @@ export const usesAxis = (data: dataPoint[][], axisName: "x" | "y" | "y2") => {
 
 export const uniqueArray = <T>(arr: T[]) => {
     return [...new Set(arr)];
+};
+
+/**
+ * Determine metadata about data sets, to help users navigate more effectively
+ *
+ * @param data - the X/Y values
+ */
+export const calculateMetadataByGroup = (data: dataPoint[][]) => {
+    return data.map((row) => {
+        // Calculate min/max
+        const yPoints = row.map(({ y, y2 }) => y ?? y2);
+        const yValues = yPoints.filter(
+            (value) => typeof value === "number"
+        ) as number[];
+        const min = Math.min(...yValues);
+        const max = Math.max(...yValues);
+
+        // Calculate tenths
+        const tenths = Math.round(row.length / 10);
+
+        // Determine stat bundle
+        const stats = uniqueArray<string>(
+            yPoints
+                .filter((value) => typeof value !== "number")
+                .map((value) => Object.keys(value))
+                .flat()
+        );
+        // Sort by reading order
+        const availableStats = statReadOrder.filter(
+            (stat) => stats.indexOf(stat) >= 0
+        );
+
+        return {
+            minimumPointIndex: yValues.indexOf(min),
+            maximumPointIndex: yValues.indexOf(max),
+            tenths,
+            availableStats,
+            statIndex: -1
+        };
+    });
 };

@@ -8,7 +8,8 @@ import {
     generateSummary,
     interpolateBin,
     sentenceCase,
-    generatePointDescription
+    generatePointDescription,
+    calculateMetadataByGroup
 } from "../src/utils";
 
 test("sentence case", () => {
@@ -254,4 +255,116 @@ test("Generate point description", () => {
             { format: defaultFormat }
         )
     ).toBe("");
+});
+
+test("Calculate metadata by group", () => {
+    // Simple test
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ]
+        ])
+    ).toEqual([
+        {
+            minimumPointIndex: 0,
+            maximumPointIndex: 2,
+            tenths: 0,
+            availableStats: [],
+            statIndex: -1
+        }
+    ]);
+
+    // Multiple categories
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            [
+                { x: 1, y: 8 },
+                { x: 2, y: 6 },
+                { x: 3, y: 7 }
+            ]
+        ])
+    ).toEqual([
+        {
+            minimumPointIndex: 0,
+            maximumPointIndex: 2,
+            tenths: 0,
+            availableStats: [],
+            statIndex: -1
+        },
+        {
+            minimumPointIndex: 1,
+            maximumPointIndex: 0,
+            tenths: 0,
+            availableStats: [],
+            statIndex: -1
+        }
+    ]);
+
+    // Contains y2
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 1, y2: 1 },
+                { x: 2, y2: 2 },
+                { x: 3, y2: 3 }
+            ]
+        ])
+    ).toEqual([
+        {
+            minimumPointIndex: 0,
+            maximumPointIndex: 2,
+            tenths: 0,
+            availableStats: [],
+            statIndex: -1
+        }
+    ]);
+
+    // Contains stats
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 1, y: { high: 1, low: 1 } },
+                { x: 2, y: { high: 2, low: 2 } },
+                { x: 3, y: { high: 3, low: 3 } }
+            ]
+        ])
+    ).toEqual([
+        {
+            minimumPointIndex: -1,
+            maximumPointIndex: -1,
+            tenths: 0,
+            availableStats: ["high", "low"],
+            statIndex: -1
+        }
+    ]);
+
+    // Minimum point when multiple values have the same minimum
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 1, y: 0 },
+                { x: 2, y: 0 },
+                { x: 3, y: 0 }
+            ]
+        ])[0].minimumPointIndex
+    ).toBe(0);
+
+    // Maximum point when multiple values have the same minimum
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 1, y: 0 },
+                { x: 2, y: 3 },
+                { x: 3, y: 3 }
+            ]
+        ])[0].maximumPointIndex
+    ).toBe(1);
 });

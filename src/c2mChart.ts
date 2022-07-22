@@ -21,7 +21,8 @@ import {
     sentenceCase,
     generatePointDescription,
     usesAxis,
-    uniqueArray
+    uniqueArray,
+    calculateMetadataByGroup
 } from "./utils";
 
 let context: null | AudioContext = null;
@@ -78,7 +79,8 @@ export class c2mChart {
         this._ccElement = input.cc ?? this._chartElement;
 
         this._initializeData(input.data);
-        this._calculateMetadataByGroup();
+
+        this._metadataByGroup = calculateMetadataByGroup(this._data);
 
         this._xAxis = this._initializeAxis("x", input.axes?.x);
         this._yAxis = this._initializeAxis("y", input.axes?.y);
@@ -364,44 +366,6 @@ export class c2mChart {
 
         this._groups = [""];
         this._data = [massagedData];
-    }
-
-    /**
-     * Determine metadata about data sets, to help users navigate more effectively
-     */
-    private _calculateMetadataByGroup() {
-        this._metadataByGroup = this._data.map((row) => {
-            // Calculate min/max
-            const yPoints = row.map(({ y, y2 }) => y ?? y2);
-            const yValues = yPoints.filter(
-                (value) => typeof value === "number"
-            ) as number[];
-            const min = Math.min(...yValues);
-            const max = Math.max(...yValues);
-
-            // Calculate tenths
-            const tenths = Math.round(row.length / 10);
-
-            // Determine stat bundle
-            const stats = uniqueArray<string>(
-                yPoints
-                    .filter((value) => typeof value !== "number")
-                    .map((value) => Object.keys(value))
-                    .flat()
-            );
-            // Sort by reading order
-            const availableStats = statReadOrder.filter(
-                (stat) => stats.indexOf(stat) >= 0
-            );
-
-            return {
-                minimumPointIndex: yValues.indexOf(min),
-                maximumPointIndex: yValues.indexOf(max),
-                tenths,
-                availableStats,
-                statIndex: -1
-            };
-        });
     }
 
     /**
