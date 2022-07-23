@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // Enabling an error condition to test error handling
+import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 import {
     validateInput,
@@ -172,4 +173,10 @@ test("validateInputDataHomogeneity", () => {
     ).toBe(
         `Error for data category b: The first item is an alternate axis data point (x/y2), but item index 1 is not (value: {"x":2,"y":2}). All items should be of the same type.`
     );
+});
+
+test("c2mChart validation", () => {
+    // @ts-ignore
+    const {err} = c2mChart({});
+    expect(err).toBe("Required parameter 'type' was left undefined. Supported types are: line, bar\nRequired parameter 'element' was left undefined. An HTMLElement must be provided for this parameter.");
 });

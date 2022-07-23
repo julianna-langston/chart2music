@@ -14,10 +14,12 @@ test("Move at boundaries - single line plot", () => {
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
