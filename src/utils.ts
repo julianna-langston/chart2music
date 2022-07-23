@@ -1,7 +1,15 @@
-import { statReadOrder } from "./constants";
+import type {
+    AlternateAxisDataPoint,
+    SimpleDataPoint,
+    SupportedDataPointType
+} from "./dataPoint";
+import {
+    isAlternateAxisDataPoint,
+    isHighLowDataPoint,
+    isSimpleDataPoint
+} from "./dataPoint";
 import type {
     AxisData,
-    dataPoint,
     StatBundle,
     SUPPORTED_CHART_TYPES,
     validAxes
@@ -66,32 +74,56 @@ export const generateSummary = ({
 };
 
 export const calculateAxisMinimum = (
-    data: dataPoint[][],
+    data: SupportedDataPointType[][],
     prop: "x" | "y" | "y2"
 ) => {
     const values: number[] = data
         .flat()
-        .filter((point) => prop in point)
-        .map((point: dataPoint): number => {
-            if (typeof point[prop] === "number") {
-                return point[prop] as number;
+        .map((point: SupportedDataPointType): number => {
+            if (isSimpleDataPoint(point)) {
+                if (prop === "x" || prop === "y") {
+                    return point[prop];
+                }
+            } else if (isAlternateAxisDataPoint(point)) {
+                if (prop === "x" || prop === "y2") {
+                    return point[prop];
+                }
+            } else if (isHighLowDataPoint(point)) {
+                if (prop === "x") {
+                    return point.x;
+                }
+                if (prop === "y") {
+                    return Math.min(point.high, point.low);
+                }
             }
-            return Math.min(...Object.values(point[prop] as StatBundle));
+            return NaN;
         });
     return Math.min(...values);
 };
 export const calculateAxisMaximum = (
-    data: dataPoint[][],
+    data: SupportedDataPointType[][],
     prop: "x" | "y" | "y2"
 ) => {
     const values: number[] = data
         .flat()
-        .filter((point) => prop in point)
-        .map((point: dataPoint): number => {
-            if (typeof point[prop] === "number") {
-                return point[prop] as number;
+        .map((point: SupportedDataPointType): number => {
+            if (isSimpleDataPoint(point)) {
+                if (prop === "x" || prop === "y") {
+                    return point[prop];
+                }
+            } else if (isAlternateAxisDataPoint(point)) {
+                if (prop === "x" || prop === "y2") {
+                    return point[prop];
+                }
+            } else if (isHighLowDataPoint(point)) {
+                if (prop === "x") {
+                    return point.x;
+                }
+                if (prop === "y") {
+                    return Math.max(point.high, point.low);
+                }
             }
-            return Math.max(...Object.values(point[prop] as StatBundle));
+            return NaN;
         });
     return Math.max(...values);
 };
@@ -127,38 +159,39 @@ export const sentenceCase = (str: string) =>
 // }
 
 export const generatePointDescription = (
-    point: dataPoint,
+    point: SupportedDataPointType,
     xAxis: AxisData,
     yAxis: AxisData,
     stat?: keyof StatBundle
 ) => {
-    if (typeof stat !== "undefined" && typeof point.y !== "number") {
-        return `${xAxis.format(point.x)}, ${yAxis.format(point.y[stat])}`;
+    if (isHighLowDataPoint(point)) {
+        if (typeof stat !== "undefined") {
+            return `${xAxis.format(point.x)}, ${yAxis.format(point[stat])}`;
+        }
+        return `${xAxis.format(point.x)}, ${yAxis.format(
+            point.high
+        )} - ${yAxis.format(point.low)}`;
     }
 
-    if (typeof point.y === "number") {
+    if (isSimpleDataPoint(point)) {
         return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
-    } else if (typeof point.y2 === "number") {
-        return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
-    } else {
-        if ("high" in point.y && "low" in point.y) {
-            return `${xAxis.format(point.x)}, ${yAxis.format(
-                point.y.high
-            )} - ${yAxis.format(point.y.low)}`;
-        }
     }
+
+    if (isAlternateAxisDataPoint(point)) {
+        return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
+    }
+
     return "";
 };
 
-export const usesAxis = (data: dataPoint[][], axisName: "x" | "y" | "y2") => {
+export const usesAxis = (
+    data: SupportedDataPointType[][],
+    axisName: "x" | "y" | "y2"
+) => {
     const firstUseOfAxis = data.find((row) => {
         return row.find((point) => axisName in point);
     });
     return typeof firstUseOfAxis !== "undefined";
-};
-
-export const uniqueArray = <T>(arr: T[]) => {
-    return [...new Set(arr)];
 };
 
 /**
@@ -166,30 +199,24 @@ export const uniqueArray = <T>(arr: T[]) => {
  *
  * @param data - the X/Y values
  */
-export const calculateMetadataByGroup = (data: dataPoint[][]) => {
+export const calculateMetadataByGroup = (data: SupportedDataPointType[][]) => {
     return data.map((row) => {
+        let yValues: number[] = [];
+        let availableStats = [];
+        if (isSimpleDataPoint(row[0])) {
+            yValues = (row as SimpleDataPoint[]).map(({ y }) => y);
+        } else if (isAlternateAxisDataPoint(row[0])) {
+            yValues = (row as AlternateAxisDataPoint[]).map(({ y2 }) => y2);
+        } else if (isHighLowDataPoint(row[0])) {
+            // Don't calculate min/max for high/low
+            availableStats = ["high", "low"];
+        }
         // Calculate min/max
-        const yPoints = row.map(({ y, y2 }) => y ?? y2);
-        const yValues = yPoints.filter(
-            (value) => typeof value === "number"
-        ) as number[];
         const min = Math.min(...yValues);
         const max = Math.max(...yValues);
 
         // Calculate tenths
         const tenths = Math.round(row.length / 10);
-
-        // Determine stat bundle
-        const stats = uniqueArray<string>(
-            yPoints
-                .filter((value) => typeof value !== "number")
-                .map((value) => Object.keys(value))
-                .flat()
-        );
-        // Sort by reading order
-        const availableStats = statReadOrder.filter(
-            (stat) => stats.indexOf(stat) >= 0
-        );
 
         return {
             minimumPointIndex: yValues.indexOf(min),
@@ -210,7 +237,7 @@ export const calculateMetadataByGroup = (data: dataPoint[][]) => {
  * @param userAxis - metadata provided by the invocation
  */
 export const initializeAxis = (
-    data: dataPoint[][],
+    data: SupportedDataPointType[][],
     axisName: validAxes,
     userAxis?: AxisData
 ): AxisData => {

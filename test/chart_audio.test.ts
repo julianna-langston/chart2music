@@ -105,9 +105,9 @@ test("Move around by single events - plot with stats", () => {
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
-                { x: 1, y: { high: 10, low: 8 } },
-                { x: 2, y: { high: 11, low: 9 } },
-                { x: 3, y: { high: 12, low: 10 } }
+                { x: 1, high: 10, low: 8 },
+                { x: 2, high: 11, low: 9 },
+                { x: 3, high: 12, low: 10 }
             ],
             b: [
                 { x: 1, y: 11 },

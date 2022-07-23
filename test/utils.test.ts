@@ -1,4 +1,4 @@
-import type { dataPoint } from "../src/types";
+import type { SimpleDataPoint } from "../src/dataPoint";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 import {
     calcPan,
@@ -104,25 +104,25 @@ test("adjust percent for panning", () => {
 });
 
 test("calculate axis min/max", () => {
-    const singleRow: dataPoint[][] = [
+    const singleRow: SimpleDataPoint[][] = [
         [1, 5, 2, 0, 3, 6].map((x) => {
-            return { x };
+            return { x, y: 0 };
         })
     ];
     const multiRow = [
         [1, 5, 2, 0, 3, 6].map((x) => {
-            return { x };
+            return { x, y: 0 };
         }),
         [11, 15, 12, 10, 13, 16].map((x) => {
-            return { x };
+            return { x, y: 0 };
         })
     ];
     const bundledRow = [
         [
-            { x: 5, y: { high: 50, low: 20 } },
-            { x: 5, y: { high: 51, low: 15 } },
-            { x: 5, y: { high: 52, low: 30 } },
-            { x: 5, y: { high: 53, low: 45 } }
+            { x: 5, high: 50, low: 20 },
+            { x: 5, high: 51, low: 15 },
+            { x: 5, high: 52, low: 30 },
+            { x: 5, high: 53, low: 45 }
         ]
     ];
 
@@ -137,41 +137,7 @@ test("calculate axis min/max", () => {
     expect(calculateAxisMaximum(bundledRow, "y")).toBe(53);
 });
 
-// test("calculate inflection points", () => {
-//     expect(calcInflectionPoints([1,2,3,4,5,4,3,2,2,2,2])).toStrictEqual([4]);
-//     // expect(calcInflectionPoints([1,2,3,4,5,4,3,2,2,2,3,4])).toStrictEqual([4,9]);
-//     expect(calcInflectionPoints([-2,-1,0,1,2,3,15,20,5])).toStrictEqual([8]);
-//     expect(calcInflectionPoints([-2,-1,0,1,2,3,15,20])).toStrictEqual([]);
-// })
-
 test("Generate point description", () => {
-    // point: dataPoint,
-    // xAxis: AxisData,
-    // yAxis: AxisData,
-    // stat?: keyof StatBundle
-
-    // if (typeof stat !== "undefined" && typeof point.y !== "number") {
-    //     return `${xAxis.format(point.x)}, ${yAxis.format(point.y[stat])}`;
-    // }
-
-    // if (typeof point.y === "number") {
-    //     return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
-    // } else if (typeof point.y2 === "number") {
-    //     return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
-    // } else {
-    //     if ("high" in point.y && "low" in point.y) {
-    //         return `${xAxis.format(point.x)}, ${yAxis.format(
-    //             point.y.high
-    //         )} - ${yAxis.format(point.y.low)}`;
-    //     }
-    // }
-    // return "";
-
-    // x/y
-    // x/y2
-    // x/high
-    // formatting x, y
-
     expect(
         generatePointDescription(
             {
@@ -196,10 +162,8 @@ test("Generate point description", () => {
         generatePointDescription(
             {
                 x: 0,
-                y: {
-                    high: 10,
-                    low: 5
-                }
+                high: 10,
+                low: 5
             },
             { format: defaultFormat },
             { format: defaultFormat }
@@ -209,10 +173,8 @@ test("Generate point description", () => {
         generatePointDescription(
             {
                 x: 0,
-                y: {
-                    high: 10,
-                    low: 5
-                }
+                high: 10,
+                low: 5
             },
             { format: defaultFormat },
             { format: defaultFormat },
@@ -223,10 +185,8 @@ test("Generate point description", () => {
         generatePointDescription(
             {
                 x: 0,
-                y: {
-                    high: 10,
-                    low: 5
-                }
+                high: 10,
+                low: 5
             },
             { format: defaultFormat },
             { format: defaultFormat },
@@ -245,11 +205,11 @@ test("Generate point description", () => {
     ).toBe("$0, 1");
     expect(
         generatePointDescription(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore - Deliberately using invalid values to test handling of invalid values
             {
                 x: 0,
-                y: {
-                    high: 10
-                }
+                high: 10
             },
             { format: defaultFormat },
             { format: defaultFormat }
@@ -331,9 +291,9 @@ test("Calculate metadata by group", () => {
     expect(
         calculateMetadataByGroup([
             [
-                { x: 1, y: { high: 1, low: 1 } },
-                { x: 2, y: { high: 2, low: 2 } },
-                { x: 3, y: { high: 3, low: 3 } }
+                { x: 1, high: 1, low: 1 },
+                { x: 2, high: 2, low: 2 },
+                { x: 3, high: 3, low: 3 }
             ]
         ])
     ).toEqual([

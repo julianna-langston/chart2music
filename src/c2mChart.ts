@@ -5,7 +5,6 @@ import { KeyboardEventManager } from "./keyboardManager";
 import { ScreenReaderBridge } from "./ScreenReaderBridge";
 import type {
     AxisData,
-    dataPoint,
     groupedMetadata,
     SonifyTypes,
     c2mOptions,
@@ -22,8 +21,26 @@ import {
     initializeAxis
 } from "./utils";
 import { validateInput } from "./validate";
+import {
+    isAlternateAxisDataPoint,
+    isHighLowDataPoint,
+    isSimpleDataPoint
+} from "./dataPoint";
+import type { SupportedDataPointType } from "./dataPoint";
 
 let context: null | AudioContext = null;
+
+const convertDataRow = (row: (SupportedDataPointType | number)[]) => {
+    return row.map((point: number | SupportedDataPointType, index: number) => {
+        if (typeof point === "number") {
+            return {
+                x: index,
+                y: point
+            } as SupportedDataPointType;
+        }
+        return point;
+    });
+};
 
 export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
     const validationErrorString = validateInput(input);
@@ -45,7 +62,7 @@ export class c2m {
     private _ccElement: HTMLElement;
     private _summary: string;
     private _groups: string[];
-    private _data: dataPoint[][];
+    private _data: SupportedDataPointType[][];
     private _groupIndex = 0;
     private _pointIndex = 0;
     private _sr: ScreenReaderBridge;
@@ -358,24 +375,14 @@ export class c2m {
         if (!Array.isArray(userData)) {
             // Data is presumably of type dataSet. No other effort necessary.
             this._groups = Object.keys(userData);
-            this._data = Object.values(userData);
+            this._data = Object.values(userData).map((row) =>
+                convertDataRow(row)
+            );
             return;
         }
 
-        const massagedData: dataPoint[] = userData.map(
-            (point: number | dataPoint, index: number) => {
-                if (typeof point === "number") {
-                    return {
-                        x: index,
-                        y: point
-                    };
-                }
-                return point;
-            }
-        );
-
         this._groups = [""];
-        this._data = [massagedData];
+        this._data = [convertDataRow(userData)];
     }
 
     /**
@@ -570,8 +577,7 @@ export class c2m {
                 (this._xAxis.maximum - this._xAxis.minimum)
         );
 
-        // Only working with straight-forward numbers
-        if (typeof current.y === "number") {
+        if (isSimpleDataPoint(current)) {
             const yBin = interpolateBin(
                 current.y,
                 this._yAxis.minimum,
@@ -584,7 +590,8 @@ export class c2m {
 
             return;
         }
-        if (typeof current.y2 === "number") {
+
+        if (isAlternateAxisDataPoint(current)) {
             const yBin = interpolateBin(
                 current.y2,
                 this._y2Axis.minimum,
@@ -597,35 +604,41 @@ export class c2m {
             return;
         }
 
-        // Only play a single note, because we've drilled into stats
-        if (statIndex >= 0) {
-            const stat = availableStats[statIndex];
-            const yBin = interpolateBin(
-                current.y[stat],
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                HERTZ.length - 1
-            );
-            this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-            this._onFocus();
-            return;
-        }
-
-        const interval = 1 / (availableStats.length + 1);
-        availableStats.forEach((stat, index) => {
-            const yBin = interpolateBin(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                current.y[stat],
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                HERTZ.length - 1
-            );
-            setTimeout(() => {
+        if (isHighLowDataPoint(current)) {
+            // Only play a single note, because we've drilled into stats
+            if (statIndex >= 0) {
+                const stat = availableStats[statIndex];
+                const yBin = interpolateBin(
+                    current[stat],
+                    this._yAxis.minimum,
+                    this._yAxis.maximum,
+                    HERTZ.length - 1
+                );
                 this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-            }, SPEEDS[this._speedRateIndex] * interval * index);
-        });
+                this._onFocus();
+                return;
+            }
 
-        this._onFocus();
+            const interval = 1 / (availableStats.length + 1);
+            availableStats.forEach((stat, index) => {
+                const yBin = interpolateBin(
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                    current[stat],
+                    this._yAxis.minimum,
+                    this._yAxis.maximum,
+                    HERTZ.length - 1
+                );
+                setTimeout(() => {
+                    this._audioEngine.playDataPoint(
+                        HERTZ[yBin],
+                        xPan,
+                        NOTE_LENGTH
+                    );
+                }, SPEEDS[this._speedRateIndex] * interval * index);
+            });
+
+            this._onFocus();
+        }
     }
 
     /**
@@ -661,7 +674,7 @@ export class c2m {
         const point = generatePointDescription(
             current,
             this._xAxis,
-            "y" in current ? this._yAxis : this._y2Axis,
+            isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis,
             availableStats[statIndex]
         );
         const text =

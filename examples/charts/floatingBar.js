@@ -53,10 +53,8 @@ export const floatingBarChart = (canvas, cc) => {
         data: highs.map((y, x) => {
             return {
                 x,
-                y: {
-                    high: y,
-                    low: lows[x]
-                }
+                high: y,
+                low: lows[x]
             };
         }),
         options: {

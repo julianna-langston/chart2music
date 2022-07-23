@@ -1,5 +1,11 @@
 import type { AudioEngine } from "./audio/";
 import type { c2m } from "./c2mChart";
+import type { SupportedDataPointType } from "./dataPoint";
+
+/**
+ *
+ */
+type SupportedInputType = SupportedDataPointType | number;
 
 /**
  * Contains the data to describe a chart that should be sonified.
@@ -10,7 +16,7 @@ export type SonifyTypes = {
      * The data that should be presented in this chart.
      * This key is required for all charts.
      */
-    data: dataSet | dataPoint[] | number[];
+    data: dataSet | SupportedInputType[];
     /**
      * The HTML element in the DOM that represents this chart.
      * This will be used to handle keyboard events to enable the user to interact with the chart.
@@ -47,16 +53,7 @@ export type SonifyTypes = {
  * A dictionary of data, where the key is the group name, and the value is the array of data points
  */
 export type dataSet = {
-    [groupName: string]: dataPoint[];
-};
-
-/**
- * Data and metadata for an individual point
- */
-export type dataPoint = {
-    x: number;
-    y?: number | StatBundle;
-    y2?: number;
+    [groupName: string]: SupportedInputType[];
 };
 
 /**

@@ -192,9 +192,9 @@ test("Movement for a chart with stats", () => {
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
-                { x: 1, y: { high: 10, low: 8 } },
-                { x: 2, y: { high: 11, low: 9 } },
-                { x: 3, y: { high: 12, low: 10 } }
+                { x: 1, high: 10, low: 8 },
+                { x: 2, high: 11, low: 9 },
+                { x: 3, high: 12, low: 10 }
             ],
             b: [
                 { x: 1, y: 11 },
@@ -226,7 +226,7 @@ test("Movement for a chart with stats", () => {
     expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "",
-        point: { x: 2, y: { high: 11, low: 9 } }
+        point: { x: 2, high: 11, low: 9 }
     });
 
     // Move down
@@ -242,7 +242,7 @@ test("Movement for a chart with stats", () => {
     expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "high",
-        point: { x: 2, y: { high: 11, low: 9 } }
+        point: { x: 2, high: 11, low: 9 }
     });
 
     // Move right

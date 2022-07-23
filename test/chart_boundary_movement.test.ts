@@ -89,9 +89,9 @@ test("Move at boundaries - grouped and stat'd", () => {
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
-                { x: 1, y: { high: 10, low: 8 } },
-                { x: 2, y: { high: 11, low: 9 } },
-                { x: 3, y: { high: 12, low: 10 } }
+                { x: 1, high: 10, low: 8 },
+                { x: 2, high: 11, low: 9 },
+                { x: 3, high: 12, low: 10 }
             ],
             b: [
                 { x: 1, y: 11 },
@@ -117,7 +117,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             point: {
                 group: "a",
                 stat: "",
-                point: { x: 1, y: { high: 10, low: 8 } }
+                point: { x: 1, high: 10, low: 8 }
             },
             timer: 1
         },
@@ -126,7 +126,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             point: {
                 group: "a",
                 stat: "",
-                point: { x: 1, y: { high: 10, low: 8 } }
+                point: { x: 1, high: 10, low: 8 }
             },
             timer: 1
         },
@@ -136,7 +136,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             point: {
                 group: "a",
                 stat: "high",
-                point: { x: 1, y: { high: 10, low: 8 } }
+                point: { x: 1, high: 10, low: 8 }
             },
             timer: 2
         },
@@ -146,7 +146,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             point: {
                 group: "a",
                 stat: "low",
-                point: { x: 1, y: { high: 10, low: 8 } }
+                point: { x: 1, high: 10, low: 8 }
             },
             timer: 3
         },
@@ -156,7 +156,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             point: {
                 group: "a",
                 stat: "low",
-                point: { x: 1, y: { high: 10, low: 8 } }
+                point: { x: 1, high: 10, low: 8 }
             },
             timer: 3
         },
@@ -166,7 +166,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             point: {
                 group: "a",
                 stat: "low",
-                point: { x: 1, y: { high: 10, low: 8 } }
+                point: { x: 1, high: 10, low: 8 }
             },
             timer: 3
         },
