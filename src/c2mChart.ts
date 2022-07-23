@@ -556,6 +556,7 @@ export class c2m {
      */
     private _playCurrent() {
         if (!this._options.enableSound) {
+            this._onFocus();
             return;
         }
 
