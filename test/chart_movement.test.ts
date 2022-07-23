@@ -264,6 +264,30 @@ test("Movement for a chart with stats", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "All, 3, 12 - 10"
     );
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "["
+        })
+    );
+    jest.advanceTimersByTime(250);
+    // Unchanged
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "All, 3, 12 - 10"
+    );
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "]"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    // Unchanged
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "All, 3, 12 - 10"
+    );
 });
 
 test("Movement for a chart with a y2 axis and formatting", () => {

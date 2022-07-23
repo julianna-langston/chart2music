@@ -7,6 +7,10 @@ window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
 
+beforeEach(() => {
+    jest.clearAllMocks();
+});
+
 /**
  * Info for play history
  */
@@ -148,6 +152,101 @@ test("Move around by single events - plot with stats", () => {
     expect(lastPanning).toBe(-0.98);
     expect(lastFrequency).toBe(220);
     jest.advanceTimersByTime(250);
+});
+
+test("Move around by single events - single line plot", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    [
+        {
+            key: " ",
+            frequency: 82,
+            panning: -0.98
+        },
+        {
+            key: "ArrowRight",
+            frequency: 220,
+            panning: -0.7
+        },
+        {
+            key: "End",
+            frequency: 554,
+            panning: 0.98
+        }
+    ].forEach(({ frequency, panning, key }) => {
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key
+            })
+        );
+        jest.advanceTimersByTime(250);
+        expect(lastPanning).toBe(panning);
+        expect(Math.round(lastFrequency)).toBe(frequency);
+    });
+    expect(lastDuration).toBe(0.25);
+});
+
+test("Move around by single events - plot with y and y2", () => {
+    jest.spyOn(global, "setTimeout");
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [
+                { x: 1, y2: 5 },
+                { x: 2, y2: 10 },
+                { x: 3, y2: 15 }
+            ],
+            b: [
+                { x: 1, y: 11 },
+                { x: 2, y: 12 },
+                { x: 3, y: 13 }
+            ]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+    expect(setTimeout).toHaveBeenCalledTimes(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    // 1 timeout for high, 1 timeout for low, 1 timeout for speech
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    jest.advanceTimersByTime(250);
+    expect(lastPanning).toBe(-0.98);
+    expect(lastFrequency).toBe(32.7032);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown"
+        })
+    );
+    expect(setTimeout).toHaveBeenCalledTimes(2);
+    jest.advanceTimersByTime(50);
+    expect(lastPanning).toBe(-0.98);
+    expect(lastFrequency).toBe(32.7032);
 });
 
 test("Check play all", () => {
