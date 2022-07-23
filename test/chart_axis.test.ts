@@ -8,7 +8,7 @@ window.AudioContext = jest.fn().mockImplementation(() => {
 test("C2M setup handles partial axis info", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 4, 5],
         axes: {
@@ -19,6 +19,7 @@ test("C2M setup handles partial axis info", () => {
         element: mockElement,
         cc: mockElementCC
     });
+    expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
 

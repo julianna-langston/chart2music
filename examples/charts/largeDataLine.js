@@ -43,7 +43,7 @@ export const largeDataLine = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new c2mChart({
+    const { err } = c2mChart({
         type: "line",
         title: "Bitcoin",
         element: canvas,
@@ -75,4 +75,7 @@ export const largeDataLine = (canvas, cc) => {
             }
         }
     });
+    if (err) {
+        console.error(err);
+    }
 };

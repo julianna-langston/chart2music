@@ -10,13 +10,14 @@ window.AudioContext = jest.fn().mockImplementation(() => {
 test("Move at boundaries - single line plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err, data: chart } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC
     });
-    chart.setOptions({ enableSound: false });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -33,7 +34,7 @@ test("Move at boundaries - single line plot", () => {
                     key
                 })
             );
-            expect(chart.getCurrent()).toStrictEqual({
+            expect(chart?.getCurrent()).toStrictEqual({
                 group: "",
                 stat: "",
                 point: {
@@ -52,7 +53,7 @@ test("Move at boundaries - single line plot", () => {
             key: "End"
         })
     );
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "",
         stat: "",
         point: {
@@ -69,7 +70,7 @@ test("Move at boundaries - single line plot", () => {
             key: "ArrowRight"
         })
     );
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "",
         stat: "",
         point: {
@@ -84,7 +85,7 @@ test("Move at boundaries - single line plot", () => {
 test("Move at boundaries - grouped and stat'd", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err, data: chart } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
@@ -101,7 +102,8 @@ test("Move at boundaries - grouped and stat'd", () => {
         element: mockElement,
         cc: mockElementCC
     });
-    chart.setOptions({ enableSound: false });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -186,7 +188,7 @@ test("Move at boundaries - grouped and stat'd", () => {
                 key
             })
         );
-        expect(chart.getCurrent()).toStrictEqual(point);
+        expect(chart?.getCurrent()).toStrictEqual(point);
         jest.advanceTimersByTime(250);
         expect(setTimeout).toHaveBeenCalledTimes(timer);
     });

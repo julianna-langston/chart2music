@@ -9,13 +9,14 @@ window.AudioContext = jest.fn().mockImplementation(() => {
 test("Move around by single events", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err, data: chart } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC
     });
-    chart.setOptions({ enableSound: false });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -30,7 +31,7 @@ test("Move around by single events", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 2");
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "",
         stat: "",
         point: {
@@ -88,7 +89,7 @@ test("Move around by single events", () => {
 test("Movement for a grouped chart", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err, data: chart } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
@@ -105,7 +106,8 @@ test("Movement for a grouped chart", () => {
         element: mockElement,
         cc: mockElementCC
     });
-    chart.setOptions({ enableSound: false });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -120,7 +122,7 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2, 2");
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "",
         point: {
@@ -139,7 +141,7 @@ test("Movement for a grouped chart", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "b, 2, 12"
     );
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "b",
         stat: "",
         point: {
@@ -156,7 +158,7 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 13");
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "b",
         stat: "",
         point: {
@@ -173,7 +175,7 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 3, 3");
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "",
         point: {
@@ -186,7 +188,7 @@ test("Movement for a grouped chart", () => {
 test("Movement for a chart with stats", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err, data: chart } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
@@ -203,7 +205,8 @@ test("Movement for a chart with stats", () => {
         element: mockElement,
         cc: mockElementCC
     });
-    chart.setOptions({ enableSound: false });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -220,7 +223,7 @@ test("Movement for a chart with stats", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "2, 11 - 9"
     );
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "",
         point: { x: 2, y: { high: 11, low: 9 } }
@@ -236,7 +239,7 @@ test("Movement for a chart with stats", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "High, 2, 11"
     );
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "high",
         point: { x: 2, y: { high: 11, low: 9 } }
@@ -266,7 +269,7 @@ test("Movement for a chart with stats", () => {
 test("Movement for a chart with a y2 axis and formatting", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err, data: chart } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
@@ -294,7 +297,8 @@ test("Movement for a chart with a y2 axis and formatting", () => {
         element: mockElement,
         cc: mockElementCC
     });
-    chart.setOptions({ enableSound: false });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -309,7 +313,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2!, $2");
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "",
         point: {
@@ -328,7 +332,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "b, 2!, 12%"
     );
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "b",
         stat: "",
         point: {
@@ -345,7 +349,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3!, 13%");
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "b",
         stat: "",
         point: {
@@ -364,7 +368,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "a, 3!, $3"
     );
-    expect(chart.getCurrent()).toStrictEqual({
+    expect(chart?.getCurrent()).toStrictEqual({
         group: "a",
         stat: "",
         point: {

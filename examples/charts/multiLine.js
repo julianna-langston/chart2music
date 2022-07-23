@@ -38,7 +38,7 @@ export const multiLinePlot = (canvas, cc) => {
     const myChart = new Chart(canvas, config);
 
     const slices = ["highs", "lows"];
-    new c2mChart({
+    const { err } = c2mChart({
         type: "line",
         title: "Raleigh's High/Low Temperatures (2020)",
         element: canvas,
@@ -80,4 +80,7 @@ export const multiLinePlot = (canvas, cc) => {
             }
         }
     });
+    if (err) {
+        console.error(err);
+    }
 };

@@ -54,13 +54,14 @@ class MockAudioEngine implements AudioEngine {
 test("Move around by single events - single line plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    new c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
         audioEngine: new MockAudioEngine()
     });
+    expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -100,7 +101,7 @@ test("Move around by single events - plot with stats", () => {
     jest.spyOn(global, "setTimeout");
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    new c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
@@ -118,6 +119,7 @@ test("Move around by single events - plot with stats", () => {
         cc: mockElementCC,
         audioEngine: new MockAudioEngine()
     });
+    expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
     expect(setTimeout).toHaveBeenCalledTimes(0);
@@ -151,13 +153,14 @@ test("Move around by single events - plot with stats", () => {
 test("Check play all", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    new c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
         audioEngine: new MockAudioEngine()
     });
+    expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
 

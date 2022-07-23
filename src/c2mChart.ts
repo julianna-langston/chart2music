@@ -8,7 +8,8 @@ import type {
     dataPoint,
     groupedMetadata,
     SonifyTypes,
-    c2mOptions
+    c2mOptions,
+    c2mGolangReturn
 } from "./types";
 import {
     calcPan,
@@ -20,13 +21,26 @@ import {
     calculateMetadataByGroup,
     initializeAxis
 } from "./utils";
+import { validateInput } from "./validate";
 
 let context: null | AudioContext = null;
+
+export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
+    const validationErrorString = validateInput(input);
+    if (validationErrorString !== "") {
+        return { err: validationErrorString };
+    }
+
+    return {
+        err: null,
+        data: new c2m(input)
+    };
+};
 
 /**
  * Represents a single chart that should be sonified.
  */
-export class c2mChart {
+export class c2m {
     private _chartElement: HTMLElement;
     private _ccElement: HTMLElement;
     private _summary: string;

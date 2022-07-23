@@ -8,25 +8,27 @@ window.AudioContext = jest.fn().mockImplementation(() => {
 test("Confirm that C2M modifies provided elements", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
     });
 
+    expect(err).toBe(null);
     expect(mockElement.getAttribute("tabIndex")).toBe("0");
     expect(mockElementCC.getAttribute("aria-live")).toBe("assertive");
 });
 
 test("Confirm that C2M treats the container as the CC element if no CC element is provided", () => {
     const mockElement = document.createElement("div");
-    const chart = new c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 4, 5],
         element: mockElement
     });
 
+    expect(err).toBe(null);
     expect(mockElement.getAttribute("tabIndex")).toBe("0");
     expect(mockElement.getAttribute("aria-live")).toBe("assertive");
 });
@@ -34,7 +36,7 @@ test("Confirm that C2M treats the container as the CC element if no CC element i
 test("C2M setup handles partial axis info", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const chart = new c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 4, 5],
         axes: {
@@ -45,6 +47,7 @@ test("C2M setup handles partial axis info", () => {
         element: mockElement,
         cc: mockElementCC
     });
+    expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
 

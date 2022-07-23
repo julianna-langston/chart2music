@@ -52,7 +52,7 @@ export const bandPlot = (canvas, cc) => {
     const myChart = new Chart(canvas, config);
 
     const slices = ["Moving average", "Bollinger band"];
-    new c2mChart({
+    const { err } = c2mChart({
         type: "band",
         title: "AAPL",
         element: canvas,
@@ -99,4 +99,7 @@ export const bandPlot = (canvas, cc) => {
             }
         }
     });
+    if (err) {
+        console.error(err);
+    }
 };

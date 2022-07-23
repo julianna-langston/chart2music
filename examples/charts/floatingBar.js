@@ -31,7 +31,7 @@ export const floatingBarChart = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new c2mChart({
+    const { err } = c2mChart({
         type: "bar",
         title: "Raleigh's High/Low Temperatures (2020)",
         element: canvas,
@@ -66,4 +66,7 @@ export const floatingBarChart = (canvas, cc) => {
             }
         }
     });
+    if (err) {
+        console.error(err);
+    }
 };

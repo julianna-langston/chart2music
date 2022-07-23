@@ -1,8 +1,6 @@
 import { c2mChart } from "../../dist/index.mjs";
 import { highs, months } from "../data/data.js";
 
-console.log("reload");
-
 export const singleLinePlot = (canvas, cc) => {
     const datasets = [
         {
@@ -33,7 +31,7 @@ export const singleLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    new c2mChart({
+    const { err } = c2mChart({
         type: "line",
         element: canvas,
         cc,
@@ -51,4 +49,7 @@ export const singleLinePlot = (canvas, cc) => {
             }
         }
     });
+    if (err) {
+        console.error(err);
+    }
 };

@@ -1,4 +1,5 @@
 import type { AudioEngine } from "./audio/";
+import type { c2m } from "./c2mChart";
 
 /**
  * Contains the data to describe a chart that should be sonified.
@@ -72,7 +73,8 @@ export type AxisData = {
  * The chart types available
  */
 export enum SUPPORTED_CHART_TYPES {
-    LINE = "line"
+    LINE = "line",
+    BAR = "bar"
 }
 
 /**
@@ -114,4 +116,12 @@ export type c2mOptions = {
     enableSound?: boolean;
     enableSpeech?: boolean;
     onFocusCallback?: (point: c2mCallbackType) => void;
+};
+
+/**
+ *
+ */
+export type c2mGolangReturn = {
+    err: null | string;
+    data?: c2m;
 };

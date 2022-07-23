@@ -77,7 +77,7 @@ export const barLinePlot = (canvas, cc) => {
     const myChart = new Chart(canvas, config);
 
     const slices = ["Adjusted Close", "Volume"];
-    new c2mChart({
+    const { err } = c2mChart({
         type: "line",
         title: "AAPL Trades",
         element: canvas,
@@ -118,4 +118,7 @@ export const barLinePlot = (canvas, cc) => {
             }
         }
     });
+    if (err) {
+        console.error(err);
+    }
 };
