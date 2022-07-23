@@ -1,3 +1,9 @@
+import type { SupportedDataPointType } from "./dataPoint";
+import {
+    isAlternateAxisDataPoint,
+    isHighLowDataPoint,
+    isSimpleDataPoint
+} from "./dataPoint";
 import type { SonifyTypes } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
 
@@ -7,6 +13,7 @@ export const validateInput = (input: SonifyTypes) => {
     errors.push(validateInputType(input.type));
     errors.push(validateInputElement(input.element));
     errors.push(validateInputAxes(input.axes));
+    errors.push(validateInputDataHomogeneity(input.data));
 
     return errors.filter((str) => str !== "").join("\n");
 };
@@ -55,4 +62,65 @@ export const validateInputAxes = (axes?: SonifyTypes["axes"]) => {
     }
 
     return "";
+};
+
+export const validateInputDataHomogeneity = (data: SonifyTypes["data"]) => {
+    if (Array.isArray(data)) {
+        return validateInputDataRowHomogeneity(data);
+    }
+    for (const key in data) {
+        const result = validateInputDataRowHomogeneity(data[key]);
+        if (result !== "") {
+            return `Error for data category ${key}: ${result}`;
+        }
+    }
+    return "";
+};
+
+export const validateInputDataRowHomogeneity = (
+    row: (number | SupportedDataPointType)[]
+) => {
+    const first = row[0];
+    if (typeof first === "number") {
+        const failure = row.findIndex((cell) => !(typeof cell === "number"));
+        if (failure === -1) {
+            return "";
+        }
+        return `The first item is a number, but item index ${failure} is not (value: ${JSON.stringify(
+            row[failure]
+        )}). All items should be of the same type.`;
+    }
+    if (isSimpleDataPoint(first)) {
+        const failure = row.findIndex((cell) => !isSimpleDataPoint(cell));
+        if (failure === -1) {
+            return "";
+        }
+        return `The first item is a simple data point (x/y), but item index ${failure} is not (value: ${JSON.stringify(
+            row[failure]
+        )}). All items should be of the same type.`;
+    }
+    if (isAlternateAxisDataPoint(first)) {
+        const failure = row.findIndex(
+            (cell) => !isAlternateAxisDataPoint(cell)
+        );
+        if (failure === -1) {
+            return "";
+        }
+        return `The first item is an alternate axis data point (x/y2), but item index ${failure} is not (value: ${JSON.stringify(
+            row[failure]
+        )}). All items should be of the same type.`;
+    }
+    if (isHighLowDataPoint(first)) {
+        const failure = row.findIndex((cell) => !isHighLowDataPoint(cell));
+        if (failure === -1) {
+            return "";
+        }
+        return `The first item is a high low data point (x/high/low), but item index ${failure} is not (value: ${JSON.stringify(
+            row[failure]
+        )}). All items should be of the same type.`;
+    }
+
+    return `The first item is of an unrecognized type (value: ${JSON.stringify(
+        first
+    )}). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`;
 };
