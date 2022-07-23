@@ -12,6 +12,8 @@ type SupportedInputType = SupportedDataPointType | number;
  * Most of the keys of this interface are optional, with the exception of "data" and "element".
  */
 export type SonifyTypes = {
+    /** Required type for the chart. */
+    type: SUPPORTED_CHART_TYPES;
     /**
      * The data that should be presented in this chart.
      * This key is required for all charts.
@@ -42,8 +44,6 @@ export type SonifyTypes = {
      * If you do not provide this key, a suitable HTML will be created for you.
      */
     cc?: HTMLElement;
-    /** Optional type for the chart. */
-    type?: SUPPORTED_CHART_TYPES;
     /** Optional audio engine to replace the default audio engine. */
     audioEngine?: AudioEngine;
     options?: c2mOptions;
@@ -71,7 +71,8 @@ export type AxisData = {
  */
 export enum SUPPORTED_CHART_TYPES {
     LINE = "line",
-    BAR = "bar"
+    BAR = "bar",
+    BAND = "band"
 }
 
 /**

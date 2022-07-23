@@ -13,12 +13,12 @@ import {
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
-        "Required parameter 'type' was left undefined. Supported types are: line, bar"
+        "Required parameter 'type' was left undefined. Supported types are: line, bar, band"
     );
     expect(
         // @ts-ignore - deliberately generating error condition
         validateInputType("invalid")
-    ).toBe("Invalid input type: invalid. Valid types are: line, bar");
+    ).toBe("Invalid input type: invalid. Valid types are: line, bar, band");
     expect(validateInputType(SUPPORTED_CHART_TYPES.LINE)).toBe("");
 });
 
@@ -56,7 +56,7 @@ test("validateInput", () => {
             element: "invalid"
         })
     ).toBe(
-        "Invalid input type: invalid. Valid types are: line, bar\nProvided value for 'element' must be an instance of HTMLElement."
+        "Invalid input type: invalid. Valid types are: line, bar, band\nProvided value for 'element' must be an instance of HTMLElement."
     );
 });
 
@@ -177,6 +177,8 @@ test("validateInputDataHomogeneity", () => {
 
 test("c2mChart validation", () => {
     // @ts-ignore
-    const {err} = c2mChart({});
-    expect(err).toBe("Required parameter 'type' was left undefined. Supported types are: line, bar\nRequired parameter 'element' was left undefined. An HTMLElement must be provided for this parameter.");
+    const { err } = c2mChart({});
+    expect(err).toBe(
+        "Required parameter 'type' was left undefined. Supported types are: line, bar, band\nRequired parameter 'element' was left undefined. An HTMLElement must be provided for this parameter."
+    );
 });
