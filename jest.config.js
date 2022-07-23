@@ -32,6 +32,12 @@ module.exports = {
             functions: 85,
             lines: 85,
             statements: 85
+        },
+        "./src/dataPoint.ts": {
+            branches: 100,
+            functions: 100,
+            lines: 100,
+            statements: 100
         }
     }
 };
