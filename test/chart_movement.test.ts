@@ -86,6 +86,85 @@ test("Move around by single events", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 0");
 });
 
+test("Move around by single events", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [
+            1, 2, 3, 0, 4, 5, 4, 3, 1, 2, 3, 0, 4, 5, 4, 3, 1, 2, 3, 0, 4, 5, 4,
+            3, 1, 2, 3, 0, 4, 5, 4, 3
+        ],
+        element: mockElement,
+        cc: mockElementCC
+    });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 0");
+
+    // Move to the end
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("31, 3");
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("31, 3");
+
+    // Move left by tenths
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "ArrowLeft"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("28, 4");
+
+    // Move home
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Home"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("0, 1");
+
+    // Move left by tenths
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "ArrowLeft"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("0, 1");
+});
+
 test("Movement for a grouped chart", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");

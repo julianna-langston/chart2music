@@ -1,4 +1,2 @@
-Movement: Ctrl + Left
-Movement: Ctrl + Right
 Built-in audio engine??
 No audio engine
