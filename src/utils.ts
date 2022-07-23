@@ -97,7 +97,11 @@ export const calculateAxisMinimum = (
                 }
             }
             return NaN;
-        });
+        })
+        .filter((num) => !isNaN(num));
+    if (values.length === 0) {
+        return NaN;
+    }
     return Math.min(...values);
 };
 export const calculateAxisMaximum = (
@@ -124,7 +128,11 @@ export const calculateAxisMaximum = (
                 }
             }
             return NaN;
-        });
+        })
+        .filter((num) => !isNaN(num));
+    if (values.length === 0) {
+        return NaN;
+    }
     return Math.max(...values);
 };
 

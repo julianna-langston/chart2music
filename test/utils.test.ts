@@ -125,16 +125,30 @@ test("calculate axis min/max", () => {
             { x: 5, high: 53, low: 45 }
         ]
     ];
+    const mixMultiRow = [
+        [100, 101, 102, 103].map((y, x) => {
+            return { x, y };
+        }),
+        [200, 201, 202, 203].map((y2, x) => {
+            return { x, y2 };
+        })
+    ];
 
     expect(calculateAxisMinimum(singleRow, "x")).toBe(0);
     expect(calculateAxisMinimum(multiRow, "x")).toBe(0);
     expect(calculateAxisMinimum(bundledRow, "x")).toBe(5);
     expect(calculateAxisMinimum(bundledRow, "y")).toBe(15);
+    expect(calculateAxisMinimum(bundledRow, "y2")).toBe(NaN);
+    expect(calculateAxisMinimum(mixMultiRow, "y")).toBe(100);
+    expect(calculateAxisMinimum(mixMultiRow, "y2")).toBe(200);
 
     expect(calculateAxisMaximum(singleRow, "x")).toBe(6);
     expect(calculateAxisMaximum(multiRow, "x")).toBe(16);
     expect(calculateAxisMaximum(bundledRow, "x")).toBe(5);
     expect(calculateAxisMaximum(bundledRow, "y")).toBe(53);
+    expect(calculateAxisMaximum(bundledRow, "y2")).toBe(NaN);
+    expect(calculateAxisMaximum(mixMultiRow, "y")).toBe(103);
+    expect(calculateAxisMaximum(mixMultiRow, "y2")).toBe(203);
 });
 
 test("Generate point description", () => {
