@@ -355,7 +355,7 @@ test("Check play all", () => {
             shiftKey: true
         })
     );
-    jest.advanceTimersByTime(2200);
+    jest.advanceTimersByTime(2700);
     // All points were played
     expect(playHistory.length).toBe(8);
     expect(playHistory[0].panning).toBe(-0.98);
@@ -378,8 +378,8 @@ test("Check play all", () => {
             shiftKey: true
         })
     );
-    jest.advanceTimersByTime(2200);
-    // Only 3 points were played (at 0ms, 1,000ms, and 2,000ms)
+    jest.advanceTimersByTime(3200);
+    // Only 3 points were played (at 0ms, 1,000ms, pause at 2,000ms, and 3,000ms)
     expect(playHistory.length).toBe(3);
     expect(playHistory[0].panning).toBe(0.98);
     expect(playHistory[1].panning).toBe(0.98);
