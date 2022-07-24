@@ -2,7 +2,8 @@ import type { SupportedDataPointType } from "./dataPoint";
 import {
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
-    isSimpleDataPoint
+    isSimpleDataPoint,
+    isOHLCDataPoint
 } from "./dataPoint";
 import type { SonifyTypes } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
@@ -123,6 +124,15 @@ export const validateInputDataRowHomogeneity = (
             return "";
         }
         return `The first item is an alternate axis data point (x/y2), but item index ${failure} is not (value: ${JSON.stringify(
+            row[failure]
+        )}). All items should be of the same type.`;
+    }
+    if (isOHLCDataPoint(first)) {
+        const failure = row.findIndex((cell) => !isOHLCDataPoint(cell));
+        if (failure === -1) {
+            return "";
+        }
+        return `The first item is an OHLC data point (x/open/high/low/close), but item index ${failure} is not (value: ${JSON.stringify(
             row[failure]
         )}). All items should be of the same type.`;
     }

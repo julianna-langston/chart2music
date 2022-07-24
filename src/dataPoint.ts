@@ -76,9 +76,30 @@ export function isHighLowDataPoint(obj: unknown): obj is HighLowDataPoint {
 }
 
 /**
+ * A data point that has both a high and low value.
+ */
+export interface OHLCDataPoint extends HighLowDataPoint {
+    /** The open value */
+    open: number;
+    /** The close value */
+    close: number;
+}
+
+/**
+ * Check if an object implements the HighLowDataPoint interface.
+ *
+ * @param obj - the object to check
+ * @returns true if the object implements the interface
+ */
+export function isOHLCDataPoint(obj: unknown): obj is OHLCDataPoint {
+    return isHighLowDataPoint(obj) && "open" in obj && "close" in obj;
+}
+
+/**
  * A type that includes all of the supported data point types.
  */
 export type SupportedDataPointType =
     | SimpleDataPoint
     | AlternateAxisDataPoint
-    | HighLowDataPoint;
+    | HighLowDataPoint
+    | OHLCDataPoint;

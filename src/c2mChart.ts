@@ -24,6 +24,7 @@ import { validateInput } from "./validate";
 import {
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
+    isOHLCDataPoint,
     isSimpleDataPoint
 } from "./dataPoint";
 import type { SupportedDataPointType } from "./dataPoint";
@@ -668,16 +669,18 @@ export class c2m {
             return;
         }
 
-        if (isHighLowDataPoint(current)) {
+        if (isHighLowDataPoint(current) || isOHLCDataPoint(current)) {
             // Only play a single note, because we've drilled into stats
             if (statIndex >= 0) {
                 const stat = availableStats[statIndex];
                 const yBin = interpolateBin(
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     current[stat],
                     this._yAxis.minimum,
                     this._yAxis.maximum,
                     HERTZ.length - 1
                 );
+
                 this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
                 this._onFocus();
                 return;

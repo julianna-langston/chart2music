@@ -73,15 +73,18 @@ export enum SUPPORTED_CHART_TYPES {
     LINE = "line",
     BAR = "bar",
     BAND = "band",
-    PIE = "pie"
+    PIE = "pie",
+    CANDLESTICK = "candlestick"
 }
 
 /**
  * Bundle of possible statistics
  */
 export type StatBundle = {
+    open?: number;
     high?: number;
     low?: number;
+    close?: number;
 };
 
 /**

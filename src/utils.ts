@@ -4,6 +4,7 @@ import type {
     SupportedDataPointType
 } from "./dataPoint";
 import {
+    isOHLCDataPoint,
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
     isSimpleDataPoint
@@ -93,6 +94,18 @@ export const calculateAxisMinimum = (
                 if (prop === "x" || prop === "y2") {
                     return point[prop];
                 }
+            } else if (isOHLCDataPoint(point)) {
+                if (prop === "x") {
+                    return point.x;
+                }
+                if (prop === "y") {
+                    return Math.min(
+                        point.high,
+                        point.low,
+                        point.open,
+                        point.close
+                    );
+                }
             } else if (isHighLowDataPoint(point)) {
                 if (prop === "x") {
                     return point.x;
@@ -124,6 +137,18 @@ export const calculateAxisMaximum = (
                 if (prop === "x" || prop === "y2") {
                     return point[prop];
                 }
+            } else if (isOHLCDataPoint(point)) {
+                if (prop === "x") {
+                    return point.x;
+                }
+                if (prop === "y") {
+                    return Math.max(
+                        point.high,
+                        point.low,
+                        point.open,
+                        point.close
+                    );
+                }
             } else if (isHighLowDataPoint(point)) {
                 if (prop === "x") {
                     return point.x;
@@ -146,39 +171,26 @@ export const defaultFormat = (value: number) => `${value}`;
 export const sentenceCase = (str: string) =>
     `${str.substring(0, 1).toUpperCase()}${str.substring(1).toLowerCase()}`;
 
-// export const calcInflectionPoints = (nums: number[]) => {
-//     const nums2: number[] = [];
-//     for(let j=0; j<nums.length-2; j++){
-//         nums2.push(nums[j+1]-nums[j])
-//     }
-
-//     const inflectionIndeces: number[] = [];
-//     let temp = nums2[0]
-//     for(let i=1; i<nums2.length-2; i++){
-//         if(nums2[i] === 0){
-//             continue;
-//         }
-//         if(temp > 0 && nums2[i] > 0){
-//             continue;
-//         }
-//         if(temp < 0 && nums2[i] < 0){
-//             continue;
-//         }
-//         temp = nums2[i];
-//         inflectionIndeces.push(i);
-//     }
-
-//     return inflectionIndeces;
-// }
-
 export const generatePointDescription = (
     point: SupportedDataPointType,
     xAxis: AxisData,
     yAxis: AxisData,
     stat?: keyof StatBundle
 ) => {
+    if (isOHLCDataPoint(point)) {
+        if (typeof stat !== "undefined") {
+            return `${xAxis.format(point.x)}, ${yAxis.format(point[stat])}`;
+        }
+        return `${xAxis.format(point.x)}, ${yAxis.format(
+            point.open
+        )} - ${yAxis.format(point.high)} - ${yAxis.format(
+            point.low
+        )} - ${yAxis.format(point.close)}`;
+    }
+
     if (isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             return `${xAxis.format(point.x)}, ${yAxis.format(point[stat])}`;
         }
         return `${xAxis.format(point.x)}, ${yAxis.format(
@@ -220,6 +232,9 @@ export const calculateMetadataByGroup = (data: SupportedDataPointType[][]) => {
             yValues = (row as SimpleDataPoint[]).map(({ y }) => y);
         } else if (isAlternateAxisDataPoint(row[0])) {
             yValues = (row as AlternateAxisDataPoint[]).map(({ y2 }) => y2);
+        } else if (isOHLCDataPoint(row[0])) {
+            // Don't calculate min/max for high/low
+            availableStats = ["open", "high", "low", "close"];
         } else if (isHighLowDataPoint(row[0])) {
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];

@@ -125,6 +125,14 @@ test("calculate axis min/max", () => {
             { x: 5, high: 53, low: 45 }
         ]
     ];
+    const ohlcRow = [
+        [
+            { x: 5, open: 8, high: 50, low: 20, close: 20 },
+            { x: 5, open: 20, high: 51, low: 15, close: 20 },
+            { x: 5, open: 20, high: 52, low: 30, close: 20 },
+            { x: 5, open: 20, high: 53, low: 45, close: 55 }
+        ]
+    ];
     const mixMultiRow = [
         [100, 101, 102, 103].map((y, x) => {
             return { x, y };
@@ -139,6 +147,9 @@ test("calculate axis min/max", () => {
     expect(calculateAxisMinimum(bundledRow, "x")).toBe(5);
     expect(calculateAxisMinimum(bundledRow, "y")).toBe(15);
     expect(calculateAxisMinimum(bundledRow, "y2")).toBe(NaN);
+    expect(calculateAxisMinimum(ohlcRow, "x")).toBe(5);
+    expect(calculateAxisMinimum(ohlcRow, "y")).toBe(8);
+    expect(calculateAxisMinimum(ohlcRow, "y2")).toBe(NaN);
     expect(calculateAxisMinimum(mixMultiRow, "y")).toBe(100);
     expect(calculateAxisMinimum(mixMultiRow, "y2")).toBe(200);
 
@@ -147,6 +158,9 @@ test("calculate axis min/max", () => {
     expect(calculateAxisMaximum(bundledRow, "x")).toBe(5);
     expect(calculateAxisMaximum(bundledRow, "y")).toBe(53);
     expect(calculateAxisMaximum(bundledRow, "y2")).toBe(NaN);
+    expect(calculateAxisMaximum(ohlcRow, "x")).toBe(5);
+    expect(calculateAxisMaximum(ohlcRow, "y")).toBe(55);
+    expect(calculateAxisMaximum(ohlcRow, "y2")).toBe(NaN);
     expect(calculateAxisMaximum(mixMultiRow, "y")).toBe(103);
     expect(calculateAxisMaximum(mixMultiRow, "y2")).toBe(203);
 });
@@ -207,6 +221,47 @@ test("Generate point description", () => {
             "low"
         )
     ).toBe("0, 5");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                open: 8,
+                high: 10,
+                close: 7,
+                low: 5
+            },
+            { format: defaultFormat },
+            { format: defaultFormat }
+        )
+    ).toBe("0, 8 - 10 - 5 - 7");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                open: 8,
+                high: 10,
+                close: 7,
+                low: 5
+            },
+            { format: defaultFormat },
+            { format: defaultFormat },
+            "high"
+        )
+    ).toBe("0, 10");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                open: 8,
+                high: 10,
+                close: 7,
+                low: 5
+            },
+            { format: defaultFormat },
+            { format: defaultFormat },
+            "open"
+        )
+    ).toBe("0, 8");
     expect(
         generatePointDescription(
             {
@@ -301,7 +356,7 @@ test("Calculate metadata by group", () => {
         }
     ]);
 
-    // Contains stats
+    // Contains high/low
     expect(
         calculateMetadataByGroup([
             [
@@ -316,6 +371,25 @@ test("Calculate metadata by group", () => {
             maximumPointIndex: -1,
             tenths: 0,
             availableStats: ["high", "low"],
+            statIndex: -1
+        }
+    ]);
+
+    // Contains OHLC
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 1, open: 1, high: 1, low: 1, close: 1 },
+                { x: 2, open: 2, high: 2, low: 2, close: 2 },
+                { x: 3, open: 3, high: 3, low: 3, close: 3 }
+            ]
+        ])
+    ).toEqual([
+        {
+            minimumPointIndex: -1,
+            maximumPointIndex: -1,
+            tenths: 0,
+            availableStats: ["open", "high", "low", "close"],
             statIndex: -1
         }
     ]);
