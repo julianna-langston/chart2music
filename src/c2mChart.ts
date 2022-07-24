@@ -196,7 +196,7 @@ export class c2m {
                 }
             },
             {
-                title: "Play all right",
+                title: "Play right",
                 key: "Shift+ArrowRight",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -204,7 +204,7 @@ export class c2m {
                 }
             },
             {
-                title: "Play all left",
+                title: "Play left",
                 key: "Shift+ArrowLeft",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -212,7 +212,7 @@ export class c2m {
                 }
             },
             {
-                title: "Cancel play all",
+                title: "Cancel play",
                 key: "Ctrl+Control",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -282,6 +282,22 @@ export class c2m {
                     clearInterval(this._playListInterval);
                     this._pointIndex = this._data[this._groupIndex].length - 1;
                     this._playAndSpeak();
+                }
+            },
+            {
+                title: "Play all left",
+                key: "Shift+Home",
+                callback: () => {
+                    clearInterval(this._playListInterval);
+                    this._playAllLeft();
+                }
+            },
+            {
+                title: "Play all right",
+                key: "Shift+End",
+                callback: () => {
+                    clearInterval(this._playListInterval);
+                    this._playAllRight();
                 }
             },
             {
@@ -520,7 +536,7 @@ export class c2m {
     /**
      * Play all data points to the left, if there are any
      */
-    private _playAllLeft() {
+    private _playAll() {
         const min = 0;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex <= min) {
@@ -537,7 +553,7 @@ export class c2m {
     /**
      * Play all data points to the right, if there are any
      */
-    private _playAllRight() {
+    private _playRight() {
         const max = this._data[this._groupIndex].length - 1;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex >= max) {
@@ -545,6 +561,53 @@ export class c2m {
                 clearInterval(this._playListInterval);
             } else {
                 this._pointIndex++;
+                this._playCurrent();
+            }
+        }, SPEEDS[this._speedRateIndex]);
+        this._playCurrent();
+    }
+
+    /**
+     * Play all categories to the right
+     */
+    private _playAllRight() {
+        const maxPoints = this._data[this._groupIndex].length - 1;
+        const maxGroups = this._data.length - 1;
+        this._playListInterval = setInterval(() => {
+            if (
+                this._pointIndex >= maxPoints &&
+                this._groupIndex >= maxGroups
+            ) {
+                this._pointIndex = maxPoints;
+                clearInterval(this._playListInterval);
+            } else if (this._groupIndex === maxGroups) {
+                this._groupIndex = 0;
+                this._pointIndex++;
+                this._playCurrent();
+            } else {
+                this._groupIndex++;
+                this._playCurrent();
+            }
+        }, SPEEDS[this._speedRateIndex]);
+        this._playCurrent();
+    }
+
+    /**
+     * Play all categories to the left
+     */
+    private _playAllLeft() {
+        const min = 0;
+        const maxGroups = this._data.length - 1;
+        this._playListInterval = setInterval(() => {
+            if (this._pointIndex <= min && this._groupIndex <= min) {
+                this._pointIndex = min;
+                clearInterval(this._playListInterval);
+            } else if (this._groupIndex === min) {
+                this._groupIndex = maxGroups;
+                this._pointIndex--;
+                this._playCurrent();
+            } else {
+                this._groupIndex--;
                 this._playCurrent();
             }
         }, SPEEDS[this._speedRateIndex]);

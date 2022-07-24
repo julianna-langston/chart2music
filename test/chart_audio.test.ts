@@ -249,7 +249,7 @@ test("Move around by single events - plot with y and y2", () => {
     expect(lastFrequency).toBe(32.7032);
 });
 
-test("Check play all", () => {
+test("Check play", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
@@ -330,5 +330,89 @@ test("Check play all", () => {
     jest.advanceTimersByTime(2000);
     expect(playHistory.length).toBe(6);
     expect(playHistory[0].panning).toBeCloseTo(0.42);
+    expect(playHistory[playHistory.length - 1].panning).toBe(-0.98);
+});
+
+test("Check play all", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: { a: [1, 2, 3, 0], b: [4, 5, 4, 3] },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(2200);
+    // All points were played
+    expect(playHistory.length).toBe(8);
+    expect(playHistory[0].panning).toBe(-0.98);
+    expect(playHistory[playHistory.length - 1].panning).toBe(0.98);
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "e"
+        })
+    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Speed, 1000"
+    );
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Home",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(2200);
+    // Only 3 points were played (at 0ms, 1,000ms, and 2,000ms)
+    expect(playHistory.length).toBe(3);
+    expect(playHistory[0].panning).toBe(0.98);
+    expect(playHistory[1].panning).toBe(0.98);
+    expect(playHistory[2].panning).toBeCloseTo(0.326);
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Control",
+            ctrlKey: true
+        })
+    );
+    jest.advanceTimersByTime(2200);
+    // No more points were played
+    expect(playHistory.length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "q"
+        })
+    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Speed, 250"
+    );
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Home",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(2000);
+    expect(playHistory.length).toBe(6);
+    expect(playHistory[0].panning).toBeCloseTo(0.326);
     expect(playHistory[playHistory.length - 1].panning).toBe(-0.98);
 });
