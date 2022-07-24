@@ -268,7 +268,7 @@ test("Movement for a chart with stats", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: [SUPPORTED_CHART_TYPES.BAND, SUPPORTED_CHART_TYPES.LINE],
         data: {
             a: [
                 { x: 1, high: 10, low: 8 },
@@ -290,7 +290,9 @@ test("Movement for a chart with stats", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+    expect(mockElementCC.textContent).toBe(
+        `Sonified band-line chart "", contains 2 categories, x is "" from 1 to 3, y is "" from 8 to 13. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
 
     // Move right
     mockElement.dispatchEvent(

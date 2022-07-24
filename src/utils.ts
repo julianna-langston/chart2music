@@ -30,7 +30,7 @@ export const calcPan = (pct: number) => (pct * 2 - 1) * 0.98;
  *
  */
 type SummaryTypes = {
-    type: SUPPORTED_CHART_TYPES;
+    type: SUPPORTED_CHART_TYPES | SUPPORTED_CHART_TYPES[];
     title: string;
     dataRows: number;
     x: AxisData;
@@ -45,7 +45,12 @@ export const generateSummary = ({
     y,
     y2
 }: SummaryTypes) => {
-    const text = [`Sonified ${type} chart "${title}"`];
+    const text = [];
+    if (Array.isArray(type)) {
+        text.push(`Sonified ${type.sort().join("-")} chart "${title}"`);
+    } else {
+        text.push(`Sonified ${type} chart "${title}"`);
+    }
     if (dataRows > 1) {
         text.push(`contains ${dataRows} categories`);
     }

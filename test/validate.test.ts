@@ -19,7 +19,23 @@ test("validateInputType", () => {
         // @ts-ignore - deliberately generating error condition
         validateInputType("invalid")
     ).toBe("Invalid input type: invalid. Valid types are: line, bar, band");
+    expect(
+        // @ts-ignore - deliberately generating error condition
+        validateInputType([SUPPORTED_CHART_TYPES.LINE, "invalid"])
+    ).toBe("Invalid input types: invalid. Valid types are: line, bar, band");
+    expect(
+        // @ts-ignore - deliberately generating error condition
+        validateInputType(["invalid1", "invalid2"])
+    ).toBe(
+        "Invalid input types: invalid1, invalid2. Valid types are: line, bar, band"
+    );
     expect(validateInputType(SUPPORTED_CHART_TYPES.LINE)).toBe("");
+    expect(
+        validateInputType([
+            SUPPORTED_CHART_TYPES.BAR,
+            SUPPORTED_CHART_TYPES.LINE
+        ])
+    ).toBe("");
 });
 
 test("validateInputElement", () => {

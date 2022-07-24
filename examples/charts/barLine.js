@@ -19,7 +19,7 @@ const volume = [
 
 export const barLinePlot = (canvas, cc) => {
     const config = {
-        type: "bar",
+        type: ["bar", "line"],
         data: {
             labels: barLineLabels,
             datasets: [

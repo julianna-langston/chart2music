@@ -13,7 +13,7 @@ type SupportedInputType = SupportedDataPointType | number;
  */
 export type SonifyTypes = {
     /** Required type for the chart. */
-    type: SUPPORTED_CHART_TYPES;
+    type: SUPPORTED_CHART_TYPES | SUPPORTED_CHART_TYPES[];
     /**
      * The data that should be presented in this chart.
      * This key is required for all charts.

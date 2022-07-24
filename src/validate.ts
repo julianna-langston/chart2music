@@ -18,11 +18,27 @@ export const validateInput = (input: SonifyTypes) => {
     return errors.filter((str) => str !== "").join("\n");
 };
 
-export const validateInputType = (type?: SUPPORTED_CHART_TYPES): string => {
+export const validateInputType = (
+    type?: SUPPORTED_CHART_TYPES | SUPPORTED_CHART_TYPES[]
+): string => {
     if (typeof type === "undefined") {
         return `Required parameter 'type' was left undefined. Supported types are: ${Object.values(
             SUPPORTED_CHART_TYPES
         ).join(", ")}`;
+    }
+
+    if (Array.isArray(type)) {
+        const unsupported_types = type.filter(
+            (str) => !Object.values(SUPPORTED_CHART_TYPES).includes(str)
+        );
+        if (unsupported_types.length === 0) {
+            return "";
+        }
+        return `Invalid input types: ${unsupported_types.join(
+            ", "
+        )}. Valid types are: ${Object.values(SUPPORTED_CHART_TYPES).join(
+            ", "
+        )}`;
     }
 
     if (Object.values(SUPPORTED_CHART_TYPES).includes(type)) {
