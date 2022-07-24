@@ -53,7 +53,7 @@ export const bandPlot = (canvas, cc) => {
 
     const slices = ["Moving average", "Bollinger band"];
     const { err } = c2mChart({
-        type: ["band", "line"],
+        type: ["line", "band"],
         title: "AAPL",
         element: canvas,
         cc,
@@ -77,10 +77,8 @@ export const bandPlot = (canvas, cc) => {
             "Bollinger band": upper.map((high, x) => {
                 return {
                     x,
-                    y: {
-                        high: high,
-                        low: lower[x]
-                    }
+                    high: high,
+                    low: lower[x]
                 };
             })
         },
