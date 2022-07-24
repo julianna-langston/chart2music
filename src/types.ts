@@ -72,7 +72,8 @@ export type AxisData = {
 export enum SUPPORTED_CHART_TYPES {
     LINE = "line",
     BAR = "bar",
-    BAND = "band"
+    BAND = "band",
+    PIE = "pie"
 }
 
 /**

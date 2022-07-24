@@ -13,21 +13,25 @@ import {
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
-        "Required parameter 'type' was left undefined. Supported types are: line, bar, band"
+        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie"
     );
     expect(
         // @ts-ignore - deliberately generating error condition
         validateInputType("invalid")
-    ).toBe("Invalid input type: invalid. Valid types are: line, bar, band");
+    ).toBe(
+        "Invalid input type: invalid. Valid types are: line, bar, band, pie"
+    );
     expect(
         // @ts-ignore - deliberately generating error condition
         validateInputType([SUPPORTED_CHART_TYPES.LINE, "invalid"])
-    ).toBe("Invalid input types: invalid. Valid types are: line, bar, band");
+    ).toBe(
+        "Invalid input types: invalid. Valid types are: line, bar, band, pie"
+    );
     expect(
         // @ts-ignore - deliberately generating error condition
         validateInputType(["invalid1", "invalid2"])
     ).toBe(
-        "Invalid input types: invalid1, invalid2. Valid types are: line, bar, band"
+        "Invalid input types: invalid1, invalid2. Valid types are: line, bar, band, pie"
     );
     expect(validateInputType(SUPPORTED_CHART_TYPES.LINE)).toBe("");
     expect(
@@ -72,7 +76,7 @@ test("validateInput", () => {
             element: "invalid"
         })
     ).toBe(
-        "Invalid input type: invalid. Valid types are: line, bar, band\nProvided value for 'element' must be an instance of HTMLElement."
+        "Invalid input type: invalid. Valid types are: line, bar, band, pie\nProvided value for 'element' must be an instance of HTMLElement."
     );
 });
 
@@ -195,6 +199,6 @@ test("c2mChart validation", () => {
     // @ts-ignore
     const { err } = c2mChart({});
     expect(err).toBe(
-        "Required parameter 'type' was left undefined. Supported types are: line, bar, band\nRequired parameter 'element' was left undefined. An HTMLElement must be provided for this parameter."
+        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie\nRequired parameter 'element' was left undefined. An HTMLElement must be provided for this parameter."
     );
 });
