@@ -19,7 +19,7 @@ const volume = [
 
 export const barLinePlot = (canvas, cc) => {
     const config = {
-        type: ["bar", "line"],
+        type: "bar",
         data: {
             labels: barLineLabels,
             datasets: [
@@ -78,7 +78,7 @@ export const barLinePlot = (canvas, cc) => {
 
     const slices = ["Adjusted Close", "Volume"];
     const { err } = c2mChart({
-        type: "line",
+        type: ["bar", "line"],
         title: "AAPL Trades",
         element: canvas,
         cc,
