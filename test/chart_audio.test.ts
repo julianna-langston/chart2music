@@ -415,4 +415,22 @@ test("Check play all", () => {
     expect(playHistory.length).toBe(6);
     expect(playHistory[0].panning).toBeCloseTo(0.326);
     expect(playHistory[playHistory.length - 1].panning).toBe(-0.98);
+
+    // Check that interrupting play during a pause doesn't cause an error
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(600);
+    expect(playHistory.length).toBe(2);
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    expect(playHistory.length).toBe(3);
 });

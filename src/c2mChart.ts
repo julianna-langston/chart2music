@@ -83,6 +83,7 @@ export class c2m {
         enableSpeech: true
     };
     private _providedAudioEngine?: AudioEngine;
+    private _pauseFlag = false;
 
     /**
      * Constructor
@@ -582,9 +583,11 @@ export class c2m {
                 this._pointIndex = maxPoints;
                 clearInterval(this._playListInterval);
             } else if (this._groupIndex === maxGroups) {
-                // Forces a pause after we've circled through all groups
-                this._groupIndex++;
-            } else if (this._groupIndex > maxGroups) {
+                if (!this._pauseFlag) {
+                    this._pauseFlag = true;
+                    return;
+                }
+                this._pauseFlag = false;
                 this._groupIndex = 0;
                 this._pointIndex++;
                 this._playCurrent();
@@ -606,9 +609,12 @@ export class c2m {
             if (this._pointIndex <= min && this._groupIndex <= min) {
                 this._pointIndex = min;
                 clearInterval(this._playListInterval);
-            } else if (this._groupIndex === 0) {
-                this._groupIndex--;
-            } else if (this._groupIndex < min) {
+            } else if (this._groupIndex === min) {
+                if (!this._pauseFlag) {
+                    this._pauseFlag = true;
+                    return;
+                }
+                this._pauseFlag = false;
                 this._groupIndex = maxGroups;
                 this._pointIndex--;
                 this._playCurrent();
