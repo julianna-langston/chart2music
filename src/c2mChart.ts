@@ -201,7 +201,7 @@ export class c2m {
                 key: "Shift+ArrowRight",
                 callback: () => {
                     clearInterval(this._playListInterval);
-                    this._playAllRight();
+                    this._playRight();
                 }
             },
             {
@@ -209,7 +209,7 @@ export class c2m {
                 key: "Shift+ArrowLeft",
                 callback: () => {
                     clearInterval(this._playListInterval);
-                    this._playAllLeft();
+                    this._playLeft();
                 }
             },
             {
@@ -537,7 +537,7 @@ export class c2m {
     /**
      * Play all data points to the left, if there are any
      */
-    private _playAll() {
+    private _playLeft() {
         const min = 0;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex <= min) {
