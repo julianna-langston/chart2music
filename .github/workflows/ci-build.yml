@@ -36,7 +36,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: ./coverage/
-          files: ./clover.xml
           flags: unittests
           name: codecov-umbrella
           verbose: true
