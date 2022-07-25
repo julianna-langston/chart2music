@@ -43,7 +43,6 @@ export const singleLinePlot = (canvas, cc) => {
         }),
         options: {
             onFocusCallback: ({ index }) => {
-                console.log(index);
                 myChart.setActiveElements([{ datasetIndex: 0, index }]);
                 myChart.update();
             }
