@@ -2,6 +2,8 @@
 
 Chart2Music turns charts into music so the blind can hear data.
 
+[![Known Vulnerabilities](https://snyk.io/test/github/julianna-langston/chart2music/badge.svg)](https://snyk.io/test/github/julianna-langston/chart2music)
+
 ## Key features
 
 * **Accessibility for screen reader users** - Enables blind users to rapidly absorb information about charts and graphs using sound and exploration.
