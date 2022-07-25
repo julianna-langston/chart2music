@@ -30,7 +30,7 @@ On your page, you will also need your chart. For the sake of similicity, here's 
 Now, in your javascript, you can start a new instance of Chart2Music. In this example, we will include a simple bar chart, and point it to the img element above.
 
 ```javascript
-new c2mChart({
+c2mChart({
     type: "bar",
     element: document.getElementById("MyChart"),
     data: [1,2,3]
