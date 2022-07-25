@@ -2,6 +2,7 @@
 
 Chart2Music turns charts into music so the blind can hear data.
 
+[![npm version](https://badge.fury.io/js/chart2music.svg)](https://badge.fury.io/js/chart2music)
 ![Build verification](https://github.com/julianna-langston/chart2music/actions/workflows/ci-build.yml/badge.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/julianna-langston/chart2music/badge.svg)](https://snyk.io/test/github/julianna-langston/chart2music)
 [![codecov](https://codecov.io/gh/julianna-langston/chart2music/branch/main/graph/badge.svg?token=4T7MV9XKFS)](https://codecov.io/gh/julianna-langston/chart2music)
