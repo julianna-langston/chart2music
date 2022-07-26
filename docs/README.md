@@ -43,7 +43,7 @@ What will the user experience be? When the user navigates to the image, a descri
 
 ## Advanced
 
-[See the documentation](./docs/modules).
+[See the documentation](./docs/modules.md).
 
 For code examples in action, see the [Chart2Music Examples collection on Codepen](https://codepen.io/collection/BNedqm).
 
