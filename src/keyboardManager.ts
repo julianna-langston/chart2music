@@ -6,14 +6,19 @@ const keyboardEventToString = (e: KeyboardEvent) => {
 };
 
 /**
- *
+ * Details for a given hotkey
  */
 type KeyDetails = {
+    /* The callback for when this hotkey is invoked */
     callback: () => void;
-    force?: boolean;
+    /* Title for what this hotkey does (displayed in hotkey dialog) */
     title?: string;
+    /* Additional description for what this hotkey does (displayed in hotkey dialog) */
     description?: string;
+    /* If the hotkey already exists, force this command to override it */
+    force?: boolean;
 };
+
 /**
  *
  */
@@ -24,7 +29,9 @@ type KeyRegistration = {
 /**
  * Keyboard event manager enables:
  * - registering/unregistering custom keyboard events
- * -
+ * - generating documentations listing keyboard events
+ *
+ * @internal
  */
 export class KeyboardEventManager {
     private _keyMap: {
@@ -54,7 +61,7 @@ export class KeyboardEventManager {
      *
      * @param event - keydown event
      */
-    _handleKeyEvents(event: KeyboardEvent) {
+    private _handleKeyEvents(event: KeyboardEvent) {
         const keyPress = keyboardEventToString(event);
         if (keyPress in this._keyMap) {
             this._keyMap[keyPress].callback();

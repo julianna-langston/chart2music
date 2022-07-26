@@ -43,6 +43,12 @@ const convertDataRow = (row: (SupportedDataPointType | number)[]) => {
     });
 };
 
+/**
+ * Validates and initializes a single chart that should be sonified
+ *
+ * @param {SonifyTypes} input - data, config, and options for the chart
+ * @returns c2mGolangReturn - A value of "err" (null if no error, or string if error) and "data" (the chart, if there was no error)
+ */
 export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
     const validationErrorString = validateInput(input);
     if (validationErrorString !== "") {

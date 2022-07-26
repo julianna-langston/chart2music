@@ -63,6 +63,7 @@ export type AxisData = {
     minimum?: number;
     maximum?: number;
     label?: string;
+    /* The formatter callback to format any number plotted against this axis */
     format?: (value: number) => string;
 };
 
@@ -117,6 +118,7 @@ export type c2mCallbackType = {
 export type c2mOptions = {
     enableSound?: boolean;
     enableSpeech?: boolean;
+    /* The callback invoked when the end user focuses on a data point */
     onFocusCallback?: (point: c2mCallbackType) => void;
 };
 

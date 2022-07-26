@@ -5,6 +5,8 @@
  * spoken.
  * The "caption" element must have a specific list of aria attributes to properly work, see the static method
  * "addAriaAttributes" for more details.
+ *
+ * @internal
  */
 export class ScreenReaderBridge {
     private static readonly PADDING_CHARACTER = "\u00A0"; // no-break space

@@ -30,7 +30,8 @@
     },
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
-        "clean": "rimraf ./dist ./coverage",
+        "clean": "rimraf ./dist ./coverage ./docs",
+        "docs": "rimraf ./docs && typedoc",
         "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\" \"jest -o\"",
         "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
@@ -60,6 +61,10 @@
         "rollup-plugin-dts": "^4.2.2",
         "ts-jest": "^28.0.7",
         "tslib": "^2.4.0",
+        "typedoc": "^0.23.9",
+        "typedoc-plugin-coverage": "^2.0.0",
+        "typedoc-plugin-mdn-links": "^2.0.0",
+        "typedoc-plugin-missing-exports": "^0.23.0",
         "typescript": "^4.7.4"
     }
 }
