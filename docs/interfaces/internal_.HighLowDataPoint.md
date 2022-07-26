@@ -32,7 +32,7 @@ The high value
 
 #### Defined in
 
-[dataPoint.ts:63](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/dataPoint.ts#L63)
+[dataPoint.ts:63](https://github.com/julianna-langston/chart2music/blob/389a994/src/dataPoint.ts#L63)
 
 ___
 
@@ -44,7 +44,7 @@ The low value
 
 #### Defined in
 
-[dataPoint.ts:65](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/dataPoint.ts#L65)
+[dataPoint.ts:65](https://github.com/julianna-langston/chart2music/blob/389a994/src/dataPoint.ts#L65)
 
 ___
 
@@ -60,4 +60,4 @@ The x-axis value
 
 #### Defined in
 
-[dataPoint.ts:7](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/dataPoint.ts#L7)
+[dataPoint.ts:7](https://github.com/julianna-langston/chart2music/blob/389a994/src/dataPoint.ts#L7)

@@ -27,7 +27,7 @@ Setting this to 0 will mute the engine, while setting it to 1 will enable full v
 
 #### Defined in
 
-[audio/AudioEngine.ts:9](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/audio/AudioEngine.ts#L9)
+[audio/AudioEngine.ts:9](https://github.com/julianna-langston/chart2music/blob/389a994/src/audio/AudioEngine.ts#L9)
 
 ## Methods
 
@@ -51,4 +51,4 @@ Play a sound to represent a data point.
 
 #### Defined in
 
-[audio/AudioEngine.ts:18](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/audio/AudioEngine.ts#L18)
+[audio/AudioEngine.ts:18](https://github.com/julianna-langston/chart2music/blob/389a994/src/audio/AudioEngine.ts#L18)

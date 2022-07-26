@@ -24,7 +24,7 @@ The chart types available
 
 #### Defined in
 
-[types.ts:76](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L76)
+[types.ts:76](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L76)
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 #### Defined in
 
-[types.ts:75](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L75)
+[types.ts:75](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L75)
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 #### Defined in
 
-[types.ts:78](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L78)
+[types.ts:78](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L78)
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 #### Defined in
 
-[types.ts:74](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L74)
+[types.ts:74](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L74)
 
 ___
 
@@ -64,4 +64,4 @@ ___
 
 #### Defined in
 
-[types.ts:77](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L77)
+[types.ts:77](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L77)

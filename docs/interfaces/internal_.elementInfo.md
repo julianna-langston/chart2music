@@ -21,7 +21,7 @@ Track an element and the time at which it was hidden.
 
 #### Defined in
 
-[ScreenReaderBridge.ts:138](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/ScreenReaderBridge.ts#L138)
+[ScreenReaderBridge.ts:138](https://github.com/julianna-langston/chart2music/blob/389a994/src/ScreenReaderBridge.ts#L138)
 
 ___
 
@@ -31,4 +31,4 @@ ___
 
 #### Defined in
 
-[ScreenReaderBridge.ts:139](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/ScreenReaderBridge.ts#L139)
+[ScreenReaderBridge.ts:139](https://github.com/julianna-langston/chart2music/blob/389a994/src/ScreenReaderBridge.ts#L139)

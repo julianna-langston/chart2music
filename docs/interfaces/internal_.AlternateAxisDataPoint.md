@@ -33,7 +33,7 @@ The x-axis value
 
 #### Defined in
 
-[dataPoint.ts:7](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/dataPoint.ts#L7)
+[dataPoint.ts:7](https://github.com/julianna-langston/chart2music/blob/389a994/src/dataPoint.ts#L7)
 
 ___
 
@@ -45,4 +45,4 @@ The y2-axis
 
 #### Defined in
 
-[dataPoint.ts:43](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/dataPoint.ts#L43)
+[dataPoint.ts:43](https://github.com/julianna-langston/chart2music/blob/389a994/src/dataPoint.ts#L43)

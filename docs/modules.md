@@ -38,4 +38,4 @@ c2mGolangReturn - A value of "err" (null if no error, or string if error) and "d
 
 #### Defined in
 
-[c2mChart.ts:52](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/c2mChart.ts#L52)
+[c2mChart.ts:52](https://github.com/julianna-langston/chart2music/blob/389a994/src/c2mChart.ts#L52)

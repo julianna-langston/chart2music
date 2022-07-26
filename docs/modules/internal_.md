@@ -52,7 +52,7 @@ Metadata for an axis
 
 #### Defined in
 
-[types.ts:62](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L62)
+[types.ts:62](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L62)
 
 ___
 
@@ -73,7 +73,7 @@ Details for a given hotkey
 
 #### Defined in
 
-[keyboardManager.ts:11](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/keyboardManager.ts#L11)
+[keyboardManager.ts:11](https://github.com/julianna-langston/chart2music/blob/389a994/src/keyboardManager.ts#L11)
 
 ___
 
@@ -83,7 +83,7 @@ ___
 
 #### Defined in
 
-[keyboardManager.ts:25](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/keyboardManager.ts#L25)
+[keyboardManager.ts:25](https://github.com/julianna-langston/chart2music/blob/389a994/src/keyboardManager.ts#L25)
 
 ___
 
@@ -112,7 +112,7 @@ Most of the keys of this interface are optional, with the exception of "data" an
 
 #### Defined in
 
-[types.ts:14](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L14)
+[types.ts:14](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L14)
 
 ___
 
@@ -133,7 +133,7 @@ Bundle of possible statistics
 
 #### Defined in
 
-[types.ts:84](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L84)
+[types.ts:84](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L84)
 
 ___
 
@@ -145,7 +145,7 @@ A type that includes all of the supported data point types.
 
 #### Defined in
 
-[dataPoint.ts:101](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/dataPoint.ts#L101)
+[dataPoint.ts:101](https://github.com/julianna-langston/chart2music/blob/389a994/src/dataPoint.ts#L101)
 
 ___
 
@@ -155,7 +155,7 @@ ___
 
 #### Defined in
 
-[types.ts:8](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L8)
+[types.ts:8](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L8)
 
 ___
 
@@ -174,7 +174,7 @@ Data provided for the on focus callback
 
 #### Defined in
 
-[types.ts:110](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L110)
+[types.ts:110](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L110)
 
 ___
 
@@ -191,7 +191,7 @@ ___
 
 #### Defined in
 
-[types.ts:128](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L128)
+[types.ts:128](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L128)
 
 ___
 
@@ -211,7 +211,7 @@ Options available for C2M chart
 
 #### Defined in
 
-[types.ts:118](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L118)
+[types.ts:118](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L118)
 
 ___
 
@@ -227,7 +227,7 @@ A dictionary of data, where the key is the group name, and the value is the arra
 
 #### Defined in
 
-[types.ts:55](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L55)
+[types.ts:55](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L55)
 
 ___
 
@@ -249,4 +249,4 @@ Metadata for a group of chart data
 
 #### Defined in
 
-[types.ts:94](https://github.com/julianna-langston/chart2music/blob/5c1c6b4/src/types.ts#L94)
+[types.ts:94](https://github.com/julianna-langston/chart2music/blob/389a994/src/types.ts#L94)
