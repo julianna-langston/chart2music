@@ -288,6 +288,7 @@ export class c2m {
             {
                 title: "Cancel play",
                 key: "Ctrl+Control",
+                keyDescription: "Control",
                 callback: () => {
                     clearInterval(this._playListInterval);
                 }
@@ -377,6 +378,7 @@ export class c2m {
             {
                 title: "Replay",
                 key: " ",
+                keyDescription: "Spacebar",
                 callback: () => {
                     clearInterval(this._playListInterval);
                     this._flagNewGroup = true;

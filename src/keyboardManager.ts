@@ -13,6 +13,7 @@ type KeyDetails = {
     callback: () => void;
     /* Title for what this hotkey does (displayed in hotkey dialog) */
     title?: string;
+    keyDescription?: string;
     /* Additional description for what this hotkey does (displayed in hotkey dialog) */
     description?: string;
     /* If the hotkey already exists, force this command to override it */
@@ -77,6 +78,7 @@ export class KeyboardEventManager {
      * @param details.callback - the function if the key event is pressed
      * @param details.title - the title of the event
      * @param details.description - the description of the event
+     * @param details.keyDescription - the description of the key (eg, "Spacebar")
      * @param [details.force] - if the key event already exists, overwrite? (True if yes)
      */
     registerKeyEvent({
@@ -84,7 +86,8 @@ export class KeyboardEventManager {
         callback,
         title = "",
         description = "",
-        force = false
+        force = false,
+        keyDescription
     }: KeyRegistration) {
         if (!force && key in this._keyMap) {
             return;
@@ -92,7 +95,8 @@ export class KeyboardEventManager {
         this._keyMap[key] = {
             title,
             description,
-            callback
+            callback,
+            keyDescription
         };
     }
 
@@ -139,7 +143,7 @@ export class KeyboardEventManager {
             tr.appendChild(th);
 
             const td1 = document.createElement("td");
-            td1.textContent = keystroke;
+            td1.textContent = details.keyDescription ?? keystroke;
             tr.appendChild(td1);
 
             const td2 = document.createElement("td");
