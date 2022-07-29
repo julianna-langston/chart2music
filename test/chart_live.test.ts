@@ -200,9 +200,20 @@ test("Test axes min/max adjustment - numbers, no clamps", () => {
     expect(chart._yAxis.minimum).toBe(1);
     expect(chart._yAxis.maximum).toBe(9);
 
-    chart?.appendData(0);
+    expect(chart._data[0].length).toBe(7);
+    const result1 = chart?.appendData(0);
+    expect(chart._data[0].length).toBe(8);
     expect(chart._yAxis.minimum).toBe(0);
     expect(chart._yAxis.maximum).toBe(9);
+    expect(result1).not.toBeUndefined();
+    expect(result1?.err).toBeNull();
+
+    const result = chart?.appendData(5, "c");
+    expect(chart._data[0].length).toBe(8);
+    expect(result).not.toBeUndefined();
+    expect(result?.err).not.toBeNull();
+    expect(result?.err).toContain(`unknown group name "c"`);
+    expect(result?.err).toContain(`There are no group names`);
 });
 
 test("Test axes min/max adjustment - high/low, no clamps", () => {
@@ -285,4 +296,45 @@ test("Test axes min/max adjustment - OHLC, no clamps", () => {
     });
     expect(chart._yAxis.minimum).toBe(2);
     expect(chart._yAxis.maximum).toBe(12);
+});
+
+test("Test appending data to a group that doesn't exist", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: [SUPPORTED_CHART_TYPES.LINE],
+        data: {
+            a: [1, 2, 3, 4],
+            b: [1, 2, 3, 4]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            live: true
+        }
+    });
+    expect(err).toBe(null);
+    expect(chart._data[0].length).toBe(4);
+    expect(chart._data[1].length).toBe(4);
+
+    const result1 = chart?.appendData(5, "a");
+    expect(chart._data[0].length).toBe(5);
+    expect(chart._data[1].length).toBe(4);
+    expect(result1).not.toBeUndefined();
+    expect(result1?.err).toBeNull();
+
+    const result2 = chart?.appendData(5, "b");
+    expect(chart._data[0].length).toBe(5);
+    expect(chart._data[1].length).toBe(5);
+    expect(result2).not.toBeUndefined();
+    expect(result2?.err).toBeNull();
+
+    const result3 = chart?.appendData(5, "c");
+    expect(chart._data[0].length).toBe(5);
+    expect(chart._data[1].length).toBe(5);
+    expect(result3).not.toBeUndefined();
+    expect(result3?.err).not.toBeNull();
+    expect(result3?.err).toContain(`unknown group name "c"`);
+    expect(result3?.err).toContain(`Valid groups: a, b`);
 });

@@ -186,10 +186,19 @@ export class c2m {
      * @param dataPoint - the data point
      * @param group - which group to apply to, if there are multiple groups
      */
-    appendData(dataPoint: SupportedDataPointType | number, group?: string) {
-        let groupIndex = group ? this._groups.indexOf(group) : 0;
+    appendData(
+        dataPoint: SupportedDataPointType | number,
+        group?: string
+    ): { err: string | null; data?: SupportedDataPointType } {
+        const groupIndex = group ? this._groups.indexOf(group) : 0;
         if (groupIndex === -1) {
-            groupIndex = 0;
+            return {
+                err: `Error adding data to unknown group name "${group}". ${
+                    this._groups.length === 1
+                        ? "There are no group names."
+                        : `Valid groups: ${this._groups.join(", ")}`
+                } `
+            };
         }
 
         if (typeof dataPoint === "number") {
@@ -241,6 +250,11 @@ export class c2m {
                 this._metadataByGroup[groupIndex];
             this._playDataPoint(newDataPoint, statIndex, availableStats);
         }
+
+        return {
+            err: null,
+            data: newDataPoint
+        };
     }
 
     /**
@@ -781,7 +795,7 @@ export class c2m {
             return;
         }
 
-        if (isHighLowDataPoint(current) || isOHLCDataPoint(current)) {
+        if (isOHLCDataPoint(current) || isHighLowDataPoint(current)) {
             // Only play a single note, because we've drilled into stats
             if (statIndex >= 0) {
                 const stat = availableStats[statIndex];

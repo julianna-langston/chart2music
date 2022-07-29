@@ -55,6 +55,13 @@ class MockAudioEngine implements AudioEngine {
     }
 }
 
+beforeEach(() => {
+    playHistory = [];
+    lastDuration = -10;
+    lastFrequency = -10;
+    lastPanning = -10;
+});
+
 test("Move around by single events - single line plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
@@ -249,6 +256,37 @@ test("Move around by single events - plot with y and y2", () => {
     expect(lastFrequency).toBe(32.7032);
 });
 
+test("Move around by single events - candlestick", () => {
+    jest.spyOn(global, "setTimeout");
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [
+            { x: 1, high: 10, open: 5, close: 5, low: 8 },
+            { x: 2, high: 11, open: 5, close: 5, low: 9 },
+            { x: 3, high: 12, open: 5, close: 5, low: 10 }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+    expect(setTimeout).toHaveBeenCalledTimes(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    expect(setTimeout).toHaveBeenCalledTimes(5);
+    jest.advanceTimersByTime(250);
+    expect(lastPanning).toBe(-0.98);
+    expect(lastFrequency).toBe(32.7032);
+});
+
 test("Check play", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
@@ -433,4 +471,12 @@ test("Check play all", () => {
         })
     );
     expect(playHistory.length).toBe(3);
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(6000);
+    expect(playHistory.length).toBe(8);
 });
