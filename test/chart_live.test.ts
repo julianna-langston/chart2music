@@ -338,3 +338,43 @@ test("Test appending data to a group that doesn't exist", () => {
     expect(result3?.err).toContain(`unknown group name "c"`);
     expect(result3?.err).toContain(`Valid groups: a, b`);
 });
+
+test("Test appending mismatched data", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: [SUPPORTED_CHART_TYPES.LINE],
+        data: {
+            a: [1, 2],
+            b: [
+                {
+                    x: 1,
+                    open: 8,
+                    close: 8,
+                    high: 10,
+                    low: 5
+                },
+                {
+                    x: 2,
+                    high: 11,
+                    low: 6,
+                    open: 8,
+                    close: 8
+                }
+            ]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            live: true
+        }
+    });
+    expect(err).toBe(null);
+
+    const result = chart?.appendData(3, "b");
+    expect(result?.err).not.toBeNull();
+    expect(result?.err).toBe(
+        "Mismatched type error. Trying to add data of type SimpleDataPoint to target data of type OHLCDataPoint."
+    );
+});

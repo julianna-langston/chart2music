@@ -9,7 +9,8 @@ import {
     interpolateBin,
     sentenceCase,
     generatePointDescription,
-    calculateMetadataByGroup
+    calculateMetadataByGroup,
+    detectDataPointType
 } from "../src/utils";
 
 test("sentence case", () => {
@@ -415,4 +416,20 @@ test("Calculate metadata by group", () => {
             ]
         ])[0].maximumPointIndex
     ).toBe(1);
+});
+
+test("detectDataPointType", () => {
+    expect(detectDataPointType(5)).toBe("number");
+    expect(detectDataPointType({ x: 1, y: 5 })).toBe("SimpleDataPoint");
+    expect(detectDataPointType({ x: 1, y2: 5 })).toBe(
+        "AlternativeAxisDataPoint"
+    );
+    expect(detectDataPointType({ x: 1, high: 5, low: 5 })).toBe(
+        "HighLowDataPoint"
+    );
+    expect(
+        detectDataPointType({ x: 1, open: 5, close: 5, high: 5, low: 5 })
+    ).toBe("OHLCDataPoint");
+    expect(detectDataPointType({})).toBe("unknown");
+    expect(detectDataPointType("{}")).toBe("unknown");
 });

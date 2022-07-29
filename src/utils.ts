@@ -282,3 +282,41 @@ export const initializeAxis = (
         format: userAxis?.format ?? defaultFormat
     };
 };
+
+/**
+ * Types of data points
+ */
+type detectableDataPoint =
+    | "number"
+    | "unknown"
+    | "SimpleDataPoint"
+    | "HighLowDataPoint"
+    | "OHLCDataPoint"
+    | "AlternativeAxisDataPoint";
+
+export const detectDataPointType = (query: unknown): detectableDataPoint => {
+    if (typeof query === "number") {
+        return "number";
+    }
+    if (typeof query !== "object") {
+        return "unknown";
+    }
+
+    if (isSimpleDataPoint(query)) {
+        return "SimpleDataPoint";
+    }
+
+    if (isAlternateAxisDataPoint(query)) {
+        return "AlternativeAxisDataPoint";
+    }
+
+    if (isOHLCDataPoint(query)) {
+        return "OHLCDataPoint";
+    }
+
+    if (isHighLowDataPoint(query)) {
+        return "HighLowDataPoint";
+    }
+
+    return "unknown";
+};

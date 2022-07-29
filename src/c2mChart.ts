@@ -18,7 +18,8 @@ import {
     generatePointDescription,
     usesAxis,
     calculateMetadataByGroup,
-    initializeAxis
+    initializeAxis,
+    detectDataPointType
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -201,17 +202,24 @@ export class c2m {
             };
         }
 
-        if (typeof dataPoint === "number") {
-            this._data[groupIndex].push({
-                x: this._data[groupIndex].length,
-                y: dataPoint
-            });
-        } else {
-            this._data[groupIndex].push(dataPoint);
+        const newDataPoint =
+            typeof dataPoint === "number"
+                ? {
+                      x: this._data[groupIndex].length,
+                      y: dataPoint
+                  }
+                : dataPoint;
+
+        const addedType = detectDataPointType(newDataPoint);
+        const targetType = detectDataPointType(this._data[groupIndex][0]);
+
+        if (addedType !== targetType) {
+            return {
+                err: `Mismatched type error. Trying to add data of type ${addedType} to target data of type ${targetType}.`
+            };
         }
 
-        const newDataPoint =
-            this._data[groupIndex][this._data[groupIndex].length - 1];
+        this._data[groupIndex].push(newDataPoint);
 
         this._xAxis.maximum = Math.max(this._xAxis.maximum, newDataPoint.x);
         if (isSimpleDataPoint(newDataPoint)) {
