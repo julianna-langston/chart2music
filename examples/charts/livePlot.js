@@ -1,7 +1,7 @@
 import { c2mChart } from "../../dist/index.mjs";
+let arr = [1];
 
 export const livePlot = (canvas, cc) => {
-    let arr = [1, 2, 3, 2, 1, 2, 3, 4, 4, 3, 2, 2, 2, 1, 3, 2, 4];
     const datasets = [
         {
             backgroundColor: "rgb(255, 99, 132)",
@@ -43,6 +43,7 @@ export const livePlot = (canvas, cc) => {
         }),
         options: {
             live: true,
+            maxWidth: 20,
             onFocusCallback: ({ index }) => {
                 myChart.setActiveElements([{ datasetIndex: 0, index }]);
                 myChart.update();
@@ -59,6 +60,13 @@ export const livePlot = (canvas, cc) => {
         myChart.data.datasets.data = arr;
         myChart.data.labels = arr.map((num, index) => String(index));
         myChart.update();
+
+        if (arr.length >= 20) {
+            arr.shift();
+            myChart.data.datasets.data = arr;
+            myChart.data.labels = arr.map((num, index) => String(index));
+            myChart.update();
+        }
 
         c2m.appendData(num);
     }, 1000);

@@ -303,7 +303,8 @@ test("Calculate metadata by group", () => {
             maximumPointIndex: 2,
             tenths: 0,
             availableStats: [],
-            statIndex: -1
+            statIndex: -1,
+            inputType: "SimpleDataPoint"
         }
     ]);
 
@@ -327,14 +328,16 @@ test("Calculate metadata by group", () => {
             maximumPointIndex: 2,
             tenths: 0,
             availableStats: [],
-            statIndex: -1
+            statIndex: -1,
+            inputType: "SimpleDataPoint"
         },
         {
             minimumPointIndex: 1,
             maximumPointIndex: 0,
             tenths: 0,
             availableStats: [],
-            statIndex: -1
+            statIndex: -1,
+            inputType: "SimpleDataPoint"
         }
     ]);
 
@@ -353,7 +356,8 @@ test("Calculate metadata by group", () => {
             maximumPointIndex: 2,
             tenths: 0,
             availableStats: [],
-            statIndex: -1
+            statIndex: -1,
+            inputType: "AlternativeAxisDataPoint"
         }
     ]);
 
@@ -372,7 +376,8 @@ test("Calculate metadata by group", () => {
             maximumPointIndex: -1,
             tenths: 0,
             availableStats: ["high", "low"],
-            statIndex: -1
+            statIndex: -1,
+            inputType: "HighLowDataPoint"
         }
     ]);
 
@@ -391,7 +396,8 @@ test("Calculate metadata by group", () => {
             maximumPointIndex: -1,
             tenths: 0,
             availableStats: ["open", "high", "low", "close"],
-            statIndex: -1
+            statIndex: -1,
+            inputType: "OHLCDataPoint"
         }
     ]);
 

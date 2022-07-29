@@ -97,6 +97,7 @@ export type groupedMetadata = {
     tenths: number;
     statIndex: number;
     availableStats: (keyof StatBundle)[];
+    inputType: detectableDataPoint;
 };
 
 /**
@@ -121,6 +122,7 @@ export type c2mOptions = {
     /* The callback invoked when the end user focuses on a data point */
     onFocusCallback?: (point: c2mCallbackType) => void;
     live?: boolean;
+    maxWidth?: number;
 };
 
 /**
@@ -130,3 +132,14 @@ export type c2mGolangReturn = {
     err: null | string;
     data?: c2m;
 };
+
+/**
+ * Types of data points
+ */
+export type detectableDataPoint =
+    | "number"
+    | "unknown"
+    | "SimpleDataPoint"
+    | "HighLowDataPoint"
+    | "OHLCDataPoint"
+    | "AlternativeAxisDataPoint";

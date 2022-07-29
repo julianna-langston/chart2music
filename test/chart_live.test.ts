@@ -79,7 +79,8 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
     expect(mockElementCC.textContent).toContain(`Sonified live line chart`);
     expect(mockElementCC.textContent).toContain(`Press M`);
 
-    chart?.appendData(4);
+    const result1 = chart?.appendData(4);
+    expect(result1?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
     expect(playHistory.length).toBe(0);
@@ -90,13 +91,15 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
         })
     );
     expect(mockElementCC.textContent).toContain(`Monitoring on`);
-    chart?.appendData(6);
+    const result2 = chart?.appendData(6);
+    expect(result2?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
     expect(playHistory.length).toBe(1);
 
     mockElement.dispatchEvent(new Event("blur"));
-    chart?.appendData(5);
+    const result3 = chart?.appendData(5);
+    expect(result3?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
     expect(playHistory.length).toBe(1);
@@ -319,10 +322,10 @@ test("Test appending data to a group that doesn't exist", () => {
     expect(chart._data[1].length).toBe(4);
 
     const result1 = chart?.appendData(5, "a");
-    expect(chart._data[0].length).toBe(5);
-    expect(chart._data[1].length).toBe(4);
     expect(result1).not.toBeUndefined();
     expect(result1?.err).toBeNull();
+    expect(chart._data[0].length).toBe(5);
+    expect(chart._data[1].length).toBe(4);
 
     const result2 = chart?.appendData(5, "b");
     expect(chart._data[0].length).toBe(5);
@@ -375,6 +378,86 @@ test("Test appending mismatched data", () => {
     const result = chart?.appendData(3, "b");
     expect(result?.err).not.toBeNull();
     expect(result?.err).toBe(
-        "Mismatched type error. Trying to add data of type SimpleDataPoint to target data of type OHLCDataPoint."
+        "Mismatched type error. Trying to add data of type number to target data of type OHLCDataPoint."
     );
+});
+
+test("C2M: test maxWidth adjustment (type = number)", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 4, 5],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            live: true,
+            enableSound: false,
+            enableSpeech: false,
+            maxWidth: 6
+        }
+    });
+    expect(err).toBe(null);
+
+    chart?.appendData(4);
+    expect(chart._data[0].length).toBe(6);
+    expect(chart._data[0][5].x).toBe(5);
+    expect(chart._data[0][5].y).toBe(4);
+    expect(chart._data[0][0].x).toBe(0);
+    expect(chart._data[0][0].y).toBe(1);
+    expect(chart._data[0][1].x).toBe(1);
+    expect(chart._data[0][1].y).toBe(2);
+
+    chart?.appendData(2);
+    expect(chart._data[0].length).toBe(6);
+    expect(chart._data[0][5].x).toBe(5);
+    expect(chart._data[0][5].y).toBe(2);
+    expect(chart._data[0][0].x).toBe(0);
+    expect(chart._data[0][0].y).toBe(2);
+    expect(chart._data[0][1].x).toBe(1);
+    expect(chart._data[0][1].y).toBe(3);
+});
+
+test("C2M: test maxWidth adjustment (with y2)", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [
+            { x: 1, y2: 1 },
+            { x: 2, y2: 2 },
+            { x: 3, y2: 1 },
+            { x: 4, y2: 3 },
+            { x: 5, y2: 4 }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            live: true,
+            enableSound: false,
+            enableSpeech: false,
+            maxWidth: 6
+        }
+    });
+    expect(err).toBe(null);
+
+    chart?.appendData({ x: 6, y2: 0 });
+    expect(chart._data[0].length).toBe(6);
+    expect(chart._data[0][5].x).toBe(6);
+    expect(chart._data[0][5].y2).toBe(0);
+    expect(chart._data[0][0].x).toBe(1);
+    expect(chart._data[0][0].y2).toBe(1);
+    expect(chart._data[0][1].x).toBe(2);
+    expect(chart._data[0][1].y2).toBe(2);
+
+    chart?.appendData({ x: 7, y2: 4 });
+    expect(chart._data[0].length).toBe(6);
+    expect(chart._data[0][5].x).toBe(7);
+    expect(chart._data[0][5].y2).toBe(4);
+    expect(chart._data[0][0].x).toBe(2);
+    expect(chart._data[0][0].y2).toBe(2);
+    expect(chart._data[0][1].x).toBe(3);
+    expect(chart._data[0][1].y2).toBe(1);
 });

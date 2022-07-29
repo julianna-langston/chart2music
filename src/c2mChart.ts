@@ -8,7 +8,8 @@ import type {
     groupedMetadata,
     SonifyTypes,
     c2mOptions,
-    c2mGolangReturn
+    c2mGolangReturn,
+    dataSet
 } from "./types";
 import {
     calcPan,
@@ -19,7 +20,9 @@ import {
     usesAxis,
     calculateMetadataByGroup,
     initializeAxis,
-    detectDataPointType
+    detectDataPointType,
+    calculateAxisMinimum,
+    calculateAxisMaximum
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -62,6 +65,25 @@ export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
     };
 };
 
+const checkForNumberInput = (
+    metadataByGroup: groupedMetadata[],
+    data: SonifyTypes["data"]
+) => {
+    if (Array.isArray(data) && typeof data[0] === "number") {
+        metadataByGroup[0].inputType = "number";
+    } else {
+        let index = 0;
+        for (const group in data) {
+            if (detectDataPointType((data as dataSet)[group][0]) === "number") {
+                metadataByGroup[index].inputType = "number";
+            }
+            index++;
+        }
+    }
+
+    return metadataByGroup;
+};
+
 /**
  * Represents a single chart that should be sonified.
  */
@@ -93,6 +115,7 @@ export class c2m {
     private _providedAudioEngine?: AudioEngine;
     private _pauseFlag = false;
     private _monitorMode = false;
+    private _type: SonifyTypes["type"];
 
     /**
      * Constructor
@@ -100,6 +123,7 @@ export class c2m {
      * @param input - data/config provided by the invocation
      */
     constructor(input: SonifyTypes) {
+        this._type = input.type;
         this._providedAudioEngine = input.audioEngine;
         this._title = input.title ?? "";
         this._chartElement = input.element;
@@ -119,6 +143,10 @@ export class c2m {
         this._initializeData(input.data);
 
         this._metadataByGroup = calculateMetadataByGroup(this._data);
+        this._metadataByGroup = checkForNumberInput(
+            this._metadataByGroup,
+            input.data
+        );
 
         this._xAxis = initializeAxis(this._data, "x", input.axes?.x);
         this._yAxis = initializeAxis(this._data, "y", input.axes?.y);
@@ -182,6 +210,44 @@ export class c2m {
     }
 
     /**
+     * If there's a max width, shift off any data points that go over size
+     */
+    private _shrinkToMaxWidth() {
+        if (typeof this._options.maxWidth === "undefined") {
+            return;
+        }
+        for (let i = 0; i < this._data.length; i++) {
+            if (this._data[i].length <= this._options.maxWidth) {
+                continue;
+            }
+
+            const tmp = this._data[i].shift();
+            if (
+                this._xAxis.minimum === tmp.x ||
+                this._xAxis.maximum === tmp.x
+            ) {
+                this._xAxis.minimum = calculateAxisMinimum(this._data, "x");
+                this._xAxis.maximum = calculateAxisMaximum(this._data, "x");
+            }
+            this._yAxis.minimum = calculateAxisMinimum(this._data, "y");
+            this._yAxis.maximum = calculateAxisMaximum(this._data, "y");
+
+            if (isAlternateAxisDataPoint(tmp)) {
+                this._y2Axis.minimum = calculateAxisMinimum(this._data, "y2");
+                this._y2Axis.maximum = calculateAxisMaximum(this._data, "y2");
+            }
+
+            const targetType = this._metadataByGroup[i].inputType;
+
+            if (targetType === "number") {
+                this._data[i].forEach((item, index) => {
+                    this._data[i][index].x = index;
+                });
+            }
+        }
+    }
+
+    /**
      * Append data in a live chart
      *
      * @param dataPoint - the data point
@@ -202,6 +268,15 @@ export class c2m {
             };
         }
 
+        const addedType = detectDataPointType(dataPoint);
+        const targetType = this._metadataByGroup[groupIndex].inputType;
+
+        if (addedType !== targetType) {
+            return {
+                err: `Mismatched type error. Trying to add data of type ${addedType} to target data of type ${targetType}.`
+            };
+        }
+
         const newDataPoint =
             typeof dataPoint === "number"
                 ? {
@@ -209,15 +284,6 @@ export class c2m {
                       y: dataPoint
                   }
                 : dataPoint;
-
-        const addedType = detectDataPointType(newDataPoint);
-        const targetType = detectDataPointType(this._data[groupIndex][0]);
-
-        if (addedType !== targetType) {
-            return {
-                err: `Mismatched type error. Trying to add data of type ${addedType} to target data of type ${targetType}.`
-            };
-        }
 
         this._data[groupIndex].push(newDataPoint);
 
@@ -259,6 +325,7 @@ export class c2m {
             this._playDataPoint(newDataPoint, statIndex, availableStats);
         }
 
+        this._shrinkToMaxWidth();
         return {
             err: null,
             data: newDataPoint
@@ -517,7 +584,20 @@ export class c2m {
             if (!context) {
                 context = new AudioContext();
             }
-            if (this._options.enableSpeech) this._sr.render(this._summary);
+            if (this._options.live) {
+                this._summary = generateSummary({
+                    type: this._type,
+                    title: this._title,
+                    x: this._xAxis,
+                    y: this._yAxis,
+                    dataRows: this._groups.length,
+                    y2: this._y2Axis,
+                    live: this._options.live
+                });
+            }
+            if (this._options.enableSpeech) {
+                this._sr.render(this._summary);
+            }
         });
         this._chartElement.addEventListener("blur", () => {
             this._monitorMode = false;

@@ -13,7 +13,9 @@ import type {
     AxisData,
     StatBundle,
     SUPPORTED_CHART_TYPES,
-    validAxes
+    validAxes,
+    detectableDataPoint,
+    groupedMetadata
 } from "./types";
 
 export const interpolateBin = (
@@ -230,7 +232,9 @@ export const usesAxis = (
  *
  * @param data - the X/Y values
  */
-export const calculateMetadataByGroup = (data: SupportedDataPointType[][]) => {
+export const calculateMetadataByGroup = (
+    data: SupportedDataPointType[][]
+): groupedMetadata[] => {
     return data.map((row) => {
         let yValues: number[] = [];
         let availableStats = [];
@@ -257,7 +261,8 @@ export const calculateMetadataByGroup = (data: SupportedDataPointType[][]) => {
             maximumPointIndex: yValues.indexOf(max),
             tenths,
             availableStats,
-            statIndex: -1
+            statIndex: -1,
+            inputType: detectDataPointType(row[0])
         };
     });
 };
@@ -282,17 +287,6 @@ export const initializeAxis = (
         format: userAxis?.format ?? defaultFormat
     };
 };
-
-/**
- * Types of data points
- */
-type detectableDataPoint =
-    | "number"
-    | "unknown"
-    | "SimpleDataPoint"
-    | "HighLowDataPoint"
-    | "OHLCDataPoint"
-    | "AlternativeAxisDataPoint";
 
 export const detectDataPointType = (query: unknown): detectableDataPoint => {
     if (typeof query === "number") {
