@@ -1,2 +1,7 @@
 Built-in audio engine??
 No audio engine
+
+Negative cases (Live charts)
+    appendData that go beyond explicit clamps
+    appendData for wrong data point type
+    appendData to non-existant group

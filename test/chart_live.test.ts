@@ -94,6 +94,12 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
     jest.advanceTimersByTime(250);
 
     expect(playHistory.length).toBe(1);
+
+    mockElement.dispatchEvent(new Event("blur"));
+    chart?.appendData(5);
+    jest.advanceTimersByTime(250);
+
+    expect(playHistory.length).toBe(1);
 });
 
 test("C2M provides details for live mixed charts", () => {
@@ -166,4 +172,117 @@ test("C2M provides details for live mixed charts", () => {
     jest.advanceTimersByTime(250);
 
     expect(playHistory.length).toBe(0);
+});
+
+test("Test axes min/max adjustment - numbers, no clamps", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: [SUPPORTED_CHART_TYPES.LINE],
+        data: [1, 2, 3, 4, 5],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            live: true
+        }
+    });
+    expect(err).toBe(null);
+
+    expect(chart._yAxis.minimum).toBe(1);
+    expect(chart._yAxis.maximum).toBe(5);
+
+    chart?.appendData(9);
+    expect(chart._yAxis.minimum).toBe(1);
+    expect(chart._yAxis.maximum).toBe(9);
+
+    chart?.appendData(3);
+    expect(chart._yAxis.minimum).toBe(1);
+    expect(chart._yAxis.maximum).toBe(9);
+
+    chart?.appendData(0);
+    expect(chart._yAxis.minimum).toBe(0);
+    expect(chart._yAxis.maximum).toBe(9);
+});
+
+test("Test axes min/max adjustment - high/low, no clamps", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: [SUPPORTED_CHART_TYPES.LINE],
+        data: [
+            {
+                x: 1,
+                high: 10,
+                low: 5
+            },
+            {
+                x: 2,
+                high: 11,
+                low: 6
+            }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            live: true
+        }
+    });
+    expect(err).toBe(null);
+
+    expect(chart._yAxis.minimum).toBe(5);
+    expect(chart._yAxis.maximum).toBe(11);
+
+    chart?.appendData({
+        x: 3,
+        high: 12,
+        low: 2
+    });
+    expect(chart._yAxis.minimum).toBe(2);
+    expect(chart._yAxis.maximum).toBe(12);
+});
+
+test("Test axes min/max adjustment - OHLC, no clamps", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: [SUPPORTED_CHART_TYPES.LINE],
+        data: [
+            {
+                x: 1,
+                open: 8,
+                close: 8,
+                high: 10,
+                low: 5
+            },
+            {
+                x: 2,
+                high: 11,
+                low: 6,
+                open: 8,
+                close: 8
+            }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            live: true
+        }
+    });
+    expect(err).toBe(null);
+
+    expect(chart._yAxis.minimum).toBe(5);
+    expect(chart._yAxis.maximum).toBe(11);
+
+    chart?.appendData({
+        x: 3,
+        high: 12,
+        low: 2,
+        open: 8,
+        close: 2
+    });
+    expect(chart._yAxis.minimum).toBe(2);
+    expect(chart._yAxis.maximum).toBe(12);
 });
