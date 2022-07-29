@@ -86,10 +86,12 @@ export class c2m {
     private _metadataByGroup: groupedMetadata[];
     private _options: c2mOptions = {
         enableSound: true,
-        enableSpeech: true
+        enableSpeech: true,
+        live: false
     };
     private _providedAudioEngine?: AudioEngine;
     private _pauseFlag = false;
+    private _monitorMode = false;
 
     /**
      * Constructor
@@ -137,7 +139,8 @@ export class c2m {
             x: this._xAxis,
             y: this._yAxis,
             dataRows: this._groups.length,
-            y2: this._y2Axis
+            y2: this._y2Axis,
+            live: this._options.live
         });
 
         // Initialize SRB
@@ -175,6 +178,69 @@ export class c2m {
             point: this._data[this._groupIndex][this._pointIndex],
             stat: availableStats[statIndex] ?? ""
         };
+    }
+
+    /**
+     * Append data in a live chart
+     *
+     * @param dataPoint - the data point
+     * @param group - which group to apply to, if there are multiple groups
+     */
+    appendData(dataPoint: SupportedDataPointType | number, group?: string) {
+        let groupIndex = group ? this._groups.indexOf(group) : 0;
+        if (groupIndex === -1) {
+            groupIndex = 0;
+        }
+
+        if (typeof dataPoint === "number") {
+            this._data[groupIndex].push({
+                x: this._data[groupIndex].length,
+                y: dataPoint
+            });
+        } else {
+            this._data[groupIndex].push(dataPoint);
+        }
+
+        const newDataPoint =
+            this._data[groupIndex][this._data[groupIndex].length - 1];
+
+        this._xAxis.maximum = Math.max(this._xAxis.maximum, newDataPoint.x);
+        if (isSimpleDataPoint(newDataPoint)) {
+            this._yAxis.maximum = Math.max(this._yAxis.maximum, newDataPoint.y);
+            this._yAxis.minimum = Math.min(this._yAxis.minimum, newDataPoint.y);
+        } else if (isOHLCDataPoint(newDataPoint)) {
+            this._yAxis.maximum = Math.max(
+                this._yAxis.maximum,
+                newDataPoint.open,
+                newDataPoint.high,
+                newDataPoint.low,
+                newDataPoint.close
+            );
+            this._yAxis.minimum = Math.min(
+                this._yAxis.minimum,
+                newDataPoint.open,
+                newDataPoint.high,
+                newDataPoint.low,
+                newDataPoint.close
+            );
+        } else if (isHighLowDataPoint(newDataPoint)) {
+            this._yAxis.maximum = Math.max(
+                this._yAxis.maximum,
+                newDataPoint.high,
+                newDataPoint.low
+            );
+            this._yAxis.minimum = Math.min(
+                this._yAxis.minimum,
+                newDataPoint.high,
+                newDataPoint.low
+            );
+        }
+
+        if (this._monitorMode) {
+            const { statIndex, availableStats } =
+                this._metadataByGroup[groupIndex];
+            this._playDataPoint(newDataPoint, statIndex, availableStats);
+        }
     }
 
     /**
@@ -379,6 +445,16 @@ export class c2m {
                 }
             },
             {
+                title: "Toggle monitor mode",
+                key: "m",
+                callback: () => {
+                    this._monitorMode = !this._monitorMode;
+                    this._sr.render(
+                        `Monitoring ${this._monitorMode ? "on" : "off"}`
+                    );
+                }
+            },
+            {
                 title: "Open help dialog",
                 key: "h",
                 callback: () => {
@@ -418,6 +494,9 @@ export class c2m {
                 context = new AudioContext();
             }
             if (this._options.enableSpeech) this._sr.render(this._summary);
+        });
+        this._chartElement.addEventListener("blur", () => {
+            this._monitorMode = false;
         });
     }
 
@@ -644,6 +723,24 @@ export class c2m {
         const { statIndex, availableStats } =
             this._metadataByGroup[this._groupIndex];
 
+        const current = this._data[this._groupIndex][this._pointIndex];
+
+        this._playDataPoint(current, statIndex, availableStats);
+        this._onFocus();
+    }
+
+    /**
+     * Play a given data point
+     *
+     * @param current - the data point to play
+     * @param statIndex - which stat is present, if available
+     * @param availableStats - which stats are available
+     */
+    private _playDataPoint(
+        current: SupportedDataPointType,
+        statIndex: groupedMetadata["statIndex"],
+        availableStats: groupedMetadata["availableStats"]
+    ) {
         if (!this._audioEngine && context) {
             this._audioEngine =
                 this._providedAudioEngine ?? new OscillatorAudioEngine(context);
@@ -651,8 +748,6 @@ export class c2m {
         if (!this._audioEngine) {
             return;
         }
-
-        const current = this._data[this._groupIndex][this._pointIndex];
 
         const xPan = calcPan(
             (current.x - this._xAxis.minimum) /
@@ -668,7 +763,6 @@ export class c2m {
             );
 
             this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-            this._onFocus();
 
             return;
         }
@@ -682,7 +776,6 @@ export class c2m {
             );
 
             this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-            this._onFocus();
             return;
         }
 
@@ -699,7 +792,6 @@ export class c2m {
                 );
 
                 this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
-                this._onFocus();
                 return;
             }
 
@@ -720,8 +812,6 @@ export class c2m {
                     );
                 }, SPEEDS[this._speedRateIndex] * interval * index);
             });
-
-            this._onFocus();
         }
     }
 

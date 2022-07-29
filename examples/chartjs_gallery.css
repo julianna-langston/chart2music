@@ -8,7 +8,7 @@
 }
 [role='dialog']{
     width: 400px;
-    height: 400px;
+    height: fit-content;
     position: absolute;
     top: 200px;
     left: calc((100vw / 2) - 200px);

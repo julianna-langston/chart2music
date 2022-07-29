@@ -37,6 +37,7 @@ type SummaryTypes = {
     x: AxisData;
     y: AxisData;
     y2?: AxisData;
+    live?: boolean;
 };
 export const generateSummary = ({
     type,
@@ -44,13 +45,18 @@ export const generateSummary = ({
     dataRows,
     x,
     y,
-    y2
+    y2,
+    live = false
 }: SummaryTypes) => {
     const text = [];
     if (Array.isArray(type)) {
-        text.push(`Sonified ${type.sort().join("-")} chart "${title}"`);
+        text.push(
+            `Sonified ${live ? "live " : ""}${type
+                .sort()
+                .join("-")} chart "${title}"`
+        );
     } else {
-        text.push(`Sonified ${type} chart "${title}"`);
+        text.push(`Sonified ${live ? "live " : ""}${type} chart "${title}"`);
     }
     if (dataRows > 1) {
         text.push(`contains ${dataRows} categories`);
@@ -74,9 +80,9 @@ export const generateSummary = ({
         );
     }
 
-    return `${text.join(
-        ", "
-    )}. Use arrow keys to navigate. Press H for more hotkeys.`;
+    return `${text.join(", ")}. Use arrow keys to navigate.${
+        live ? " Press M to toggle monitor mode." : ""
+    } Press H for more hotkeys.`;
 };
 
 export const calculateAxisMinimum = (

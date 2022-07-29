@@ -4,6 +4,7 @@ import { floatingBarChart } from "./charts/floatingBar.js";
 import { largeDataLine } from "./charts/largeDataLine.js";
 import { barLinePlot } from "./charts/barLine.js";
 import { bandPlot } from "./charts/bandPlot.js";
+import { livePlot } from "./charts/livePlot.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -14,7 +15,8 @@ window.addEventListener("load", () => {
         floatingBarChart,
         largeDataLine,
         barLinePlot,
-        bandPlot
+        bandPlot,
+        livePlot
     ];
 
     chartFn.forEach((fn) => {
