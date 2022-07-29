@@ -28,10 +28,10 @@ module.exports = {
             statements: 100
         },
         "./src/c2mChart.ts": {
-            branches: 85,
-            functions: 85,
-            lines: 85,
-            statements: 85
+            branches: 90,
+            functions: 100,
+            lines: 90,
+            statements: 90
         },
         "./src/dataPoint.ts": {
             branches: 100,
