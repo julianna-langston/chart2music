@@ -134,7 +134,7 @@ export class c2m {
         ) {
             this._chartElement.setAttribute(
                 "aria-label",
-                `Sonified chart, ${this._title}`
+                `${this._title}, Sonified chart`
             );
         }
 
@@ -968,3 +968,5 @@ export class c2m {
         this._flagNewStat = false;
     }
 }
+
+export default c2mChart;
