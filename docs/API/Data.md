@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+sidebar_label: Data
+---
+
 # Providing data for a chart
 
 You can add data to a chart in many different ways. You could provide data like this:

@@ -31,6 +31,9 @@
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
         "clean": "rimraf ./dist ./coverage",
+        "docs-start": "docusaurus start",
+        "docs-build": "docusaurus build",
+        "docs-serve": "docusaurus serve",
         "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\" \"jest -o\"",
         "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
@@ -40,6 +43,8 @@
     },
     "license": "MIT",
     "devDependencies": {
+        "@docusaurus/core": "^2.0.1",
+        "@docusaurus/preset-classic": "^2.0.1",
         "@rollup/plugin-typescript": "^8.3.3",
         "@types/jest": "^28.1.6",
         "@typescript-eslint/eslint-plugin": "^5.31.0",
