@@ -120,7 +120,7 @@ export class c2m {
         x?: AxisData;
         y?: AxisData;
         y2?: AxisData;
-    };
+    } = {};
 
     /**
      * Constructor
@@ -132,7 +132,6 @@ export class c2m {
         this._providedAudioEngine = input.audioEngine;
         this._title = input.title ?? "";
         this._chartElement = input.element;
-        this._explicitAxes = input.axes ?? {};
 
         if (
             !this._chartElement.hasAttribute("alt") &&
@@ -188,6 +187,22 @@ export class c2m {
      * @param axes
      */
     setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
+        // Update axes
+        this._explicitAxes = {
+            x: {
+                ...(this._explicitAxes.x ?? {}),
+                ...(axes?.x ?? {})
+            },
+            y: {
+                ...(this._explicitAxes.y ?? {}),
+                ...(axes?.y ?? {})
+            },
+            y2: {
+                ...(this._explicitAxes.y2 ?? {}),
+                ...(axes?.y2 ?? {})
+            }
+        };
+
         this._initializeData(data);
 
         this._metadataByGroup = calculateMetadataByGroup(this._data);
@@ -196,19 +211,14 @@ export class c2m {
             data
         );
 
-        this._xAxis = initializeAxis(this._data, "x", {
-            ...this._explicitAxes.x,
-            ...axes?.x
-        });
-        this._yAxis = initializeAxis(this._data, "y", {
-            ...this._explicitAxes.y,
-            ...axes?.y
-        });
+        this._xAxis = initializeAxis(this._data, "x", this._explicitAxes.x);
+        this._yAxis = initializeAxis(this._data, "y", this._explicitAxes.y);
         if (usesAxis(this._data, "y2")) {
-            this._y2Axis = initializeAxis(this._data, "y2", {
-                ...this._explicitAxes.y2,
-                ...axes?.y2
-            });
+            this._y2Axis = initializeAxis(
+                this._data,
+                "y2",
+                this._explicitAxes.y2
+            );
         }
 
         // Generate summary
