@@ -75,7 +75,7 @@ All of our examples so far have been ignoring the fact that the `c2mChart` funct
 
 `c2mChart` returns a golang-style object with 2 properties:
 * `err` - either `null` if there was no error, or a string with the errors that came about while generating your chart.
-* `data` - only provided if `err` is not null, `data` provides an instance of your chart. You can use this object to call the available chart methods, `appendData`.
+* `data` - only provided if `err` is not null, `data` provides an instance of your chart. You can use this object to call the available chart methods, `appendData` and `setData`.
 
 
 Add data to a chart in real time.
@@ -95,4 +95,37 @@ const {data: chart} = c2mChart({
 setInterval(() => {
     chart.appendData(Math.random());
 }, 5000);
+```
+
+This way, you can append one data point at a time. This is ideal for streaming a live chart, but sometimes you need to do more...
+
+## Re-setting data
+
+If you want to reflash the entire contents of the chart, you can use the method `setData`.
+
+```html
+<canvas id="myElement"></canvas>
+<button id="randomize">Randomize data</button>
+```
+
+```js
+const generateData = () => {
+    return [
+        Math.random(),
+        Math.random(),
+        Math.random(),
+        Math.random(),
+    ];
+};
+
+const {data: chart} = c2mChart({
+    title: "Random sets",
+    type: "line",
+    element: myElement,
+    data: generateData()
+});
+
+document.getElementById("randomize").addEventListener("click", () => {
+    chart.setData(generateData());
+});
 ```

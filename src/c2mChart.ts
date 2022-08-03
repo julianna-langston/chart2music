@@ -116,6 +116,11 @@ export class c2m {
     private _pauseFlag = false;
     private _monitorMode = false;
     private _type: SonifyTypes["type"];
+    private _explicitAxes: {
+        x?: AxisData;
+        y?: AxisData;
+        y2?: AxisData;
+    };
 
     /**
      * Constructor
@@ -127,6 +132,7 @@ export class c2m {
         this._providedAudioEngine = input.audioEngine;
         this._title = input.title ?? "";
         this._chartElement = input.element;
+        this._explicitAxes = input.axes ?? {};
 
         if (
             !this._chartElement.hasAttribute("alt") &&
@@ -140,19 +146,7 @@ export class c2m {
 
         this._ccElement = input.cc ?? this._chartElement;
 
-        this._initializeData(input.data);
-
-        this._metadataByGroup = calculateMetadataByGroup(this._data);
-        this._metadataByGroup = checkForNumberInput(
-            this._metadataByGroup,
-            input.data
-        );
-
-        this._xAxis = initializeAxis(this._data, "x", input.axes?.x);
-        this._yAxis = initializeAxis(this._data, "y", input.axes?.y);
-        if (usesAxis(this._data, "y2")) {
-            this._y2Axis = initializeAxis(this._data, "y2", input.axes?.y2);
-        }
+        this.setData(input.data, input.axes);
 
         if (input?.options) {
             this._options = {
@@ -162,15 +156,7 @@ export class c2m {
         }
 
         // Generate summary
-        this._summary = generateSummary({
-            type: input.type,
-            title: this._title,
-            x: this._xAxis,
-            y: this._yAxis,
-            dataRows: this._groups.length,
-            y2: this._y2Axis,
-            live: this._options.live
-        });
+        this._generateSummary();
 
         // Initialize SRB
         ScreenReaderBridge.addAriaAttributes(this._ccElement);
@@ -178,6 +164,55 @@ export class c2m {
 
         this._initializeKeyActionMap();
         this._startListening();
+    }
+
+    /**
+     * Generate (or regenerate) chart summary
+     */
+    public _generateSummary() {
+        this._summary = generateSummary({
+            type: this._type,
+            title: this._title,
+            x: this._xAxis,
+            y: this._yAxis,
+            dataRows: this._groups.length,
+            y2: this._y2Axis,
+            live: this._options.live
+        });
+    }
+
+    /**
+     * Assign or re-assign data values
+     *
+     * @param data
+     * @param axes
+     */
+    setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
+        this._initializeData(data);
+
+        this._metadataByGroup = calculateMetadataByGroup(this._data);
+        this._metadataByGroup = checkForNumberInput(
+            this._metadataByGroup,
+            data
+        );
+
+        this._xAxis = initializeAxis(this._data, "x", {
+            ...this._explicitAxes.x,
+            ...axes?.x
+        });
+        this._yAxis = initializeAxis(this._data, "y", {
+            ...this._explicitAxes.y,
+            ...axes?.y
+        });
+        if (usesAxis(this._data, "y2")) {
+            this._y2Axis = initializeAxis(this._data, "y2", {
+                ...this._explicitAxes.y2,
+                ...axes?.y2
+            });
+        }
+
+        // Generate summary
+        this._generateSummary();
     }
 
     /**
@@ -585,15 +620,7 @@ export class c2m {
                 context = new AudioContext();
             }
             if (this._options.live) {
-                this._summary = generateSummary({
-                    type: this._type,
-                    title: this._title,
-                    x: this._xAxis,
-                    y: this._yAxis,
-                    dataRows: this._groups.length,
-                    y2: this._y2Axis,
-                    live: this._options.live
-                });
+                this._generateSummary();
             }
             if (this._options.enableSpeech) {
                 this._sr.render(this._summary);
