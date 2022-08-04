@@ -1,4 +1,8 @@
-# Top-level config
+---
+sidebar_position: 2
+---
+
+# Config
 
 When calling `c2mChart`, there are several different config items that you can provide:
 

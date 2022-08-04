@@ -1,3 +1,8 @@
+---
+sidebar_position: 2
+sidebar_label: Integration
+---
+
 # Using on your site
 
 Chart2Music can be integrated into a vanilla HTML website, or be used in a more complex development stack. Here are different examples.
