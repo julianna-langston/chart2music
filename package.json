@@ -66,5 +66,9 @@
         "ts-jest": "^28.0.7",
         "tslib": "^2.4.0",
         "typescript": "^4.7.4"
+    },
+    "resolutions": {
+        "got": "^11.8.5",
+        "trim": "^0.0.3"
     }
 }
