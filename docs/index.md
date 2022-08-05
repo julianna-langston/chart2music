@@ -1,11 +1,14 @@
 ---
+title: Chart2Music
 sidebar_position: 1
 sidebar_label: Introduction
 ---
 
-# Chart2Music
+<div align="center">
+    <img src="/img/logo.jpg" alt="Logo showing an alto clef starting a musical staff with whole notes. The staff's lines turn into a line chart." width="300px" height="175px" />
 
-Chart2Music turns charts into music so the blind can hear data.
+    Chart2Music turns charts into music so the blind can hear data.
+</div>
 
 [![npm version](https://badge.fury.io/js/chart2music.svg)](https://badge.fury.io/js/chart2music)
 ![Build verification](https://github.com/julianna-langston/chart2music/actions/workflows/ci-build.yml/badge.svg)
@@ -22,7 +25,7 @@ Chart2Music turns charts into music so the blind can hear data.
 
 Tab to, or click on, the chart to get started.
 
-<iframe src="/demo.html" aria-label="Demo charts" width="500px" height="350px" />
+<iframe src="/demo.html" aria-label="Demo charts" width="500px" height="330px" />
 
 ## Examples
 

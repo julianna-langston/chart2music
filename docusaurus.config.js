@@ -19,6 +19,9 @@ const config = {
             ({
                 docs: {
                     sidebarPath: require.resolve("./sidebars.js")
+                },
+                theme: {
+                    customCss: require.resolve("./static/custom.css")
                 }
             })
         ]
@@ -35,6 +38,10 @@ const config = {
             },
             navbar: {
                 items: [
+                    {
+                        to: "/docs/",
+                        label: "Chart2Music"
+                    },
                     {
                         to: "https://codepen.io/collection/BNedqm",
                         label: "Examples",
