@@ -22,7 +22,13 @@ Chart2Music turns charts into music so the blind can hear data.
 
 For code examples in action, see the [Chart2Music Examples collection on Codepen](https://codepen.io/collection/BNedqm).
 
-Some of the examples you will find there include:
+Some of the examples you will find there include a variety of chart types, like:
 * [Simple, no frills code example](https://codepen.io/chart2music/pen/ExEmqbr).
 * [Multi-line plot](https://codepen.io/chart2music/full/gOegZpm).
 * [Bar-line plot](https://codepen.io/chart2music/full/QWmdpOJ).
+
+You can also find examples of integrations with other visualization libraries, like:
+* [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ)
+* [with Chartist.js](https://codepen.io/chart2music/full/LYdmPNj)
+* [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr)
+* [with Morris.js](https://codepen.io/chart2music/full/abYGobm)
