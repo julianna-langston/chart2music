@@ -18,6 +18,12 @@ Chart2Music turns charts into music so the blind can hear data.
 * **Easier maintenance for accessibility requirements** - Traditionally, charts and graphs would be made accessible using alt text, which can be difficult to generate or maintain, or data tables, which provide a poor end user experience. C2M provides an *automated* solution while *enhancing* the user experience.
 * **Visual agnostic** - Use C2M alongside your charts, regardless of how your visuals were created. ChartJS? D3.js? An image? C2M works in parallel with your visuals.
 
+## Demo
+
+Tab to, or click on, the chart to get started.
+
+<iframe src="/demo.html" aria-label="Demo charts" width="500px" height="350px" />
+
 ## Examples
 
 For code examples in action, see the [Chart2Music Examples collection on Codepen](https://codepen.io/collection/BNedqm).
