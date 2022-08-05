@@ -41,7 +41,7 @@ You can also find examples of integrations with other visualization libraries, l
 * [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ)
 * [with AnyChart](https://codepen.io/chart2music/full/abYGoME)
 * [with Chartist.js](https://codepen.io/chart2music/full/LYdmPNj)
-* [with NVD3.js](https://codepen.io/chart2music/pen/jOzxNQW)
+* [with NVD3.js](https://codepen.io/chart2music/full/jOzxNQW)
 * [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr)
 * [with Morris.js](https://codepen.io/chart2music/full/abYGobm)
 * [with Frappe](https://codepen.io/chart2music/full/QWmrWWE)
