@@ -28,6 +28,9 @@
     "bugs": {
         "url": "https://github.com/julianna-langston/chart2music/issues"
     },
+    "engines": {
+        "node": ">16.14"
+    },
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
         "clean": "rimraf ./dist ./coverage",
