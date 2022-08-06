@@ -36,6 +36,13 @@ const config = {
                     autoCollapseCategories: true
                 }
             },
+            metadata: [
+                {
+                    name: "keywords",
+                    content:
+                        "accessibility, a11y, charts, graphs, data visualization, dataviz, sonification, audio graphs"
+                }
+            ],
             navbar: {
                 items: [
                     {

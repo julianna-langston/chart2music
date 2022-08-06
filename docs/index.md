@@ -7,13 +7,14 @@ sidebar_label: Introduction
 <div align="center">
     <img src="/img/logo.jpg" alt="Logo showing an alto clef starting a musical staff with whole notes. The staff's lines turn into a line chart." width="300px" height="175px" />
 
-    Chart2Music turns charts into music so the blind can hear data.
 </div>
 
-[![npm version](https://badge.fury.io/js/chart2music.svg)](https://badge.fury.io/js/chart2music)
-![Build verification](https://github.com/julianna-langston/chart2music/actions/workflows/ci-build.yml/badge.svg)
-[![Known Vulnerabilities](https://snyk.io/test/github/julianna-langston/chart2music/badge.svg)](https://snyk.io/test/github/julianna-langston/chart2music)
-[![codecov](https://codecov.io/gh/julianna-langston/chart2music/branch/main/graph/badge.svg?token=4T7MV9XKFS)](https://codecov.io/gh/julianna-langston/chart2music)
+<p align="center">Chart2Music turns charts into music so the blind can hear data.</p>
+
+[![npm badge](https://badge.fury.io/js/chart2music.svg)](https://badge.fury.io/js/chart2music)
+![Build verification badge](https://github.com/julianna-langston/chart2music/actions/workflows/ci-build.yml/badge.svg)
+[![Vulnerabilities badge](https://snyk.io/test/github/julianna-langston/chart2music/badge.svg)](https://snyk.io/test/github/julianna-langston/chart2music)
+[![Code coverage badge](https://codecov.io/gh/julianna-langston/chart2music/branch/main/graph/badge.svg?token=4T7MV9XKFS)](https://codecov.io/gh/julianna-langston/chart2music)
 
 ## Key features
 
@@ -37,6 +38,7 @@ Some of the examples you will find there include a variety of chart types, like:
 * [Bar-line plot](https://codepen.io/chart2music/full/QWmdpOJ).
 
 You can also find examples of integrations with other visualization libraries, like:
+* [with Chart.js](https://codepen.io/chart2music/pen/YzaVxPK)
 * [with D3.js](https://codepen.io/chart2music/full/gOezOaY)
 * [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ)
 * [with AnyChart](https://codepen.io/chart2music/full/abYGoME)
