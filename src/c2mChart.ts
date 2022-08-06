@@ -32,6 +32,7 @@ import {
     isSimpleDataPoint
 } from "./dataPoint";
 import type { SupportedDataPointType } from "./dataPoint";
+import { english } from "./language";
 
 let context: null | AudioContext = null;
 
@@ -304,13 +305,7 @@ export class c2m {
     ): { err: string | null; data?: SupportedDataPointType } {
         const groupIndex = group ? this._groups.indexOf(group) : 0;
         if (groupIndex === -1) {
-            return {
-                err: `Error adding data to unknown group name "${group}". ${
-                    this._groups.length === 1
-                        ? "There are no group names."
-                        : `Valid groups: ${this._groups.join(", ")}`
-                } `
-            };
+            return { err: english.error_unknown_group(group, this._groups) };
         }
 
         const addedType = detectDataPointType(dataPoint);
@@ -318,7 +313,7 @@ export class c2m {
 
         if (addedType !== targetType) {
             return {
-                err: `Mismatched type error. Trying to add data of type ${addedType} to target data of type ${targetType}.`
+                err: english.error_mismatched_type(addedType, targetType)
             };
         }
 
@@ -384,7 +379,7 @@ export class c2m {
         this._keyEventManager = new KeyboardEventManager(this._chartElement);
         this._keyEventManager.registerKeyEvents([
             {
-                title: "Go to next point",
+                title: english.hotkey_right(),
                 key: "ArrowRight",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -394,7 +389,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go to previous point",
+                title: english.hotkey_left(),
                 key: "ArrowLeft",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -404,7 +399,7 @@ export class c2m {
                 }
             },
             {
-                title: "Play right",
+                title: english.hotkey_play_right(),
                 key: "Shift+ArrowRight",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -412,7 +407,7 @@ export class c2m {
                 }
             },
             {
-                title: "Play left",
+                title: english.hotkey_play_left(),
                 key: "Shift+ArrowLeft",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -420,7 +415,7 @@ export class c2m {
                 }
             },
             {
-                title: "Cancel play",
+                title: english.hotkey_cancel_play(),
                 key: "Ctrl+Control",
                 keyDescription: "Control",
                 callback: () => {
@@ -428,7 +423,7 @@ export class c2m {
                 }
             },
             {
-                title: "Navigate to previous statistic",
+                title: english.hotkey_previous_stat(),
                 key: "ArrowUp",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -439,7 +434,7 @@ export class c2m {
                 }
             },
             {
-                title: "Navigate to next statistic",
+                title: english.hotkey_next_stat(),
                 key: "ArrowDown",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -450,7 +445,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go to previous category",
+                title: english.hotkey_previous_category(),
                 key: "PageUp",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -463,7 +458,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go to next category",
+                title: english.hotkey_next_category(),
                 key: "PageDown",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -476,7 +471,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go to first point",
+                title: english.hotkey_first(),
                 key: "Home",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -485,7 +480,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go to last point",
+                title: english.hotkey_end(),
                 key: "End",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -494,7 +489,7 @@ export class c2m {
                 }
             },
             {
-                title: "Play all left",
+                title: english.hotkey_play_all_left(),
                 key: "Shift+Home",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -502,7 +497,7 @@ export class c2m {
                 }
             },
             {
-                title: "Play all right",
+                title: english.hotkey_play_all_right(),
                 key: "Shift+End",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -510,7 +505,7 @@ export class c2m {
                 }
             },
             {
-                title: "Replay",
+                title: english.hotkey_replay(),
                 key: " ",
                 keyDescription: "Spacebar",
                 callback: () => {
@@ -521,7 +516,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go backward by a tenth",
+                title: english.hotkey_backward_tenth(),
                 key: "Ctrl+ArrowLeft",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -530,7 +525,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go forward by a tenth",
+                title: english.hotkey_forward_tenth(),
                 key: "Ctrl+ArrowRight",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -539,7 +534,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go to minimum value",
+                title: english.hotkey_jump_minimum(),
                 key: "[",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -549,7 +544,7 @@ export class c2m {
                 }
             },
             {
-                title: "Go to maximum value",
+                title: english.hotkey_jump_minimum(),
                 key: "]",
                 callback: () => {
                     clearInterval(this._playListInterval);
@@ -559,39 +554,41 @@ export class c2m {
                 }
             },
             {
-                title: "Speed up",
+                title: english.hotkey_speed_incr(),
                 key: "q",
                 callback: () => {
                     clearInterval(this._playListInterval);
                     if (this._speedRateIndex < SPEEDS.length - 1) {
                         this._speedRateIndex++;
                     }
-                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+                    this._sr.render(
+                        english.speed(SPEEDS[this._speedRateIndex])
+                    );
                 }
             },
             {
-                title: "Slow down",
+                title: english.hotkey_speed_decr(),
                 key: "e",
                 callback: () => {
                     clearInterval(this._playListInterval);
                     if (this._speedRateIndex > 0) {
                         this._speedRateIndex--;
                     }
-                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
-                }
-            },
-            {
-                title: "Toggle monitor mode",
-                key: "m",
-                callback: () => {
-                    this._monitorMode = !this._monitorMode;
                     this._sr.render(
-                        `Monitoring ${this._monitorMode ? "on" : "off"}`
+                        english.speed(SPEEDS[this._speedRateIndex])
                     );
                 }
             },
             {
-                title: "Open help dialog",
+                title: english.hotkey_toggle_monitor(),
+                key: "m",
+                callback: () => {
+                    this._monitorMode = !this._monitorMode;
+                    this._sr.render(english.monitoring(this._monitorMode));
+                }
+            },
+            {
+                title: english.hotkey_help(),
                 key: "h",
                 callback: () => {
                     clearInterval(this._playListInterval);
