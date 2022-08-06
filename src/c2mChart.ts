@@ -626,9 +626,6 @@ export class c2m {
      */
     private _startListening() {
         this._chartElement.addEventListener("focus", () => {
-            if (!context) {
-                context = new AudioContext();
-            }
             if (this._options.live) {
                 this._generateSummary();
             }
@@ -882,6 +879,9 @@ export class c2m {
         statIndex: groupedMetadata["statIndex"],
         availableStats: groupedMetadata["availableStats"]
     ) {
+        if (!context) {
+            context = new AudioContext();
+        }
         if (!this._audioEngine && context) {
             this._audioEngine =
                 this._providedAudioEngine ?? new OscillatorAudioEngine(context);
