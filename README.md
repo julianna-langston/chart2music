@@ -59,3 +59,5 @@ You can also find examples of integrations with other visualization libraries:
 * [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr)
 * [with Morris.js](https://codepen.io/chart2music/full/abYGobm)
 * [with Frappe](https://codepen.io/chart2music/full/QWmrWWE)
+
+Go to [chart2music.com](https://www.chart2music.com) for the full tutorial.
