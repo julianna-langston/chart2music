@@ -141,5 +141,11 @@ document.getElementById("randomize").addEventListener("click", () => {
 ```
 
 :::caution
-Re-setting data can confuse users. Ideally, you should only reset data as the result of a user's action. For example, you can reset the chart based on the user clicking a button or making a selection from a form field.
+When you reset data, the user's focus moves back to the beginning of the chart. This behavior could confuse users. It's best practices to only reset data as the result of a user's action. For example, you can reset the chart based on the user clicking a button or making a selection from a form field.
+:::
+
+:::note
+When you reset data, the user will be informed which chart was updated, if the chart has a title. If there are multiple update-able charts on a page, be sure to include a title for each of them. This will help a user to distinguish which chart changed.
+
+Also, since users will be informed every time a chart is updated, if you update your charts constantly, you will potentially annoy your users. If you need to regularly update your chart, consider using `appendData`, which only updates users if they've enabled monitoring mode.
 :::

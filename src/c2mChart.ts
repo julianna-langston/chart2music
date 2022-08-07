@@ -145,7 +145,7 @@ export class c2m {
 
         this._ccElement = input.cc ?? this._chartElement;
 
-        this.setData(input.data, input.axes);
+        this._setData(input.data, input.axes);
 
         if (input?.options) {
             this._options = {
@@ -186,7 +186,7 @@ export class c2m {
      * @param data
      * @param axes
      */
-    setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
+    private _setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
         // Update axes
         this._explicitAxes = {
             x: {
@@ -223,6 +223,21 @@ export class c2m {
 
         // Generate summary
         this._generateSummary();
+    }
+
+    /**
+     * Assign or re-assign data values
+     *
+     * @param data
+     * @param axes
+     */
+    setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
+        this._setData(data, axes);
+
+        this._pointIndex = 0;
+        this._groupIndex = 0;
+
+        this._sr.render(`${this._title || "Chart"} updated`);
     }
 
     /**
