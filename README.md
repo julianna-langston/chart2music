@@ -22,7 +22,7 @@ Include the following script tag on your page:
 <script src="https://cdn.jsdelivr.net/npm/chart2music"></script>
 ```
 
-On your page, you will also need your chart. For the sake of similicity, here's an example with an image:
+On your page, you will also need your chart. For the sake of simplicity, here's an example with an image:
 
 ```html
 <img src="mychart.png" id="MyChart" />
