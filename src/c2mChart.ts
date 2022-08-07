@@ -262,6 +262,10 @@ export class c2m {
         if (typeof this._options.maxWidth === "undefined") {
             return;
         }
+
+        let recalculateX = false,
+            recalculateY = false,
+            recalculateY2 = false;
         for (let i = 0; i < this._data.length; i++) {
             if (this._data[i].length <= this._options.maxWidth) {
                 continue;
@@ -272,15 +276,12 @@ export class c2m {
                 this._xAxis.minimum === tmp.x ||
                 this._xAxis.maximum === tmp.x
             ) {
-                this._xAxis.minimum = calculateAxisMinimum(this._data, "x");
-                this._xAxis.maximum = calculateAxisMaximum(this._data, "x");
+                recalculateX = true;
             }
-            this._yAxis.minimum = calculateAxisMinimum(this._data, "y");
-            this._yAxis.maximum = calculateAxisMaximum(this._data, "y");
+            recalculateY = true;
 
             if (isAlternateAxisDataPoint(tmp)) {
-                this._y2Axis.minimum = calculateAxisMinimum(this._data, "y2");
-                this._y2Axis.maximum = calculateAxisMaximum(this._data, "y2");
+                recalculateY2 = true;
             }
 
             const targetType = this._metadataByGroup[i].inputType;
@@ -290,6 +291,19 @@ export class c2m {
                     this._data[i][index].x = index;
                 });
             }
+        }
+
+        if (recalculateX) {
+            this._xAxis.minimum = calculateAxisMinimum(this._data, "x");
+            this._xAxis.maximum = calculateAxisMaximum(this._data, "x");
+        }
+        if (recalculateY) {
+            this._yAxis.minimum = calculateAxisMinimum(this._data, "y");
+            this._yAxis.maximum = calculateAxisMaximum(this._data, "y");
+        }
+        if (recalculateY2) {
+            this._y2Axis.minimum = calculateAxisMinimum(this._data, "y2");
+            this._y2Axis.maximum = calculateAxisMaximum(this._data, "y2");
         }
     }
 
