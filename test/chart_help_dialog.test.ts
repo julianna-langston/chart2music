@@ -11,14 +11,16 @@ test("Launch help dialog using keyboard command", () => {
     const spyRemove = jest.spyOn(document.body, "removeChild");
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const { err, data: chart } = c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     document.body.focus();
 

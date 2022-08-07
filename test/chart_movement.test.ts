@@ -13,10 +13,12 @@ test("Move around by single events", () => {
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -89,17 +91,19 @@ test("Move around by single events", () => {
 test("Move around by single events", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const { err, data: chart } = c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: [
             1, 2, 3, 0, 4, 5, 4, 3, 1, 2, 3, 0, 4, 5, 4, 3, 1, 2, 3, 0, 4, 5, 4,
             3, 1, 2, 3, 0, 4, 5, 4, 3
         ],
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -183,10 +187,12 @@ test("Movement for a grouped chart", () => {
             ]
         },
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -282,10 +288,12 @@ test("Movement for a chart with stats", () => {
             ]
         },
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -400,10 +408,12 @@ test("Movement for a chart with a y2 axis and formatting", () => {
             }
         },
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
@@ -499,11 +509,11 @@ test("Test onSelectCallback", () => {
         options: {
             onSelectCallback: ({ index }) => {
                 lastSelectedIndex = index;
-            }
+            },
+            enableSound: false
         }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 

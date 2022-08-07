@@ -62,7 +62,7 @@ test("Move around by single events", () => {
 test("Movement for a grouped chart", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const { err, data: chart } = c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
@@ -79,11 +79,11 @@ test("Movement for a grouped chart", () => {
         element: mockElement,
         cc: mockElementCC,
         options: {
-            onFocusCallback
+            onFocusCallback,
+            enableSound: false
         }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 

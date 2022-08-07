@@ -241,20 +241,6 @@ export class c2m {
     }
 
     /**
-     * Set options for the interaction model of the chart
-     *
-     * @param option - key/value pairs for options and their possible values
-     * @param [option.enableSound] - enables sound. Set to FALSE to mute.
-     * @param [option.enableSpeech] - enables speech. Set to FALSE to gag.
-     */
-    setOptions(option: c2mOptions) {
-        this._options = {
-            ...this._options,
-            ...option
-        };
-    }
-
-    /**
      * Get the data point that the user is currently focused on
      *
      * @returns - the current group name and data point

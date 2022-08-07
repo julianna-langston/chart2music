@@ -102,10 +102,12 @@ test("Move at boundaries - grouped and stat'd", () => {
             ]
         },
         element: mockElement,
-        cc: mockElementCC
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
     expect(err).toBe(null);
-    chart?.setOptions({ enableSound: false });
 
     mockElement.dispatchEvent(new Event("focus"));
 
