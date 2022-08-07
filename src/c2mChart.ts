@@ -521,6 +521,16 @@ export class c2m {
                 }
             },
             {
+                title: "Select item",
+                key: "Enter",
+                callback: () => {
+                    this._options.onSelectCallback?.({
+                        slice: this._groups[this._groupIndex],
+                        index: this._pointIndex
+                    });
+                }
+            },
+            {
                 title: "Go backward by a tenth",
                 key: "Ctrl+ArrowLeft",
                 callback: () => {

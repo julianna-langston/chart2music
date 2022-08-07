@@ -485,3 +485,53 @@ test("Movement for a chart with a y2 axis and formatting", () => {
 
 // with formatting
 // enough data to test moveByTenths
+
+test("Test onSelectCallback", () => {
+    let lastSelectedIndex = -1;
+
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            onSelectCallback: ({ index }) => {
+                lastSelectedIndex = index;
+            }
+        }
+    });
+    expect(err).toBe(null);
+    chart?.setOptions({ enableSound: false });
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 2");
+    expect(chart?.getCurrent()).toStrictEqual({
+        group: "",
+        stat: "",
+        point: {
+            x: 1,
+            y: 2
+        }
+    });
+
+    // Select item
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Enter"
+        })
+    );
+    expect(lastSelectedIndex).toBe(1);
+});

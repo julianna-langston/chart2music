@@ -121,6 +121,8 @@ export type c2mOptions = {
     enableSpeech?: boolean;
     /* The callback invoked when the end user focuses on a data point */
     onFocusCallback?: (point: c2mCallbackType) => void;
+    /* The callback invoked when the user presses enter */
+    onSelectCallback?: (point: c2mCallbackType) => void;
     live?: boolean;
     maxWidth?: number;
 };

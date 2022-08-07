@@ -115,6 +115,11 @@ export const barLinePlot = (canvas, cc) => {
                 myChart.setActiveElements([
                     { datasetIndex: slices.indexOf(slice), index }
                 ]);
+            },
+            onSelectCallback: ({ index }) => {
+                alert(
+                    `${barLineLabels[index]} - ${adjClose[index]}, ${volume[index]}`
+                );
             }
         }
     });
