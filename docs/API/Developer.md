@@ -139,3 +139,7 @@ document.getElementById("randomize").addEventListener("click", () => {
     chart.setData(generateData());
 });
 ```
+
+:::caution
+Re-setting data can confuse users. Ideally, you should only reset data as the result of a user's action. For example, you can reset the chart based on the user clicking a button or making a selection from a form field.
+:::
