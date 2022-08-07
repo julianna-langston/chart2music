@@ -98,7 +98,7 @@ SupportedDataPoint comes in the following forms:
 }
 ```
 
-See data.md for usage info
+See [Data](./Data) for usage info
 
 ## Element
 
@@ -221,7 +221,7 @@ This is the "closed caption" element. When a user navigates around the chart, th
 Why is it optional? Because we'll generate an element if you don't provide us one. However, if you provide us one, you can style it more effectively.
 
 :::tip
-While developing and debugging, you may want to include this element in a central, visible location. This helps you make sure things like number formatting is going correctly. This is where the "closed caption" sentiment comes from - it provides you a closed caption of what the screen reader is saying.
+While developing and debugging, you may want to include this element in a central, visible location. This helps you make sure things like number formatting is going correctly. This is where the "closed caption" sentiment comes from - it can provide a sighted developer a closed caption of what the screen reader is saying.
 
 For production mode, you can use CSS to position the CC element off-screen, so that screen readers can read it, but no one else can.
 :::

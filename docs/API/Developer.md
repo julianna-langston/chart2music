@@ -69,6 +69,16 @@ If you already have aesthetics for hovering over an element with a mouse, you sh
 * Showing a crosshair near the data point
 :::
 
+:::caution
+The contents of the onFocusCallback should be quick. If a user plays the full contents of a chart, the onFocusCallback could be invoked up to 40 times per second. A heavy onFocusCallback could negatively impact the performance of the play speed.
+:::
+
+Examples:
+
+* [with Chart.js](https://codepen.io/chart2music/full/YzaVxPK)
+* [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ)
+* [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr)
+
 ## Live charts
 
 All of our examples so far have been ignoring the fact that the `c2mChart` function actually returns a value. Let's dig into those values and what you can do with them.

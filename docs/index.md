@@ -38,12 +38,12 @@ Some of the examples you will find there include a variety of chart types, like:
 * [Bar-line plot](https://codepen.io/chart2music/full/QWmdpOJ).
 
 You can also find examples of integrations with other visualization libraries, like:
-* [with Chart.js](https://codepen.io/chart2music/pen/YzaVxPK)
+* [with Chart.js](https://codepen.io/chart2music/full/YzaVxPK) (includes visual syncing)
 * [with D3.js](https://codepen.io/chart2music/full/gOezOaY)
-* [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ)
+* [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ) (includes visual syncing)
 * [with AnyChart](https://codepen.io/chart2music/full/abYGoME)
 * [with Chartist.js](https://codepen.io/chart2music/full/LYdmPNj)
 * [with NVD3.js](https://codepen.io/chart2music/full/jOzxNQW)
-* [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr)
+* [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr) (includes visual syncing)
 * [with Morris.js](https://codepen.io/chart2music/full/abYGobm)
 * [with Frappe](https://codepen.io/chart2music/full/QWmrWWE)
