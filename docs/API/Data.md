@@ -145,7 +145,7 @@ c2mChart({
 
 ## Multiple plot types 
 
-If you want to plot multiple types of plots on the same chart, you can provide those types as an array.
+If you want to show multiple types of plots on the same chart, you can provide those types as an array.
 
 Here's an example of a band plot AND a line plot.
 

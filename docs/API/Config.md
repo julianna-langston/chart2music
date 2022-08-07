@@ -166,7 +166,7 @@ y: {
 
 Your y-value will be described as `123,456` or `123.456`, depending on your locality. This will make the value much easier for a screen reader to verbalize.
 
-Note that data point values are always numeric. If you values on the X axis that are strings, you will need to provide the data points as numbers, and then use the format function to format them as strings after the fact. 
+Note that data point values are always numeric. If you use values on the X axis that are strings, you will need to provide the data points as numbers, and then use the format function to format them as strings after the fact.
 
 Here's an example where the X-axis represents Month:
 ```js
@@ -216,7 +216,7 @@ Optional
 Format:
 * An HTML element, ideally a `<div>`
 
-This is the "closed caption" element. When a user navigates around the chart, their screen reader will be reading custom text we provide it. The CC element is where the screen reader's script is going to be printed. This element is the magic of how everything works.
+This is the "closed caption" element. When a user navigates around the chart, their screen reader will read custom text we provide it. The CC element is where the screen reader's script is going to be printed. This element is the magic of how everything works.
 
 Why is it optional? Because we'll generate an element if you don't provide us one. However, if you provide us one, you can style it more effectively.
 
@@ -297,7 +297,7 @@ When you call `c2mChart`, you can provide several different options, all optiona
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| enableSound | boolean | `true` | When true, sound is played. When false, sonification is muted. This does not impact if screen readers read anything. |
+| enableSound | boolean | `true` | When true, sound is played. When false, sonification is muted. This does not impact if screen readers verbalize anything. |
 | enableSpeech | boolean | `true` | When true, screen readers are given text to read. When false, chart2music will not provide screen readers anything to say (though they may continue speaking based on other context on the page.) |
 | live | boolean | `false` | When true, the user is told that it is a live chart. It is expected that streaming data will be added to the chart using the `appendData` method. |
 | maxWidth | number | nothing | Only relevant for `live` charts. This indicates the maximum number of data points to be displayed on a chart. For example, if you're streaming to a live chart once every second, you may want to cap the number of data points at 100. Otherwise, the chart will become too unwieldy. |

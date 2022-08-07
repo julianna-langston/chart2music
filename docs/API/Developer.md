@@ -7,7 +7,7 @@ Using `c2mChart` to sonify a *static* chart is already powerful, but you can als
 
 You can also use the `c2mChart` option `onFocusCallback` to keep your visual chart synchronized with the user as they navigate. How this works will depedn on how you built your chart visuals in the first place.
 
-`onFoucsCallback` calls a function and provides an object with 2 properties:
+`onFocusCallback` calls a function and provides an object with 2 properties:
 * `slice` - the name of the category
 * `index` - the index of the data point
 
