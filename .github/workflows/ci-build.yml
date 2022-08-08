@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Test linting
+        run: npm run lint-check
+
       - name: Build package (to confirm building works)
         run: npm run build
 
