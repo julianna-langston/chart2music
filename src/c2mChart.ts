@@ -183,8 +183,8 @@ export class c2m {
     /**
      * Assign or re-assign data values
      *
-     * @param data
-     * @param axes
+     * @param data - data for the chart
+     * @param [axes] - updated axes metadata
      */
     private _setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
         // Update axes
@@ -228,8 +228,8 @@ export class c2m {
     /**
      * Assign or re-assign data values
      *
-     * @param data
-     * @param axes
+     * @param data - data for the chart
+     * @param [axes] - updated axes metadata
      */
     setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
         this._setData(data, axes);
