@@ -441,7 +441,7 @@ export class c2m {
             },
             {
                 title: "Play right",
-                key: "Shift+ArrowRight",
+                key: "Shift+End",
                 callback: () => {
                     clearInterval(this._playListInterval);
                     this._playRight();
@@ -449,7 +449,7 @@ export class c2m {
             },
             {
                 title: "Play left",
-                key: "Shift+ArrowLeft",
+                key: "Shift+Home",
                 callback: () => {
                     clearInterval(this._playListInterval);
                     this._playLeft();
@@ -527,22 +527,6 @@ export class c2m {
                     clearInterval(this._playListInterval);
                     this._pointIndex = this._data[this._groupIndex].length - 1;
                     this._playAndSpeak();
-                }
-            },
-            {
-                title: "Play all left",
-                key: "Shift+Home",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._playAllLeft();
-                }
-            },
-            {
-                title: "Play all right",
-                key: "Shift+End",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._playAllRight();
                 }
             },
             {
@@ -833,63 +817,6 @@ export class c2m {
                 clearInterval(this._playListInterval);
             } else {
                 this._pointIndex++;
-                this._playCurrent();
-            }
-        }, SPEEDS[this._speedRateIndex]);
-        this._playCurrent();
-    }
-
-    /**
-     * Play all categories to the right
-     */
-    private _playAllRight() {
-        const maxPoints = this._data[this._groupIndex].length - 1;
-        const maxGroups = this._data.length - 1;
-        this._playListInterval = setInterval(() => {
-            if (
-                this._pointIndex >= maxPoints &&
-                this._groupIndex >= maxGroups
-            ) {
-                this._pointIndex = maxPoints;
-                clearInterval(this._playListInterval);
-            } else if (this._groupIndex === maxGroups) {
-                if (!this._pauseFlag) {
-                    this._pauseFlag = true;
-                    return;
-                }
-                this._pauseFlag = false;
-                this._groupIndex = 0;
-                this._pointIndex++;
-                this._playCurrent();
-            } else {
-                this._groupIndex++;
-                this._playCurrent();
-            }
-        }, SPEEDS[this._speedRateIndex]);
-        this._playCurrent();
-    }
-
-    /**
-     * Play all categories to the left
-     */
-    private _playAllLeft() {
-        const min = 0;
-        const maxGroups = this._data.length - 1;
-        this._playListInterval = setInterval(() => {
-            if (this._pointIndex <= min && this._groupIndex <= min) {
-                this._pointIndex = min;
-                clearInterval(this._playListInterval);
-            } else if (this._groupIndex === min) {
-                if (!this._pauseFlag) {
-                    this._pauseFlag = true;
-                    return;
-                }
-                this._pauseFlag = false;
-                this._groupIndex = maxGroups;
-                this._pointIndex--;
-                this._playCurrent();
-            } else {
-                this._groupIndex--;
                 this._playCurrent();
             }
         }, SPEEDS[this._speedRateIndex]);
