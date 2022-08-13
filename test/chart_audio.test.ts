@@ -518,3 +518,87 @@ test("Check missing data", () => {
     expect(playHistory.length).toBe(0);
     expect(mockElementCC.textContent).toContain("1, missing");
 });
+
+test("Out of bounds data", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [0, 1, 2, 3, 4, 5, 6, 7],
+        element: mockElement,
+        cc: mockElementCC,
+        axes: {
+            x: {
+                minimum: 1,
+                maximum: 6
+            },
+            y: {
+                minimum: 2,
+                maximum: 5
+            }
+        },
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(playHistory.length).toBe(0);
+    expect(mockElementCC.textContent).toContain("too low, too low");
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(playHistory.length).toBe(0);
+    expect(mockElementCC.textContent).toContain("1, too low");
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(playHistory.length).toBe(1);
+    expect(mockElementCC.textContent).toContain("2, 2");
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End"
+        })
+    );
+    jest.advanceTimersByTime(1250);
+    expect(playHistory.length).toBe(0);
+    expect(mockElementCC.textContent).toContain("too high, too high");
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowLeft"
+        })
+    );
+    jest.advanceTimersByTime(1250);
+    expect(playHistory.length).toBe(0);
+    expect(mockElementCC.textContent).toContain("6, too high");
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowLeft"
+        })
+    );
+    jest.advanceTimersByTime(1250);
+    expect(playHistory.length).toBe(1);
+    expect(mockElementCC.textContent).toContain("5, 5");
+});

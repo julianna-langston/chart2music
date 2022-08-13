@@ -47,15 +47,25 @@ const convertDataRow = (row: (SupportedDataPointType | number)[]) => {
     });
 };
 
-const formatWrapper = (formatPassthrough: AxisData["format"]) => {
+const formatWrapper = (axis: AxisData) => {
     const format = (num: number) => {
         if (isNaN(num)) {
             return "missing";
         }
-        return formatPassthrough(num);
+        if (axis.minimum && num < axis.minimum) {
+            return "too low";
+        }
+        if (axis.maximum && num > axis.maximum) {
+            return "too high";
+        }
+        return axis.format(num);
     };
 
     return format;
+};
+
+const isUnplayable = (yValue: number, yAxis: AxisData) => {
+    return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
 };
 
 /**
@@ -926,13 +936,17 @@ export class c2m {
             return;
         }
 
+        if (isUnplayable(current.x, this._xAxis)) {
+            return;
+        }
+
         const xPan = calcPan(
             (current.x - this._xAxis.minimum) /
                 (this._xAxis.maximum - this._xAxis.minimum)
         );
 
         if (isSimpleDataPoint(current)) {
-            if (isNaN(current.y)) {
+            if (isUnplayable(current.y, this._yAxis)) {
                 return;
             }
 
@@ -949,7 +963,7 @@ export class c2m {
         }
 
         if (isAlternateAxisDataPoint(current)) {
-            if (isNaN(current.y2)) {
+            if (isUnplayable(current.y2, this._y2Axis)) {
                 return;
             }
             const yBin = interpolateBin(
@@ -969,7 +983,7 @@ export class c2m {
                 const stat = availableStats[statIndex];
 
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                if (isNaN(current[stat])) {
+                if (isUnplayable(current[stat], this._yAxis)) {
                     return;
                 }
 
@@ -988,7 +1002,7 @@ export class c2m {
             const interval = 1 / (availableStats.length + 1);
             availableStats.forEach((stat, index) => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                if (isNaN(current[stat])) {
+                if (isUnplayable(current[stat], this._yAxis)) {
                     return;
                 }
                 const yBin = interpolateBin(
@@ -1041,11 +1055,9 @@ export class c2m {
         const current = this._data[this._groupIndex][this._pointIndex];
         const point = generatePointDescription(
             current,
-            formatWrapper(this._xAxis.format),
+            formatWrapper(this._xAxis),
             formatWrapper(
-                isAlternateAxisDataPoint(current)
-                    ? this._y2Axis.format
-                    : this._yAxis.format
+                isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis
             ),
             availableStats[statIndex]
         );
