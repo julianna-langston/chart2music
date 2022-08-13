@@ -480,3 +480,41 @@ test("Check play all", () => {
     jest.advanceTimersByTime(6000);
     expect(playHistory.length).toBe(8);
 });
+
+test("Check missing data", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, NaN, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(playHistory.length).toBe(1);
+    expect(mockElementCC.textContent).toContain("0, 1");
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(playHistory.length).toBe(0);
+    expect(mockElementCC.textContent).toContain("1, missing");
+});

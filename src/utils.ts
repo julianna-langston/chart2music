@@ -181,37 +181,35 @@ export const sentenceCase = (str: string) =>
 
 export const generatePointDescription = (
     point: SupportedDataPointType,
-    xAxis: AxisData,
-    yAxis: AxisData,
+    xFormat: AxisData["format"],
+    yFormat: AxisData["format"],
     stat?: keyof StatBundle
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return `${xAxis.format(point.x)}, ${yAxis.format(point[stat])}`;
+            return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
         }
-        return `${xAxis.format(point.x)}, ${yAxis.format(
-            point.open
-        )} - ${yAxis.format(point.high)} - ${yAxis.format(
-            point.low
-        )} - ${yAxis.format(point.close)}`;
+        return `${xFormat(point.x)}, ${yFormat(point.open)} - ${yFormat(
+            point.high
+        )} - ${yFormat(point.low)} - ${yFormat(point.close)}`;
     }
 
     if (isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            return `${xAxis.format(point.x)}, ${yAxis.format(point[stat])}`;
+            return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
         }
-        return `${xAxis.format(point.x)}, ${yAxis.format(
-            point.high
-        )} - ${yAxis.format(point.low)}`;
+        return `${xFormat(point.x)}, ${yFormat(point.high)} - ${yFormat(
+            point.low
+        )}`;
     }
 
     if (isSimpleDataPoint(point)) {
-        return `${xAxis.format(point.x)}, ${yAxis.format(point.y)}`;
+        return `${xFormat(point.x)}, ${yFormat(point.y)}`;
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return `${xAxis.format(point.x)}, ${yAxis.format(point.y2)}`;
+        return `${xFormat(point.x)}, ${yFormat(point.y2)}`;
     }
 
     return "";

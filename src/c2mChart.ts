@@ -47,6 +47,17 @@ const convertDataRow = (row: (SupportedDataPointType | number)[]) => {
     });
 };
 
+const formatWrapper = (formatPassthrough: AxisData["format"]) => {
+    const format = (num: number) => {
+        if (isNaN(num)) {
+            return "missing";
+        }
+        return formatPassthrough(num);
+    };
+
+    return format;
+};
+
 /**
  * Validates and initializes a single chart that should be sonified
  *
@@ -921,6 +932,10 @@ export class c2m {
         );
 
         if (isSimpleDataPoint(current)) {
+            if (isNaN(current.y)) {
+                return;
+            }
+
             const yBin = interpolateBin(
                 current.y,
                 this._yAxis.minimum,
@@ -934,6 +949,9 @@ export class c2m {
         }
 
         if (isAlternateAxisDataPoint(current)) {
+            if (isNaN(current.y2)) {
+                return;
+            }
             const yBin = interpolateBin(
                 current.y2,
                 this._y2Axis.minimum,
@@ -949,6 +967,12 @@ export class c2m {
             // Only play a single note, because we've drilled into stats
             if (statIndex >= 0) {
                 const stat = availableStats[statIndex];
+
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                if (isNaN(current[stat])) {
+                    return;
+                }
+
                 const yBin = interpolateBin(
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     current[stat],
@@ -963,6 +987,10 @@ export class c2m {
 
             const interval = 1 / (availableStats.length + 1);
             availableStats.forEach((stat, index) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                if (isNaN(current[stat])) {
+                    return;
+                }
                 const yBin = interpolateBin(
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     current[stat],
@@ -1013,8 +1041,12 @@ export class c2m {
         const current = this._data[this._groupIndex][this._pointIndex];
         const point = generatePointDescription(
             current,
-            this._xAxis,
-            isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis,
+            formatWrapper(this._xAxis.format),
+            formatWrapper(
+                isAlternateAxisDataPoint(current)
+                    ? this._y2Axis.format
+                    : this._yAxis.format
+            ),
             availableStats[statIndex]
         );
         const text =

@@ -5,6 +5,7 @@ import { largeDataLine } from "./charts/largeDataLine.js";
 import { barLinePlot } from "./charts/barLine.js";
 import { bandPlot } from "./charts/bandPlot.js";
 import { livePlot } from "./charts/livePlot.js";
+import { missingData } from "./charts/missingData.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -16,7 +17,8 @@ window.addEventListener("load", () => {
         largeDataLine,
         barLinePlot,
         bandPlot,
-        livePlot
+        livePlot,
+        missingData
     ];
 
     chartFn.forEach((fn) => {

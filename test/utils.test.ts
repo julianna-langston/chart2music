@@ -173,8 +173,8 @@ test("Generate point description", () => {
                 x: 0,
                 y: 1
             },
-            { format: defaultFormat },
-            { format: defaultFormat }
+            defaultFormat,
+            defaultFormat
         )
     ).toBe("0, 1");
     expect(
@@ -183,8 +183,8 @@ test("Generate point description", () => {
                 x: 0,
                 y2: 1
             },
-            { format: defaultFormat },
-            { format: defaultFormat }
+            defaultFormat,
+            defaultFormat
         )
     ).toBe("0, 1");
     expect(
@@ -194,8 +194,8 @@ test("Generate point description", () => {
                 high: 10,
                 low: 5
             },
-            { format: defaultFormat },
-            { format: defaultFormat }
+            defaultFormat,
+            defaultFormat
         )
     ).toBe("0, 10 - 5");
     expect(
@@ -205,8 +205,8 @@ test("Generate point description", () => {
                 high: 10,
                 low: 5
             },
-            { format: defaultFormat },
-            { format: defaultFormat },
+            defaultFormat,
+            defaultFormat,
             "high"
         )
     ).toBe("0, 10");
@@ -217,8 +217,8 @@ test("Generate point description", () => {
                 high: 10,
                 low: 5
             },
-            { format: defaultFormat },
-            { format: defaultFormat },
+            defaultFormat,
+            defaultFormat,
             "low"
         )
     ).toBe("0, 5");
@@ -231,8 +231,8 @@ test("Generate point description", () => {
                 close: 7,
                 low: 5
             },
-            { format: defaultFormat },
-            { format: defaultFormat }
+            defaultFormat,
+            defaultFormat
         )
     ).toBe("0, 8 - 10 - 5 - 7");
     expect(
@@ -244,8 +244,8 @@ test("Generate point description", () => {
                 close: 7,
                 low: 5
             },
-            { format: defaultFormat },
-            { format: defaultFormat },
+            defaultFormat,
+            defaultFormat,
             "high"
         )
     ).toBe("0, 10");
@@ -258,8 +258,8 @@ test("Generate point description", () => {
                 close: 7,
                 low: 5
             },
-            { format: defaultFormat },
-            { format: defaultFormat },
+            defaultFormat,
+            defaultFormat,
             "open"
         )
     ).toBe("0, 8");
@@ -269,8 +269,8 @@ test("Generate point description", () => {
                 x: 0,
                 y: 1
             },
-            { format: (value) => `$${value}` },
-            { format: defaultFormat }
+            (value) => `$${value}`,
+            defaultFormat
         )
     ).toBe("$0, 1");
     expect(
@@ -281,8 +281,8 @@ test("Generate point description", () => {
                 x: 0,
                 high: 10
             },
-            { format: defaultFormat },
-            { format: defaultFormat }
+            defaultFormat,
+            defaultFormat
         )
     ).toBe("");
 });
