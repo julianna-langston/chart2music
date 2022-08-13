@@ -672,6 +672,7 @@ export class c2m {
      */
     private _startListening() {
         this._chartElement.addEventListener("focus", () => {
+            this._sr.clear();
             if (this._options.live) {
                 this._generateSummary();
             }

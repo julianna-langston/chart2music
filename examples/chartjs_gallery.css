@@ -20,3 +20,15 @@
 [role='dialog'] th{
     text-align: left;
 }
+#cc {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: fit-content;
+    min-width: 200px;
+    max-width: 600px;
+    background-color: beige;
+    border-radius: 10px;
+    min-height: 20px;
+    padding: 5px;
+  }

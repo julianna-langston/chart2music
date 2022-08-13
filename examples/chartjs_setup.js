@@ -10,6 +10,7 @@ import { outOfBounds } from "./charts/outOfBounds.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
+    const cc = document.getElementById("cc");
 
     const chartFn = [
         singleLinePlot,
@@ -26,9 +27,7 @@ window.addEventListener("load", () => {
     chartFn.forEach((fn) => {
         const cell = document.createElement("div");
         const canvas = document.createElement("canvas");
-        const cc = document.createElement("div");
         cell.appendChild(canvas);
-        cell.appendChild(cc);
         grid.appendChild(cell);
 
         fn(canvas, cc);

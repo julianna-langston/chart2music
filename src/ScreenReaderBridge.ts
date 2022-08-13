@@ -62,6 +62,13 @@ export class ScreenReaderBridge {
     }
 
     /**
+     * Clear the contents of the live region
+     */
+    public clear(): void {
+        this._element.innerHTML = "";
+    }
+
+    /**
      * Speak the provided text.
      *
      * @param text - the text to speak
