@@ -6,6 +6,7 @@ const config = {
     title: "Chart2Music",
     url: "http://www.chart2music.com",
     baseUrl: "/",
+    favicon: "/favicon.ico",
 
     i18n: {
         defaultLocale: "en",
