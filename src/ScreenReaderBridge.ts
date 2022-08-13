@@ -17,7 +17,6 @@ export class ScreenReaderBridge {
     private readonly _maxNumPaddingCharacters = 3;
     private _numPaddingCharacters = 0;
     private _lastCreatedElement: HTMLElement | null;
-    private _elementsToDelete: elementInfo[] = [];
 
     /**
      * Add the required aria attributes to an element for screen readers to properly work.
@@ -83,14 +82,11 @@ export class ScreenReaderBridge {
             ScreenReaderBridge.ORIGINAL_TEXT_ATTRIBUTE,
             text
         );
+        divElement.setAttribute("data-created", Date.now().toString());
         // If there is a previous element, delete old elements and add it to the list to be deleted in the future.
         if (this.lastCreatedElement) {
             this._removeOldElements();
             this.lastCreatedElement.style.display = "none";
-            this._elementsToDelete.push({
-                element: this.lastCreatedElement,
-                time: Date.now()
-            });
         }
         // Show the new element wit the text.
         this._element.appendChild(divElement);
@@ -125,23 +121,11 @@ export class ScreenReaderBridge {
     private _removeOldElements(): void {
         // Remove old elements or add them to a list if they are too young.
         const curTime = Date.now();
-        const elementsTooYoungToDelete: elementInfo[] = [];
-        this._elementsToDelete.forEach((eInfo) => {
-            if (curTime - eInfo.time > ScreenReaderBridge.REMOVAL_DELAY) {
-                this._element.removeChild(eInfo.element);
-            } else {
-                elementsTooYoungToDelete.push(eInfo);
+        Array.from(this._element.children).forEach((kid) => {
+            const time = Number(kid.getAttribute("data-time"));
+            if (curTime - time > ScreenReaderBridge.REMOVAL_DELAY) {
+                this._element.removeChild(kid);
             }
         });
-        // Save the elements that wern't removed.
-        this._elementsToDelete = elementsTooYoungToDelete;
     }
-}
-
-/**
- * Track an element and the time at which it was hidden.
- */
-interface elementInfo {
-    element: HTMLElement;
-    time: number;
 }
