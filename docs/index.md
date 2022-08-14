@@ -27,9 +27,11 @@ It works alongside other charting libraries, so you can continue to use the tool
 
 ## Key features
 
+* **Inclusively designed** - The dev team behind C2M includes blind people in the design, development, and testing stages.
 * **Accessibility for screen reader users** - Enables blind users to quickly absorb information about charts and graphs using sound and exploration.
 * **Easier maintenance for accessibility requirements** - Traditionally, charts and graphs would be made accessible using alt text, which can be difficult to generate or maintain, or data tables, which provide a poor end user experience. C2M provides an *automated* solution while *enhancing* the user experience.
 * **Visual agnostic** - Use C2M alongside your charts, regardless of how your visuals were created. ChartJS? D3.js? An image? C2M works in parallel with your visuals.
+* **Use anywhere, for free** - C2M is [MIT licensed](https://github.com/julianna-langston/chart2music/blob/main/LICENSE), so you can integrate into anything - personal, commercial, government, etc.
 
 ## Demo
 
@@ -38,7 +40,7 @@ Tab to or click on the chart.
 Use the left and right arrow keys on your keyboard to explore the chart using sound.
 Press the H key to get help, including a list of keyboard commands.
 
-:::note
+:::tip
 Due to Autoplay restrictions in Firefox, you may have to press spacebar before you hear any sound.
 :::
 
@@ -65,3 +67,9 @@ You can also find examples of integrations with other visualization libraries, l
 * [with Vega-Lite](https://codepen.io/chart2music/pen/jOzpyME)
 * [with Morris.js](https://codepen.io/chart2music/full/abYGobm)
 * [with Frappe](https://codepen.io/chart2music/full/QWmrWWE)
+
+## Getting started
+
+If you want to start making accessible charts, check out our [installation instructions](./getting_started/Installation) and [walkthrough](./getting_started/BasicExample).
+
+If you have any problems or suggestions, [open an issue in our Github repository](https://github.com/julianna-langston/chart2music/issues).
