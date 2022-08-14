@@ -41,7 +41,7 @@ const config = {
                 {
                     name: "keywords",
                     content:
-                        "accessibility, a11y, charts, graphs, data visualization, dataviz, sonification, audio graphs"
+                        "sonification, accessible charts, data visualization, audio graphs, accessible graphs"
                 }
             ],
             navbar: {
