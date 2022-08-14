@@ -16,15 +16,31 @@ sidebar_label: Introduction
 [![Vulnerabilities badge](https://snyk.io/test/github/julianna-langston/chart2music/badge.svg)](https://snyk.io/test/github/julianna-langston/chart2music)
 [![Code coverage badge](https://codecov.io/gh/julianna-langston/chart2music/branch/main/graph/badge.svg?token=4T7MV9XKFS)](https://codecov.io/gh/julianna-langston/chart2music)
 
+## Introduction
+
+Charts can convey a lot of information but are difficult to make accessible for visually impaired and blind users.
+The most common solutions are to include a data table or attempt to describe the chart in alt text, often resulting in a subpar user experience.
+
+Chart2Music is a TypeScript/JavaScript package which allows authors to add accessibility to their charts.
+With a couple lines of code, Chart2Music will provide sonification (turning data into sound), screen reader support, and keyboard handling.
+It works alongside other charting libraries, so you can continue to use the tools that you know best.
+
 ## Key features
 
-* **Accessibility for screen reader users** - Enables blind users to rapidly absorb information about charts and graphs using sound and exploration.
+* **Accessibility for screen reader users** - Enables blind users to quickly absorb information about charts and graphs using sound and exploration.
 * **Easier maintenance for accessibility requirements** - Traditionally, charts and graphs would be made accessible using alt text, which can be difficult to generate or maintain, or data tables, which provide a poor end user experience. C2M provides an *automated* solution while *enhancing* the user experience.
 * **Visual agnostic** - Use C2M alongside your charts, regardless of how your visuals were created. ChartJS? D3.js? An image? C2M works in parallel with your visuals.
 
 ## Demo
 
-Tab to, or click on, the chart to get started.
+Try Chart2Music for yourself using the below demo.
+Tab to or click on the chart.
+Use the left and right arrow keys on your keyboard to explore the chart using sound.
+Press the H key to get help, including a list of keyboard commands.
+
+:::note
+Due to Autoplay restrictions in Firefox, you may have to press spacebar before you hear any sound.
+:::
 
 <iframe src="/demo.html" aria-label="Demo charts" width="500px" height="330px" />
 
