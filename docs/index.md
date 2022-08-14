@@ -56,6 +56,7 @@ Some of the examples you will find there include a variety of chart types, like:
 You can also find examples of integrations with other visualization libraries, like:
 * [with Chart.js](https://codepen.io/chart2music/full/YzaVxPK) (includes visual syncing)
 * [with D3.js](https://codepen.io/chart2music/full/gOezOaY)
+* [with HighCharts](https://codepen.io/chart2music/full/QWmZrKj) (includes visual syncing)
 * [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ) (includes visual syncing)
 * [with AnyChart](https://codepen.io/chart2music/full/abYGoME)
 * [with Chartist.js](https://codepen.io/chart2music/full/LYdmPNj)

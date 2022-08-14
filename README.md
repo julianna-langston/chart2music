@@ -52,6 +52,7 @@ Some of the examples you will find there include:
 You can also find examples of integrations with other visualization libraries:
 * [with Chart.js](https://codepen.io/chart2music/pen/YzaVxPK)
 * [with D3.js](https://codepen.io/chart2music/full/gOezOaY)
+* [with HighCharts](https://codepen.io/chart2music/full/QWmZrKj)
 * [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ)
 * [with AnyChart](https://codepen.io/chart2music/full/abYGoME)
 * [with Chartist.js](https://codepen.io/chart2music/full/LYdmPNj)
