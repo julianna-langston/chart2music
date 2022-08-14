@@ -134,7 +134,6 @@ export class c2m {
         live: false
     };
     private _providedAudioEngine?: AudioEngine;
-    private _pauseFlag = false;
     private _monitorMode = false;
     private _type: SonifyTypes["type"];
     private _explicitAxes: {

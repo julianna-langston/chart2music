@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import type { AudioEngine } from "./audio/";
 import type { c2m } from "./c2mChart";
 import type { SupportedDataPointType } from "./dataPoint";

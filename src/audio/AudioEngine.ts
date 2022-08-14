@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * An interface which all audio engines must implement.
  */

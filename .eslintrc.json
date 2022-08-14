@@ -40,6 +40,7 @@
         "no-return-assign": "error",
         "no-throw-literal": "error",
         "no-unused-expressions": "error",
+        "no-unused-vars": "error",
         "no-undefined": "error",
         "arrow-parens": "error",
         "no-var": "error",
