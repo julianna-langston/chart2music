@@ -8,8 +8,7 @@ import type {
     groupedMetadata,
     SonifyTypes,
     c2mOptions,
-    c2mGolangReturn,
-    dataSet
+    c2mGolangReturn
 } from "./types";
 import {
     calcPan,
@@ -22,7 +21,12 @@ import {
     initializeAxis,
     detectDataPointType,
     calculateAxisMinimum,
-    calculateAxisMaximum
+    calculateAxisMaximum,
+    convertDataRow,
+    formatWrapper,
+    isUnplayable,
+    prepChartElement,
+    checkForNumberInput
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -34,49 +38,6 @@ import {
 import type { SupportedDataPointType } from "./dataPoint";
 
 let context: null | AudioContext = null;
-
-const convertDataRow = (row: (SupportedDataPointType | number)[]) => {
-    return row.map((point: number | SupportedDataPointType, index: number) => {
-        if (typeof point === "number") {
-            return {
-                x: index,
-                y: point
-            } as SupportedDataPointType;
-        }
-        return point;
-    });
-};
-
-const formatWrapper = (axis: AxisData) => {
-    const format = (num: number) => {
-        if (isNaN(num)) {
-            return "missing";
-        }
-        if (axis.minimum && num < axis.minimum) {
-            return "too low";
-        }
-        if (axis.maximum && num > axis.maximum) {
-            return "too high";
-        }
-        return axis.format(num);
-    };
-
-    return format;
-};
-
-const isUnplayable = (yValue: number, yAxis: AxisData) => {
-    return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
-};
-
-const prepChartElement = (elem: HTMLElement, title: string) => {
-    if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
-        elem.setAttribute("aria-label", `${title}, Sonified chart`);
-    }
-
-    if (!elem.hasAttribute("role")) {
-        elem.setAttribute("role", "img");
-    }
-};
 
 /**
  * Validates and initializes a single chart that should be sonified
@@ -94,25 +55,6 @@ export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
         err: null,
         data: new c2m(input)
     };
-};
-
-const checkForNumberInput = (
-    metadataByGroup: groupedMetadata[],
-    data: SonifyTypes["data"]
-) => {
-    if (Array.isArray(data) && typeof data[0] === "number") {
-        metadataByGroup[0].inputType = "number";
-    } else {
-        let index = 0;
-        for (const group in data) {
-            if (detectDataPointType((data as dataSet)[group][0]) === "number") {
-                metadataByGroup[index].inputType = "number";
-            }
-            index++;
-        }
-    }
-
-    return metadataByGroup;
 };
 
 /**
