@@ -93,6 +93,10 @@ export class c2m {
         y?: AxisData;
         y2?: AxisData;
     } = {};
+    private _hertzClamps = {
+        upper: HERTZ.length - 12,
+        lower: 21
+    };
 
     /**
      * Constructor
@@ -766,6 +770,15 @@ export class c2m {
     }
 
     /**
+     * Get the available hertzes
+     *
+     * @returns number[]
+     */
+    private _getHertzRange() {
+        return HERTZ.slice(this._hertzClamps.lower, this._hertzClamps.upper);
+    }
+
+    /**
      * Play the current data point
      */
     private _playCurrent() {
@@ -810,6 +823,8 @@ export class c2m {
             return;
         }
 
+        const hertzes = this._getHertzRange();
+
         const xPan = calcPan(
             (current.x - this._xAxis.minimum) /
                 (this._xAxis.maximum - this._xAxis.minimum)
@@ -824,10 +839,10 @@ export class c2m {
                 current.y,
                 this._yAxis.minimum,
                 this._yAxis.maximum,
-                HERTZ.length - 1
+                hertzes.length - 1
             );
 
-            this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
+            this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
 
             return;
         }
@@ -840,10 +855,10 @@ export class c2m {
                 current.y2,
                 this._y2Axis.minimum,
                 this._y2Axis.maximum,
-                HERTZ.length - 1
+                hertzes.length - 1
             );
 
-            this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
+            this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
             return;
         }
 
@@ -862,10 +877,14 @@ export class c2m {
                     current[stat],
                     this._yAxis.minimum,
                     this._yAxis.maximum,
-                    HERTZ.length - 1
+                    hertzes.length - 1
                 );
 
-                this._audioEngine.playDataPoint(HERTZ[yBin], xPan, NOTE_LENGTH);
+                this._audioEngine.playDataPoint(
+                    hertzes[yBin],
+                    xPan,
+                    NOTE_LENGTH
+                );
                 return;
             }
 
@@ -880,11 +899,11 @@ export class c2m {
                     current[stat],
                     this._yAxis.minimum,
                     this._yAxis.maximum,
-                    HERTZ.length - 1
+                    hertzes.length - 1
                 );
                 setTimeout(() => {
                     this._audioEngine.playDataPoint(
-                        HERTZ[yBin],
+                        hertzes[yBin],
                         xPan,
                         NOTE_LENGTH
                     );
