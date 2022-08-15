@@ -161,7 +161,7 @@ test("C2M provides details for live mixed charts", () => {
 
     expect(playHistory.length).toBe(3);
     expect(lastPanning).toBe(0.98);
-    expect(lastFrequency).toBe(1975.533);
+    expect(lastFrequency).toBe(2093.005);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -192,27 +192,27 @@ test("Test axes min/max adjustment - numbers, no clamps", () => {
     });
     expect(err).toBe(null);
 
-    expect(chart._yAxis.minimum).toBe(1);
-    expect(chart._yAxis.maximum).toBe(5);
+    expect(chart?._yAxis.minimum).toBe(1);
+    expect(chart?._yAxis.maximum).toBe(5);
 
     chart?.appendData(9);
-    expect(chart._yAxis.minimum).toBe(1);
-    expect(chart._yAxis.maximum).toBe(9);
+    expect(chart?._yAxis.minimum).toBe(1);
+    expect(chart?._yAxis.maximum).toBe(9);
 
     chart?.appendData(3);
-    expect(chart._yAxis.minimum).toBe(1);
-    expect(chart._yAxis.maximum).toBe(9);
+    expect(chart?._yAxis.minimum).toBe(1);
+    expect(chart?._yAxis.maximum).toBe(9);
 
-    expect(chart._data[0].length).toBe(7);
+    expect(chart?._data[0].length).toBe(7);
     const result1 = chart?.appendData(0);
-    expect(chart._data[0].length).toBe(8);
-    expect(chart._yAxis.minimum).toBe(0);
-    expect(chart._yAxis.maximum).toBe(9);
+    expect(chart?._data[0].length).toBe(8);
+    expect(chart?._yAxis.minimum).toBe(0);
+    expect(chart?._yAxis.maximum).toBe(9);
     expect(result1).not.toBeUndefined();
     expect(result1?.err).toBeNull();
 
     const result = chart?.appendData(5, "c");
-    expect(chart._data[0].length).toBe(8);
+    expect(chart?._data[0].length).toBe(8);
     expect(result).not.toBeUndefined();
     expect(result?.err).not.toBeNull();
     expect(result?.err).toContain(`unknown group name "c"`);
@@ -245,16 +245,16 @@ test("Test axes min/max adjustment - high/low, no clamps", () => {
     });
     expect(err).toBe(null);
 
-    expect(chart._yAxis.minimum).toBe(5);
-    expect(chart._yAxis.maximum).toBe(11);
+    expect(chart?._yAxis.minimum).toBe(5);
+    expect(chart?._yAxis.maximum).toBe(11);
 
     chart?.appendData({
         x: 3,
         high: 12,
         low: 2
     });
-    expect(chart._yAxis.minimum).toBe(2);
-    expect(chart._yAxis.maximum).toBe(12);
+    expect(chart?._yAxis.minimum).toBe(2);
+    expect(chart?._yAxis.maximum).toBe(12);
 });
 
 test("Test axes min/max adjustment - OHLC, no clamps", () => {
@@ -287,8 +287,8 @@ test("Test axes min/max adjustment - OHLC, no clamps", () => {
     });
     expect(err).toBe(null);
 
-    expect(chart._yAxis.minimum).toBe(5);
-    expect(chart._yAxis.maximum).toBe(11);
+    expect(chart?._yAxis.minimum).toBe(5);
+    expect(chart?._yAxis.maximum).toBe(11);
 
     chart?.appendData({
         x: 3,
@@ -297,8 +297,8 @@ test("Test axes min/max adjustment - OHLC, no clamps", () => {
         open: 8,
         close: 2
     });
-    expect(chart._yAxis.minimum).toBe(2);
-    expect(chart._yAxis.maximum).toBe(12);
+    expect(chart?._yAxis.minimum).toBe(2);
+    expect(chart?._yAxis.maximum).toBe(12);
 });
 
 test("Test appending data to a group that doesn't exist", () => {
@@ -318,24 +318,24 @@ test("Test appending data to a group that doesn't exist", () => {
         }
     });
     expect(err).toBe(null);
-    expect(chart._data[0].length).toBe(4);
-    expect(chart._data[1].length).toBe(4);
+    expect(chart?._data[0].length).toBe(4);
+    expect(chart?._data[1].length).toBe(4);
 
     const result1 = chart?.appendData(5, "a");
     expect(result1).not.toBeUndefined();
     expect(result1?.err).toBeNull();
-    expect(chart._data[0].length).toBe(5);
-    expect(chart._data[1].length).toBe(4);
+    expect(chart?._data[0].length).toBe(5);
+    expect(chart?._data[1].length).toBe(4);
 
     const result2 = chart?.appendData(5, "b");
-    expect(chart._data[0].length).toBe(5);
-    expect(chart._data[1].length).toBe(5);
+    expect(chart?._data[0].length).toBe(5);
+    expect(chart?._data[1].length).toBe(5);
     expect(result2).not.toBeUndefined();
     expect(result2?.err).toBeNull();
 
     const result3 = chart?.appendData(5, "c");
-    expect(chart._data[0].length).toBe(5);
-    expect(chart._data[1].length).toBe(5);
+    expect(chart?._data[0].length).toBe(5);
+    expect(chart?._data[1].length).toBe(5);
     expect(result3).not.toBeUndefined();
     expect(result3?.err).not.toBeNull();
     expect(result3?.err).toContain(`unknown group name "c"`);
@@ -401,22 +401,22 @@ test("C2M: test maxWidth adjustment (type = number)", () => {
     expect(err).toBe(null);
 
     chart?.appendData(4);
-    expect(chart._data[0].length).toBe(6);
-    expect(chart._data[0][5].x).toBe(5);
-    expect(chart._data[0][5].y).toBe(4);
-    expect(chart._data[0][0].x).toBe(0);
-    expect(chart._data[0][0].y).toBe(1);
-    expect(chart._data[0][1].x).toBe(1);
-    expect(chart._data[0][1].y).toBe(2);
+    expect(chart?._data[0].length).toBe(6);
+    expect(chart?._data[0][5].x).toBe(5);
+    expect(chart?._data[0][5].y).toBe(4);
+    expect(chart?._data[0][0].x).toBe(0);
+    expect(chart?._data[0][0].y).toBe(1);
+    expect(chart?._data[0][1].x).toBe(1);
+    expect(chart?._data[0][1].y).toBe(2);
 
     chart?.appendData(2);
-    expect(chart._data[0].length).toBe(6);
-    expect(chart._data[0][5].x).toBe(5);
-    expect(chart._data[0][5].y).toBe(2);
-    expect(chart._data[0][0].x).toBe(0);
-    expect(chart._data[0][0].y).toBe(2);
-    expect(chart._data[0][1].x).toBe(1);
-    expect(chart._data[0][1].y).toBe(3);
+    expect(chart?._data[0].length).toBe(6);
+    expect(chart?._data[0][5].x).toBe(5);
+    expect(chart?._data[0][5].y).toBe(2);
+    expect(chart?._data[0][0].x).toBe(0);
+    expect(chart?._data[0][0].y).toBe(2);
+    expect(chart?._data[0][1].x).toBe(1);
+    expect(chart?._data[0][1].y).toBe(3);
 });
 
 test("C2M: test maxWidth adjustment (with y2)", () => {
@@ -444,20 +444,20 @@ test("C2M: test maxWidth adjustment (with y2)", () => {
     expect(err).toBe(null);
 
     chart?.appendData({ x: 6, y2: 0 });
-    expect(chart._data[0].length).toBe(6);
-    expect(chart._data[0][5].x).toBe(6);
-    expect(chart._data[0][5].y2).toBe(0);
-    expect(chart._data[0][0].x).toBe(1);
-    expect(chart._data[0][0].y2).toBe(1);
-    expect(chart._data[0][1].x).toBe(2);
-    expect(chart._data[0][1].y2).toBe(2);
+    expect(chart?._data[0].length).toBe(6);
+    expect(chart?._data[0][5].x).toBe(6);
+    expect(chart?._data[0][5].y2).toBe(0);
+    expect(chart?._data[0][0].x).toBe(1);
+    expect(chart?._data[0][0].y2).toBe(1);
+    expect(chart?._data[0][1].x).toBe(2);
+    expect(chart?._data[0][1].y2).toBe(2);
 
     chart?.appendData({ x: 7, y2: 4 });
-    expect(chart._data[0].length).toBe(6);
-    expect(chart._data[0][5].x).toBe(7);
-    expect(chart._data[0][5].y2).toBe(4);
-    expect(chart._data[0][0].x).toBe(2);
-    expect(chart._data[0][0].y2).toBe(2);
-    expect(chart._data[0][1].x).toBe(3);
-    expect(chart._data[0][1].y2).toBe(1);
+    expect(chart?._data[0].length).toBe(6);
+    expect(chart?._data[0][5].x).toBe(7);
+    expect(chart?._data[0][5].y2).toBe(4);
+    expect(chart?._data[0][0].x).toBe(2);
+    expect(chart?._data[0][0].y2).toBe(2);
+    expect(chart?._data[0][1].x).toBe(3);
+    expect(chart?._data[0][1].y2).toBe(1);
 });
