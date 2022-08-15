@@ -222,12 +222,16 @@ Why is it optional? Because we'll generate an element if you don't provide us on
 
 :::tip
 While developing and debugging, you may want to include this element in a central, visible location. This helps you make sure things like number formatting is going correctly. This is where the "closed caption" sentiment comes from - it can provide a sighted developer a closed caption of what the screen reader is saying.
-
-For production mode, you can use CSS to position the CC element off-screen, so that screen readers can read it, but no one else can.
 :::
 
-:::note
+:::tip
 You can have one CC element on a page, and point all of your charts that that single element.
+:::
+
+:::caution
+For Firefox users, the CC element must be visible on the screen in order for the screen reader to know what to say. Reasons it may not be on screen include:
+* The CC element was positioned off-screen to hide it from sighted users. (This tactic works for Chrome users, just not Firefox users.)
+* The chart is at the bottom of the screen, and the CC element is beneath it, so it hasn't been scrolled into view.
 :::
 
 
