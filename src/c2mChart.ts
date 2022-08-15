@@ -68,6 +68,16 @@ const isUnplayable = (yValue: number, yAxis: AxisData) => {
     return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
 };
 
+const prepChartElement = (elem: HTMLElement, title: string) => {
+    if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
+        elem.setAttribute("aria-label", `${title}, Sonified chart`);
+    }
+
+    if (!elem.hasAttribute("role")) {
+        elem.setAttribute("role", "img");
+    }
+};
+
 /**
  * Validates and initializes a single chart that should be sonified
  *
@@ -152,16 +162,7 @@ export class c2m {
         this._providedAudioEngine = input.audioEngine;
         this._title = input.title ?? "";
         this._chartElement = input.element;
-
-        if (
-            !this._chartElement.hasAttribute("alt") &&
-            !this._chartElement.hasAttribute("aria-label")
-        ) {
-            this._chartElement.setAttribute(
-                "aria-label",
-                `${this._title}, Sonified chart`
-            );
-        }
+        prepChartElement(this._chartElement, this._title);
 
         this._ccElement = input.cc ?? this._chartElement;
 
