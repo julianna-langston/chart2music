@@ -4,7 +4,8 @@
         "removeComments": true,
         "target": "ES2020",
         "preserveConstEnums": true,
-        "moduleResolution": "Node"
+        "moduleResolution": "Node",
+        "typeRoots": ["node_modules/@types"]
     },
     "include": ["test/**/*"]
 }
