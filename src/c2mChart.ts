@@ -37,6 +37,74 @@ import {
 } from "./dataPoint";
 import type { SupportedDataPointType } from "./dataPoint";
 
+const launchOptionDialog = (
+    { upper, lower }: { upper: number; lower: number },
+    cb: (lower: number, upper: number) => void,
+    playCb?: (hertz: number) => void
+) => {
+    const previousElement = document.activeElement as HTMLElement;
+    const dialog = document.createElement("div");
+    dialog.setAttribute("role", "dialog");
+    dialog.innerHTML = `<h1>Options</h1>
+
+    <p tabIndex="0">While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:</p>
+
+    <div>
+        <label>
+            Lower hertz:
+            <input type="range" min="0" max="${
+                HERTZ.length - 1
+            }" step="1" id="lowerRange" value="${lower}" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Upper hertz:
+            <input type="range" min="0" max="${
+                HERTZ.length - 1
+            }" step="1" id="upperRange" value="${upper}" />
+        </label>
+    </div>
+
+    <button id="save">save</button>
+    `;
+
+    const lowerRange: HTMLInputElement = dialog.querySelector("#lowerRange");
+    const upperRange: HTMLInputElement = dialog.querySelector("#upperRange");
+
+    dialog.querySelector("#save").addEventListener("click", () => {
+        const lowerValue = Number(lowerRange.value);
+        const upperValue = Number(upperRange.value);
+        cb(lowerValue, upperValue);
+        esc();
+    });
+
+    if (playCb) {
+        lowerRange.addEventListener("change", () => {
+            playCb(Number(lowerRange.value));
+        });
+        upperRange.addEventListener("change", () => {
+            playCb(Number(upperRange.value));
+        });
+    }
+
+    const esc = () => {
+        previousElement.focus();
+        dialog.parentElement.removeChild(dialog);
+    };
+
+    dialog.addEventListener("keydown", (evt) => {
+        if (evt.key === "Escape") {
+            esc();
+        }
+    });
+    dialog.addEventListener("blur", esc);
+
+    document.body.appendChild(dialog);
+    const p: HTMLElement = dialog.querySelector("[tabIndex]");
+    p.focus();
+};
+
 let context: null | AudioContext = null;
 
 /**
@@ -573,8 +641,39 @@ export class c2m {
                     clearInterval(this._playListInterval);
                     this._keyEventManager.launchHelpDialog();
                 }
+            },
+            {
+                title: "Open options dialog",
+                key: "o",
+                callback: () => {
+                    this._checkAudioEngine();
+                    launchOptionDialog(
+                        this._hertzClamps,
+                        (lowerIndex: number, upperIndex: number) => {
+                            this._setHertzClamps(lowerIndex, upperIndex);
+                        },
+                        (hertzIndex: number) => {
+                            this._audioEngine?.playDataPoint(
+                                HERTZ[hertzIndex],
+                                0,
+                                NOTE_LENGTH
+                            );
+                        }
+                    );
+                }
             }
         ]);
+    }
+
+    /**
+     * Change the range of playable hertz
+     *
+     * @param lowerIndex - index of the lower end of the HERTZ
+     * @param upperIndex - index of the upper end of the HERTZ
+     */
+    private _setHertzClamps(lowerIndex: number, upperIndex: number) {
+        this._hertzClamps.lower = lowerIndex;
+        this._hertzClamps.upper = upperIndex;
     }
 
     /**
@@ -797,6 +896,19 @@ export class c2m {
     }
 
     /**
+     * Confirm the audio engine was initialized
+     */
+    private _checkAudioEngine() {
+        if (!context) {
+            context = new AudioContext();
+        }
+        if (!this._audioEngine && context) {
+            this._audioEngine =
+                this._providedAudioEngine ?? new OscillatorAudioEngine(context);
+        }
+    }
+
+    /**
      * Play a given data point
      *
      * @param current - the data point to play
@@ -808,13 +920,8 @@ export class c2m {
         statIndex: groupedMetadata["statIndex"],
         availableStats: groupedMetadata["availableStats"]
     ) {
-        if (!context) {
-            context = new AudioContext();
-        }
-        if (!this._audioEngine && context) {
-            this._audioEngine =
-                this._providedAudioEngine ?? new OscillatorAudioEngine(context);
-        }
+        this._checkAudioEngine();
+
         if (!this._audioEngine) {
             return;
         }
