@@ -360,6 +360,7 @@ export class c2m {
             }
 
             const tmp = this._data[i].shift();
+            this._pointIndex--;
             if (
                 this._xAxis.minimum === tmp.x ||
                 this._xAxis.maximum === tmp.x
@@ -392,6 +393,10 @@ export class c2m {
         if (recalculateY2) {
             this._y2Axis.minimum = calculateAxisMinimum(this._data, "y2");
             this._y2Axis.maximum = calculateAxisMaximum(this._data, "y2");
+        }
+
+        if (this._pointIndex < 0) {
+            this._pointIndex = 0;
         }
     }
 
