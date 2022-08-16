@@ -29,7 +29,7 @@ module.exports = {
         },
         "./src/c2mChart.ts": {
             branches: 90,
-            functions: 100,
+            functions: 90,
             lines: 90,
             statements: 90
         },

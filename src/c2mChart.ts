@@ -51,19 +51,19 @@ declare global {
     }
 }
 
-const launchOptionDialog = (
+const generateOptionDialog = (
     { upper, lower }: { upper: number; lower: number },
     cb: (lower: number, upper: number) => void,
     playCb?: (hertz: number) => void
 ) => {
-    const previousElement = document.activeElement as HTMLElement;
-    const dialog = document.createElement("div");
-    dialog.setAttribute("role", "dialog");
+    const dialog = document.createElement("dialog");
+    dialog.classList.add("c2m-options");
+    dialog.style.maxWidth = "400px";
     dialog.innerHTML = `<h1>Options</h1>
 
     <p tabIndex="0">While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:</p>
 
-    <form id="optionForm">
+    <form id="optionForm" method="dialog">
         <div>
             <label>
                 Lower hertz:
@@ -88,7 +88,7 @@ const launchOptionDialog = (
             </label>
         </div>
 
-        <input id="save" type="submit" value="Save" />
+        <input id="save" type="submit" value="Save" style="float:right" />
     </form>
     `;
 
@@ -120,15 +120,8 @@ const launchOptionDialog = (
         esc();
     };
 
-    dialog.querySelector("#optionForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-        save();
-    });
-
-    dialog.querySelector("#save").addEventListener("click", (e) => {
-        e.preventDefault();
-        save();
-    });
+    dialog.querySelector("#optionForm").addEventListener("submit", save);
+    dialog.querySelector("#save").addEventListener("click", save);
 
     if (playCb) {
         lowerRange.addEventListener("change", () => {
@@ -142,20 +135,11 @@ const launchOptionDialog = (
     }
 
     const esc = () => {
-        previousElement.focus();
-        dialog.parentElement.removeChild(dialog);
+        dialog.blur();
     };
 
-    dialog.addEventListener("keydown", (evt) => {
-        if (evt.key === "Escape") {
-            esc();
-        }
-    });
-    dialog.addEventListener("blur", esc);
-
     document.body.appendChild(dialog);
-    const p: HTMLElement = dialog.querySelector("[tabIndex]");
-    p.focus();
+    return dialog;
 };
 
 let context: null | AudioContext = null;
@@ -218,6 +202,7 @@ export class c2m {
         upper: HERTZ.length - 12,
         lower: 21
     };
+    private _optionDialog: HTMLDialogElement;
 
     /**
      * Constructor
@@ -232,6 +217,19 @@ export class c2m {
         prepChartElement(this._chartElement, this._title);
 
         this._ccElement = input.cc ?? this._chartElement;
+        this._optionDialog = generateOptionDialog(
+            this._hertzClamps,
+            (lowerIndex: number, upperIndex: number) => {
+                this._setHertzClamps(lowerIndex, upperIndex);
+            },
+            (hertzIndex: number) => {
+                this._audioEngine?.playDataPoint(
+                    HERTZ[hertzIndex],
+                    0,
+                    NOTE_LENGTH
+                );
+            }
+        );
 
         this._setData(input.data, input.axes);
 
@@ -709,19 +707,7 @@ export class c2m {
                 key: "o",
                 callback: () => {
                     this._checkAudioEngine();
-                    launchOptionDialog(
-                        this._hertzClamps,
-                        (lowerIndex: number, upperIndex: number) => {
-                            this._setHertzClamps(lowerIndex, upperIndex);
-                        },
-                        (hertzIndex: number) => {
-                            this._audioEngine?.playDataPoint(
-                                HERTZ[hertzIndex],
-                                0,
-                                NOTE_LENGTH
-                            );
-                        }
-                    );
+                    this._optionDialog.showModal();
                 }
             }
         ]);
