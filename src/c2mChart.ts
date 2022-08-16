@@ -681,6 +681,10 @@ export class c2m {
                 title: "Toggle monitor mode",
                 key: "m",
                 callback: () => {
+                    if (!this._options.live) {
+                        this._sr.render("Not a live chart");
+                        return;
+                    }
                     this._monitorMode = !this._monitorMode;
                     this._sr.render(
                         `Monitoring ${this._monitorMode ? "on" : "off"}`
