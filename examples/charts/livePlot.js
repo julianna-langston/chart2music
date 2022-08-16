@@ -53,6 +53,7 @@ export const livePlot = (canvas, cc) => {
     if (err) {
         console.error(err);
     }
+    let x = arr.length;
 
     setInterval(() => {
         const num = +(arr[arr.length - 1] + Math.floor(Math.random() * 3) - 1);
@@ -68,6 +69,7 @@ export const livePlot = (canvas, cc) => {
             myChart.update();
         }
 
-        c2m.appendData(num);
+        c2m.appendData({ x, y: num });
+        x++;
     }, 1000);
 };
