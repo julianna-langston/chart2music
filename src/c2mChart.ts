@@ -37,6 +37,20 @@ import {
 } from "./dataPoint";
 import type { SupportedDataPointType } from "./dataPoint";
 
+declare global {
+    /**
+     * augment the global window object
+     */
+    interface Window {
+        __chart2music_options__?: {
+            _hertzClamps?: {
+                lower: number;
+                upper: number;
+            };
+        };
+    }
+}
+
 const launchOptionDialog = (
     { upper, lower }: { upper: number; lower: number },
     cb: (lower: number, upper: number) => void,
@@ -67,17 +81,42 @@ const launchOptionDialog = (
             </label>
         </div>
 
+        <div>
+            <label>
+                <input type="checkbox" id="global" checked />
+                Save my options for other charts on this page
+            </label>
+        </div>
+
         <input id="save" type="submit" value="Save" />
     </form>
     `;
 
     const lowerRange: HTMLInputElement = dialog.querySelector("#lowerRange");
     const upperRange: HTMLInputElement = dialog.querySelector("#upperRange");
+    const global: HTMLInputElement = dialog.querySelector("#global");
+
+    if (!window) {
+        global.parentElement.parentElement.style.display = " none";
+    }
 
     const save = () => {
         const lowerValue = Number(lowerRange.value);
         const upperValue = Number(upperRange.value);
+        const saveGlobal = global.checked;
         cb(lowerValue, upperValue);
+
+        if (window && saveGlobal) {
+            if (!window.__chart2music_options__) {
+                window.__chart2music_options__ = {};
+            }
+            window.__chart2music_options__ = {
+                _hertzClamps: {
+                    lower: lowerValue,
+                    upper: upperValue
+                }
+            };
+        }
         esc();
     };
 
@@ -721,6 +760,11 @@ export class c2m {
             }
             if (this._options.enableSpeech) {
                 this._sr.render(this._summary);
+            }
+            if (window.__chart2music_options__?._hertzClamps) {
+                const { lower, upper } =
+                    window.__chart2music_options__._hertzClamps;
+                this._setHertzClamps(lower, upper);
             }
         });
         this._chartElement.addEventListener("blur", () => {

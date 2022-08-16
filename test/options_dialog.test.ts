@@ -50,8 +50,14 @@ class MockAudioEngine implements AudioEngine {
 }
 
 beforeEach(() => {
+    // Clear play history
     playHistory = [];
+    // Clear frequency
     lastFrequency = -10;
+    // Clear global options
+    delete window.__chart2music_options__;
+    // Clear dialog, if it's still up
+    document.querySelector("[role='dialog']")?.dispatchEvent(new Event("blur"));
 });
 
 test("Open Options dialog and modify a value", () => {
@@ -211,9 +217,6 @@ test("In the Options dialog, the ranges play sounds onChange", () => {
     upperRange.dispatchEvent(new Event("change"));
     expect(playHistory.length).toBe(3);
     expect(lastFrequency).toBeCloseTo(1661.219);
-
-    document.querySelector("[role='dialog']")?.dispatchEvent(new Event("blur"));
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
 });
 
 test("In the Options dialog, modifying one range changes the limits of the other", () => {
@@ -279,4 +282,63 @@ test("In the Options dialog, modifying one range changes the limits of the other
         })
     );
     expect(lastFrequency).toBeCloseTo(155.56);
+});
+
+test("Modifying limits globally impacts other charts", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err: err1, data: chart1 } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err1).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    expect(Math.round(lastFrequency)).toBe(123);
+
+    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "o"
+        })
+    );
+    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+
+    const lowerRange = document.getElementById(
+        "lowerRange"
+    ) as HTMLInputElement;
+    expect(lowerRange).toHaveProperty("value", "21");
+    lowerRange.value = "0";
+
+    document.getElementById("save")?.click();
+
+    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+
+    expect(chart1._hertzClamps.lower).toBe(0);
+
+    const mockElement2 = document.createElement("div");
+    const { err: err2, data: chart2 } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement2,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err2).toBe(null);
+
+    mockElement2.dispatchEvent(new Event("focus"));
+    expect(chart2._hertzClamps.lower).toBe(0);
 });
