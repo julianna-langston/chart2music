@@ -95,5 +95,4 @@ export const missingData = (canvas, cc) => {
     if (err) {
         console.error(err);
     }
-    console.log(chart);
 };
