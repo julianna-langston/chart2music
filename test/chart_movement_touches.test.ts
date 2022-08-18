@@ -7,6 +7,13 @@ window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - jsdom weirdness
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+window.navigator.__defineGetter__("userAgent", function () {
+    return "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36";
+});
+
 beforeEach(() => {
     jest.clearAllMocks();
 });
@@ -20,9 +27,6 @@ type playHistoryType = {
     duration: number;
 };
 
-let lastDuration = 0;
-let lastFrequency = 0;
-let lastPanning = 0;
 let playHistory: playHistoryType[] = [];
 
 /**
@@ -35,9 +39,7 @@ class MockAudioEngine implements AudioEngine {
      * Constructor
      */
     constructor() {
-        lastDuration = -10;
-        lastFrequency = -10;
-        lastPanning = -10;
+        playHistory = [];
     }
 
     /**
@@ -48,18 +50,12 @@ class MockAudioEngine implements AudioEngine {
      * @param duration - how long to play
      */
     playDataPoint(frequency: number, panning: number, duration: number): void {
-        lastFrequency = frequency;
-        lastPanning = panning;
-        lastDuration = duration;
         playHistory.push({ frequency, panning, duration });
     }
 }
 
 beforeEach(() => {
     playHistory = [];
-    lastDuration = -10;
-    lastFrequency = -10;
-    lastPanning = -10;
 });
 
 test("Move around by single events", () => {
@@ -79,7 +75,9 @@ test("Move around by single events", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+    expect(mockElementCC.textContent).toBe(
+        `Sonified line chart "", x is "" from 0 to 7, y is "" from 0 to 5. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`
+    );
 
     // Move right
     mockElement.dispatchEvent(
@@ -334,7 +332,7 @@ test("Movement for a grouped chart", () => {
 test("Movement for a chart with stats", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const { err, data: chart } = c2mChart({
+    const { err } = c2mChart({
         type: [SUPPORTED_CHART_TYPES.BAND, SUPPORTED_CHART_TYPES.LINE],
         data: {
             a: [
@@ -360,7 +358,7 @@ test("Movement for a chart with stats", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified band-line chart "", contains 2 categories, x is "" from 1 to 3, y is "" from 8 to 13. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified band-line chart "", contains 2 categories, x is "" from 1 to 3, y is "" from 8 to 13. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`
     );
 
     // Move right

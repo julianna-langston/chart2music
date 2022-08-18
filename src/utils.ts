@@ -84,9 +84,13 @@ export const generateSummary = ({
         );
     }
 
-    return `${text.join(", ")}. Use arrow keys to navigate.${
+    const isMobile = detectIfMobile();
+    const keyboardMessage = `Use arrow keys to navigate.${
         live ? " Press M to toggle monitor mode." : ""
     } Press H for more hotkeys.`;
+    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`;
+
+    return `${text.join(", ")}. ${isMobile ? mobileMessage : keyboardMessage}`;
 };
 
 export const calculateAxisMinimum = (
@@ -375,4 +379,21 @@ export const checkForNumberInput = (
     }
 
     return metadataByGroup;
+};
+
+// https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
+export const detectIfMobile = () => {
+    const toMatch = [
+        /Android/i,
+        /webOS/i,
+        /iPhone/i,
+        /iPad/i,
+        /iPod/i,
+        /BlackBerry/i,
+        /Windows Phone/i
+    ];
+
+    return toMatch.some((toMatchItem) => {
+        return navigator.userAgent.match(toMatchItem);
+    });
 };

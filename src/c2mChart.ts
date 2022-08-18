@@ -474,9 +474,9 @@ export class c2m {
         elem.addEventListener("touchstart", (e) => {
             e.preventDefault();
             this._availableActions.stop_play();
-            // if(document.activeElement !== this._chartElement){
-            //     this._chartElement.focus();
-            // }
+            if (document.activeElement !== this._chartElement) {
+                this._chartElement.focus();
+            }
             Array.from(e.targetTouches).forEach((touch) => {
                 touches.push(touch);
             });
