@@ -167,6 +167,17 @@ test("Move around by single events", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("0, 1");
+
+    // Move left by tenths
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "m"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Not a live chart"
+    );
 });
 
 test("Movement for a grouped chart", () => {
