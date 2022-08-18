@@ -17,10 +17,23 @@ import type {
     detectableDataPoint,
     groupedMetadata,
     SonifyTypes,
-    dataSet
+    dataSet,
+    AxisScale
 } from "./types";
 
 export const interpolateBin = (
+    point: number,
+    min: number,
+    max: number,
+    bins: number,
+    scale: AxisScale
+) => {
+    return scale === "linear"
+        ? interpolateBinLinear(point, min, max, bins)
+        : interpolateBinLog(point, min, max, bins);
+};
+
+const interpolateBinLinear = (
     point: number,
     min: number,
     max: number,
@@ -29,6 +42,20 @@ export const interpolateBin = (
     const pct = (point - min) / (max - min);
     return Math.floor(bins * pct);
 };
+
+const interpolateBinLog = (
+    pointRaw: number,
+    minRaw: number,
+    maxRaw: number,
+    bins: number
+) => {
+    const point = Math.log10(pointRaw);
+    const min = Math.log10(minRaw);
+    const max = Math.log10(maxRaw);
+    const pct = (point - min) / (max - min);
+    return Math.floor(bins * pct);
+};
+
 export const calcPan = (pct: number) => (pct * 2 - 1) * 0.98;
 
 /**
@@ -288,7 +315,8 @@ export const initializeAxis = (
         minimum: userAxis?.minimum ?? calculateAxisMinimum(data, axisName),
         maximum: userAxis?.maximum ?? calculateAxisMaximum(data, axisName),
         label: userAxis?.label ?? "",
-        format: userAxis?.format ?? defaultFormat
+        format: userAxis?.format ?? defaultFormat,
+        type: userAxis?.type ?? "linear"
     };
 };
 

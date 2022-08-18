@@ -20,10 +20,16 @@ test("sentence case", () => {
     expect(sentenceCase("HELLO WORLD")).toBe("Hello world");
 });
 
-test("interpolate bin", () => {
-    expect(interpolateBin(5, 0, 100, 100)).toBe(5);
-    expect(interpolateBin(5, 5, 100, 10)).toBe(0);
-    expect(interpolateBin(15, 5, 100, 10)).toBe(1);
+test("interpolate bin - linear", () => {
+    expect(interpolateBin(5, 0, 100, 100, "linear")).toBe(5);
+    expect(interpolateBin(5, 5, 100, 10, "linear")).toBe(0);
+    expect(interpolateBin(15, 5, 100, 10, "linear")).toBe(1);
+});
+
+test("interpolate bin - log", () => {
+    expect(interpolateBin(5, 0.001, 100, 100, "log10")).toBe(73);
+    expect(interpolateBin(5, 5, 100, 10, "log10")).toBe(0);
+    expect(interpolateBin(15, 5, 100, 10, "log10")).toBe(3);
 });
 
 test("generating summary", () => {

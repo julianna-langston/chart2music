@@ -1177,7 +1177,8 @@ export class c2m {
                 current.y,
                 this._yAxis.minimum,
                 this._yAxis.maximum,
-                hertzes.length - 1
+                hertzes.length - 1,
+                this._yAxis.type
             );
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
@@ -1193,7 +1194,8 @@ export class c2m {
                 current.y2,
                 this._y2Axis.minimum,
                 this._y2Axis.maximum,
-                hertzes.length - 1
+                hertzes.length - 1,
+                this._y2Axis.type
             );
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
@@ -1215,7 +1217,8 @@ export class c2m {
                     current[stat],
                     this._yAxis.minimum,
                     this._yAxis.maximum,
-                    hertzes.length - 1
+                    hertzes.length - 1,
+                    this._yAxis.type
                 );
 
                 this._audioEngine.playDataPoint(
@@ -1237,7 +1240,8 @@ export class c2m {
                     current[stat],
                     this._yAxis.minimum,
                     this._yAxis.maximum,
-                    hertzes.length - 1
+                    hertzes.length - 1,
+                    this._yAxis.type
                 );
                 setTimeout(() => {
                     this._audioEngine.playDataPoint(

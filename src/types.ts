@@ -9,6 +9,11 @@ import type { SupportedDataPointType } from "./dataPoint";
 type SupportedInputType = SupportedDataPointType | number;
 
 /**
+ * The types of scales (linear, log) that are supported for an axis
+ */
+export type AxisScale = "linear" | "log10";
+
+/**
  * Contains the data to describe a chart that should be sonified.
  * Most of the keys of this interface are optional, with the exception of "data" and "element".
  */
@@ -66,6 +71,7 @@ export type AxisData = {
     label?: string;
     /* The formatter callback to format any number plotted against this axis */
     format?: (value: number) => string;
+    type?: AxisScale;
 };
 
 /**

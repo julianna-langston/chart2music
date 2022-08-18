@@ -65,6 +65,58 @@ test("validateInputAxes", () => {
     expect(validateInputAxes({ invalid: {}, invalid2: {} })).toBe(
         "Unsupported axes were included: invalid, invalid2. The only supported axes are: x, y, y2."
     );
+    expect(
+        validateInputAxes({
+            y: {
+                type: "linear"
+            }
+        })
+    ).toBe("");
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10"
+            }
+        })
+    ).toBe("");
+    expect(
+        validateInputAxes({
+            y: {
+                // @ts-ignore - deliberately generating error condition
+                type: "invalid"
+            }
+        })
+    ).toBe(
+        `Axis y has an unsupported axis type "invalid". Valid axis types are: linear, log10.`
+    );
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10",
+                minimum: 0.01
+            }
+        })
+    ).toBe("");
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10",
+                minimum: 0
+            }
+        })
+    ).toBe(
+        `Axis y has type "log10", but has a minimum or maximum value of 0. No values <= 0 are supported for logarithmic axes.`
+    );
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10",
+                maximum: 0
+            }
+        })
+    ).toBe(
+        `Axis y has type "log10", but has a minimum or maximum value of 0. No values <= 0 are supported for logarithmic axes.`
+    );
 });
 
 test("validateInput", () => {

@@ -63,6 +63,8 @@ export const validateInputElement = (element: HTMLElement) => {
     return "Provided value for 'element' must be an instance of HTMLElement.";
 };
 
+const valid_axis_types = ["linear", "log10"];
+
 export const validateInputAxes = (axes?: SonifyTypes["axes"]) => {
     if (typeof axes === "undefined") {
         return "";
@@ -76,6 +78,24 @@ export const validateInputAxes = (axes?: SonifyTypes["axes"]) => {
         return `Unsupported axes were included: ${unsupportedAxes.join(
             ", "
         )}. The only supported axes are: ${supportedAxis.join(", ")}.`;
+    }
+
+    for (const axis in axes) {
+        const thisAxis = axes[axis as keyof typeof axes];
+        if (
+            typeof thisAxis.type === "string" &&
+            !valid_axis_types.includes(thisAxis.type)
+        ) {
+            return `Axis ${axis} has an unsupported axis type "${
+                thisAxis.type
+            }". Valid axis types are: ${valid_axis_types.join(", ")}.`;
+        }
+        if (
+            thisAxis.type === "log10" &&
+            (thisAxis.minimum === 0 || thisAxis.maximum === 0)
+        ) {
+            return `Axis ${axis} has type "log10", but has a minimum or maximum value of 0. No values <= 0 are supported for logarithmic axes.`;
+        }
     }
 
     return "";
