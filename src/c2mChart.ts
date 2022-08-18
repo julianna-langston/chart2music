@@ -37,6 +37,48 @@ import {
 } from "./dataPoint";
 import type { SupportedDataPointType } from "./dataPoint";
 
+/**
+ * List of actions that could be activated by keyboard or touch
+ */
+enum ActionSet {
+    NEXT_POINT = "next_point",
+    PREVIOUS_POINT = "previous_point",
+    PLAY_RIGHT = "play_right",
+    PLAY_LEFT = "play_left",
+    STOP_PLAY = "stop_play",
+    PREVIOUS_STAT = "previous_stat",
+    NEXT_STAT = "next_stat",
+    PREVIOUS_CATEGORY = "previous_category",
+    NEXT_CATEGORY = "next_category",
+    FIRST_POINT = "first_point",
+    LAST_POINT = "last_point",
+    REPLAY = "replay",
+    SELECT = "select",
+    PREVIOUS_TENTH = "previous_tenth",
+    NEXT_TENTH = "next_tenth",
+    GO_MINIMUM = "go_minimum",
+    GO_MAXIMUM = "go_maximum",
+    SPEED_UP = "speed_up",
+    SLOW_DOWN = "slow_down",
+    MONITOR = "monitor",
+    HELP = "help",
+    OPTIONS = "options"
+}
+
+/**
+ * List of kinds of swipes available from touch actions
+ */
+enum TouchActionSet {
+    LEFT = "left",
+    RIGHT = "right",
+    UP = "up",
+    DOWN = "down",
+    DOUBLE_LEFT = "double_left",
+    DOUBLE_RIGHT = "double_right",
+    DOUBLE_UP = "double_up",
+    DOUBLE_DOWN = "double_down"
+}
+
 declare global {
     /**
      * augment the global window object
@@ -218,6 +260,9 @@ export class c2m {
         upper: HERTZ.length - 12,
         lower: 21
     };
+    private _availableActions: {
+        [key in ActionSet]: () => void;
+    };
 
     /**
      * Constructor
@@ -249,8 +294,248 @@ export class c2m {
         ScreenReaderBridge.addAriaAttributes(this._ccElement);
         this._sr = new ScreenReaderBridge(this._ccElement);
 
+        this._availableActions = this._initializeActionMap();
+
         this._initializeKeyActionMap();
+        this._initializeTouchActions();
         this._startListening();
+    }
+
+    /**
+     * Establish what actions are available for the touch/keyboard action listeners
+     */
+    private _initializeActionMap() {
+        return {
+            next_point: () => {
+                clearInterval(this._playListInterval);
+                if (this._moveRight()) {
+                    this._playAndSpeak();
+                }
+            },
+            previous_point: () => {
+                clearInterval(this._playListInterval);
+                if (this._moveLeft()) {
+                    this._playAndSpeak();
+                }
+            },
+            play_right: () => {
+                clearInterval(this._playListInterval);
+                this._playRight();
+            },
+            play_left: () => {
+                clearInterval(this._playListInterval);
+                this._playLeft();
+            },
+            stop_play: () => {
+                clearInterval(this._playListInterval);
+            },
+            previous_stat: () => {
+                clearInterval(this._playListInterval);
+                if (this._movePrevStat()) {
+                    this._flagNewStat = true;
+                    this._playAndSpeak();
+                }
+            },
+            next_stat: () => {
+                clearInterval(this._playListInterval);
+                if (this._moveNextStat()) {
+                    this._flagNewStat = true;
+                    this._playAndSpeak();
+                }
+            },
+            previous_category: () => {
+                clearInterval(this._playListInterval);
+                if (this._groupIndex === 0) {
+                    return;
+                }
+                this._groupIndex--;
+                this._flagNewGroup = true;
+                this._playAndSpeak();
+            },
+            next_category: () => {
+                clearInterval(this._playListInterval);
+                if (this._groupIndex === this._data.length - 1) {
+                    return;
+                }
+                this._groupIndex++;
+                this._flagNewGroup = true;
+                this._playAndSpeak();
+            },
+            first_point: () => {
+                clearInterval(this._playListInterval);
+                this._pointIndex = 0;
+                this._playAndSpeak();
+            },
+            last_point: () => {
+                clearInterval(this._playListInterval);
+                this._pointIndex = this._data[this._groupIndex].length - 1;
+                this._playAndSpeak();
+            },
+            replay: () => {
+                clearInterval(this._playListInterval);
+                this._flagNewGroup = true;
+                this._flagNewStat = true;
+                this._playAndSpeak();
+            },
+            select: () => {
+                this._options.onSelectCallback?.({
+                    slice: this._groups[this._groupIndex],
+                    index: this._pointIndex
+                });
+            },
+            previous_tenth: () => {
+                clearInterval(this._playListInterval);
+                this._moveLeftTenths();
+                this._playAndSpeak();
+            },
+            next_tenth: () => {
+                clearInterval(this._playListInterval);
+                this._moveRightTenths();
+                this._playAndSpeak();
+            },
+            go_minimum: () => {
+                clearInterval(this._playListInterval);
+                if (this._moveToMinimum()) {
+                    this._playAndSpeak();
+                }
+            },
+            go_maximum: () => {
+                clearInterval(this._playListInterval);
+                if (this._moveToMaximum()) {
+                    this._playAndSpeak();
+                }
+            },
+            speed_up: () => {
+                clearInterval(this._playListInterval);
+                if (this._speedRateIndex < SPEEDS.length - 1) {
+                    this._speedRateIndex++;
+                }
+                this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+            },
+            slow_down: () => {
+                clearInterval(this._playListInterval);
+                if (this._speedRateIndex > 0) {
+                    this._speedRateIndex--;
+                }
+                this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
+            },
+            monitor: () => {
+                if (!this._options.live) {
+                    this._sr.render("Not a live chart");
+                    return;
+                }
+                this._monitorMode = !this._monitorMode;
+                this._sr.render(
+                    `Monitoring ${this._monitorMode ? "on" : "off"}`
+                );
+            },
+            help: () => {
+                clearInterval(this._playListInterval);
+                this._keyEventManager.launchHelpDialog();
+            },
+            options: () => {
+                this._checkAudioEngine();
+                launchOptionDialog(
+                    this._hertzClamps,
+                    (lowerIndex: number, upperIndex: number) => {
+                        this._setHertzClamps(lowerIndex, upperIndex);
+                    },
+                    (hertzIndex: number) => {
+                        this._audioEngine?.playDataPoint(
+                            HERTZ[hertzIndex],
+                            0,
+                            NOTE_LENGTH
+                        );
+                    }
+                );
+            }
+        };
+    }
+
+    /**
+     * Wire up the touch action event listeners
+     */
+    private _initializeTouchActions() {
+        let touches: Touch[] = [];
+        const elem = this._chartElement;
+        const touchActionMap: { [swipe in TouchActionSet]: () => void } = {
+            left: this._availableActions.previous_point,
+            right: this._availableActions.next_point,
+            up: this._availableActions.previous_stat,
+            down: this._availableActions.next_stat,
+            double_down: this._availableActions.next_category,
+            double_left: this._availableActions.play_left,
+            double_right: this._availableActions.play_right,
+            double_up: this._availableActions.previous_category
+        };
+        let waitTime = 0;
+        let lastDirection = "";
+        let secondTouchTimeout: NodeJS.Timeout | number | null = null;
+        elem.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            this._availableActions.stop_play();
+            // if(document.activeElement !== this._chartElement){
+            //     this._chartElement.focus();
+            // }
+            Array.from(e.targetTouches).forEach((touch) => {
+                touches.push(touch);
+            });
+        });
+        const endTouch = (e: TouchEvent) => {
+            e.preventDefault();
+            let direction = "";
+            Array.from(e.changedTouches).forEach((touch) => {
+                // Remove from touches list
+                const startTouch = touches.find(
+                    (t) => t.identifier === touch.identifier
+                );
+                touches = touches.filter(
+                    (t) => t.identifier !== touch.identifier
+                );
+
+                // Determine change angle
+                const { clientX: startX, clientY: startY } = startTouch;
+                const { clientX: endX, clientY: endY } = touch;
+                const xDiff = endX - startX;
+                const yDiff = endY - startY;
+
+                // Print conclusion
+                if (xDiff < -200 && Math.abs(yDiff) < 200) {
+                    direction = TouchActionSet.LEFT;
+                } else if (xDiff > 200 && Math.abs(yDiff) < 200) {
+                    direction = TouchActionSet.RIGHT;
+                } else if (yDiff < -200 && Math.abs(xDiff) < 200) {
+                    direction = TouchActionSet.UP;
+                } else if (yDiff > 200 && Math.abs(xDiff) < 200) {
+                    direction = TouchActionSet.DOWN;
+                } else {
+                    direction = "";
+                    return;
+                }
+
+                if (waitTime > new Date().valueOf() - 25) {
+                    if (direction === lastDirection) {
+                        clearTimeout(secondTouchTimeout);
+                        touchActionMap[
+                            `double_${direction}` as TouchActionSet
+                        ]();
+                        direction = "";
+                    }
+                }
+                // This was the first of multiple touches
+                if (touches.length > 0) {
+                    waitTime = new Date().valueOf();
+                    lastDirection = direction;
+                }
+
+                secondTouchTimeout = setTimeout(() => {
+                    touchActionMap[direction as TouchActionSet]?.();
+                    direction = "";
+                }, 25);
+            });
+        };
+        elem.addEventListener("touchend", endTouch);
+        elem.addEventListener("touchcancel", endTouch);
     }
 
     /**
@@ -486,7 +771,7 @@ export class c2m {
     }
 
     /**
-     * Initialize which keys map to which actions
+     * Wire up the hotkey action event listeners
      */
     private _initializeKeyActionMap() {
         this._keyEventManager = new KeyboardEventManager(this._chartElement);
@@ -494,235 +779,114 @@ export class c2m {
             {
                 title: "Go to next point",
                 key: "ArrowRight",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._moveRight()) {
-                        this._playAndSpeak();
-                    }
-                }
+                callback: this._availableActions.next_point
             },
             {
                 title: "Go to previous point",
                 key: "ArrowLeft",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._moveLeft()) {
-                        this._playAndSpeak();
-                    }
-                }
+                callback: this._availableActions.previous_point
             },
             {
                 title: "Play right",
                 key: "Shift+End",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._playRight();
-                }
+                callback: this._availableActions.play_right
             },
             {
                 title: "Play left",
                 key: "Shift+Home",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._playLeft();
-                }
+                callback: this._availableActions.play_left
             },
             {
                 title: "Cancel play",
                 key: "Ctrl+Control",
                 keyDescription: "Control",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                }
+                callback: this._availableActions.stop_play
             },
             {
                 title: "Navigate to previous statistic",
                 key: "ArrowUp",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._movePrevStat()) {
-                        this._flagNewStat = true;
-                        this._playAndSpeak();
-                    }
-                }
+                callback: this._availableActions.previous_stat
             },
             {
                 title: "Navigate to next statistic",
                 key: "ArrowDown",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._moveNextStat()) {
-                        this._flagNewStat = true;
-                        this._playAndSpeak();
-                    }
-                }
+                callback: this._availableActions.next_stat
             },
             {
                 title: "Go to previous category",
                 key: "PageUp",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._groupIndex === 0) {
-                        return;
-                    }
-                    this._groupIndex--;
-                    this._flagNewGroup = true;
-                    this._playAndSpeak();
-                }
+                callback: this._availableActions.previous_category
             },
             {
                 title: "Go to next category",
                 key: "PageDown",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._groupIndex === this._data.length - 1) {
-                        return;
-                    }
-                    this._groupIndex++;
-                    this._flagNewGroup = true;
-                    this._playAndSpeak();
-                }
+                callback: this._availableActions.next_category
             },
             {
                 title: "Go to first point",
                 key: "Home",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._pointIndex = 0;
-                    this._playAndSpeak();
-                }
+                callback: this._availableActions.first_point
             },
             {
                 title: "Go to last point",
                 key: "End",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._pointIndex = this._data[this._groupIndex].length - 1;
-                    this._playAndSpeak();
-                }
+                callback: this._availableActions.last_point
             },
             {
                 title: "Replay",
                 key: " ",
                 keyDescription: "Spacebar",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._flagNewGroup = true;
-                    this._flagNewStat = true;
-                    this._playAndSpeak();
-                }
+                callback: this._availableActions.replay
             },
             {
                 title: "Select item",
                 key: "Enter",
-                callback: () => {
-                    this._options.onSelectCallback?.({
-                        slice: this._groups[this._groupIndex],
-                        index: this._pointIndex
-                    });
-                }
+                callback: this._availableActions.select
             },
             {
                 title: "Go backward by a tenth",
                 key: "Ctrl+ArrowLeft",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._moveLeftTenths();
-                    this._playAndSpeak();
-                }
+                callback: this._availableActions.previous_tenth
             },
             {
                 title: "Go forward by a tenth",
                 key: "Ctrl+ArrowRight",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._moveRightTenths();
-                    this._playAndSpeak();
-                }
+                callback: this._availableActions.next_tenth
             },
             {
                 title: "Go to minimum value",
                 key: "[",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._moveToMinimum()) {
-                        this._playAndSpeak();
-                    }
-                }
+                callback: this._availableActions.go_minimum
             },
             {
                 title: "Go to maximum value",
                 key: "]",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._moveToMaximum()) {
-                        this._playAndSpeak();
-                    }
-                }
+                callback: this._availableActions.go_maximum
             },
             {
                 title: "Speed up",
                 key: "q",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._speedRateIndex < SPEEDS.length - 1) {
-                        this._speedRateIndex++;
-                    }
-                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
-                }
+                callback: this._availableActions.speed_up
             },
             {
                 title: "Slow down",
                 key: "e",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    if (this._speedRateIndex > 0) {
-                        this._speedRateIndex--;
-                    }
-                    this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
-                }
+                callback: this._availableActions.slow_down
             },
             {
                 title: "Toggle monitor mode",
                 key: "m",
-                callback: () => {
-                    if (!this._options.live) {
-                        this._sr.render("Not a live chart");
-                        return;
-                    }
-                    this._monitorMode = !this._monitorMode;
-                    this._sr.render(
-                        `Monitoring ${this._monitorMode ? "on" : "off"}`
-                    );
-                }
+                callback: this._availableActions.monitor
             },
             {
                 title: "Open help dialog",
                 key: "h",
-                callback: () => {
-                    clearInterval(this._playListInterval);
-                    this._keyEventManager.launchHelpDialog();
-                }
+                callback: this._availableActions.help
             },
             {
                 title: "Open options dialog",
                 key: "o",
-                callback: () => {
-                    this._checkAudioEngine();
-                    launchOptionDialog(
-                        this._hertzClamps,
-                        (lowerIndex: number, upperIndex: number) => {
-                            this._setHertzClamps(lowerIndex, upperIndex);
-                        },
-                        (hertzIndex: number) => {
-                            this._audioEngine?.playDataPoint(
-                                HERTZ[hertzIndex],
-                                0,
-                                NOTE_LENGTH
-                            );
-                        }
-                    );
-                }
+                callback: this._availableActions.options
             }
         ]);
     }
