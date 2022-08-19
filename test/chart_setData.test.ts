@@ -269,3 +269,117 @@ test("setData: setting new data (no starting explicit minimum) (add minimum)", (
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toContain(`y is "" from 9 to 22.`);
 });
+
+test("setData: setting new data with starting pointIndex", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 4, 5],
+        element: mockElement,
+        cc: mockElementCC
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent).toContain(`y is "" from 1 to 5.`);
+
+    chart?.setData([10, 11, 12], {}, 1);
+
+    expect(chart?.getCurrent().point).toEqual({
+        x: 1,
+        y: 11
+    });
+});
+
+test("setData: setting new data with starting group and pointIndex", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [1, 2, 3, 4, 5],
+            b: [8, 7, 6, 5, 4]
+        },
+        element: mockElement,
+        cc: mockElementCC
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    chart?.setData({ a: [10, 11, 12], b: [20, 21, 22] }, {}, 1, "b");
+
+    expect(chart?.getCurrent().point).toEqual({
+        x: 1,
+        y: 21
+    });
+});
+
+test("setData: setting new data with invalid starting group", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [1, 2, 3, 4, 5],
+            b: [8, 7, 6, 5, 4]
+        },
+        element: mockElement,
+        cc: mockElementCC
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    chart?.setData({ a: [10, 11, 12], b: [20, 21, 22] }, {}, 1, "c");
+
+    expect(chart?.getCurrent().point).toEqual({
+        x: 1,
+        y: 11
+    });
+});
+
+test("setData: setting new data with invalid pointIndex (less than 0)", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 4, 5],
+        element: mockElement,
+        cc: mockElementCC
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    chart?.setData([10, 11, 12], {}, -1);
+
+    expect(chart?.getCurrent().point).toEqual({
+        x: 0,
+        y: 10
+    });
+});
+
+test("setData: setting new data with invalid pointIndex (too high)", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 4, 5],
+        element: mockElement,
+        cc: mockElementCC
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    chart?.setData([10, 11, 12], {}, 8);
+
+    expect(chart?.getCurrent().point).toEqual({
+        x: 2,
+        y: 12
+    });
+});

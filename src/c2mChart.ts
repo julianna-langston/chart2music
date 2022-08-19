@@ -604,12 +604,22 @@ export class c2m {
      *
      * @param data - data for the chart
      * @param [axes] - updated axes metadata
+     * @param [pointIndex] - the pointIndex to focus on
+     * @param [groupName] -  the name of the group to focus on
      */
-    setData(data: SonifyTypes["data"], axes?: SonifyTypes["axes"]) {
+    setData(
+        data: SonifyTypes["data"],
+        axes?: SonifyTypes["axes"],
+        pointIndex?: number,
+        groupName?: string
+    ) {
         this._setData(data, axes);
 
-        this._pointIndex = 0;
-        this._groupIndex = 0;
+        this._pointIndex = Math.min(
+            Math.max(pointIndex ?? 0, 0),
+            this._data[0].length - 1
+        );
+        this._groupIndex = Math.max(this._groups.indexOf(groupName), 0);
 
         this._sr.render(`${this._title || "Chart"} updated`);
     }

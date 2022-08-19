@@ -140,8 +140,33 @@ document.getElementById("randomize").addEventListener("click", () => {
 });
 ```
 
+If the data change also changes the metadata of the axes (such as changing the minimum or maximum), you can also update that. For example:
+
+```javascript
+chart.setData([1,2,3,4,5], {
+    x: {
+        minimum: 0
+    }
+});
+```
+
 :::caution
-When you reset data, the user's focus moves back to the beginning of the chart. This behavior could confuse users. It's best practices to only reset data as the result of a user's action. For example, you can reset the chart based on the user clicking a button or making a selection from a form field.
+When you reset data, the user's focus moves back to the beginning of the chart by default. This behavior could confuse users. It's best practices to only reset data as the result of a user's action. For example, you can reset the chart based on the user clicking a button or making a selection from a form field.
+:::
+
+If you don't want the user's focus to be reset, you can control where the focus goes. For example, let's say you have implemented zooming in/out of a chart. When you zoom, you change the range of data, but you want the user to continue to focus on the same data point.  If you know that the user was on point #15, but once you zoom in, that will be point #5, you can include that in your data reset:
+
+```javascript
+chart.setData(zoomedInData, {}, 5);
+```
+
+You can also specify the name of the group that should receive focus. This code resets the data to `zoomedInData`, with no changes to the axes metadata, and focuses on point[5] in group "b":
+```javascript
+chart.setData(zoomedInData, {}, 5, "b");
+```
+
+:::info 
+By default, the point that receives focus is the first point in the first group. If you attempt to assign focus to a point or group that doesn't exist, then focus will be assigned to the first point in the first group.
 :::
 
 :::note
