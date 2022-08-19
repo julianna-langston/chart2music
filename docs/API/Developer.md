@@ -149,3 +149,53 @@ When you reset data, the user will be informed which chart was updated, if the c
 
 Also, since users will be informed every time a chart is updated, if you update your charts constantly, you will potentially annoy your users. If you need to regularly update your chart, consider using `appendData`, which only updates users if they've enabled monitoring mode.
 :::
+
+## Custom hotkeys
+
+If you want to integrate custom interactions, you can use the c2mChart option `customHotkeys`. For example, let's imagine a bar chart where you can drill into data in individual bars. Let's say you've decided to use Alt+Down and Alt+Up to drill in/out of the bars. Here is how that code would look:
+
+```javascript
+c2mChart({
+    title: "Drillable data",
+    type: "bar",
+    element: myElement,
+    data,
+    options: {
+        customHotkeys: [
+            {
+                key: {
+                    altKey: true,
+                    key: "ArrowDown",
+                },
+                title: "Drill in",
+                callback: drillIn
+            },
+            {
+                key: {
+                    altKey: true,
+                    key: "ArrowUp",
+                },
+                title: "Drill out",
+                callback: drillOut
+            },
+        ]
+    }
+});
+```
+
+If you want to overwrite a hotkey that Chart2Music has already defined, you can. We'd rather you didn't, because that could confuse users, but you can.
+
+Here's an example for overwriting the hotkey "[" (which jumps to the minimum value):
+
+```javascript
+customHotkeys: [{
+    key: {
+        key: "["
+    },
+    title: "Pan left",
+    callback: panLeft,
+    force: true
+}]
+```
+
+Without the `force:true`, the hotkey would simply not get added.

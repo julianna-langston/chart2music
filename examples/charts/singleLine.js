@@ -45,7 +45,20 @@ export const singleLinePlot = (canvas, cc) => {
             onFocusCallback: ({ index }) => {
                 myChart.setActiveElements([{ datasetIndex: 0, index }]);
                 myChart.update();
-            }
+            },
+            customHotkeys: [
+                {
+                    key: {
+                        altKey: true,
+                        key: "m"
+                    },
+                    keyDescription: "Alt + M",
+                    title: "Get extra info",
+                    callback: ({ index }) => {
+                        alert(highs[index]);
+                    }
+                }
+            ]
         }
     });
     if (err) {

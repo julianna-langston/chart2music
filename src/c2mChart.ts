@@ -1,14 +1,15 @@
 import { OscillatorAudioEngine } from "./audio/index";
 import type { AudioEngine } from "./audio/index";
 import { HERTZ, NOTE_LENGTH, SPEEDS } from "./constants";
-import { KeyboardEventManager } from "./keyboardManager";
+import { KeyboardEventManager, keyboardEventToString } from "./keyboardManager";
 import { ScreenReaderBridge } from "./ScreenReaderBridge";
 import type {
     AxisData,
     groupedMetadata,
     SonifyTypes,
     c2mOptions,
-    c2mGolangReturn
+    c2mGolangReturn,
+    c2mCallbackType
 } from "./types";
 import {
     calcPan,
@@ -889,6 +890,23 @@ export class c2m {
                 callback: this._availableActions.options
             }
         ]);
+
+        const hotkeyCallbackWrapper = (cb: (args: c2mCallbackType) => void) => {
+            cb({
+                slice: this._groups[this._groupIndex],
+                index: this._pointIndex
+            });
+        };
+
+        this._options.customHotkeys?.forEach((hotkey) => {
+            this._keyEventManager.registerKeyEvent({
+                ...hotkey,
+                key: keyboardEventToString(hotkey.key as KeyboardEvent),
+                callback: () => {
+                    hotkeyCallbackWrapper(hotkey.callback);
+                }
+            });
+        });
     }
 
     /**
