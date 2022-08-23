@@ -1333,5 +1333,3 @@ export class c2m {
         this._flagNewStat = false;
     }
 }
-
-export default c2mChart;
