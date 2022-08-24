@@ -45,13 +45,18 @@ test("validateInputType", () => {
 test("validateInputElement", () => {
     // @ts-ignore - deliberately generating error condition
     expect(validateInputElement()).toBe(
-        "Required parameter 'element' was left undefined. An HTMLElement must be provided for this parameter."
+        "Required parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter."
     );
     // @ts-ignore - deliberately generating error condition
     expect(validateInputElement(3)).toBe(
-        "Provided value for 'element' must be an instance of HTMLElement."
+        "Provided value for 'element' must be an instance of HTMLElement or SVGElement."
     );
     expect(validateInputElement(document.createElement("div"))).toBe("");
+    expect(
+        validateInputElement(
+            document.createElementNS("http://www.w3.org/2000/svg", "svg")
+        )
+    ).toBe("");
 });
 
 test("validateInputAxes", () => {
@@ -128,7 +133,7 @@ test("validateInput", () => {
             element: "invalid"
         })
     ).toBe(
-        "Invalid input type: invalid. Valid types are: line, bar, band, pie, candlestick\nProvided value for 'element' must be an instance of HTMLElement."
+        "Invalid input type: invalid. Valid types are: line, bar, band, pie, candlestick\nProvided value for 'element' must be an instance of HTMLElement or SVGElement."
     );
 });
 
@@ -270,6 +275,6 @@ test("c2mChart validation", () => {
     // @ts-ignore
     const { err } = c2mChart({});
     expect(err).toBe(
-        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie, candlestick\nRequired parameter 'element' was left undefined. An HTMLElement must be provided for this parameter."
+        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie, candlestick\nRequired parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter."
     );
 });

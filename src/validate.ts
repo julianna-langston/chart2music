@@ -51,16 +51,16 @@ export const validateInputType = (
     ).join(", ")}`;
 };
 
-export const validateInputElement = (element: HTMLElement) => {
+export const validateInputElement = (element: HTMLElement | SVGSVGElement) => {
     if (typeof element === "undefined") {
-        return "Required parameter 'element' was left undefined. An HTMLElement must be provided for this parameter.";
+        return "Required parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter.";
     }
 
-    if (element instanceof HTMLElement) {
+    if (element instanceof HTMLElement || element instanceof SVGElement) {
         return "";
     }
 
-    return "Provided value for 'element' must be an instance of HTMLElement.";
+    return "Provided value for 'element' must be an instance of HTMLElement or SVGElement.";
 };
 
 const valid_axis_types = ["linear", "log10"];
