@@ -386,7 +386,7 @@ export const prepChartElement = (elem: HTMLElement, title: string) => {
     }
 
     if (!elem.hasAttribute("role")) {
-        elem.setAttribute("role", "img");
+        elem.setAttribute("role", "application");
     }
 };
 
