@@ -33,7 +33,7 @@ test("Launch help dialog using keyboard command", () => {
 
     expect(spyAppend).toHaveBeenCalled();
 
-    const dialog = document.body.querySelector("[role='dialog']");
+    const dialog = document.body.querySelector("dialog");
 
     expect(document.activeElement).toBe(dialog);
 
