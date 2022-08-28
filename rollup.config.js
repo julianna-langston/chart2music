@@ -6,13 +6,19 @@ import del from "rollup-plugin-delete";
 
 export default [
     {
-        input: "src/c2mChart.ts",
+        input: "src/entryPoint.ts",
         output: [
             {
                 file: "dist/index.js",
                 name: "c2mChart",
                 format: "iife"
-            },
+            }
+        ],
+        plugins: [typescript({ tsconfig: "./tsconfig.json" })]
+    },
+    {
+        input: "src/entryPoint_mjs.ts",
+        output: [
             {
                 file: "dist/index.mjs",
                 format: "es"
@@ -21,7 +27,7 @@ export default [
         plugins: [typescript({ tsconfig: "./tsconfig.json" })]
     },
     {
-        input: "dist/types/c2mChart.d.ts",
+        input: "dist/types/entryPoint.d.ts",
         output: [
             {
                 file: "dist/index.d.ts",

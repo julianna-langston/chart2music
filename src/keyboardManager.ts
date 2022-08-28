@@ -1,31 +1,11 @@
+import type { KeyDetails, KeyRegistration } from "./types";
+
 /* eslint-disable @typescript-eslint/unbound-method */
-const keyboardEventToString = (e: KeyboardEvent) => {
+export const keyboardEventToString = (e: KeyboardEvent) => {
     return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${
         e.shiftKey ? "Shift+" : ""
     }${e.key}`;
 };
-
-/**
- * Details for a given hotkey
- */
-type KeyDetails = {
-    /* The callback for when this hotkey is invoked */
-    callback: () => void;
-    /* Title for what this hotkey does (displayed in hotkey dialog) */
-    title?: string;
-    keyDescription?: string;
-    /* Additional description for what this hotkey does (displayed in hotkey dialog) */
-    description?: string;
-    /* If the hotkey already exists, force this command to override it */
-    force?: boolean;
-};
-
-/**
- *
- */
-type KeyRegistration = {
-    key: string;
-} & KeyDetails;
 
 /**
  * Keyboard event manager enables:
@@ -110,15 +90,6 @@ export class KeyboardEventManager {
         keyRegistrationList.forEach((kr) => {
             this.registerKeyEvent(kr);
         });
-    }
-
-    /**
-     * Unregister a key event
-     *
-     * @param key - the key to remove
-     */
-    unregisterKeyEvent(key: string) {
-        delete this._keyMap[key];
     }
 
     /**

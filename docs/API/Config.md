@@ -307,3 +307,15 @@ When you call `c2mChart`, you can provide several different options, all optiona
 | maxWidth | number | nothing | Only relevant for `live` charts. This indicates the maximum number of data points to be displayed on a chart. For example, if you're streaming to a live chart once every second, you may want to cap the number of data points at 100. Otherwise, the chart will become too unwieldy. |
 | onFocusCallback | function | nothing | Provides a callback as a user is navigating a chart. (This is the equivalent of a mouse user hovering over a data point.) Use this if you'd like to keep your visuals synchronized with the user. This is especially helpful for low vision users or blind users who collaborate with sighted users. |
 | onSelectCallback | function | nothing | Provides a callback as a user presses enter while navigating a chart. (This is the equivalent of a mouse user clicking on a data point.) Use this if you've implemented brushing or other data visualization interactions. |
+| customHotkeys | array of HotkeyType | nothing | List of custom hotkeys. [See Developer section](./Developer#custom-hotkeys) |
+
+
+### HotkeyType
+
+| Option | Type | Required? | Description |
+| --- | --- | --- | --- |
+| key | {key: string; altKey?: boolean; shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean} | Required | The relevant KeyboardEvent details for the hotkey you want to register. |
+| callback | function | Required | The function called when the user activates the hotkey |
+| title | string | Required | The name for your hotkey (like, "Drill down" or "Zoom in"). This will appear in the Help dialog. |
+| keyDescription | string | optional | An alternative description of the hotkey, if you don't like the automated description. For example, you could provide "Alt + Spacebar" instead of the auto-generated "Alt+ ". |
+| force | boolean | optional | If you are overwriting an existing hotkey, you must set `force: true` to force the overwrite. |

@@ -4,9 +4,59 @@ import type { c2m } from "./c2mChart";
 import type { SupportedDataPointType } from "./dataPoint";
 
 /**
+ * Details for a given hotkey
+ */
+export type KeyDetails = {
+    /* The callback for when this hotkey is invoked */
+    callback: () => void;
+    /* Title for what this hotkey does (displayed in hotkey dialog) */
+    title?: string;
+    keyDescription?: string;
+    /* Additional description for what this hotkey does (displayed in hotkey dialog) */
+    description?: string;
+    /* If the hotkey already exists, force this command to override it */
+    force?: boolean;
+};
+
+/**
+ *
+ */
+export type KeyRegistration = {
+    key: string;
+} & KeyDetails;
+
+/**
+ *
+ */
+export type ExpandedKeyRegistration = {
+    key: {
+        key: string;
+        shiftKey?: boolean;
+        ctrlKey?: boolean;
+        altKey?: boolean;
+        metaKey?: boolean;
+    };
+} & {
+    /* The callback for when this hotkey is invoked */
+    callback: (point: c2mCallbackType) => void;
+    /* Title for what this hotkey does (displayed in hotkey dialog) */
+    title?: string;
+    keyDescription?: string;
+    /* Additional description for what this hotkey does (displayed in hotkey dialog) */
+    description?: string;
+    /* If the hotkey already exists, force this command to override it */
+    force?: boolean;
+};
+
+/**
  *
  */
 type SupportedInputType = SupportedDataPointType | number;
+
+/**
+ * The types of scales (linear, log) that are supported for an axis
+ */
+export type AxisScale = "linear" | "log10";
 
 /**
  * Contains the data to describe a chart that should be sonified.
@@ -66,6 +116,7 @@ export type AxisData = {
     label?: string;
     /* The formatter callback to format any number plotted against this axis */
     format?: (value: number) => string;
+    type?: AxisScale;
 };
 
 /**
@@ -126,6 +177,7 @@ export type c2mOptions = {
     onSelectCallback?: (point: c2mCallbackType) => void;
     live?: boolean;
     maxWidth?: number;
+    customHotkeys?: ExpandedKeyRegistration[];
 };
 
 /**

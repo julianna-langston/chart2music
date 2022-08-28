@@ -15,6 +15,7 @@ export const validateInput = (input: SonifyTypes) => {
     errors.push(validateInputElement(input.element));
     errors.push(validateInputAxes(input.axes));
     errors.push(validateInputDataHomogeneity(input.data));
+    errors.push(validateCornerCases(input));
 
     return errors.filter((str) => str !== "").join("\n");
 };
@@ -51,17 +52,19 @@ export const validateInputType = (
     ).join(", ")}`;
 };
 
-export const validateInputElement = (element: HTMLElement) => {
+export const validateInputElement = (element: HTMLElement | SVGSVGElement) => {
     if (typeof element === "undefined") {
-        return "Required parameter 'element' was left undefined. An HTMLElement must be provided for this parameter.";
+        return "Required parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter.";
     }
 
-    if (element instanceof HTMLElement) {
+    if (element instanceof HTMLElement || element instanceof SVGElement) {
         return "";
     }
 
-    return "Provided value for 'element' must be an instance of HTMLElement.";
+    return "Provided value for 'element' must be an instance of HTMLElement or SVGElement.";
 };
+
+const valid_axis_types = ["linear", "log10"];
 
 export const validateInputAxes = (axes?: SonifyTypes["axes"]) => {
     if (typeof axes === "undefined") {
@@ -76,6 +79,24 @@ export const validateInputAxes = (axes?: SonifyTypes["axes"]) => {
         return `Unsupported axes were included: ${unsupportedAxes.join(
             ", "
         )}. The only supported axes are: ${supportedAxis.join(", ")}.`;
+    }
+
+    for (const axis in axes) {
+        const thisAxis = axes[axis as keyof typeof axes];
+        if (
+            typeof thisAxis.type === "string" &&
+            !valid_axis_types.includes(thisAxis.type)
+        ) {
+            return `Axis ${axis} has an unsupported axis type "${
+                thisAxis.type
+            }". Valid axis types are: ${valid_axis_types.join(", ")}.`;
+        }
+        if (
+            thisAxis.type === "log10" &&
+            (thisAxis.minimum === 0 || thisAxis.maximum === 0)
+        ) {
+            return `Axis ${axis} has type "log10", but has a minimum or maximum value of 0. No values <= 0 are supported for logarithmic axes.`;
+        }
     }
 
     return "";
@@ -149,4 +170,15 @@ export const validateInputDataRowHomogeneity = (
     return `The first item is of an unrecognized type (value: ${JSON.stringify(
         first
     )}). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`;
+};
+
+export const validateCornerCases = (input: SonifyTypes) => {
+    if (
+        input.element instanceof HTMLImageElement &&
+        typeof input.cc === "undefined"
+    ) {
+        return "Error: If the target element is an IMG element, a CC property must be specified.";
+    }
+
+    return "";
 };

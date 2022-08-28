@@ -45,13 +45,18 @@ test("validateInputType", () => {
 test("validateInputElement", () => {
     // @ts-ignore - deliberately generating error condition
     expect(validateInputElement()).toBe(
-        "Required parameter 'element' was left undefined. An HTMLElement must be provided for this parameter."
+        "Required parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter."
     );
     // @ts-ignore - deliberately generating error condition
     expect(validateInputElement(3)).toBe(
-        "Provided value for 'element' must be an instance of HTMLElement."
+        "Provided value for 'element' must be an instance of HTMLElement or SVGElement."
     );
     expect(validateInputElement(document.createElement("div"))).toBe("");
+    expect(
+        validateInputElement(
+            document.createElementNS("http://www.w3.org/2000/svg", "svg")
+        )
+    ).toBe("");
 });
 
 test("validateInputAxes", () => {
@@ -65,6 +70,58 @@ test("validateInputAxes", () => {
     expect(validateInputAxes({ invalid: {}, invalid2: {} })).toBe(
         "Unsupported axes were included: invalid, invalid2. The only supported axes are: x, y, y2."
     );
+    expect(
+        validateInputAxes({
+            y: {
+                type: "linear"
+            }
+        })
+    ).toBe("");
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10"
+            }
+        })
+    ).toBe("");
+    expect(
+        validateInputAxes({
+            y: {
+                // @ts-ignore - deliberately generating error condition
+                type: "invalid"
+            }
+        })
+    ).toBe(
+        `Axis y has an unsupported axis type "invalid". Valid axis types are: linear, log10.`
+    );
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10",
+                minimum: 0.01
+            }
+        })
+    ).toBe("");
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10",
+                minimum: 0
+            }
+        })
+    ).toBe(
+        `Axis y has type "log10", but has a minimum or maximum value of 0. No values <= 0 are supported for logarithmic axes.`
+    );
+    expect(
+        validateInputAxes({
+            y: {
+                type: "log10",
+                maximum: 0
+            }
+        })
+    ).toBe(
+        `Axis y has type "log10", but has a minimum or maximum value of 0. No values <= 0 are supported for logarithmic axes.`
+    );
 });
 
 test("validateInput", () => {
@@ -76,7 +133,7 @@ test("validateInput", () => {
             element: "invalid"
         })
     ).toBe(
-        "Invalid input type: invalid. Valid types are: line, bar, band, pie, candlestick\nProvided value for 'element' must be an instance of HTMLElement."
+        "Invalid input type: invalid. Valid types are: line, bar, band, pie, candlestick\nProvided value for 'element' must be an instance of HTMLElement or SVGElement."
     );
 });
 
@@ -218,6 +275,18 @@ test("c2mChart validation", () => {
     // @ts-ignore
     const { err } = c2mChart({});
     expect(err).toBe(
-        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie, candlestick\nRequired parameter 'element' was left undefined. An HTMLElement must be provided for this parameter."
+        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie, candlestick\nRequired parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter."
+    );
+});
+
+test("validate img tag without cc property", () => {
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.BAR,
+        element: document.createElement("img"),
+        data: [1, 2, 3]
+    });
+
+    expect(err).toBe(
+        "Error: If the target element is an IMG element, a CC property must be specified."
     );
 });

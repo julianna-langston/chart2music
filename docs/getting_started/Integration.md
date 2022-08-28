@@ -12,7 +12,7 @@ Chart2Music can be integrated into a vanilla HTML website, or be used in a more 
 If you're referencing a CDN...
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/chart2music@latest/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart2music"></script>
 <script>
     c2mChart({...});
 </script>

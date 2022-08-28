@@ -7,6 +7,8 @@ const config = {
     url: "http://www.chart2music.com",
     baseUrl: "/",
     favicon: "/favicon.ico",
+    onBrokenLinks: "throw",
+    onBrokenMarkdownLinks: "throw",
 
     i18n: {
         defaultLocale: "en",
