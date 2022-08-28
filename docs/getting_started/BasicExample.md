@@ -24,12 +24,14 @@ Here is a basic example:
 
 ```html
 <img src="lineGoesUp.png" id="myChart" />
+<div id="screenReaderText"></div>
 ```
 
 ```js
 c2mChart({
     type: "line",
     element: document.getElementById("myChart"),
+    cc: document.getElementById("screenReaderText"),
     data: [8,9,6]
 });
 ```
@@ -48,6 +50,7 @@ c2mChart({
     type: "line",
     title: "Quality of Terminator movies",
     element: document.getElementById("myChart"),
+    cc: document.getElementById("screenReaderText"),
     data: [8,9,6]
 });
 ```

@@ -278,3 +278,15 @@ test("c2mChart validation", () => {
         "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie, candlestick\nRequired parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter."
     );
 });
+
+test("validate img tag without cc property", () => {
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.BAR,
+        element: document.createElement("img"),
+        data: [1, 2, 3]
+    });
+
+    expect(err).toBe(
+        "Error: If the target element is an IMG element, a CC property must be specified."
+    );
+});

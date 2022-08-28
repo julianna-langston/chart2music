@@ -15,6 +15,7 @@ export const validateInput = (input: SonifyTypes) => {
     errors.push(validateInputElement(input.element));
     errors.push(validateInputAxes(input.axes));
     errors.push(validateInputDataHomogeneity(input.data));
+    errors.push(validateCornerCases(input));
 
     return errors.filter((str) => str !== "").join("\n");
 };
@@ -169,4 +170,15 @@ export const validateInputDataRowHomogeneity = (
     return `The first item is of an unrecognized type (value: ${JSON.stringify(
         first
     )}). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`;
+};
+
+export const validateCornerCases = (input: SonifyTypes) => {
+    if (
+        input.element instanceof HTMLImageElement &&
+        typeof input.cc === "undefined"
+    ) {
+        return "Error: If the target element is an IMG element, a CC property must be specified.";
+    }
+
+    return "";
 };

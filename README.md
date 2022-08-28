@@ -25,20 +25,27 @@ Include the following script tag on your page:
 <script src="https://cdn.jsdelivr.net/npm/chart2music"></script>
 ```
 
-On your page, you will also need your chart. For the sake of simplicity, here's an example with an image:
+On your page, you will also need your chart. For the sake of simplicity, here's an example with an image and an element for screen reader text:
 
 ```html
 <img src="mychart.png" id="MyChart" />
+<div id="screenReaderText"></div>
 ```
 
 Now, in your javascript, you can start a new instance of Chart2Music. In this example, we will include a simple bar chart, and point it to the img element above.
 
 ```javascript
-c2mChart({
+const {err} = c2mChart({
     type: "bar",
     element: document.getElementById("MyChart"),
+    cc: document.getElementById("screenReaderText"),
     data: [1,2,3]
 });
+
+// If there was an error in generating the chart, print the error message
+if(err){
+    console.error(err);
+}
 ```
 
 What will the user experience be? When the user navigates to the image, a description will be automatically generated, telling the user that there is interaction available. Then, the user can use arrow keys or keyboard shortcuts to interact with the data.
