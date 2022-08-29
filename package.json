@@ -33,7 +33,7 @@
     },
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
-        "clean": "rimraf ./dist ./coverage",
+        "clean": "rimraf ./dist ./coverage ./build",
         "docs-start": "docusaurus start",
         "docs-build": "docusaurus build",
         "docs-serve": "docusaurus serve",
