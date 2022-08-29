@@ -1,4 +1,4 @@
-import { c2mChart } from "../src/c2mChart";
+import { c2mChart } from "../src/entryPoint_mjs";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 window.AudioContext = jest.fn().mockImplementation(() => {
