@@ -40,7 +40,7 @@ c2mChart({
 Chart2Music will modify the provided element in order to optimize the experience for screen reader users. After the above javascript runs, the img tag will look like this:
 
 ```html
-<img src="lineGoesUp.png" id="myChart" tabIndex="0" alt="Sonified line chart" />
+<img src="lineGoesUp.png" id="myChart" tabIndex="0" role="application" aria-label="Sonified line chart" />
 ```
 
 While not *required*, it is recommended that you provide a title when creating a chart. For example, this javascript code:
@@ -55,10 +55,13 @@ c2mChart({
 });
 ```
 
-would give this more informative alt text:
+would give this more informative text for screen readers:
 
 ```html
-<img src="lineGoesUp.png" id="myChart" tabIndex="0" alt="Quality of Terminator movies, sonified line chart" />
+<img src="lineGoesUp.png" id="myChart" tabIndex="0" role="application" aria-label="Quality of Terminator movies, sonified line chart" />
+
 ```
+
+For more details on the provided element, see [the Element page](/docs/API/Element).
 :::
 
