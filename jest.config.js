@@ -17,7 +17,7 @@ module.exports = {
     ],
     collectCoverage: true,
     coverageDirectory: "coverage",
-    coverageProvider: "v8",
+    coverageProvider: "babel",
     coverageThreshold: {
         "./src/utils.ts": {
             branches: 100,

@@ -1056,6 +1056,7 @@ export class c2m {
             context = new AudioContext();
         }
         if (!this._audioEngine && context) {
+            /* istanbul ignore next */
             this._audioEngine =
                 this._providedAudioEngine ?? new OscillatorAudioEngine(context);
         }
@@ -1075,6 +1076,7 @@ export class c2m {
     ) {
         this._checkAudioEngine();
 
+        /* istanbul ignore next */
         if (!this._audioEngine) {
             return;
         }
