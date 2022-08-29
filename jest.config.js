@@ -10,7 +10,11 @@ module.exports = {
     },
     testRegex: ".+\\.test\\.ts?$",
     testEnvironment: "jsdom",
-    collectCoverageFrom: ["src/**/*.{ts,js}"],
+    collectCoverageFrom: [
+        "src/**/*.{ts,js}",
+        // Ignore this file, which calls browser API's that are impossible to test
+        "!src/audio/*.ts"
+    ],
     collectCoverage: true,
     coverageDirectory: "coverage",
     coverageProvider: "v8",
