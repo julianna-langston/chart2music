@@ -331,9 +331,20 @@ export class c2m {
             options: () => {
                 this._checkAudioEngine();
                 launchOptionDialog(
-                    this._hertzClamps,
-                    (lowerIndex: number, upperIndex: number) => {
+                    {
+                        ...this._hertzClamps,
+                        speedIndex: this._speedRateIndex
+                    },
+                    (
+                        lowerIndex: number,
+                        upperIndex: number,
+                        speedIndex: number
+                    ) => {
                         this._setHertzClamps(lowerIndex, upperIndex);
+                        this._speedRateIndex = speedIndex;
+                        this._sr.render(
+                            `Speed, ${SPEEDS[this._speedRateIndex]}`
+                        );
                     },
                     (hertzIndex: number) => {
                         this._audioEngine?.playDataPoint(

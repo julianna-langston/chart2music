@@ -1,8 +1,12 @@
 import { HERTZ } from "./constants";
 
 export const launchOptionDialog = (
-    { upper, lower }: { upper: number; lower: number },
-    cb: (lower: number, upper: number) => void,
+    {
+        upper,
+        lower,
+        speedIndex
+    }: { upper: number; lower: number; speedIndex: number },
+    cb: (lower: number, upper: number, speed: number) => void,
     playCb?: (hertz: number) => void
 ) => {
     const previousElement = document.activeElement as HTMLElement;
@@ -21,12 +25,20 @@ export const launchOptionDialog = (
                 }" step="1" id="lowerRange" value="${lower}" />
             </label>
         </div>
+
         <div>
             <label>
                 Upper hertz:
                 <input type="range" min="${lower + 1}" max="${
         HERTZ.length - 1
     }" step="1" id="upperRange" value="${upper}" />
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Play speed (aka, press 'Q' and 'E'):
+                <input type="range" min="0" max="4" id="speedRange" value="${speedIndex}" />
             </label>
         </div>
 
@@ -43,6 +55,7 @@ export const launchOptionDialog = (
 
     const lowerRange: HTMLInputElement = dialog.querySelector("#lowerRange");
     const upperRange: HTMLInputElement = dialog.querySelector("#upperRange");
+    const speedRange: HTMLInputElement = dialog.querySelector("#speedRange");
     const global: HTMLInputElement = dialog.querySelector("#global");
 
     if (!window) {
@@ -52,8 +65,9 @@ export const launchOptionDialog = (
     const save = () => {
         const lowerValue = Number(lowerRange.value);
         const upperValue = Number(upperRange.value);
+        const speedIndex = Number(speedRange.value);
         const saveGlobal = global.checked;
-        cb(lowerValue, upperValue);
+        cb(lowerValue, upperValue, speedIndex);
 
         if (window && saveGlobal) {
             if (!window.__chart2music_options__) {
