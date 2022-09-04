@@ -47,8 +47,8 @@
     },
     "license": "MIT",
     "devDependencies": {
-        "@docusaurus/core": "2.0.1",
-        "@docusaurus/preset-classic": "2.0.1",
+        "@docusaurus/core": "2.1.0",
+        "@docusaurus/preset-classic": "2.1.0",
         "@rollup/plugin-typescript": "8.3.3",
         "@types/jest": "28.1.6",
         "@typescript-eslint/eslint-plugin": "5.33.0",
