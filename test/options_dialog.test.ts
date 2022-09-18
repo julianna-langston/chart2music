@@ -111,6 +111,60 @@ test("Open Options dialog and modify a value", () => {
     expect(Math.round(lastFrequency)).toBe(49);
 });
 
+test("Open Options dialog with custom hertz range and modify a value", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options: {
+            hertzes: [400, 410, 420, 430, 440, 450, 460]
+        }
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    expect(lastFrequency).toBe(410);
+
+    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "o"
+        })
+    );
+    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+
+    const lowerRange = document.getElementById(
+        "lowerRange"
+    ) as HTMLInputElement;
+    expect(lowerRange).toHaveProperty("value", "0");
+    lowerRange.value = "2";
+
+    document.getElementById("save")?.click();
+
+    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    expect(Math.round(lastFrequency)).toBe(420);
+});
+
 test("Open Options dialog, modify a value, but esc", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");

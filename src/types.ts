@@ -178,6 +178,7 @@ export type c2mOptions = {
     live?: boolean;
     maxWidth?: number;
     customHotkeys?: ExpandedKeyRegistration[];
+    hertzes?: number[];
 };
 
 /**

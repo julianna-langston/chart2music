@@ -141,7 +141,8 @@ export class c2m {
     private _options: c2mOptions = {
         enableSound: true,
         enableSpeech: true,
-        live: false
+        live: false,
+        hertzes: HERTZ
     };
     private _providedAudioEngine?: AudioEngine;
     private _monitorMode = false;
@@ -180,6 +181,13 @@ export class c2m {
                 ...this._options,
                 ...input?.options
             };
+
+            if (input.options.hertzes) {
+                this._hertzClamps = {
+                    upper: input.options.hertzes.length - 1,
+                    lower: 0
+                };
+            }
         }
 
         // Generate summary
@@ -348,7 +356,7 @@ export class c2m {
                     },
                     (hertzIndex: number) => {
                         this._audioEngine?.playDataPoint(
-                            HERTZ[hertzIndex],
+                            this._options.hertzes[hertzIndex],
                             0,
                             NOTE_LENGTH
                         );
@@ -1038,7 +1046,10 @@ export class c2m {
      * @returns number[]
      */
     private _getHertzRange() {
-        return HERTZ.slice(this._hertzClamps.lower, this._hertzClamps.upper);
+        return this._options.hertzes.slice(
+            this._hertzClamps.lower,
+            this._hertzClamps.upper
+        );
     }
 
     /**
