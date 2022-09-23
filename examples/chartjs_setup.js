@@ -8,6 +8,7 @@ import { livePlot } from "./charts/livePlot.js";
 import { missingData } from "./charts/missingData.js";
 import { outOfBounds } from "./charts/outOfBounds.js";
 import { logLinePlot } from "./charts/logLinePlot.js";
+import { histogram } from "./charts/histogram.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -23,7 +24,8 @@ window.addEventListener("load", () => {
         livePlot,
         missingData,
         outOfBounds,
-        logLinePlot
+        logLinePlot,
+        histogram
     ];
 
     chartFn.forEach((fn) => {

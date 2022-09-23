@@ -11,27 +11,25 @@ import {
     validateInputType
 } from "../src/validate";
 
+const validTypes = "line, bar, band, pie, candlestick, histogram";
+
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
-        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie, candlestick"
+        `Required parameter 'type' was left undefined. Supported types are: ${validTypes}`
     );
     expect(
         // @ts-ignore - deliberately generating error condition
         validateInputType("invalid")
-    ).toBe(
-        "Invalid input type: invalid. Valid types are: line, bar, band, pie, candlestick"
-    );
+    ).toBe(`Invalid input type: invalid. Valid types are: ${validTypes}`);
     expect(
         // @ts-ignore - deliberately generating error condition
         validateInputType([SUPPORTED_CHART_TYPES.LINE, "invalid"])
-    ).toBe(
-        "Invalid input types: invalid. Valid types are: line, bar, band, pie, candlestick"
-    );
+    ).toBe(`Invalid input types: invalid. Valid types are: ${validTypes}`);
     expect(
         // @ts-ignore - deliberately generating error condition
         validateInputType(["invalid1", "invalid2"])
     ).toBe(
-        "Invalid input types: invalid1, invalid2. Valid types are: line, bar, band, pie, candlestick"
+        `Invalid input types: invalid1, invalid2. Valid types are: ${validTypes}`
     );
     expect(validateInputType(SUPPORTED_CHART_TYPES.LINE)).toBe("");
     expect(
@@ -133,7 +131,7 @@ test("validateInput", () => {
             element: "invalid"
         })
     ).toBe(
-        "Invalid input type: invalid. Valid types are: line, bar, band, pie, candlestick\nProvided value for 'element' must be an instance of HTMLElement or SVGElement."
+        `Invalid input type: invalid. Valid types are: ${validTypes}\nProvided value for 'element' must be an instance of HTMLElement or SVGElement.`
     );
 });
 
@@ -275,7 +273,7 @@ test("c2mChart validation", () => {
     // @ts-ignore
     const { err } = c2mChart({});
     expect(err).toBe(
-        "Required parameter 'type' was left undefined. Supported types are: line, bar, band, pie, candlestick\nRequired parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter."
+        `Required parameter 'type' was left undefined. Supported types are: ${validTypes}\nRequired parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter.`
     );
 });
 

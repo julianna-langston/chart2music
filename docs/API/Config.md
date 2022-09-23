@@ -23,7 +23,7 @@ When calling `c2mChart`, there are several different config items that you can p
 Required
 
 Format:
-* String: `line` | `bar` | `band` | `pie` | `candlestick`
+* String: `line` | `bar` | `band` | `pie` | `candlestick` | `histogram`
 * Array: any combination of the above
 
 Examples:
