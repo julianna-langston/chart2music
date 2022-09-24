@@ -26,6 +26,10 @@ Format:
 * String: `line` | `bar` | `band` | `pie` | `candlestick` | `histogram`
 * Array: any combination of the above
 
+:::caution Experimental
+Another supported type is `box` for box plots. This is currently experimental. Please do not use in production.
+:::
+
 Examples:
 ```js
 type: "line"
@@ -96,6 +100,22 @@ SupportedDataPoint comes in the following forms:
     low: number;
     close: number;
 }
+```
+
+:::caution Experimental
+We are experimentally supporting the following data point style for box plots.
+**BoxDataPoint**
+```ts
+{
+    x: number;
+    low: number;
+    q1: number;
+    median: number;
+    q3: number;
+    high: number;
+}
+```
+This syntax is subject to change. Please do not rely on it in production.
 ```
 
 See [Data](./Data) for usage info
