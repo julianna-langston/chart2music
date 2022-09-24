@@ -3,7 +3,8 @@ import {
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
     isSimpleDataPoint,
-    isOHLCDataPoint
+    isOHLCDataPoint,
+    isBoxDataPoint
 } from "./dataPoint";
 import type { SonifyTypes } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
@@ -154,6 +155,15 @@ export const validateInputDataRowHomogeneity = (
             return "";
         }
         return `The first item is an OHLC data point (x/open/high/low/close), but item index ${failure} is not (value: ${JSON.stringify(
+            row[failure]
+        )}). All items should be of the same type.`;
+    }
+    if (isBoxDataPoint(first)) {
+        const failure = row.findIndex((cell) => !isBoxDataPoint(cell));
+        if (failure === -1) {
+            return "";
+        }
+        return `The first item is a box data point (x/low/q1/median/q3/high), but item index ${failure} is not (value: ${JSON.stringify(
             row[failure]
         )}). All items should be of the same type.`;
     }

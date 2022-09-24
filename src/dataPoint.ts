@@ -96,10 +96,35 @@ export function isOHLCDataPoint(obj: unknown): obj is OHLCDataPoint {
 }
 
 /**
+ * A data point that has both a high and low value.
+ */
+export interface BoxDataPoint extends HighLowDataPoint {
+    /** The first quartile */
+    q1: number;
+    /** The third quartile */
+    q3: number;
+    /** The median */
+    median: number;
+}
+
+/**
+ * Check if an object implements the HighLowDataPoint interface.
+ *
+ * @param obj - the object to check
+ * @returns true if the object implements the interface
+ */
+export function isBoxDataPoint(obj: unknown): obj is OHLCDataPoint {
+    return (
+        isHighLowDataPoint(obj) && "q1" in obj && "q3" in obj && "median" in obj
+    );
+}
+
+/**
  * A type that includes all of the supported data point types.
  */
 export type SupportedDataPointType =
     | SimpleDataPoint
     | AlternateAxisDataPoint
     | HighLowDataPoint
-    | OHLCDataPoint;
+    | OHLCDataPoint
+    | BoxDataPoint;

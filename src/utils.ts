@@ -1,5 +1,6 @@
 import type {
     AlternateAxisDataPoint,
+    OHLCDataPoint,
     SimpleDataPoint,
     SupportedDataPointType
 } from "./dataPoint";
@@ -7,7 +8,8 @@ import {
     isOHLCDataPoint,
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
-    isSimpleDataPoint
+    isSimpleDataPoint,
+    isBoxDataPoint
 } from "./dataPoint";
 import type {
     AxisData,
@@ -220,14 +222,16 @@ export const generatePointDescription = (
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
+            return `${xFormat(point.x)}, ${yFormat(
+                point[stat as keyof OHLCDataPoint]
+            )}`;
         }
         return `${xFormat(point.x)}, ${yFormat(point.open)} - ${yFormat(
             point.high
         )} - ${yFormat(point.low)} - ${yFormat(point.close)}`;
     }
 
-    if (isHighLowDataPoint(point)) {
+    if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
@@ -276,6 +280,8 @@ export const calculateMetadataByGroup = (
         } else if (isOHLCDataPoint(row[0])) {
             // Don't calculate min/max for high/low
             availableStats = ["open", "high", "low", "close"];
+        } else if (isBoxDataPoint(row[0])) {
+            availableStats = ["high", "q3", "median", "q1", "low"];
         } else if (isHighLowDataPoint(row[0])) {
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];
@@ -338,6 +344,10 @@ export const detectDataPointType = (query: unknown): detectableDataPoint => {
 
     if (isOHLCDataPoint(query)) {
         return "OHLCDataPoint";
+    }
+
+    if (isBoxDataPoint(query)) {
+        return "BoxDataPoint";
     }
 
     if (isHighLowDataPoint(query)) {

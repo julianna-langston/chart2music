@@ -128,7 +128,8 @@ export enum SUPPORTED_CHART_TYPES {
     BAND = "band",
     PIE = "pie",
     CANDLESTICK = "candlestick",
-    HISTOGRAM = "histogram"
+    HISTOGRAM = "histogram",
+    BOX = "box"
 }
 
 /**
@@ -139,6 +140,9 @@ export type StatBundle = {
     high?: number;
     low?: number;
     close?: number;
+    q1?: number;
+    q3?: number;
+    median?: number;
 };
 
 /**
@@ -199,4 +203,5 @@ export type detectableDataPoint =
     | "SimpleDataPoint"
     | "HighLowDataPoint"
     | "OHLCDataPoint"
+    | "BoxDataPoint"
     | "AlternativeAxisDataPoint";

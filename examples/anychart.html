@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <script src="https://cdn.anychart.com/releases/8.8.0/js/anychart-base.min.js"></script>
+    <script src="./anychart.js" type="module"></script>
+    <style type="text/css">
+      html, body, #container {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #cc {
+        position: fixed;
+        bottom: 5px;
+        right: 5px;
+        border: 1px solid black;
+        background-color: aliceblue;
+        z-index: 5;
+        max-width: 400px;
+        padding: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <div id="cc"></div>
+  </body>
+  <script>
+    anychart.onDocumentReady(function () {
+      var data = [
+        {x:"Western Europe", low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53},
+        {x:"North America", low: 7.10, q1: 7.18, median: 7.25, q3: 7.33, high: 7.40},
+        {x:"Australia and New Zealand", low: 7.31, q1: 7.32, median: 7.32, q3: 7.33, high: 7.33},
+        {x:"Middle East and Northern Africa", low: 3.07, q1: 4.78, median: 5.30, q3: 6.30, high: 7.27},
+        {x:"Latin America and Caribbean", low: 4.87, q1: 5.80, median: 6.13, q3: 6.66, high: 7.09, outliers: [4.03]},
+        {x:"Southeastern Asia", low: 3.91, q1: 4.88, median: 5.28, q3: 6.01, high: 6.74},
+        {x:"Central and Eastern Europe", low: 4.22, q1: 5.15, median: 5.49, q3: 5.81, high: 6.60},
+        {x:"Eastern Asia", low: 4.91, q1: 5.30, median: 5.65, q3: 5.90, high: 6.38},
+        {x:"Sub-Saharan Africa", low: 2.91, q1: 3.74, median: 4.13, q3: 4.43, high: 5.44, outliers: [5.648]},
+        {x:"Southern Asia", low: 4.40, q1: 4.41, median: 4.64, q3: 4.96, high: 5.20, outliers: [3.36]}
+      ]
+
+      // create a chart
+      chart = anychart.box();
+
+      // create a box series and set the data
+      series = chart.box(data);
+
+      // set the container id
+      chart.container("container");
+
+      // initiate drawing the chart
+      chart.draw();
+
+    });
+
+
+  </script>
+</html>

@@ -11,7 +11,7 @@ import {
     validateInputType
 } from "../src/validate";
 
-const validTypes = "line, bar, band, pie, candlestick, histogram";
+const validTypes = "line, bar, band, pie, candlestick, histogram, box";
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
@@ -215,6 +215,25 @@ test("validateInputDataRowHomogeneity", () => {
         ])
     ).toBe(
         `The first item is an OHLC data point (x/open/high/low/close), but item index 1 is not (value: {"x":2,"high":2,"low":1}). All items should be of the same type.`
+    );
+
+    // Confirm simple data point homogeneity
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
+            { x: 1, low: 7.1, q1: 7.18, median: 7.25, q3: 7.33, high: 7.4 },
+            { x: 2, low: 7.31, q1: 7.32, median: 7.32, q3: 7.33, high: 7.33 }
+        ])
+    ).toBe("");
+    // Confirm simple data point homogeneity
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
+            { x: 2, high: 2, low: 1 },
+            { x: 3, y2: 3 }
+        ])
+    ).toBe(
+        `The first item is a box data point (x/low/q1/median/q3/high), but item index 1 is not (value: {"x":2,"high":2,"low":1}). All items should be of the same type.`
     );
 
     // @ts-ignore - deliberately generating error condition
