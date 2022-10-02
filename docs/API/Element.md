@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Element
 
 The source or target element can technically be any visible HTML or SVG element. That said, the most common elements are CANVAS, SVG, DIV, and IMG.
