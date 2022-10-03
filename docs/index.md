@@ -65,6 +65,7 @@ You can also find examples of integrations with other visualization libraries, l
 * [with Chartist.js](https://codepen.io/chart2music/full/LYdmPNj)
 * [with NVD3.js](https://codepen.io/chart2music/full/jOzxNQW)
 * [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr) (includes visual syncing)
+* [with AM Charts](https://codepen.io/chart2music/full/MWGGZPe) (includes visual syncing)
 * [with Vega-Lite](https://codepen.io/chart2music/pen/jOzpyME)
 * [with Morris.js](https://codepen.io/chart2music/full/abYGobm)
 * [with Frappe](https://codepen.io/chart2music/full/QWmrWWE)
