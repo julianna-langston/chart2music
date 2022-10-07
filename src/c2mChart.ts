@@ -52,6 +52,8 @@ enum ActionSet {
     NEXT_STAT = "next_stat",
     PREVIOUS_CATEGORY = "previous_category",
     NEXT_CATEGORY = "next_category",
+    FIRST_CATEGORY = "first_category",
+    LAST_CATEGORY = "last_category",
     FIRST_POINT = "first_point",
     LAST_POINT = "last_point",
     REPLAY = "replay",
@@ -261,6 +263,18 @@ export class c2m {
                     return;
                 }
                 this._groupIndex++;
+                this._flagNewGroup = true;
+                this._playAndSpeak();
+            },
+            first_category: () => {
+                clearInterval(this._playListInterval);
+                this._groupIndex = 0;
+                this._flagNewGroup = true;
+                this._playAndSpeak();
+            },
+            last_category: () => {
+                clearInterval(this._playListInterval);
+                this._groupIndex = this._groups.length - 1;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
@@ -745,6 +759,16 @@ export class c2m {
                 title: "Go to next category",
                 key: "PageDown",
                 callback: this._availableActions.next_category
+            },
+            {
+                title: "Go to first category",
+                key: "Alt+PageUp",
+                callback: this._availableActions.first_category
+            },
+            {
+                title: "Go to last category",
+                key: "Alt+PageDown",
+                callback: this._availableActions.last_category
             },
             {
                 title: "Go to first point",

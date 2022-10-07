@@ -195,6 +195,11 @@ test("Movement for a grouped chart", () => {
                 { x: 1, y: 11 },
                 { x: 2, y: 12 },
                 { x: 3, y: 13 }
+            ],
+            c: [
+                { x: 1, y: 7 },
+                { x: 2, y: 8 },
+                { x: 3, y: 9 }
             ]
         },
         element: mockElement,
@@ -227,7 +232,7 @@ test("Movement for a grouped chart", () => {
         }
     });
 
-    // Move right
+    // Move to next category
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "PageDown"
@@ -263,7 +268,7 @@ test("Movement for a grouped chart", () => {
         }
     });
 
-    // Move right
+    // Move to previous category
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "PageUp"
@@ -279,6 +284,26 @@ test("Movement for a grouped chart", () => {
             y: 3
         }
     });
+
+    // Move to last category
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            altKey: true,
+            key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent().group).toEqual("c");
+
+    // Move to first category
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            altKey: true,
+            key: "PageUp"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent().group).toEqual("a");
 });
 
 test("Movement for a chart with stats", () => {
