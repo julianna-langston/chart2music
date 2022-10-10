@@ -1370,6 +1370,7 @@ function buildChart(data) {
     const { err, data: c2m } = c2mChart({
         type: "candlestick",
         element: document.getElementById("examples"),
+        cc: document.getElementById("cc"),
         axes: {
             x: {
                 label: "Day",
