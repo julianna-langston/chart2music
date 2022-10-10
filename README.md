@@ -58,9 +58,10 @@ Some of the examples you will find there include:
 * [Simple, no frills code example](https://codepen.io/chart2music/pen/ExEmqbr).
 * [Multi-line plot](https://codepen.io/chart2music/full/gOegZpm).
 * [Bar-line plot](https://codepen.io/chart2music/full/QWmdpOJ).
+* [Candlestick](https://codepen.io/chart2music/full/rNvqBYL).
 
 You can also find examples of integrations with other visualization libraries:
-* [with Chart.js](https://codepen.io/chart2music/pen/YzaVxPK)
+* [with Chart.js](https://codepen.io/chart2music/full/YzaVxPK)
 * [with D3.js](https://codepen.io/chart2music/full/gOezOaY)
 * [with HighCharts](https://codepen.io/chart2music/full/QWmZrKj)
 * [with Recharts](https://codepen.io/chart2music/full/eYrrRam)
@@ -70,7 +71,7 @@ You can also find examples of integrations with other visualization libraries:
 * [with NVD3.js](https://codepen.io/chart2music/full/jOzxNQW)
 * [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr)
 * [with AM Charts](https://codepen.io/chart2music/full/MWGGZPe)
-* [with Vega-Lite](https://codepen.io/chart2music/pen/jOzpyME)
+* [with Vega-Lite](https://codepen.io/chart2music/full/jOzpyME)
 * [with Morris.js](https://codepen.io/chart2music/full/abYGobm)
 * [with Frappe](https://codepen.io/chart2music/full/QWmrWWE)
 
