@@ -1,0 +1,34 @@
+ignores: [
+    # Used in docusaurus.config.js
+    "@docusaurus/preset-classic",
+
+    # Used as a script in package.json
+    "http-server",
+    "rollup",
+
+    # Configured with the jest.config.js
+    "jest-environment-jsdom",
+
+    # Helper library sideloaded by other things
+    "tslib",
+  ]
+skip-missing: true
+
+# https://github.com/depcheck/depcheck/issues/615
+parsers:
+  "**/*.mjs":
+    - "es6"
+  "**/*.cjs":
+    - "es6"
+  "**/*.mts":
+    - "typescript"
+  "**/*.cts":
+    - "typescript"
+  "**/*.jsx":
+    - "jsx"
+  "**/*.tsx":
+    - "typescript"
+  "**/*.ts":
+    - "typescript"
+  "**/*.js":
+    - "es6"

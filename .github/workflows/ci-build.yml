@@ -31,6 +31,9 @@ jobs:
       - name: Test linting
         run: npm run lint-check
 
+      - name: Check deps
+        run: npm run depcheck
+
       - name: Build package (to confirm building works)
         run: npm run build
 
