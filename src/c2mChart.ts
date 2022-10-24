@@ -69,20 +69,6 @@ enum ActionSet {
     OPTIONS = "options"
 }
 
-/**
- * List of kinds of swipes available from touch actions
- */
-enum TouchActionSet {
-    LEFT = "left",
-    RIGHT = "right",
-    UP = "up",
-    DOWN = "down",
-    DOUBLE_LEFT = "double_left",
-    DOUBLE_RIGHT = "double_right",
-    DOUBLE_UP = "double_up",
-    DOUBLE_DOWN = "double_down"
-}
-
 declare global {
     /**
      * augment the global window object
@@ -115,6 +101,33 @@ export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
         err: null,
         data: new c2m(input)
     };
+};
+
+/**
+ * Details for action buttons for the mobile toolbars
+ */
+interface toolbarActionButtons {
+    title: string;
+    display?: string;
+    callback: () => void;
+}
+
+const addMobileToolbar = (
+    elem: HTMLElement,
+    actions: toolbarActionButtons[]
+) => {
+    const toolbar = document.createElement("div");
+    toolbar.classList.add("chart2music-mobile-toolbar");
+
+    actions.forEach(({ title, display, callback }) => {
+        const button = document.createElement("button");
+        button.setAttribute("aria-label", title);
+        button.textContent = display ?? title;
+        button.addEventListener("click", callback);
+        toolbar.appendChild(button);
+    });
+
+    elem.parentElement.insertBefore(toolbar, elem);
 };
 
 /**
@@ -202,8 +215,46 @@ export class c2m {
         this._availableActions = this._initializeActionMap();
 
         this._initializeKeyActionMap();
-        this._initializeTouchActions();
         this._startListening();
+
+        addMobileToolbar(this._chartElement, [
+            {
+                title: "Go home",
+                callback: () => this._availableActions.first_point()
+            },
+            {
+                title: "Play back",
+                callback: () => this._availableActions.play_left()
+            },
+            {
+                title: "Go left",
+                callback: () => this._availableActions.previous_point()
+            },
+            {
+                title: "Replay",
+                callback: () => this._availableActions.replay()
+            },
+            {
+                title: "Go right",
+                callback: () => this._availableActions.next_point()
+            },
+            {
+                title: "Play forward",
+                callback: () => this._availableActions.play_right()
+            },
+            {
+                title: "Go end",
+                callback: () => this._availableActions.last_point()
+            },
+            {
+                title: "Cycle categories",
+                callback: () => this._availableActions.next_category()
+            },
+            {
+                title: "Cycle statistics",
+                callback: () => this._availableActions.next_stat()
+            }
+        ]);
     }
 
     /**
@@ -381,95 +432,9 @@ export class c2m {
     }
 
     /**
-     * Wire up the touch action event listeners
-     */
-    private _initializeTouchActions() {
-        let touches: Touch[] = [];
-        const elem = this._chartElement;
-        const touchActionMap: { [swipe in TouchActionSet]: () => void } = {
-            left: this._availableActions.previous_point,
-            right: this._availableActions.next_point,
-            up: this._availableActions.previous_stat,
-            down: this._availableActions.next_stat,
-            double_down: this._availableActions.next_category,
-            double_left: this._availableActions.play_left,
-            double_right: this._availableActions.play_right,
-            double_up: this._availableActions.previous_category
-        };
-        let waitTime = 0;
-        let lastDirection = "";
-        let secondTouchTimeout: NodeJS.Timeout | number | null = null;
-        elem.addEventListener("touchstart", (e) => {
-            e.preventDefault();
-            this._availableActions.stop_play();
-            if (document.activeElement !== this._chartElement) {
-                this._chartElement.focus();
-            }
-            Array.from(e.targetTouches).forEach((touch) => {
-                touches.push(touch);
-            });
-        });
-        const endTouch = (e: TouchEvent) => {
-            e.preventDefault();
-            let direction = "";
-            Array.from(e.changedTouches).forEach((touch) => {
-                // Remove from touches list
-                const startTouch = touches.find(
-                    (t) => t.identifier === touch.identifier
-                );
-                touches = touches.filter(
-                    (t) => t.identifier !== touch.identifier
-                );
-
-                // Determine change angle
-                const { clientX: startX, clientY: startY } = startTouch;
-                const { clientX: endX, clientY: endY } = touch;
-                const xDiff = endX - startX;
-                const yDiff = endY - startY;
-
-                // Print conclusion
-                if (xDiff < -200 && Math.abs(yDiff) < 200) {
-                    direction = TouchActionSet.LEFT;
-                } else if (xDiff > 200 && Math.abs(yDiff) < 200) {
-                    direction = TouchActionSet.RIGHT;
-                } else if (yDiff < -200 && Math.abs(xDiff) < 200) {
-                    direction = TouchActionSet.UP;
-                } else if (yDiff > 200 && Math.abs(xDiff) < 200) {
-                    direction = TouchActionSet.DOWN;
-                } else {
-                    direction = "";
-                    return;
-                }
-
-                if (waitTime > new Date().valueOf() - 25) {
-                    if (direction === lastDirection) {
-                        clearTimeout(secondTouchTimeout);
-                        touchActionMap[
-                            `double_${direction}` as TouchActionSet
-                        ]();
-                        direction = "";
-                    }
-                }
-                // This was the first of multiple touches
-                if (touches.length > 0) {
-                    waitTime = new Date().valueOf();
-                    lastDirection = direction;
-                }
-
-                secondTouchTimeout = setTimeout(() => {
-                    touchActionMap[direction as TouchActionSet]?.();
-                    direction = "";
-                }, 25);
-            });
-        };
-        elem.addEventListener("touchend", endTouch);
-        elem.addEventListener("touchcancel", endTouch);
-    }
-
-    /**
      * Generate (or regenerate) chart summary
      */
-    public _generateSummary() {
+    private _generateSummary() {
         this._summary = generateSummary({
             type: this._type,
             title: this._title,
