@@ -19,7 +19,7 @@ export class KeyboardEventManager {
         [keyEvent: string]: KeyDetails;
     };
     private _target: HTMLElement;
-    private _preLaunchActiveElement: HTMLElement;
+    private _dialog: HTMLDialogElement | null;
 
     /**
      * Initialize keyboard event manager
@@ -35,6 +35,7 @@ export class KeyboardEventManager {
         if (!this._target.hasAttribute("tabIndex")) {
             this._target.setAttribute("tabIndex", "0");
         }
+        this._dialog = null;
     }
 
     /**
@@ -96,8 +97,18 @@ export class KeyboardEventManager {
      * Build a help dialog
      */
     generateHelpDialog() {
-        const dialog = document.createElement("div");
-        dialog.setAttribute("role", "dialog");
+        const dialog = document.createElement("dialog");
+
+        const closeButton = document.createElement("button");
+        closeButton.textContent = "X";
+        closeButton.ariaLabel = "Close";
+        closeButton.style.position = "absolute";
+        closeButton.style.top = "10px";
+        closeButton.style.right = "10px";
+        closeButton.addEventListener("click", () => {
+            dialog.close();
+        });
+        dialog.appendChild(closeButton);
 
         const heading = "Keyboard Manager";
         const h1 = document.createElement("h1");
@@ -133,22 +144,11 @@ export class KeyboardEventManager {
      * Launch help dialog
      */
     launchHelpDialog() {
-        this._preLaunchActiveElement = document.activeElement as HTMLElement;
-
-        const dialog = this.generateHelpDialog();
-        document.body.appendChild(dialog);
-        const km = new KeyboardEventManager(dialog);
-        km.registerKeyEvent({
-            key: "Escape",
-            callback: () => {
-                this._preLaunchActiveElement?.focus(); // causes dialog to blur, which closes it
-            }
-        });
-        dialog.focus();
-
-        const closeDialog = () => {
-            dialog.parentNode.removeChild(dialog);
-        };
-        dialog.addEventListener("blur", closeDialog);
+        if (this._dialog === null) {
+            this._dialog = this.generateHelpDialog();
+            document.body.appendChild(this._dialog);
+        }
+        this._dialog.showModal();
+        this._dialog.focus();
     }
 }

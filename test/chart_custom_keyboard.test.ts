@@ -27,6 +27,15 @@ test("Use a custom hotkey", () => {
             customHotkeys: [
                 {
                     key: {
+                        key: "p"
+                    },
+                    callback: ({ slice, index }) => {
+                        lastIndex = index;
+                        lastSlice = slice;
+                    }
+                },
+                {
+                    key: {
                         altKey: true,
                         key: "m"
                     },
@@ -61,20 +70,18 @@ test("Use a custom hotkey", () => {
             key: "h"
         })
     );
-    const helpDialog = document.querySelector("[role='dialog']");
+    const helpDialog = document.querySelector("dialog");
     expect(helpDialog?.querySelector("tr:last-child th")?.textContent).toBe(
         "Extra info"
     );
     expect(helpDialog?.querySelector("tr:last-child td")?.textContent).toBe(
         "Alt+m"
     );
-    helpDialog?.dispatchEvent(
-        new KeyboardEvent("keydown", {
-            key: "Escape"
-        })
-    );
-    helpDialog?.dispatchEvent(new Event("blur"));
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+
+    expect(helpDialog?.open).toBe(true);
+    const closeButton = helpDialog?.querySelector("button");
+    closeButton?.click();
+    expect(helpDialog?.open).toBe(false);
 });
 
 test("Overwrite a hotkey", () => {

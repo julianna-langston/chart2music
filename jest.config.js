@@ -1,3 +1,4 @@
+/** @type {import('jest').Config} */
 module.exports = {
     moduleFileExtensions: ["js", "ts"],
     globals: {
@@ -5,6 +6,7 @@ module.exports = {
             isolatedModules: true
         }
     },
+    setupFiles: ["<rootDir>/test/_setup.ts"],
     transform: {
         "^.+\\.ts?$": "ts-jest"
     },
