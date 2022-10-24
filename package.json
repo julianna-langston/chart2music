@@ -37,7 +37,7 @@
         "docs-start": "docusaurus start",
         "docs-build": "docusaurus build",
         "docs-serve": "docusaurus serve",
-        "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\" \"jest -o\"",
+        "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\"",
         "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
         "lint-check": "eslint --quiet src/ --ext .ts && prettier --config .prettierrc.json src/**/*.ts --check",

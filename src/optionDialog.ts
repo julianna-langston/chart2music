@@ -56,10 +56,6 @@ export const launchOptionDialog = (
     const speedRange: HTMLInputElement = dialog.querySelector("#speedRange");
     const global: HTMLInputElement = dialog.querySelector("#global");
 
-    if (!window) {
-        global.parentElement.parentElement.style.display = " none";
-    }
-
     const save = () => {
         const lowerValue = Number(lowerRange.value);
         const upperValue = Number(upperRange.value);
