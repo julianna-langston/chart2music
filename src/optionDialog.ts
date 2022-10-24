@@ -9,9 +9,7 @@ export const launchOptionDialog = (
     cb: (lower: number, upper: number, speed: number) => void,
     playCb?: (hertz: number) => void
 ) => {
-    const previousElement = document.activeElement as HTMLElement;
-    const dialog = document.createElement("div");
-    dialog.setAttribute("role", "dialog");
+    const dialog = document.createElement("dialog");
     dialog.innerHTML = `<h1>Options</h1>
 
     <p tabIndex="0">While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:</p>
@@ -80,7 +78,8 @@ export const launchOptionDialog = (
                 }
             };
         }
-        esc();
+
+        dialog.close();
     };
 
     dialog.querySelector("#optionForm").addEventListener("submit", (e) => {
@@ -104,19 +103,11 @@ export const launchOptionDialog = (
         });
     }
 
-    const esc = () => {
-        previousElement.focus();
-        dialog.parentElement.removeChild(dialog);
-    };
-
-    dialog.addEventListener("keydown", (evt) => {
-        if (evt.key === "Escape") {
-            esc();
-        }
-    });
-    dialog.addEventListener("blur", esc);
-
     document.body.appendChild(dialog);
-    const p: HTMLElement = dialog.querySelector("[tabIndex]");
-    p.focus();
+    dialog.showModal();
+    dialog.focus();
+
+    dialog.addEventListener("close", () => {
+        dialog.parentElement.removeChild(dialog);
+    });
 };

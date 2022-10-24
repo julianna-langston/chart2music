@@ -57,7 +57,7 @@ beforeEach(() => {
     // Clear global options
     delete window.__chart2music_options__;
     // Clear dialog, if it's still up
-    document.querySelector("[role='dialog']")?.dispatchEvent(new Event("blur"));
+    document.querySelector("dialog")?.close();
 });
 
 test("Open Options dialog and modify a value", () => {
@@ -84,14 +84,14 @@ test("Open Options dialog and modify a value", () => {
     );
     expect(Math.round(lastFrequency)).toBe(123);
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "o"
         })
     );
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+    expect(document.querySelectorAll("dialog").length).toBe(1);
 
     const lowerRange = document.getElementById(
         "lowerRange"
@@ -101,7 +101,7 @@ test("Open Options dialog and modify a value", () => {
 
     document.getElementById("save")?.click();
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -138,14 +138,14 @@ test("Open Options dialog with custom hertz range and modify a value", () => {
     );
     expect(lastFrequency).toBe(410);
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "o"
         })
     );
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+    expect(document.querySelectorAll("dialog").length).toBe(1);
 
     const lowerRange = document.getElementById(
         "lowerRange"
@@ -155,7 +155,7 @@ test("Open Options dialog with custom hertz range and modify a value", () => {
 
     document.getElementById("save")?.click();
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -189,14 +189,14 @@ test("Open Options dialog, modify a value, but esc", () => {
     );
     expect(Math.round(lastFrequency)).toBe(123);
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "o"
         })
     );
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+    expect(document.querySelectorAll("dialog").length).toBe(1);
 
     const lowerRange = document.getElementById(
         "lowerRange"
@@ -204,13 +204,9 @@ test("Open Options dialog, modify a value, but esc", () => {
     expect(lowerRange).toHaveProperty("value", "21");
     lowerRange.value = "0";
 
-    document.querySelector("[role='dialog']")?.dispatchEvent(
-        new KeyboardEvent("keydown", {
-            key: "Escape"
-        })
-    );
+    document.querySelector("dialog")?.dispatchEvent(new Event("blur"));
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -245,14 +241,14 @@ test("In the Options dialog, the ranges play sounds onChange", () => {
     expect(playHistory.length).toBe(1);
     expect(lastFrequency).toBeCloseTo(123.47);
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "o"
         })
     );
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+    expect(document.querySelectorAll("dialog").length).toBe(1);
 
     const lowerRange = document.getElementById(
         "lowerRange"
@@ -298,14 +294,14 @@ test("In the Options dialog, modifying one range changes the limits of the other
     expect(playHistory.length).toBe(1);
     expect(lastFrequency).toBeCloseTo(123.47);
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "o"
         })
     );
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+    expect(document.querySelectorAll("dialog").length).toBe(1);
 
     const lowerRange = document.getElementById(
         "lowerRange"
@@ -362,14 +358,14 @@ test("Modifying limits globally impacts other charts", () => {
     );
     expect(Math.round(lastFrequency)).toBe(123);
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "o"
         })
     );
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(1);
+    expect(document.querySelectorAll("dialog").length).toBe(1);
 
     const lowerRange = document.getElementById(
         "lowerRange"
@@ -379,7 +375,7 @@ test("Modifying limits globally impacts other charts", () => {
 
     document.getElementById("save")?.click();
 
-    expect(document.querySelectorAll("[role='dialog']").length).toBe(0);
+    expect(document.querySelectorAll("dialog").length).toBe(0);
 
     expect(chart1._hertzClamps.lower).toBe(0);
 
