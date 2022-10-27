@@ -9,7 +9,8 @@ import type {
     SonifyTypes,
     c2mOptions,
     c2mGolangReturn,
-    c2mCallbackType
+    c2mCallbackType,
+    c2mCrosshairType
 } from "./types";
 import {
     calcPan,
@@ -34,7 +35,8 @@ import {
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
     isOHLCDataPoint,
-    isSimpleDataPoint
+    isSimpleDataPoint,
+    isBoxDataPoint
 } from "./dataPoint";
 import type { SupportedDataPointType } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
@@ -1232,6 +1234,27 @@ export class c2m {
             slice: this._groups[this._groupIndex],
             index: this._pointIndex
         });
+
+        const { point, stat } = this.getCurrent();
+        const callbackPoint: c2mCrosshairType = { x: point.x };
+        if (isSimpleDataPoint(point)) {
+            callbackPoint.y = point.y;
+        } else if (isAlternateAxisDataPoint(point)) {
+            callbackPoint.y2 = point.y2;
+        } else if (
+            isBoxDataPoint(point) ||
+            isOHLCDataPoint(point) ||
+            isHighLowDataPoint(point)
+        ) {
+            if (stat === "") {
+                callbackPoint.y = this._metadataByGroup[
+                    this._groupIndex
+                ].availableStats.map((stat) => point[stat] as number);
+            } else {
+                callbackPoint.y = point[stat] as number;
+            }
+        }
+        this._options?.onCrosshairCallback?.(callbackPoint);
     }
 
     /**

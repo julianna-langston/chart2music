@@ -163,11 +163,20 @@ export type groupedMetadata = {
 export type validAxes = "x" | "y" | "y2";
 
 /**
- * Data provided for the on focus callback
+ * The individual data point currently in focus
  */
 export type c2mCallbackType = {
     slice: string;
     index: number;
+};
+
+/**
+ * The values of the data currently in focus
+ */
+export type c2mCrosshairType = {
+    x: number;
+    y?: number | number[];
+    y2?: number;
 };
 
 /**
@@ -178,6 +187,8 @@ export type c2mOptions = {
     enableSpeech?: boolean;
     /* The callback invoked when the end user focuses on a data point */
     onFocusCallback?: (point: c2mCallbackType) => void;
+    /* The callback invoked when the end user focuses on a data point */
+    onCrosshairCallback?: (crosshair: c2mCrosshairType) => void;
     /* The callback invoked when the user presses enter */
     onSelectCallback?: (point: c2mCallbackType) => void;
     live?: boolean;

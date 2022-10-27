@@ -5,7 +5,9 @@ Using `c2mChart` to sonify a *static* chart is already powerful, but you can als
 
 ## Visual syncing
 
-You can also use the `c2mChart` option `onFocusCallback` to keep your visual chart synchronized with the user as they navigate. How this works will depedn on how you built your chart visuals in the first place.
+You can also use the `c2mChart` options `onFocusCallback` or `onCrosshairCallback` to keep your visual chart synchronized with the user as they navigate. How this works will depedn on how you built your chart visuals in the first place.
+
+### onFocusCallback
 
 `onFocusCallback` calls a function and provides an object with 2 properties:
 * `slice` - the name of the category
@@ -78,6 +80,69 @@ Examples:
 * [with Chart.js](https://codepen.io/chart2music/full/YzaVxPK)
 * [with Google Charts](https://codepen.io/chart2music/full/abYGoBJ)
 * [with Plotly.js](https://codepen.io/chart2music/full/BarrXYr)
+
+### onCrosshairCallback
+
+`onCrosshairCallback` calls a function and provides an object with 2 properties:
+* `x` - the unformatted x-value of the data point currently in focus
+* `y` or `y2` - the unformatted y-value of the data point. When multiple y-values are currently in focus, such as the 5 values in a box plot, all of the relevant y-values will be returned in an array.
+
+Example usages:
+
+```js
+c2mChart({
+    title: "My chart",
+    type: "line",
+    element: canvas,
+    data: [1,2,3,4,5],
+    options: {
+        onCrosshairCallback: ({x, y}) => {
+            // Example values: {x: 0, y: 1}
+        }
+    }
+});
+```
+
+```js
+c2mChart({
+    title: "My chart",
+    type: "band",
+    element: canvas,
+    data: {
+        MovingAverage: [
+            {x: 3, high: 10, low: 8},
+            {x: 4, high: 12, low: 9},
+            {x: 5, high: 15, low: 10},
+            {x: 6, high: 13, low: 11},
+        ]
+    },
+    options: {
+        onCrosshairCallback: ({x, y}) => {
+            // Example values when the statistic is "All": {x: 4, y: [12, 9]}
+            // Example values when the statistic is "Low": {x: 4, y: 9}
+        }
+    }
+});
+```
+
+```js
+c2mChart({
+    title: "My chart",
+    type: "band",
+    element: canvas,
+    data: [
+        {x: 1, y2: 10},
+        {x: 2, y2: 12},
+        {x: 3, y2: 15},
+        {x: 4, y2: 13},
+    ],
+    options: {
+        onCrosshairCallback: ({x, y2}) => {
+            // Example values: {x: 4, y2: 13}
+        }
+    }
+});
+```
 
 ## Live charts
 
