@@ -1,7 +1,4 @@
 ignores: [
-    # Used in docusaurus.config.js
-    "@docusaurus/preset-classic",
-
     # Used as a script in package.json
     "http-server",
     "rollup",

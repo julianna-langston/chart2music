@@ -33,11 +33,8 @@
     },
     "scripts": {
         "build": "rollup -c rollup.config.js --silent",
-        "clean": "rimraf ./dist ./coverage ./build",
+        "clean": "rimraf ./dist ./coverage",
         "depcheck": "depcheck",
-        "docs-start": "docusaurus start",
-        "docs-build": "docusaurus build",
-        "docs-serve": "docusaurus serve",
         "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\"",
         "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
@@ -48,8 +45,6 @@
     },
     "license": "MIT",
     "devDependencies": {
-        "@docusaurus/core": "2.1.0",
-        "@docusaurus/preset-classic": "2.1.0",
         "@rollup/plugin-typescript": "9.0.2",
         "@typescript-eslint/eslint-plugin": "5.40.0",
         "@typescript-eslint/parser": "5.40.0",
@@ -64,18 +59,11 @@
         "jest-environment-jsdom": "29.2.0",
         "lint-staged": "13.0.3",
         "prettier": "2.7.1",
-        "react": "17.0.2",
-        "react-dom": "17.0.2",
         "rimraf": "3.0.2",
         "rollup": "2.79.1",
         "rollup-plugin-dts": "4.2.2",
         "ts-jest": "28.0.8",
         "tslib": "2.4.0",
         "typescript": "4.8.4"
-    },
-    "overrides": {
-        "got": "^11.8.5",
-        "trim": "^0.0.3",
-        "minimatch": "^3.0.5"
     }
 }
