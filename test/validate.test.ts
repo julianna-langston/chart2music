@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // Enabling an error condition to test error handling
 import { c2mChart } from "../src/c2mChart";
@@ -11,7 +13,7 @@ import {
     validateInputType
 } from "../src/validate";
 
-const validTypes = "line, bar, band, pie, candlestick, histogram, box";
+const validTypes = "line, bar, band, pie, candlestick, histogram, box, matrix";
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
