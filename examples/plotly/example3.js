@@ -1,7 +1,6 @@
 import { c2mChart } from "../../dist/index.mjs";
 
 const fillWithNaN = (seed, maxNum) => {
-    console.log(seed);
     const arr = seed.slice(0);
     while (arr.length < maxNum) {
         arr.push(NaN);
