@@ -8,6 +8,7 @@ ignores: [
 
     # Helper library sideloaded by other things
     "tslib",
+    "@types/jest"
   ]
 skip-missing: true
 
