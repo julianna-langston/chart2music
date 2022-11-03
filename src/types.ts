@@ -129,7 +129,8 @@ export enum SUPPORTED_CHART_TYPES {
     PIE = "pie",
     CANDLESTICK = "candlestick",
     HISTOGRAM = "histogram",
-    BOX = "box"
+    BOX = "box",
+    MATRIX = "matrix"
 }
 
 /**
