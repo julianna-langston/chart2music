@@ -294,10 +294,10 @@ export const example3 = (canvas, cc) => {
                 yanchor: "bottom",
                 font: {
                     family: "Arial",
-                    size: 30,
+                    size: 24,
                     color: "rgb(37,37,37)"
                 },
-                text: "Main Source for News",
+                text: "Star Trek Episodes (IMDB Ratings)",
                 showarrow: false
             }
         ]
