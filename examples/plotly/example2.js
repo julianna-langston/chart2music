@@ -21,7 +21,7 @@ export const example2 = (canvas, cc) => {
 
     const { err } = c2mChart({
         title: "Time using a device",
-        type: "line",
+        type: "matrix",
         axes: {
             x: {
                 label: "Day",

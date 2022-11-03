@@ -305,7 +305,7 @@ export const example3 = (canvas, cc) => {
 
     const { err } = c2mChart({
         title: "Star Trek Episodes - IMDB Ratings",
-        type: "line",
+        type: "matrix",
         axes: {
             x: {
                 label: "Episodes",
