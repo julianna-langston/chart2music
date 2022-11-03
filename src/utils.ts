@@ -286,9 +286,12 @@ export const calculateMetadataByGroup = (
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];
         }
+
+        const filteredYValues = yValues.filter((num) => !isNaN(num));
+
         // Calculate min/max
-        const min = Math.min(...yValues);
-        const max = Math.max(...yValues);
+        const min = Math.min(...filteredYValues);
+        const max = Math.max(...filteredYValues);
 
         // Calculate tenths
         const tenths = Math.round(row.length / 10);

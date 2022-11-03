@@ -497,6 +497,41 @@ test("Calculate metadata by group", () => {
             ]
         ])[0].maximumPointIndex
     ).toBe(1);
+
+    // Can calculate minimum/maximum values even when there are NaNs
+    expect(
+        calculateMetadataByGroup([
+            [
+                { x: 0, y: 1 },
+                { x: 1, y: 2 },
+                { x: 2, y: 3 },
+                { x: 2, y: 4 },
+                { x: 2, y: 5 },
+                { x: 2, y: 6 },
+                { x: 2, y: 7 },
+                { x: 2, y: 8 },
+                { x: 2, y: 9 },
+                { x: 2, y: 10 },
+                { x: 2, y: NaN },
+                { x: 2, y: null },
+                { x: 2 },
+                { x: 2, y: 5 },
+                { x: 2, y: 6 },
+                { x: 2, y: 4 },
+                { x: 2, y: 2 },
+                { x: 2, y: 0 }
+            ]
+        ])
+    ).toEqual([
+        {
+            minimumPointIndex: 17,
+            maximumPointIndex: 9,
+            tenths: 2,
+            availableStats: [],
+            statIndex: -1,
+            inputType: "SimpleDataPoint"
+        }
+    ]);
 });
 
 test("detectDataPointType", () => {
