@@ -23,8 +23,10 @@ When calling `c2mChart`, there are several different config items that you can p
 Required
 
 Format:
-* String: `line` | `bar` | `band` | `pie` | `candlestick` | `histogram`
+* String: `line` | `bar` | `band` | `pie` | `candlestick` | `histogram` | `matrix`
 * Array: any combination of the above
+
+**Note: a "matrix" chart can work for heatmaps and correlation matrices.**
 
 :::caution Experimental
 Another supported type is `box` for box plots. This is currently experimental. Please do not use in production.
