@@ -304,6 +304,72 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent().group).toEqual("a");
+
+    // Move to category maximum
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "]"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toEqual({
+        group: "a",
+        stat: "",
+        point: {
+            x: 3,
+            y: 3
+        }
+    });
+
+    // Move to chart maximum
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "]",
+            ctrlKey: true
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toEqual({
+        group: "b",
+        stat: "",
+        point: {
+            x: 3,
+            y: 13
+        }
+    });
+
+    // Move to category minimum
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "["
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toEqual({
+        group: "b",
+        stat: "",
+        point: {
+            x: 1,
+            y: 11
+        }
+    });
+
+    // Move to chart minimum
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "[",
+            ctrlKey: true
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toEqual({
+        group: "a",
+        stat: "",
+        point: {
+            x: 1,
+            y: 1
+        }
+    });
 });
 
 test("Movement for a chart with stats", () => {

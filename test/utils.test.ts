@@ -307,6 +307,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: 0,
             maximumPointIndex: 2,
+            index: 0,
+            maximumValue: 3,
+            minimumValue: 1,
             tenths: 0,
             availableStats: [],
             statIndex: -1,
@@ -332,6 +335,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: 0,
             maximumPointIndex: 2,
+            index: 0,
+            maximumValue: 3,
+            minimumValue: 1,
             tenths: 0,
             availableStats: [],
             statIndex: -1,
@@ -340,6 +346,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: 1,
             maximumPointIndex: 0,
+            index: 1,
+            maximumValue: 8,
+            minimumValue: 6,
             tenths: 0,
             availableStats: [],
             statIndex: -1,
@@ -360,6 +369,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: 0,
             maximumPointIndex: 2,
+            index: 0,
+            maximumValue: 3,
+            minimumValue: 1,
             tenths: 0,
             availableStats: [],
             statIndex: -1,
@@ -380,6 +392,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: -1,
             maximumPointIndex: -1,
+            index: 0,
+            maximumValue: -1,
+            minimumValue: -1,
             tenths: 0,
             availableStats: ["high", "low"],
             statIndex: -1,
@@ -400,6 +415,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: -1,
             maximumPointIndex: -1,
+            index: 0,
+            maximumValue: -1,
+            minimumValue: -1,
             tenths: 0,
             availableStats: ["open", "high", "low", "close"],
             statIndex: -1,
@@ -469,6 +487,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: -1,
             maximumPointIndex: -1,
+            index: 0,
+            maximumValue: -1,
+            minimumValue: -1,
             tenths: 1,
             availableStats: ["high", "q3", "median", "q1", "low"],
             statIndex: -1,
@@ -526,6 +547,9 @@ test("Calculate metadata by group", () => {
         {
             minimumPointIndex: 17,
             maximumPointIndex: 9,
+            index: 0,
+            maximumValue: 10,
+            minimumValue: 0,
             tenths: 2,
             availableStats: [],
             statIndex: -1,

@@ -156,6 +156,9 @@ export type groupedMetadata = {
     statIndex: number;
     availableStats: (keyof StatBundle)[];
     inputType: detectableDataPoint;
+    minimumValue: number;
+    maximumValue: number;
+    index: number;
 };
 
 /**

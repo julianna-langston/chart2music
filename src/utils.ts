@@ -270,7 +270,7 @@ export const usesAxis = (
 export const calculateMetadataByGroup = (
     data: SupportedDataPointType[][]
 ): groupedMetadata[] => {
-    return data.map((row) => {
+    return data.map((row, index) => {
         let yValues: number[] = [];
         let availableStats = [];
         if (isSimpleDataPoint(row[0])) {
@@ -290,15 +290,21 @@ export const calculateMetadataByGroup = (
         const filteredYValues = yValues.filter((num) => !isNaN(num));
 
         // Calculate min/max
-        const min = Math.min(...filteredYValues);
-        const max = Math.max(...filteredYValues);
+        // (set to -1 if there are no values to calculate, such as in the case of OHLC data)
+        const [min, max] =
+            filteredYValues.length > 0
+                ? [Math.min(...filteredYValues), Math.max(...filteredYValues)]
+                : [-1, -1];
 
         // Calculate tenths
         const tenths = Math.round(row.length / 10);
 
         return {
+            index,
             minimumPointIndex: yValues.indexOf(min),
             maximumPointIndex: yValues.indexOf(max),
+            minimumValue: min,
+            maximumValue: max,
             tenths,
             availableStats,
             statIndex: -1,

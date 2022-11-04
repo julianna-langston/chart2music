@@ -47,6 +47,8 @@ enum ActionSet {
     PREVIOUS_POINT = "previous_point",
     PLAY_RIGHT = "play_right",
     PLAY_LEFT = "play_left",
+    PLAY_FORWARD_CATEGORY = "play_forward_category",
+    PLAY_BACKWARD_CATEGORY = "play_backward_category",
     STOP_PLAY = "stop_play",
     PREVIOUS_STAT = "previous_stat",
     NEXT_STAT = "next_stat",
@@ -62,6 +64,8 @@ enum ActionSet {
     NEXT_TENTH = "next_tenth",
     GO_MINIMUM = "go_minimum",
     GO_MAXIMUM = "go_maximum",
+    GO_TOTAL_MINIMUM = "go_total_minimum",
+    GO_TOTAL_MAXIMUM = "go_total_maximum",
     SPEED_UP = "speed_up",
     SLOW_DOWN = "slow_down",
     MONITOR = "monitor",
@@ -231,6 +235,34 @@ export class c2m {
                 clearInterval(this._playListInterval);
                 this._playLeft();
             },
+            play_forward_category: () => {
+                clearInterval(this._playListInterval);
+                const max = this._groups.length - 1;
+                this._playListInterval = setInterval(() => {
+                    if (this._groupIndex >= max) {
+                        this._groupIndex = max;
+                        clearInterval(this._playListInterval);
+                    } else {
+                        this._groupIndex++;
+                        this._playCurrent();
+                    }
+                }, SPEEDS[this._speedRateIndex]);
+                this._playCurrent();
+            },
+            play_backward_category: () => {
+                clearInterval(this._playListInterval);
+                const min = 0;
+                this._playListInterval = setInterval(() => {
+                    if (this._groupIndex <= min) {
+                        this._groupIndex = min;
+                        clearInterval(this._playListInterval);
+                    } else {
+                        this._groupIndex--;
+                        this._playCurrent();
+                    }
+                }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
+                this._playCurrent();
+            },
             stop_play: () => {
                 clearInterval(this._playListInterval);
             },
@@ -321,6 +353,40 @@ export class c2m {
                 if (this._moveToMaximum()) {
                     this._playAndSpeak();
                 }
+            },
+            go_total_maximum: () => {
+                clearInterval(this._playListInterval);
+                const winner = this._metadataByGroup.reduce(
+                    (previousValue, currentValue) => {
+                        return previousValue.maximumValue >
+                            currentValue.maximumValue
+                            ? previousValue
+                            : currentValue;
+                    }
+                );
+                if (!winner) {
+                    return;
+                }
+                this._groupIndex = winner.index;
+                this._pointIndex = winner.maximumPointIndex;
+                this._playAndSpeak();
+            },
+            go_total_minimum: () => {
+                clearInterval(this._playListInterval);
+                const winner = this._metadataByGroup.reduce(
+                    (previousValue, currentValue) => {
+                        return previousValue.minimumValue <
+                            currentValue.minimumValue
+                            ? previousValue
+                            : currentValue;
+                    }
+                );
+                if (!winner) {
+                    return;
+                }
+                this._groupIndex = winner.index;
+                this._pointIndex = winner.minimumPointIndex;
+                this._playAndSpeak();
             },
             speed_up: () => {
                 clearInterval(this._playListInterval);
@@ -771,6 +837,16 @@ export class c2m {
                 callback: this._availableActions.last_category
             },
             {
+                title: "Play forwards through categories",
+                key: "Shift+PageDown",
+                callback: this._availableActions.play_forward_category
+            },
+            {
+                title: "Play backwards through categories",
+                key: "Shift+PageUp",
+                callback: this._availableActions.play_backward_category
+            },
+            {
                 title: "Go to first point",
                 key: "Home",
                 callback: this._availableActions.first_point
@@ -802,14 +878,24 @@ export class c2m {
                 callback: this._availableActions.next_tenth
             },
             {
-                title: "Go to minimum value",
+                title: "Go to category minimum value",
                 key: "[",
                 callback: this._availableActions.go_minimum
             },
             {
-                title: "Go to maximum value",
+                title: "Go to category maximum value",
                 key: "]",
                 callback: this._availableActions.go_maximum
+            },
+            {
+                title: "Go to chart minimum value",
+                key: "Ctrl+[",
+                callback: this._availableActions.go_total_minimum
+            },
+            {
+                title: "Go to chart maximum value",
+                key: "Ctrl+]",
+                callback: this._availableActions.go_total_maximum
             },
             {
                 title: "Speed up",

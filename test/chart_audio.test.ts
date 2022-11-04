@@ -458,6 +458,74 @@ test("Check play", () => {
     expect(playHistory[playHistory.length - 1].panning).toBe(-0.98);
 });
 
+test("Check play through categories", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            b: [
+                { x: 1, y: 11 },
+                { x: 2, y: 12 },
+                { x: 3, y: 13 }
+            ],
+            c: [
+                { x: 1, y: 7 },
+                { x: 2, y: 8 },
+                { x: 3, y: 9 }
+            ]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(2200);
+    // All points were played
+    expect(playHistory.length).toBe(3);
+    expect(playHistory[0].panning).toBe(-0.98);
+    expect(playHistory[1].panning).toBe(-0.98);
+    expect(playHistory[2].panning).toBe(-0.98);
+    expect(playHistory[0].frequency).toBe(55);
+    expect(playHistory[1].frequency).toBeCloseTo(1864.65);
+    expect(playHistory[2].frequency).toBeCloseTo(466.16);
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageUp",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(2200);
+    // All points were played
+    expect(playHistory.length).toBe(3);
+    expect(playHistory[0].panning).toBe(-0.98);
+    expect(playHistory[1].panning).toBe(-0.98);
+    expect(playHistory[2].panning).toBe(-0.98);
+    expect(playHistory[0].frequency).toBeCloseTo(466.16);
+    expect(playHistory[1].frequency).toBeCloseTo(1864.65);
+    expect(playHistory[2].frequency).toBe(55);
+});
+
 test("Out of bounds data", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
