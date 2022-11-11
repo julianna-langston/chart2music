@@ -5,6 +5,7 @@ import { largeDataLine } from "./charts/largeDataLine.js";
 import { barLinePlot } from "./charts/barLine.js";
 import { bandPlot } from "./charts/bandPlot.js";
 import { livePlot } from "./charts/livePlot.js";
+import { livePlotBand } from "./charts/livePlotBand.js";
 import { missingData } from "./charts/missingData.js";
 import { outOfBounds } from "./charts/outOfBounds.js";
 import { logLinePlot } from "./charts/logLinePlot.js";
@@ -22,6 +23,7 @@ window.addEventListener("load", () => {
         barLinePlot,
         bandPlot,
         livePlot,
+        livePlotBand,
         missingData,
         outOfBounds,
         logLinePlot,

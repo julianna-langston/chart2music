@@ -6,6 +6,9 @@ module.exports = {
             isolatedModules: true
         }
     },
+    fakeTimers: {
+        enableGlobally: true
+    },
     setupFiles: ["<rootDir>/test/_setup.ts"],
     transform: {
         "^.+\\.ts?$": "ts-jest"

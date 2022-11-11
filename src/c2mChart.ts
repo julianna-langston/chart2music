@@ -9,7 +9,8 @@ import type {
     SonifyTypes,
     c2mOptions,
     c2mGolangReturn,
-    c2mCallbackType
+    c2mCallbackType,
+    StatBundle
 } from "./types";
 import {
     calcPan,
@@ -606,6 +607,7 @@ export class c2m {
         pointIndex?: number,
         groupName?: string
     ) {
+        const currentStat = this.getCurrent().stat;
         this._setData(data, axes);
 
         this._pointIndex = Math.min(
@@ -613,7 +615,14 @@ export class c2m {
             this._data[0].length - 1
         );
         this._groupIndex = Math.max(this._groups.indexOf(groupName), 0);
-
+        if (currentStat !== "") {
+            this._metadataByGroup[this._groupIndex].statIndex = Math.max(
+                0,
+                this._metadataByGroup[this._groupIndex].availableStats.indexOf(
+                    currentStat
+                )
+            );
+        }
         this._sr.render(`${this._title || "Chart"} updated`);
     }
 
@@ -628,7 +637,7 @@ export class c2m {
         return {
             group: this._groups[this._groupIndex],
             point: this._data[this._groupIndex][this._pointIndex],
-            stat: availableStats[statIndex] ?? ""
+            stat: availableStats[statIndex] ?? ("" as keyof StatBundle | "")
         };
     }
 
