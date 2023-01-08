@@ -52,7 +52,7 @@
         "concurrently": "7.6.0",
         "depcheck": "^1.4.3",
         "eslint": "8.31.0",
-        "eslint-config-prettier": "8.5.0",
+        "eslint-config-prettier": "8.6.0",
         "eslint-plugin-jsdoc": "39.6.4",
         "http-server": "14.1.1",
         "husky": "8.0.2",
