@@ -2,6 +2,7 @@ ignores: [
     # Used as a script in package.json
     "http-server",
     "rollup",
+    "rimraf",
 
     # Configured with the jest.config.js
     "jest-environment-jsdom",
