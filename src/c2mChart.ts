@@ -12,6 +12,7 @@ import type {
     c2mCallbackType,
     StatBundle
 } from "./types";
+import { SUPPORTED_CHART_TYPES } from "./types";
 import {
     calcPan,
     generateSummary,
@@ -815,16 +816,28 @@ export class c2m {
                 keyDescription: "Control",
                 callback: this._availableActions.stop_play
             },
-            {
-                title: "Navigate to previous statistic",
-                key: "ArrowUp",
-                callback: this._availableActions.previous_stat
-            },
-            {
-                title: "Navigate to next statistic",
-                key: "ArrowDown",
-                callback: this._availableActions.next_stat
-            },
+            this._type === SUPPORTED_CHART_TYPES.MATRIX
+                ? {
+                      title: "Go to previous category",
+                      key: "ArrowUp",
+                      callback: this._availableActions.previous_category
+                  }
+                : {
+                      title: "Navigate to previous statistic",
+                      key: "ArrowUp",
+                      callback: this._availableActions.previous_stat
+                  },
+            this._type === SUPPORTED_CHART_TYPES.MATRIX
+                ? {
+                      title: "Go to next category",
+                      key: "ArrowDown",
+                      callback: this._availableActions.next_category
+                  }
+                : {
+                      title: "Navigate to next statistic",
+                      key: "ArrowDown",
+                      callback: this._availableActions.next_stat
+                  },
             {
                 title: "Go to previous category",
                 key: "PageUp",
