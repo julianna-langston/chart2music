@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import type { SupportedDataPointType } from "./dataPoint";
 import {
     isAlternateAxisDataPoint,
@@ -129,6 +130,14 @@ export const validateInputDataRowHomogeneity = (
             row[failure]
         )}). All items should be of the same type.`;
     }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore: TypeScript doesn't think it's possible for first.x to be a date. However, users calling
+    // with vanilla javascript can still pass in a date, and they must be stopped.
+    if (first.x instanceof Date) {
+        return "The first item is a date, which is not a supported format type. Please re-submit with the ms version of the date. For example: `myDate.valueOf()`.";
+    }
+
     if (isSimpleDataPoint(first)) {
         const failure = row.findIndex((cell) => !isSimpleDataPoint(cell));
         if (failure === -1) {
