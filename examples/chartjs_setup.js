@@ -10,24 +10,26 @@ import { missingData } from "./charts/missingData.js";
 import { outOfBounds } from "./charts/outOfBounds.js";
 import { logLinePlot } from "./charts/logLinePlot.js";
 import { histogram } from "./charts/histogram.js";
+import { bug120 } from "./charts/bug_gh120.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
     const cc = document.getElementById("cc");
 
     const chartFn = [
-        singleLinePlot,
-        multiLinePlot,
-        floatingBarChart,
-        largeDataLine,
-        barLinePlot,
-        bandPlot,
-        livePlot,
-        livePlotBand,
-        missingData,
-        outOfBounds,
-        logLinePlot,
-        histogram
+        // singleLinePlot,
+        // multiLinePlot,
+        // floatingBarChart,
+        // largeDataLine,
+        // barLinePlot,
+        // bandPlot,
+        // livePlot,
+        // livePlotBand,
+        // missingData,
+        // outOfBounds,
+        // logLinePlot,
+        // histogram,
+        bug120
     ];
 
     chartFn.forEach((fn) => {
