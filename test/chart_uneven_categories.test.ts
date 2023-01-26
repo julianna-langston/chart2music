@@ -20,6 +20,12 @@ test("Move at boundaries - uneven groups", () => {
             b: [
                 { x: 1, y: 11 },
                 { x: 2, y: 12 },
+                { x: 3, y: 13 },
+                { x: 4, y: 14 }
+            ],
+            c: [
+                { x: 1, y: 11 },
+                { x: 2, y: 12 },
                 { x: 3, y: 13 }
             ]
         },
@@ -50,6 +56,22 @@ test("Move at boundaries - uneven groups", () => {
             point: {
                 group: "b",
                 stat: "",
+                point: { x: 4, y: 14 }
+            }
+        },
+        {
+            key: "PageDown",
+            point: {
+                group: "c",
+                stat: "",
+                point: { x: 3, y: 13 }
+            }
+        },
+        {
+            key: "PageUp",
+            point: {
+                group: "b",
+                stat: "",
                 point: { x: 3, y: 13 }
             }
         },
@@ -58,7 +80,7 @@ test("Move at boundaries - uneven groups", () => {
             point: {
                 group: "a",
                 stat: "",
-                point: { x: 1, y: 11 }
+                point: { x: 2, y: 11 }
             }
         }
     ].forEach(({ key, point }) => {
