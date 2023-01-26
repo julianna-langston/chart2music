@@ -16,6 +16,8 @@ export type KeyDetails = {
     description?: string;
     /* If the hotkey already exists, force this command to override it */
     force?: boolean;
+    /* If the hotkey should be case sensitive. Default true */
+    caseSensitive?: boolean;
 };
 
 /**
