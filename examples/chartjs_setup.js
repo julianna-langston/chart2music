@@ -17,18 +17,18 @@ window.addEventListener("load", () => {
     const cc = document.getElementById("cc");
 
     const chartFn = [
-        // singleLinePlot,
-        // multiLinePlot,
-        // floatingBarChart,
-        // largeDataLine,
-        // barLinePlot,
-        // bandPlot,
-        // livePlot,
-        // livePlotBand,
-        // missingData,
-        // outOfBounds,
-        // logLinePlot,
-        // histogram,
+        singleLinePlot,
+        multiLinePlot,
+        floatingBarChart,
+        largeDataLine,
+        barLinePlot,
+        bandPlot,
+        livePlot,
+        livePlotBand,
+        missingData,
+        outOfBounds,
+        logLinePlot,
+        histogram,
         bug120
     ];
 
