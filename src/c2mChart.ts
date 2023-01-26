@@ -291,6 +291,9 @@ export class c2m {
                 }
                 this._groupIndex--;
                 this._flagNewGroup = true;
+                if (this._pointIndex >= this._data[this._groupIndex].length) {
+                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                }
                 this._playAndSpeak();
             },
             next_category: () => {
@@ -303,6 +306,9 @@ export class c2m {
                 }
                 this._groupIndex++;
                 this._flagNewGroup = true;
+                if (this._pointIndex >= this._data[this._groupIndex].length) {
+                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                }
                 this._playAndSpeak();
             },
             first_category: () => {
