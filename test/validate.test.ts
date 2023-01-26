@@ -241,6 +241,15 @@ test("validateInputDataRowHomogeneity", () => {
     expect(validateInputDataRowHomogeneity(["1", 2, 3, 4, 5])).toBe(
         `The first item is of an unrecognized type (value: "1"). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`
     );
+
+    expect(
+        validateInputDataRowHomogeneity([
+            // @ts-ignore
+            { x: new Date(), y: 1 }
+        ])
+    ).toContain(
+        "The first item is a date, which is not a supported format type"
+    );
 });
 
 test("validateInputDataHomogeneity", () => {
