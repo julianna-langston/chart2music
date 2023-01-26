@@ -131,6 +131,7 @@ export class c2m {
     private _ccElement: HTMLElement;
     private _summary: string;
     private _groups: string[];
+    private _visible_group_indices: number[] = [];
     private _data: SupportedDataPointType[][];
     private _groupIndex = 0;
     private _pointIndex = 0;
@@ -167,6 +168,7 @@ export class c2m {
     private _availableActions: {
         [key in ActionSet]: () => void;
     };
+    private _silent = false;
 
     /**
      * Constructor
@@ -239,7 +241,7 @@ export class c2m {
             },
             play_forward_category: () => {
                 clearInterval(this._playListInterval);
-                const max = this._groups.length - 1;
+                const max = this._visible_group_indices.length - 1;
                 this._playListInterval = setInterval(() => {
                     if (this._groupIndex >= max) {
                         this._groupIndex = max;
@@ -289,20 +291,37 @@ export class c2m {
                 }
                 this._groupIndex--;
                 this._flagNewGroup = true;
-                if (this._pointIndex >= this._data[this._groupIndex].length) {
-                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                if (
+                    this._pointIndex >=
+                    this._data[this._visible_group_indices[this._groupIndex]]
+                        .length
+                ) {
+                    this._pointIndex =
+                        this._data[
+                            this._visible_group_indices[this._groupIndex]
+                        ].length - 1;
                 }
                 this._playAndSpeak();
             },
             next_category: () => {
                 clearInterval(this._playListInterval);
-                if (this._groupIndex === this._data.length - 1) {
+                if (
+                    this._groupIndex ===
+                    this._visible_group_indices.length - 1
+                ) {
                     return;
                 }
                 this._groupIndex++;
                 this._flagNewGroup = true;
-                if (this._pointIndex >= this._data[this._groupIndex].length) {
-                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                if (
+                    this._pointIndex >=
+                    this._data[this._visible_group_indices[this._groupIndex]]
+                        .length
+                ) {
+                    this._pointIndex =
+                        this._data[
+                            this._visible_group_indices[this._groupIndex]
+                        ].length - 1;
                 }
                 this._playAndSpeak();
             },
@@ -314,7 +333,7 @@ export class c2m {
             },
             last_category: () => {
                 clearInterval(this._playListInterval);
-                this._groupIndex = this._groups.length - 1;
+                this._groupIndex = this._visible_group_indices.length - 1;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
@@ -325,7 +344,9 @@ export class c2m {
             },
             last_point: () => {
                 clearInterval(this._playListInterval);
-                this._pointIndex = this._data[this._groupIndex].length - 1;
+                this._pointIndex =
+                    this._data[this._visible_group_indices[this._groupIndex]]
+                        .length - 1;
                 this._playAndSpeak();
             },
             replay: () => {
@@ -336,7 +357,9 @@ export class c2m {
             },
             select: () => {
                 this._options.onSelectCallback?.({
-                    slice: this._groups[this._groupIndex],
+                    slice: this._groups[
+                        this._visible_group_indices[this._groupIndex]
+                    ],
                     index: this._pointIndex
                 });
             },
@@ -364,35 +387,43 @@ export class c2m {
             },
             go_total_maximum: () => {
                 clearInterval(this._playListInterval);
-                const winner = this._metadataByGroup.reduce(
-                    (previousValue, currentValue) => {
+                const winner = this._metadataByGroup
+                    .filter((g, index) =>
+                        this._visible_group_indices.includes(index)
+                    )
+                    .reduce((previousValue, currentValue) => {
                         return previousValue.maximumValue >
                             currentValue.maximumValue
                             ? previousValue
                             : currentValue;
-                    }
-                );
+                    });
                 if (!winner) {
                     return;
                 }
-                this._groupIndex = winner.index;
+                this._groupIndex = this._visible_group_indices.indexOf(
+                    winner.index
+                );
                 this._pointIndex = winner.maximumPointIndex;
                 this._playAndSpeak();
             },
             go_total_minimum: () => {
                 clearInterval(this._playListInterval);
-                const winner = this._metadataByGroup.reduce(
-                    (previousValue, currentValue) => {
+                const winner = this._metadataByGroup
+                    .filter((g, index) =>
+                        this._visible_group_indices.includes(index)
+                    )
+                    .reduce((previousValue, currentValue) => {
                         return previousValue.minimumValue <
                             currentValue.minimumValue
                             ? previousValue
                             : currentValue;
-                    }
-                );
+                    });
                 if (!winner) {
                     return;
                 }
-                this._groupIndex = winner.index;
+                this._groupIndex = this._visible_group_indices.indexOf(
+                    winner.index
+                );
                 this._pointIndex = winner.minimumPointIndex;
                 this._playAndSpeak();
             },
@@ -549,7 +580,7 @@ export class c2m {
             title: this._title,
             x: this._xAxis,
             y: this._yAxis,
-            dataRows: this._groups.length,
+            dataRows: this._visible_group_indices.length,
             y2: this._y2Axis,
             live: this._options.live
         });
@@ -621,7 +652,10 @@ export class c2m {
             Math.max(pointIndex ?? 0, 0),
             this._data[0].length - 1
         );
-        this._groupIndex = Math.max(this._groups.indexOf(groupName), 0);
+        this._groupIndex =
+            this._visible_group_indices[
+                Math.max(this._groups.indexOf(groupName), 0)
+            ];
         if (currentStat !== "") {
             this._metadataByGroup[this._groupIndex].statIndex = Math.max(
                 0,
@@ -634,16 +668,68 @@ export class c2m {
     }
 
     /**
+     * Change the visibility of a category
+     *
+     * @param name - name of category
+     * @param [state] - should the category be visible? true = visible, false = hidden
+     * @returns string - indicates error message
+     */
+    setCategoryVisibility(name: string, state: boolean): string {
+        const groupIndex = this._groups.indexOf(name);
+        if (groupIndex === -1) {
+            return `Unknown group named "${name}". Available groups are: "${this._groups.join(
+                '", "'
+            )}".`;
+        }
+
+        const visibleGroupIndex =
+            this._visible_group_indices.indexOf(groupIndex);
+
+        if (state) {
+            if (!this._visible_group_indices.includes(groupIndex)) {
+                this._visible_group_indices.push(groupIndex);
+                this._visible_group_indices.sort();
+                this._sr.render(`${this._title || "Chart"} updated`);
+            }
+        } else {
+            if (this._visible_group_indices.includes(groupIndex)) {
+                if (this._visible_group_indices.length === 1) {
+                    return `Group "${name}" can not be hidden. It is the last visible category, and there must always be at least one category visible.`;
+                }
+
+                this._visible_group_indices.splice(
+                    this._visible_group_indices.indexOf(groupIndex),
+                    1
+                );
+                this._sr.render(`${this._title || "Chart"} updated`);
+            }
+        }
+
+        if (this._groupIndex === visibleGroupIndex) {
+            this._silent = true;
+            this._availableActions.previous_category();
+            if (visibleGroupIndex > 0) this._availableActions.next_category();
+            this._silent = false;
+        }
+
+        return "";
+    }
+
+    /**
      * Get the data point that the user is currently focused on
      *
      * @returns - the current group name and data point
      */
     getCurrent() {
         const { statIndex, availableStats } =
-            this._metadataByGroup[this._groupIndex];
+            this._metadataByGroup[
+                this._visible_group_indices[this._groupIndex]
+            ];
         return {
-            group: this._groups[this._groupIndex],
-            point: this._data[this._groupIndex][this._pointIndex],
+            group: this._groups[this._visible_group_indices[this._groupIndex]],
+            point: this._data[this._visible_group_indices[this._groupIndex]][
+                this._pointIndex
+            ],
             stat: availableStats[statIndex] ?? ("" as keyof StatBundle | "")
         };
     }
@@ -954,7 +1040,9 @@ export class c2m {
 
         const hotkeyCallbackWrapper = (cb: (args: c2mCallbackType) => void) => {
             cb({
-                slice: this._groups[this._groupIndex],
+                slice: this._groups[
+                    this._visible_group_indices[this._groupIndex]
+                ],
                 index: this._pointIndex
             });
         };
@@ -991,6 +1079,9 @@ export class c2m {
         if (!Array.isArray(userData)) {
             // Data is presumably of type dataSet. No other effort necessary.
             this._groups = Object.keys(userData);
+            this._visible_group_indices = this._groups.map(
+                (value, index) => index
+            );
             this._data = Object.values(userData).map((row) =>
                 convertDataRow(row)
             );
@@ -998,6 +1089,7 @@ export class c2m {
         }
 
         this._groups = [""];
+        this._visible_group_indices = [0];
         this._data = [convertDataRow(userData)];
     }
 
@@ -1028,6 +1120,9 @@ export class c2m {
      * Play an individual data point, and then speak its details
      */
     private _playAndSpeak() {
+        if (this._silent) {
+            return;
+        }
         this._playCurrent();
         setTimeout(() => {
             this._speakCurrent();
@@ -1343,7 +1438,7 @@ export class c2m {
      */
     private _onFocus() {
         this._options?.onFocusCallback?.({
-            slice: this._groups[this._groupIndex],
+            slice: this._groups[this._visible_group_indices[this._groupIndex]],
             index: this._pointIndex
         });
     }
@@ -1357,17 +1452,25 @@ export class c2m {
         }
 
         // If we're glagged to announce a new group, but the group name is empty, ignore the flag
-        if (this._flagNewGroup && this._groups[this._groupIndex] === "") {
+        if (
+            this._flagNewGroup &&
+            this._groups[this._visible_group_indices[this._groupIndex]] === ""
+        ) {
             this._flagNewGroup = false;
         }
 
         const { statIndex, availableStats } =
-            this._metadataByGroup[this._groupIndex];
+            this._metadataByGroup[
+                this._visible_group_indices[this._groupIndex]
+            ];
         if (this._flagNewStat && availableStats.length === 0) {
             this._flagNewStat = false;
         }
 
-        const current = this._data[this._groupIndex][this._pointIndex];
+        const current =
+            this._data[this._visible_group_indices[this._groupIndex]][
+                this._pointIndex
+            ];
         const point = generatePointDescription(
             current,
             formatWrapper(this._xAxis),
@@ -1377,7 +1480,13 @@ export class c2m {
             availableStats[statIndex]
         );
         const text =
-            (this._flagNewGroup ? `${this._groups[this._groupIndex]}, ` : "") +
+            (this._flagNewGroup
+                ? `${
+                      this._groups[
+                          this._visible_group_indices[this._groupIndex]
+                      ]
+                  }, `
+                : "") +
             (this._flagNewStat
                 ? `${sentenceCase(availableStats[statIndex] ?? "all")}, `
                 : "") +

@@ -1,0 +1,27 @@
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://cdn.skypack.dev/luxon@3.2.1" type="module"></script>
+
+<style>
+#cc {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: #ddd;
+}
+</style>
+
+<figure class="highcharts-figure">
+  <div id="container"></div>
+</figure>
+
+<div id="cc"></div>
+
+<script src="../dist/index.mjs" type="module"></script>
+<script src="./interactive.js" type="module"></script>
