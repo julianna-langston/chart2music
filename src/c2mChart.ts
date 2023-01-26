@@ -1013,26 +1013,31 @@ export class c2m {
             },
             {
                 title: "Speed up",
+                caseSensitive: false,
                 key: "q",
                 callback: this._availableActions.speed_up
             },
             {
                 title: "Slow down",
+                caseSensitive: false,
                 key: "e",
                 callback: this._availableActions.slow_down
             },
             {
                 title: "Toggle monitor mode",
+                caseSensitive: false,
                 key: "m",
                 callback: this._availableActions.monitor
             },
             {
                 title: "Open help dialog",
+                caseSensitive: false,
                 key: "h",
                 callback: this._availableActions.help
             },
             {
                 title: "Open options dialog",
+                caseSensitive: false,
                 key: "o",
                 callback: this._availableActions.options
             }

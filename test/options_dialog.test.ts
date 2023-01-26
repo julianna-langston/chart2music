@@ -88,7 +88,7 @@ test("Open Options dialog and modify a value", () => {
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
-            key: "o"
+            key: "O"
         })
     );
     expect(document.querySelectorAll("dialog").length).toBe(1);

@@ -48,6 +48,9 @@ export class KeyboardEventManager {
         if (keyPress in this._keyMap) {
             this._keyMap[keyPress].callback();
             event.preventDefault();
+        } else if (keyPress.toUpperCase() in this._keyMap) {
+            this._keyMap[keyPress.toUpperCase()].callback();
+            event.preventDefault();
         }
     }
 
@@ -60,6 +63,7 @@ export class KeyboardEventManager {
      * @param details.title - the title of the event
      * @param details.description - the description of the event
      * @param details.keyDescription - the description of the key (eg, "Spacebar")
+     * @param details.caseSensitive - should the keypress be case sensitive?
      * @param [details.force] - if the key event already exists, overwrite? (True if yes)
      */
     registerKeyEvent({
@@ -68,12 +72,14 @@ export class KeyboardEventManager {
         title = "",
         description = "",
         force = false,
-        keyDescription
+        keyDescription,
+        caseSensitive = true
     }: KeyRegistration) {
-        if (!force && key in this._keyMap) {
+        const checkKey = caseSensitive ? key : key.toUpperCase();
+        if (!force && checkKey in this._keyMap) {
             return;
         }
-        this._keyMap[key] = {
+        this._keyMap[checkKey] = {
             title,
             description,
             callback,
