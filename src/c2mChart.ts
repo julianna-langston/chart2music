@@ -291,8 +291,15 @@ export class c2m {
                 }
                 this._groupIndex--;
                 this._flagNewGroup = true;
-                if (this._pointIndex >= this._data[this._groupIndex].length) {
-                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                if (
+                    this._pointIndex >=
+                    this._data[this._visible_group_indices[this._groupIndex]]
+                        .length
+                ) {
+                    this._pointIndex =
+                        this._data[
+                            this._visible_group_indices[this._groupIndex]
+                        ].length - 1;
                 }
                 this._playAndSpeak();
             },
@@ -306,8 +313,15 @@ export class c2m {
                 }
                 this._groupIndex++;
                 this._flagNewGroup = true;
-                if (this._pointIndex >= this._data[this._groupIndex].length) {
-                    this._pointIndex = this._data[this._groupIndex].length - 1;
+                if (
+                    this._pointIndex >=
+                    this._data[this._visible_group_indices[this._groupIndex]]
+                        .length
+                ) {
+                    this._pointIndex =
+                        this._data[
+                            this._visible_group_indices[this._groupIndex]
+                        ].length - 1;
                 }
                 this._playAndSpeak();
             },
@@ -330,7 +344,9 @@ export class c2m {
             },
             last_point: () => {
                 clearInterval(this._playListInterval);
-                this._pointIndex = this._data[this._groupIndex].length - 1;
+                this._pointIndex =
+                    this._data[this._visible_group_indices[this._groupIndex]]
+                        .length - 1;
                 this._playAndSpeak();
             },
             replay: () => {
