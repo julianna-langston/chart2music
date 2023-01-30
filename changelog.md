@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.7.0
 
 * New feature: Add API to show/hide individual categories in a chart
 * Prevent users from submitting javascript Date values for their X-values.
