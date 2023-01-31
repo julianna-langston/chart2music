@@ -1,5 +1,7 @@
 # Changelog
 
+### 1.7.1
+
 * Include point `index` in the `getCurrent()` results
 
 ## 1.7.0
