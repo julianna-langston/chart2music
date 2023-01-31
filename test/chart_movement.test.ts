@@ -34,6 +34,7 @@ test("Move around by single events", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 2");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "",
         stat: "",
         point: {
@@ -224,6 +225,7 @@ test("Movement for a grouped chart", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2, 2");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "a",
         stat: "",
         point: {
@@ -243,6 +245,7 @@ test("Movement for a grouped chart", () => {
         "b, 2, 12"
     );
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "b",
         stat: "",
         point: {
@@ -260,6 +263,7 @@ test("Movement for a grouped chart", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 13");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 2,
         group: "b",
         stat: "",
         point: {
@@ -277,6 +281,7 @@ test("Movement for a grouped chart", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 3, 3");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 2,
         group: "a",
         stat: "",
         point: {
@@ -313,6 +318,7 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toEqual({
+        index: 2,
         group: "a",
         stat: "",
         point: {
@@ -330,6 +336,7 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toEqual({
+        index: 2,
         group: "b",
         stat: "",
         point: {
@@ -346,6 +353,7 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toEqual({
+        index: 0,
         group: "b",
         stat: "",
         point: {
@@ -363,6 +371,7 @@ test("Movement for a grouped chart", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toEqual({
+        index: 0,
         group: "a",
         stat: "",
         point: {
@@ -415,6 +424,7 @@ test("Movement for a chart with stats", () => {
         "2, 11 - 9"
     );
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "a",
         stat: "",
         point: { x: 2, high: 11, low: 9 }
@@ -431,6 +441,7 @@ test("Movement for a chart with stats", () => {
         "High, 2, 11"
     );
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "a",
         stat: "high",
         point: { x: 2, high: 11, low: 9 }
@@ -531,6 +542,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2!, $2");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "a",
         stat: "",
         point: {
@@ -550,6 +562,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
         "b, 2!, 12%"
     );
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "b",
         stat: "",
         point: {
@@ -567,6 +580,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3!, 13%");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 2,
         group: "b",
         stat: "",
         point: {
@@ -586,6 +600,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
         "a, 3!, $3"
     );
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 2,
         group: "a",
         stat: "",
         point: {
@@ -631,6 +646,7 @@ test("Test onSelectCallback", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 2");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "",
         stat: "",
         point: {

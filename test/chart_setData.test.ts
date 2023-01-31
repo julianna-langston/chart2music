@@ -417,6 +417,7 @@ test("setData: retain stat value", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "",
         stat: "",
         point: { x: 2, high: 9, low: 6 }
@@ -430,6 +431,7 @@ test("setData: retain stat value", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
         group: "",
         stat: "high",
         point: { x: 2, high: 9, low: 6 }

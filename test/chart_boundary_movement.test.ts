@@ -37,6 +37,7 @@ test("Move at boundaries - single line plot", () => {
                 })
             );
             expect(chart?.getCurrent()).toStrictEqual({
+                index: 0,
                 group: "",
                 stat: "",
                 point: {
@@ -56,6 +57,7 @@ test("Move at boundaries - single line plot", () => {
         })
     );
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 7,
         group: "",
         stat: "",
         point: {
@@ -73,6 +75,7 @@ test("Move at boundaries - single line plot", () => {
         })
     );
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 7,
         group: "",
         stat: "",
         point: {
@@ -119,6 +122,7 @@ test("Move at boundaries - grouped and stat'd", () => {
         {
             key: "ArrowLeft",
             point: {
+                index: 0,
                 group: "a",
                 stat: "",
                 point: { x: 1, high: 10, low: 8 }
@@ -128,6 +132,7 @@ test("Move at boundaries - grouped and stat'd", () => {
         {
             key: "ArrowUp",
             point: {
+                index: 0,
                 group: "a",
                 stat: "",
                 point: { x: 1, high: 10, low: 8 }
@@ -138,6 +143,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             // High
             key: "ArrowDown",
             point: {
+                index: 0,
                 group: "a",
                 stat: "high",
                 point: { x: 1, high: 10, low: 8 }
@@ -148,6 +154,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             // Low
             key: "ArrowDown",
             point: {
+                index: 0,
                 group: "a",
                 stat: "low",
                 point: { x: 1, high: 10, low: 8 }
@@ -158,6 +165,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             // Can't move
             key: "ArrowDown",
             point: {
+                index: 0,
                 group: "a",
                 stat: "low",
                 point: { x: 1, high: 10, low: 8 }
@@ -168,6 +176,7 @@ test("Move at boundaries - grouped and stat'd", () => {
             // Can't move
             key: "PageUp",
             point: {
+                index: 0,
                 group: "a",
                 stat: "low",
                 point: { x: 1, high: 10, low: 8 }
@@ -177,13 +186,23 @@ test("Move at boundaries - grouped and stat'd", () => {
         {
             // Change to group B
             key: "PageDown",
-            point: { group: "b", stat: "", point: { x: 1, y: 11 } },
+            point: {
+                index: 0,
+                group: "b",
+                stat: "",
+                point: { x: 1, y: 11 }
+            },
             timer: 4
         },
         {
             // Can't move
             key: "PageDown",
-            point: { group: "b", stat: "", point: { x: 1, y: 11 } },
+            point: {
+                index: 0,
+                group: "b",
+                stat: "",
+                point: { x: 1, y: 11 }
+            },
             timer: 4
         }
     ].forEach(({ key, point, timer }) => {

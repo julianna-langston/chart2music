@@ -264,6 +264,7 @@ test("Movement for a grouped chart", () => {
     jest.advanceTimersByTime(350);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 13");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 2,
         group: "b",
         stat: "",
         point: {
@@ -320,6 +321,7 @@ test("Movement for a grouped chart", () => {
     jest.advanceTimersByTime(350);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 3, 3");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 2,
         group: "a",
         stat: "",
         point: {

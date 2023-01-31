@@ -46,6 +46,7 @@ test("Move at boundaries - uneven groups", () => {
         {
             key: "PageDown",
             point: {
+                index: 0,
                 group: "b",
                 stat: "",
                 point: { x: 1, y: 11 }
@@ -54,6 +55,7 @@ test("Move at boundaries - uneven groups", () => {
         {
             key: "End",
             point: {
+                index: 3,
                 group: "b",
                 stat: "",
                 point: { x: 4, y: 14 }
@@ -62,6 +64,7 @@ test("Move at boundaries - uneven groups", () => {
         {
             key: "PageDown",
             point: {
+                index: 2,
                 group: "c",
                 stat: "",
                 point: { x: 3, y: 13 }
@@ -70,6 +73,7 @@ test("Move at boundaries - uneven groups", () => {
         {
             key: "PageUp",
             point: {
+                index: 2,
                 group: "b",
                 stat: "",
                 point: { x: 3, y: 13 }
@@ -78,6 +82,7 @@ test("Move at boundaries - uneven groups", () => {
         {
             key: "PageUp",
             point: {
+                index: 1,
                 group: "a",
                 stat: "",
                 point: { x: 2, y: 11 }

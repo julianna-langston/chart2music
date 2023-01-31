@@ -1,5 +1,7 @@
 # Changelog
 
+* Include point `index` in the `getCurrent()` results
+
 ## 1.7.0
 
 * New feature: Add API to show/hide individual categories in a chart

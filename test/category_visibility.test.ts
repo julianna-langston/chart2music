@@ -51,6 +51,7 @@ test("setCategoryVisibility: toggle middle (non-current) category", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("c, 1, 7");
     expect(chart?.getCurrent()).toStrictEqual({
+        index: 0,
         group: "c",
         stat: "",
         point: {

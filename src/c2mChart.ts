@@ -574,7 +574,7 @@ export class c2m {
     /**
      * Generate (or regenerate) chart summary
      */
-    public _generateSummary() {
+    private _generateSummary() {
         this._summary = generateSummary({
             type: this._type,
             title: this._title,
@@ -726,6 +726,7 @@ export class c2m {
                 this._visible_group_indices[this._groupIndex]
             ];
         return {
+            index: this._pointIndex,
             group: this._groups[this._visible_group_indices[this._groupIndex]],
             point: this._data[this._visible_group_indices[this._groupIndex]][
                 this._pointIndex
