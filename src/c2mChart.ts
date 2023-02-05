@@ -1242,7 +1242,11 @@ export class c2m {
      */
     private _moveLeftTenths() {
         const current = this.currentPoint;
-        if (this._outlierMode && isBoxDataPoint(current)) {
+        if (
+            this._outlierMode &&
+            isBoxDataPoint(current) &&
+            "outlier" in current
+        ) {
             if (this._outlierIndex <= 0) {
                 this._outlierIndex = 0;
                 return false;
@@ -1266,7 +1270,11 @@ export class c2m {
      */
     private _moveRightTenths() {
         const current = this.currentPoint;
-        if (this._outlierMode && isBoxDataPoint(current)) {
+        if (
+            this._outlierMode &&
+            isBoxDataPoint(current) &&
+            "outlier" in current
+        ) {
             if (this._outlierIndex >= current.outlier.length - 1) {
                 this._outlierIndex = current.outlier.length - 1;
                 return false;
@@ -1538,8 +1546,13 @@ export class c2m {
             return;
         }
 
-        if (isBoxDataPoint(current) && this._outlierMode) {
+        if (
+            isBoxDataPoint(current) &&
+            this._outlierMode &&
+            "outlier" in current
+        ) {
             const yBin = interpolateBin(
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 current.outlier[this._outlierIndex],
                 this._yAxis.minimum,
                 this._yAxis.maximum,
@@ -1580,8 +1593,8 @@ export class c2m {
 
             const interval = 1 / (availableStats.length + 1);
             availableStats.forEach((stat, index) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 if (
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     isUnplayable(current[stat], this._yAxis) ||
                     stat === "outlier"
                 ) {
