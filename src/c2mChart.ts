@@ -34,6 +34,7 @@ import {
 import { validateInput } from "./validate";
 import {
     isAlternateAxisDataPoint,
+    isBoxDataPoint,
     isHighLowDataPoint,
     isOHLCDataPoint,
     isSimpleDataPoint
@@ -169,6 +170,8 @@ export class c2m {
         [key in ActionSet]: () => void;
     };
     private _silent = false;
+    private _outlierIndex = 0;
+    private _outlierMode = false;
 
     /**
      * Constructor
@@ -212,6 +215,13 @@ export class c2m {
         this._initializeKeyActionMap();
         this._initializeTouchActions();
         this._startListening();
+    }
+
+    /**
+     * Getter for current data point
+     */
+    get currentPoint() {
+        return this._data[this._groupIndex][this._pointIndex];
     }
 
     /**
@@ -1136,9 +1146,45 @@ export class c2m {
     }
 
     /**
+     * Move focus to the next outlier, if there is one
+     */
+    private _moveNextOutlier() {
+        const currentPoint = this._data[this._groupIndex][this._pointIndex];
+        if (isBoxDataPoint(currentPoint) && "outlier" in currentPoint) {
+            const { outlier } = currentPoint;
+            if (this._outlierIndex >= outlier.length - 1) {
+                return false;
+            }
+            this._outlierIndex++;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Move focus to the previous outlier, if there is one
+     */
+    private _movePrevOutlier() {
+        const currentPoint = this._data[this._groupIndex][this._pointIndex];
+        if (isBoxDataPoint(currentPoint) && "outlier" in currentPoint) {
+            if (this._outlierIndex <= 0) {
+                this._outlierIndex = 0;
+                return false;
+            }
+            this._outlierIndex--;
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Move focus to the next data point to the right, if there is one
      */
     private _moveRight() {
+        if (this._outlierMode) {
+            return this._moveNextOutlier();
+        }
+
         const max = this._data[this._groupIndex].length - 1;
         if (this._pointIndex >= max) {
             this._pointIndex = max;
@@ -1152,6 +1198,9 @@ export class c2m {
      * Move focus to the next data point to the left, if there is one
      */
     private _moveLeft() {
+        if (this._outlierMode) {
+            return this._movePrevOutlier();
+        }
         if (this._pointIndex <= 0) {
             this._pointIndex = 0;
             return false;
@@ -1192,6 +1241,16 @@ export class c2m {
      * Move by a tenth to the left
      */
     private _moveLeftTenths() {
+        const current = this.currentPoint;
+        if (this._outlierMode && isBoxDataPoint(current)) {
+            if (this._outlierIndex <= 0) {
+                this._outlierIndex = 0;
+                return false;
+            }
+            const tenths = Math.round(current.outlier.length / 10);
+            this._outlierIndex = Math.max(this._outlierIndex - tenths, 0);
+            return true;
+        }
         if (this._pointIndex === 0) {
             return false;
         }
@@ -1206,6 +1265,20 @@ export class c2m {
      * Move by a tenth to the right
      */
     private _moveRightTenths() {
+        const current = this.currentPoint;
+        if (this._outlierMode && isBoxDataPoint(current)) {
+            if (this._outlierIndex >= current.outlier.length - 1) {
+                this._outlierIndex = current.outlier.length - 1;
+                return false;
+            }
+            const tenths = Math.round(current.outlier.length / 10);
+            this._outlierIndex = Math.min(
+                this._outlierIndex + tenths,
+                current.outlier.length - 1
+            );
+            return true;
+        }
+
         if (this._pointIndex === this._data[this._groupIndex].length - 1) {
             return false;
         }
@@ -1214,6 +1287,18 @@ export class c2m {
             this._data[this._groupIndex].length - 1
         );
         return true;
+    }
+
+    /**
+     * Check if the user should be moved to outlier mode
+     */
+    private _checkOutlierMode() {
+        const { statIndex, availableStats } =
+            this._metadataByGroup[this._groupIndex];
+        this._outlierMode = ["outlier", "xtremeOutlier"].includes(
+            availableStats[statIndex]
+        );
+        this._outlierIndex = 0;
     }
 
     /**
@@ -1227,6 +1312,8 @@ export class c2m {
             return false;
         }
         this._metadataByGroup[this._groupIndex].statIndex = statIndex - 1;
+
+        this._checkOutlierMode();
         return true;
     }
 
@@ -1241,14 +1328,53 @@ export class c2m {
         if (statIndex >= availableStats.length - 1) {
             return false;
         }
+
         this._metadataByGroup[this._groupIndex].statIndex = statIndex + 1;
+
+        const newStat =
+            availableStats[this._metadataByGroup[this._groupIndex].statIndex];
+        const current = this._data[this._groupIndex][this._pointIndex];
+        if (
+            newStat === "outlier" &&
+            !(
+                "outlier" in current &&
+                Array.isArray(current.outlier) &&
+                current.outlier.length > 0
+            )
+        ) {
+            this._metadataByGroup[this._groupIndex].statIndex--;
+            return false;
+        }
+
+        this._checkOutlierMode();
         return true;
+    }
+
+    /**
+     * Play all outliers to the left, if there are any
+     */
+    private _playLeftOutlier() {
+        const min = 0;
+        this._playListInterval = setInterval(() => {
+            if (this._outlierIndex <= min) {
+                this._outlierIndex = min;
+                clearInterval(this._playListInterval);
+            } else {
+                this._outlierIndex--;
+                this._playCurrent();
+            }
+        }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
+        this._playCurrent();
     }
 
     /**
      * Play all data points to the left, if there are any
      */
     private _playLeft() {
+        if (this._outlierMode) {
+            this._playLeftOutlier();
+            return;
+        }
         const min = 0;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex <= min) {
@@ -1263,9 +1389,34 @@ export class c2m {
     }
 
     /**
+     * Play all outliers to the right, if there are any
+     */
+    private _playRightOutlier() {
+        const currentPoint = this._data[this._groupIndex][this._pointIndex];
+        if (!(isBoxDataPoint(currentPoint) && "outlier" in currentPoint)) {
+            return;
+        }
+        const max = currentPoint.outlier?.length - 1 ?? 0;
+        this._playListInterval = setInterval(() => {
+            if (this._outlierIndex >= max) {
+                this._outlierIndex = max;
+                clearInterval(this._playListInterval);
+            } else {
+                this._outlierIndex++;
+                this._playCurrent();
+            }
+        }, SPEEDS[this._speedRateIndex]);
+        this._playCurrent();
+    }
+
+    /**
      * Play all data points to the right, if there are any
      */
     private _playRight() {
+        if (this._outlierMode) {
+            this._playRightOutlier();
+            return;
+        }
         const max = this._data[this._groupIndex].length - 1;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex >= max) {
@@ -1387,6 +1538,19 @@ export class c2m {
             return;
         }
 
+        if (isBoxDataPoint(current) && this._outlierMode) {
+            const yBin = interpolateBin(
+                current.outlier[this._outlierIndex],
+                this._yAxis.minimum,
+                this._yAxis.maximum,
+                hertzes.length - 1,
+                this._yAxis.type
+            );
+
+            this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
+            return;
+        }
+
         if (isOHLCDataPoint(current) || isHighLowDataPoint(current)) {
             // Only play a single note, because we've drilled into stats
             if (statIndex >= 0) {
@@ -1417,7 +1581,10 @@ export class c2m {
             const interval = 1 / (availableStats.length + 1);
             availableStats.forEach((stat, index) => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                if (isUnplayable(current[stat], this._yAxis)) {
+                if (
+                    isUnplayable(current[stat], this._yAxis) ||
+                    stat === "outlier"
+                ) {
                     return;
                 }
                 const yBin = interpolateBin(
@@ -1457,7 +1624,7 @@ export class c2m {
             return;
         }
 
-        // If we're glagged to announce a new group, but the group name is empty, ignore the flag
+        // If we're flagged to announce a new group, but the group name is empty, ignore the flag
         if (
             this._flagNewGroup &&
             this._groups[this._visible_group_indices[this._groupIndex]] === ""
@@ -1477,13 +1644,15 @@ export class c2m {
             this._data[this._visible_group_indices[this._groupIndex]][
                 this._pointIndex
             ];
+
         const point = generatePointDescription(
             current,
             formatWrapper(this._xAxis),
             formatWrapper(
                 isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis
             ),
-            availableStats[statIndex]
+            availableStats[statIndex],
+            this._outlierMode ? this._outlierIndex : null
         );
         const text =
             (this._flagNewGroup

@@ -105,6 +105,7 @@ export interface BoxDataPoint extends HighLowDataPoint {
     q3: number;
     /** The median */
     median: number;
+    outlier?: number[];
 }
 
 /**
@@ -113,7 +114,7 @@ export interface BoxDataPoint extends HighLowDataPoint {
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
-export function isBoxDataPoint(obj: unknown): obj is OHLCDataPoint {
+export function isBoxDataPoint(obj: unknown): obj is BoxDataPoint {
     return (
         isHighLowDataPoint(obj) && "q1" in obj && "q3" in obj && "median" in obj
     );

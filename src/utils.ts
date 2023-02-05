@@ -218,7 +218,8 @@ export const generatePointDescription = (
     point: SupportedDataPointType,
     xFormat: AxisData["format"],
     yFormat: AxisData["format"],
-    stat?: keyof StatBundle
+    stat?: keyof StatBundle,
+    outlierIndex: number | null = null
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
@@ -231,14 +232,24 @@ export const generatePointDescription = (
         )} - ${yFormat(point.low)} - ${yFormat(point.close)}`;
     }
 
+    if (isBoxDataPoint(point) && outlierIndex !== null) {
+        return `${xFormat(point.x)}, ${yFormat(point.outlier[outlierIndex])}, ${
+            outlierIndex + 1
+        } of ${point.outlier.length}`;
+    }
+
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
         }
+        const outlierNote =
+            "outlier" in point && point.outlier?.length > 0
+                ? `, with ${point.outlier.length} outliers`
+                : "";
         return `${xFormat(point.x)}, ${yFormat(point.high)} - ${yFormat(
             point.low
-        )}`;
+        )}${outlierNote}`;
     }
 
     if (isSimpleDataPoint(point)) {
@@ -281,7 +292,7 @@ export const calculateMetadataByGroup = (
             // Don't calculate min/max for high/low
             availableStats = ["open", "high", "low", "close"];
         } else if (isBoxDataPoint(row[0])) {
-            availableStats = ["high", "q3", "median", "q1", "low"];
+            availableStats = ["high", "q3", "median", "q1", "low", "outlier"];
         } else if (isHighLowDataPoint(row[0])) {
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];
