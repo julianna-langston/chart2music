@@ -64,4 +64,6 @@ const { err } = c2mChart({
         }
     ]
 });
-console.error(err);
+if (err) {
+    console.error(err);
+}
