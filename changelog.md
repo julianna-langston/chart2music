@@ -1,6 +1,10 @@
 # Changelog
 
-### 1.7.1
+## 1.8.0
+
+* Formally support boxplots. (Previously, boxplots were a purely experimental feature.) This includes support for outliers.
+
+## 1.7.1
 
 * Include point `index` in the `getCurrent()` results
 
