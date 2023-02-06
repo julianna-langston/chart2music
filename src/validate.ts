@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import type { SupportedDataPointType } from "./dataPoint";
+import type { BoxDataPoint, SupportedDataPointType } from "./dataPoint";
 import {
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
@@ -169,12 +169,35 @@ export const validateInputDataRowHomogeneity = (
     }
     if (isBoxDataPoint(first)) {
         const failure = row.findIndex((cell) => !isBoxDataPoint(cell));
-        if (failure === -1) {
-            return "";
+        if (failure >= 0) {
+            return `The first item is a box data point (x/low/q1/median/q3/high), but item index ${failure} is not (value: ${JSON.stringify(
+                row[failure]
+            )}). All items should be of the same type.`;
         }
-        return `The first item is a box data point (x/low/q1/median/q3/high), but item index ${failure} is not (value: ${JSON.stringify(
-            row[failure]
-        )}). All items should be of the same type.`;
+
+        // Find boxes with outliers that aren't arrays
+        const nonArray = row.findIndex(
+            (cell: BoxDataPoint) =>
+                "outlier" in cell && !Array.isArray(cell.outlier)
+        );
+        if (nonArray >= 0) {
+            return `At least one box provided an outlier that was not an array. An outliers should be an array of numbers. The box is question is: ${JSON.stringify(
+                row[nonArray]
+            )}`;
+        }
+
+        const nonArrayNumber = row.findIndex(
+            (cell: BoxDataPoint) =>
+                "outlier" in cell &&
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                cell.outlier.findIndex((o) => typeof o !== "number") >= 0
+        );
+        if (nonArrayNumber >= 0) {
+            return `At least one box has a non-numeric outlier. Box outliers must be an array of numbers. The box in question is: ${JSON.stringify(
+                row[nonArrayNumber]
+            )}`;
+        }
+        return "";
     }
     if (isHighLowDataPoint(first)) {
         const failure = row.findIndex((cell) => !isHighLowDataPoint(cell));

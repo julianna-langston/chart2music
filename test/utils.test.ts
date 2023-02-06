@@ -291,6 +291,115 @@ test("Generate point description", () => {
             defaultFormat
         )
     ).toBe("");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                low: 5,
+                q1: 7,
+                median: 8,
+                q3: 8.5,
+                high: 10
+            },
+            defaultFormat,
+            defaultFormat
+        )
+    ).toBe("0, 10 - 5");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                low: 5,
+                q1: 7,
+                median: 8,
+                q3: 8.5,
+                high: 10
+            },
+            defaultFormat,
+            defaultFormat,
+            "low"
+        )
+    ).toBe("0, 5");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                low: 5,
+                q1: 7,
+                median: 8,
+                q3: 8.5,
+                high: 10,
+                outlier: [20]
+            },
+            defaultFormat,
+            defaultFormat
+        )
+    ).toBe("0, 10 - 5, with 1 outliers");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                low: 5,
+                q1: 7,
+                median: 8,
+                q3: 8.5,
+                high: 10,
+                outlier: [20, 23]
+            },
+            defaultFormat,
+            defaultFormat
+        )
+    ).toBe("0, 10 - 5, with 2 outliers");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                low: 5,
+                q1: 7,
+                median: 8,
+                q3: 8.5,
+                high: 10,
+                outlier: [20, 23]
+            },
+            defaultFormat,
+            defaultFormat,
+            "low"
+        )
+    ).toBe("0, 5");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                low: 5,
+                q1: 7,
+                median: 8,
+                q3: 8.5,
+                high: 10,
+                outlier: [20, 23]
+            },
+            defaultFormat,
+            defaultFormat,
+            "outlier",
+            0
+        )
+    ).toBe("0, 20, 1 of 2");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                low: 5,
+                q1: 7,
+                median: 8,
+                q3: 8.5,
+                high: 10,
+                outlier: [20, 23]
+            },
+            defaultFormat,
+            defaultFormat,
+            "outlier",
+            1
+        )
+    ).toBe("0, 23, 2 of 2");
 });
 
 test("Calculate metadata by group", () => {
@@ -491,7 +600,7 @@ test("Calculate metadata by group", () => {
             maximumValue: -1,
             minimumValue: -1,
             tenths: 1,
-            availableStats: ["high", "q3", "median", "q1", "low"],
+            availableStats: ["high", "q3", "median", "q1", "low", "outlier"],
             statIndex: -1,
             inputType: "BoxDataPoint"
         }
@@ -534,7 +643,11 @@ test("Calculate metadata by group", () => {
                 { x: 2, y: 9 },
                 { x: 2, y: 10 },
                 { x: 2, y: NaN },
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore: Providing invalid data to test error handling
                 { x: 2, y: null },
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore: Providing invalid data to test error handling
                 { x: 2 },
                 { x: 2, y: 5 },
                 { x: 2, y: 6 },

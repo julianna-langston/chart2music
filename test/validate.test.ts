@@ -235,6 +235,66 @@ test("validateInputDataRowHomogeneity", () => {
     ).toBe(
         `The first item is a box data point (x/low/q1/median/q3/high), but item index 1 is not (value: {"x":2,"high":2,"low":1}). All items should be of the same type.`
     );
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
+            // @ts-ignore: Deliberately using invalid data in order to test error handling
+            {
+                x: 1,
+                low: 5.03,
+                q1: 6.36,
+                median: 6.91,
+                q3: 7.34,
+                high: 7.53,
+                outlier: null
+            }
+        ])
+    ).toBe(
+        `At least one box provided an outlier that was not an array. An outliers should be an array of numbers. The box is question is: {"x":1,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"outlier":null}`
+    );
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
+            // @ts-ignore: Deliberately using invalid data in order to test error handling
+            {
+                x: 1,
+                low: 5.03,
+                q1: 6.36,
+                median: 6.91,
+                q3: 7.34,
+                high: 7.53,
+                outlier: 5
+            }
+        ])
+    ).toBe(
+        `At least one box provided an outlier that was not an array. An outliers should be an array of numbers. The box is question is: {"x":1,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"outlier":5}`
+    );
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
+            {
+                x: 1,
+                low: 5.03,
+                q1: 6.36,
+                median: 6.91,
+                q3: 7.34,
+                high: 7.53,
+                outlier: [5]
+            },
+            // @ts-ignore: Deliberately using invalid data in order to test error handling
+            {
+                x: 2,
+                low: 5.03,
+                q1: 6.36,
+                median: 6.91,
+                q3: 7.34,
+                high: 7.53,
+                outlier: [5, null]
+            }
+        ])
+    ).toBe(
+        `At least one box has a non-numeric outlier. Box outliers must be an array of numbers. The box in question is: {"x":2,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"outlier":[5,null]}`
+    );
 
     // @ts-ignore - deliberately generating error condition
     // Confirm number homogeneity
