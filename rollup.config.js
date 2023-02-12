@@ -27,7 +27,7 @@ export default [
         plugins: [typescript({ tsconfig: "./tsconfig.json" })]
     },
     {
-        input: "dist/types/entryPoint.d.ts",
+        input: "dist/types/entryPoint_mjs.d.ts",
         output: [
             {
                 file: "dist/index.d.ts",
