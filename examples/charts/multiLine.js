@@ -53,8 +53,7 @@ export const multiLinePlot = (canvas, cc) => {
             y: {
                 minimum: 20,
                 maximum: 100,
-                label: "Fahrenheit",
-                format: (value) => value
+                label: "Fahrenheit"
             }
         },
         data: {

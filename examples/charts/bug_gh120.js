@@ -58,7 +58,7 @@ export const bug120 = (canvas, cc) => {
         cc,
         axes: {
             x: {
-                format: (index) => config.data.labels[index]
+                valueLabels: config.data.labels
             }
         },
         data: {
