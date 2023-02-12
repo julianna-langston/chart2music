@@ -337,12 +337,18 @@ export const initializeAxis = (
     axisName: validAxes,
     userAxis?: AxisData
 ): AxisData => {
+    const format =
+        userAxis?.format ??
+        ("valueLabels" in userAxis
+            ? (index) => userAxis.valueLabels[index]
+            : defaultFormat);
+
     return {
         minimum: userAxis?.minimum ?? calculateAxisMinimum(data, axisName),
         maximum: userAxis?.maximum ?? calculateAxisMaximum(data, axisName),
         label: userAxis?.label ?? "",
-        format: userAxis?.format ?? defaultFormat,
-        type: userAxis?.type ?? "linear"
+        type: userAxis?.type ?? "linear",
+        format
     };
 };
 

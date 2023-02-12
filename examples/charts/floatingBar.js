@@ -41,13 +41,12 @@ export const floatingBarChart = (canvas, cc) => {
                 minimum: 0,
                 maximum: 10,
                 label: "Month",
-                format: (value) => months[value]
+                valueLabels: months
             },
             y: {
                 minimum: 20,
                 maximum: 100,
-                label: "Fahrenheit",
-                format: (value) => value
+                label: "Fahrenheit"
             }
         },
         data: highs.map((y, x) => {

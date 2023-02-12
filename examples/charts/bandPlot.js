@@ -60,7 +60,7 @@ export const bandPlot = (canvas, cc) => {
         axes: {
             x: {
                 label: "Day",
-                format: (value) => days[value]
+                valueLabels: days
             },
             y: {
                 label: "Close",

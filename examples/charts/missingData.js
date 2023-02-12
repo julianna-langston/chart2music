@@ -74,7 +74,7 @@ export const missingData = (canvas, cc) => {
         axes: {
             x: {
                 label: xLabel,
-                format: (index) => years[index]
+                valueLabels: years
             },
             y: {
                 label: yLabel,

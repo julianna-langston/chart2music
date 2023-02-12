@@ -85,7 +85,7 @@ export const barLinePlot = (canvas, cc) => {
         axes: {
             x: {
                 label: "Day",
-                format: (value) => barLineLabels[value]
+                valueLabels: barLineLabels
             },
             y: {
                 label: "Adjusted Close",

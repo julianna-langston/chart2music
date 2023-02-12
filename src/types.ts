@@ -119,6 +119,7 @@ export type AxisData = {
     /* The formatter callback to format any number plotted against this axis */
     format?: (value: number) => string;
     type?: AxisScale;
+    valueLabels?: string[];
 };
 
 /**

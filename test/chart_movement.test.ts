@@ -663,3 +663,55 @@ test("Test onSelectCallback", () => {
     );
     expect(lastSelectedIndex).toBe(1);
 });
+
+test("Move with tickLabels option", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        axes: {
+            x: {
+                valueLabels: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+            }
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent).toContain(`x is "" from A to H`);
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("B, 2");
+    expect(chart?.getCurrent()).toStrictEqual({
+        index: 1,
+        group: "",
+        stat: "",
+        point: {
+            x: 1,
+            y: 2
+        }
+    });
+
+    // Move to end
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("H, 3");
+});
