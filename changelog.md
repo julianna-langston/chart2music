@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.1
+
+* Export type `C2MChartConfig` for typescript users
+* Provide new axes config option `valueLabels` 
+
 ## 1.8.0
 
 * Formally support boxplots. (Previously, boxplots were a purely experimental feature.) This includes support for outliers.
