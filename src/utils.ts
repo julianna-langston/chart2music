@@ -97,7 +97,7 @@ export const generateSummary = ({
     text.push(
         `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
             x.maximum
-        )}`
+        )}${x.continuous ? " continuously" : ""}`
     );
     text.push(
         `y is "${y.label}" from ${y.format(y.minimum)} to ${y.format(
@@ -348,7 +348,8 @@ export const initializeAxis = (
         maximum: userAxis?.maximum ?? calculateAxisMaximum(data, axisName),
         label: userAxis?.label ?? "",
         type: userAxis?.type ?? "linear",
-        format
+        format,
+        continuous: userAxis.continuous ?? false
     };
 };
 

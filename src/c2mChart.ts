@@ -142,6 +142,7 @@ export class c2m {
     private _y2Axis: AxisData;
     private _title: string;
     private _playListInterval: NodeJS.Timeout | null = null;
+    private _playListContinuous: NodeJS.Timeout[] = [];
     private _speedRateIndex = 1;
     private _flagNewGroup = false;
     private _flagNewStat = false;
@@ -225,37 +226,48 @@ export class c2m {
     }
 
     /**
+     * Clear outstanding play intervals/timeouts
+     */
+    private _clearPlay() {
+        clearInterval(this._playListInterval);
+        this._playListContinuous.forEach((item) => {
+            clearTimeout(item);
+        });
+        this._playListContinuous = [];
+    }
+
+    /**
      * Establish what actions are available for the touch/keyboard action listeners
      */
     private _initializeActionMap() {
         return {
             next_point: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._moveRight()) {
                     this._playAndSpeak();
                 }
             },
             previous_point: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._moveLeft()) {
                     this._playAndSpeak();
                 }
             },
             play_right: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._playRight();
             },
             play_left: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._playLeft();
             },
             play_forward_category: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 const max = this._visible_group_indices.length - 1;
                 this._playListInterval = setInterval(() => {
                     if (this._groupIndex >= max) {
                         this._groupIndex = max;
-                        clearInterval(this._playListInterval);
+                        this._clearPlay();
                     } else {
                         this._groupIndex++;
                         this._playCurrent();
@@ -264,12 +276,12 @@ export class c2m {
                 this._playCurrent();
             },
             play_backward_category: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 const min = 0;
                 this._playListInterval = setInterval(() => {
                     if (this._groupIndex <= min) {
                         this._groupIndex = min;
-                        clearInterval(this._playListInterval);
+                        this._clearPlay();
                     } else {
                         this._groupIndex--;
                         this._playCurrent();
@@ -278,24 +290,24 @@ export class c2m {
                 this._playCurrent();
             },
             stop_play: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
             },
             previous_stat: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._movePrevStat()) {
                     this._flagNewStat = true;
                     this._playAndSpeak();
                 }
             },
             next_stat: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._moveNextStat()) {
                     this._flagNewStat = true;
                     this._playAndSpeak();
                 }
             },
             previous_category: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._groupIndex === 0) {
                     return;
                 }
@@ -314,7 +326,7 @@ export class c2m {
                 this._playAndSpeak();
             },
             next_category: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (
                     this._groupIndex ===
                     this._visible_group_indices.length - 1
@@ -336,31 +348,31 @@ export class c2m {
                 this._playAndSpeak();
             },
             first_category: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._groupIndex = 0;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
             last_category: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._groupIndex = this._visible_group_indices.length - 1;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
             first_point: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._pointIndex = 0;
                 this._playAndSpeak();
             },
             last_point: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._pointIndex =
                     this._data[this._visible_group_indices[this._groupIndex]]
                         .length - 1;
                 this._playAndSpeak();
             },
             replay: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._flagNewGroup = true;
                 this._flagNewStat = true;
                 this._playAndSpeak();
@@ -374,29 +386,29 @@ export class c2m {
                 });
             },
             previous_tenth: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._moveLeftTenths();
                 this._playAndSpeak();
             },
             next_tenth: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._moveRightTenths();
                 this._playAndSpeak();
             },
             go_minimum: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._moveToMinimum()) {
                     this._playAndSpeak();
                 }
             },
             go_maximum: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._moveToMaximum()) {
                     this._playAndSpeak();
                 }
             },
             go_total_maximum: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 const winner = this._metadataByGroup
                     .filter((g, index) =>
                         this._visible_group_indices.includes(index)
@@ -417,7 +429,7 @@ export class c2m {
                 this._playAndSpeak();
             },
             go_total_minimum: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 const winner = this._metadataByGroup
                     .filter((g, index) =>
                         this._visible_group_indices.includes(index)
@@ -438,14 +450,14 @@ export class c2m {
                 this._playAndSpeak();
             },
             speed_up: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._speedRateIndex < SPEEDS.length - 1) {
                     this._speedRateIndex++;
                 }
                 this._sr.render(`Speed, ${SPEEDS[this._speedRateIndex]}`);
             },
             slow_down: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 if (this._speedRateIndex > 0) {
                     this._speedRateIndex--;
                 }
@@ -462,7 +474,7 @@ export class c2m {
                 );
             },
             help: () => {
-                clearInterval(this._playListInterval);
+                this._clearPlay();
                 this._keyEventManager.launchHelpDialog();
             },
             options: () => {
@@ -1366,7 +1378,7 @@ export class c2m {
         this._playListInterval = setInterval(() => {
             if (this._outlierIndex <= min) {
                 this._outlierIndex = min;
-                clearInterval(this._playListInterval);
+                this._clearPlay();
             } else {
                 this._outlierIndex--;
                 this._playCurrent();
@@ -1383,11 +1395,15 @@ export class c2m {
             this._playLeftOutlier();
             return;
         }
+        if (this._xAxis.continuous) {
+            this._playLeftContinuous();
+            return;
+        }
         const min = 0;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex <= min) {
                 this._pointIndex = min;
-                clearInterval(this._playListInterval);
+                this._clearPlay();
             } else {
                 this._pointIndex--;
                 this._playCurrent();
@@ -1408,13 +1424,63 @@ export class c2m {
         this._playListInterval = setInterval(() => {
             if (this._outlierIndex >= max) {
                 this._outlierIndex = max;
-                clearInterval(this._playListInterval);
+                this._clearPlay();
             } else {
                 this._outlierIndex++;
                 this._playCurrent();
             }
         }, SPEEDS[this._speedRateIndex]);
         this._playCurrent();
+    }
+
+    /**
+     * Play all data points to the right, if there are any, in continuous mode
+     */
+    private _playRightContinuous() {
+        const startIndex = this._pointIndex;
+        const startX = this.getCurrent().point.x;
+        const row = this._data[this._groupIndex].slice(startIndex);
+        const totalTime = SPEEDS[this._speedRateIndex] * 10;
+        const xMin = this._xAxis.minimum;
+        const range = this._xAxis.maximum - xMin;
+        const change = (x) => {
+            return (x - xMin) / range;
+        };
+        const startingPct = change(startX);
+
+        row.forEach((item, index) => {
+            this._playListContinuous.push(
+                setTimeout(() => {
+                    this._pointIndex = startIndex + index;
+                    this._playCurrent();
+                }, (change(item.x) - startingPct) * totalTime)
+            );
+        });
+    }
+
+    /**
+     * Play all data points to the right, if there are any, in continuous mode
+     */
+    private _playLeftContinuous() {
+        const startIndex = this._pointIndex;
+        const startX = this.getCurrent().point.x;
+        const row = this._data[this._groupIndex].slice(0, startIndex + 1);
+        const totalTime = SPEEDS[this._speedRateIndex] * 10;
+        const xMin = this._xAxis.minimum;
+        const range = this._xAxis.maximum - xMin;
+        const change = (x) => {
+            return 1 - (x - xMin) / range;
+        };
+        const startingPct = change(startX);
+
+        row.reverse().forEach((item, index) => {
+            this._playListContinuous.push(
+                setTimeout(() => {
+                    this._pointIndex = startIndex - index;
+                    this._playCurrent();
+                }, (change(item.x) - startingPct) * totalTime)
+            );
+        });
     }
 
     /**
@@ -1425,11 +1491,15 @@ export class c2m {
             this._playRightOutlier();
             return;
         }
+        if (this._xAxis.continuous) {
+            this._playRightContinuous();
+            return;
+        }
         const max = this._data[this._groupIndex].length - 1;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex >= max) {
                 this._pointIndex = max;
-                clearInterval(this._playListInterval);
+                this._clearPlay();
             } else {
                 this._pointIndex++;
                 this._playCurrent();

@@ -1,4 +1,5 @@
 import { singleLinePlot } from "./charts/singleLine.js";
+import { continuous } from "./charts/continuous.js";
 import { multiLinePlot } from "./charts/multiLine.js";
 import { floatingBarChart } from "./charts/floatingBar.js";
 import { largeDataLine } from "./charts/largeDataLine.js";
@@ -29,7 +30,8 @@ window.addEventListener("load", () => {
         outOfBounds,
         logLinePlot,
         histogram,
-        bug120
+        bug120,
+        continuous
     ];
 
     chartFn.forEach((fn) => {
