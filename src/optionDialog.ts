@@ -4,9 +4,20 @@ export const launchOptionDialog = (
     {
         upper,
         lower,
-        speedIndex
-    }: { upper: number; lower: number; speedIndex: number },
-    cb: (lower: number, upper: number, speed: number) => void,
+        speedIndex,
+        continuousMode
+    }: {
+        upper: number;
+        lower: number;
+        speedIndex: number;
+        continuousMode: boolean;
+    },
+    cb: (
+        lower: number,
+        upper: number,
+        speed: number,
+        continuousMode: boolean
+    ) => void,
     playCb?: (hertz: number) => void
 ) => {
     const dialog = document.createElement("dialog");
@@ -47,6 +58,17 @@ export const launchOptionDialog = (
             </label>
         </div>
 
+        <div>
+            <label>
+                <input type="checkbox" id="continuous" ${
+                    continuousMode ? "checked" : ""
+                } />
+                Use continuous mode
+            </label>
+            <br/>
+            Continuous mode changes how values are played when you press Shift+Home and Shift+End
+        </div>
+
         <input id="save" type="submit" value="Save" />
     </form>
     `;
@@ -55,13 +77,15 @@ export const launchOptionDialog = (
     const upperRange: HTMLInputElement = dialog.querySelector("#upperRange");
     const speedRange: HTMLInputElement = dialog.querySelector("#speedRange");
     const global: HTMLInputElement = dialog.querySelector("#global");
+    const continuous: HTMLInputElement = dialog.querySelector("#continuous");
 
     const save = () => {
         const lowerValue = Number(lowerRange.value);
         const upperValue = Number(upperRange.value);
         const speedIndex = Number(speedRange.value);
         const saveGlobal = global.checked;
-        cb(lowerValue, upperValue, speedIndex);
+        const continuousChecked = continuous.checked;
+        cb(lowerValue, upperValue, speedIndex, continuousChecked);
 
         if (window && saveGlobal) {
             if (!window.__chart2music_options__) {

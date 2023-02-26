@@ -482,18 +482,26 @@ export class c2m {
                 launchOptionDialog(
                     {
                         ...this._hertzClamps,
-                        speedIndex: this._speedRateIndex
+                        speedIndex: this._speedRateIndex,
+                        continuousMode: this._xAxis.continuous
                     },
                     (
                         lowerIndex: number,
                         upperIndex: number,
-                        speedIndex: number
+                        speedIndex: number,
+                        continuousMode: boolean
                     ) => {
                         this._setHertzClamps(lowerIndex, upperIndex);
-                        this._speedRateIndex = speedIndex;
-                        this._sr.render(
-                            `Speed, ${SPEEDS[this._speedRateIndex]}`
-                        );
+                        if (this._speedRateIndex !== speedIndex) {
+                            this._speedRateIndex = speedIndex;
+                            this._sr.render(
+                                `Speed, ${SPEEDS[this._speedRateIndex]}`
+                            );
+                        }
+                        if (this._xAxis.continuous !== continuousMode) {
+                            this._xAxis.continuous = continuousMode;
+                            this._generateSummary();
+                        }
                     },
                     (hertzIndex: number) => {
                         this._audioEngine?.playDataPoint(
