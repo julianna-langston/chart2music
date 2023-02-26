@@ -120,6 +120,7 @@ export type AxisData = {
     format?: (value: number) => string;
     type?: AxisScale;
     valueLabels?: string[];
+    continuous?: boolean;
 };
 
 /**
