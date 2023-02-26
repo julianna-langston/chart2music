@@ -311,8 +311,21 @@ export class c2m {
                 if (this._groupIndex === 0) {
                     return;
                 }
+                const currentX = this.currentPoint.x;
                 this._groupIndex--;
                 this._flagNewGroup = true;
+                if (
+                    this._xAxis.continuous &&
+                    (!this.currentPoint || this.currentPoint.x !== currentX)
+                ) {
+                    const differences = this._data[this._groupIndex].map(
+                        ({ x }) => Math.abs(currentX - x)
+                    );
+                    const smallestDifference = Math.min(...differences);
+                    const closestIndex =
+                        differences.indexOf(smallestDifference);
+                    this._pointIndex = closestIndex;
+                }
                 if (
                     this._pointIndex >=
                     this._data[this._visible_group_indices[this._groupIndex]]
@@ -333,8 +346,21 @@ export class c2m {
                 ) {
                     return;
                 }
+                const currentX = this.currentPoint.x;
                 this._groupIndex++;
                 this._flagNewGroup = true;
+                if (
+                    this._xAxis.continuous &&
+                    (!this.currentPoint || this.currentPoint.x !== currentX)
+                ) {
+                    const differences = this._data[this._groupIndex].map(
+                        ({ x }) => Math.abs(currentX - x)
+                    );
+                    const smallestDifference = Math.min(...differences);
+                    const closestIndex =
+                        differences.indexOf(smallestDifference);
+                    this._pointIndex = closestIndex;
+                }
                 if (
                     this._pointIndex >=
                     this._data[this._visible_group_indices[this._groupIndex]]

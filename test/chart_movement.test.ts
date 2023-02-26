@@ -715,3 +715,177 @@ test("Move with tickLabels option", () => {
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("H, 3");
 });
+
+test("Changing groups with continuous mode: 1-1", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [
+                {
+                    x: 3, // ms: 750
+                    y: 2
+                },
+                {
+                    x: 4, // ms: 1000
+                    y: 3
+                },
+                {
+                    x: 4.5, // ms: 1125
+                    y: 0
+                },
+                {
+                    x: 5, // ms: 1250
+                    y: 4
+                },
+                {
+                    x: 10, // ms: 2500
+                    y: 5
+                }
+            ],
+            b: [
+                {
+                    x: 0,
+                    y: 5
+                },
+                {
+                    x: 1,
+                    y: 6
+                },
+                {
+                    x: 3,
+                    y: 5
+                },
+                {
+                    x: 5,
+                    y: 8
+                },
+                {
+                    x: 6,
+                    y: 6
+                },
+                {
+                    x: 7,
+                    y: 8
+                }
+            ]
+        },
+        axes: {
+            x: {
+                continuous: true
+            }
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+    expect(mockElementCC.textContent).toContain("continuously");
+
+    [
+        {
+            input: {
+                key: " "
+            },
+            output: {
+                group: "a",
+                index: 0
+            }
+        },
+        {
+            input: {
+                key: "PageDown"
+            },
+            output: {
+                group: "b",
+                index: 2
+            }
+        },
+        {
+            input: {
+                key: "Home"
+            },
+            output: {
+                group: "b",
+                index: 0
+            }
+        },
+        {
+            input: {
+                key: "PageUp"
+            },
+            output: {
+                group: "a",
+                index: 0
+            }
+        },
+        {
+            input: {
+                key: "ArrowRight"
+            },
+            output: {
+                group: "a",
+                index: 1
+            }
+        },
+        {
+            input: {
+                key: "PageDown"
+            },
+            output: {
+                group: "b",
+                index: 2
+            }
+        },
+        {
+            input: {
+                key: "End"
+            },
+            output: {
+                group: "b",
+                index: 5
+            }
+        },
+        {
+            input: {
+                key: "PageUp"
+            },
+            output: {
+                group: "a",
+                index: 3
+            }
+        },
+        {
+            input: {
+                key: "End"
+            },
+            output: {
+                group: "a",
+                index: 4
+            }
+        },
+        {
+            input: {
+                key: "PageDown"
+            },
+            output: {
+                group: "b",
+                index: 5
+            }
+        }
+    ].forEach(({ input, output }) => {
+        mockElement.dispatchEvent(new KeyboardEvent("keydown", input));
+
+        const current = chart?.getCurrent();
+        expect(current?.group).toBe(output.group);
+        expect(current?.index).toBe(output.index);
+    });
+});
