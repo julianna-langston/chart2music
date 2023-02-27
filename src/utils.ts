@@ -112,7 +112,7 @@ export const generateSummary = ({
             `alternative y is "${y2.label}" from ${y2.format(
                 y2.minimum
             )} to ${y2.format(y2.maximum)}${
-                y.type === "log10" ? " logarithmic" : ""
+                y2.type === "log10" ? " logarithmic" : ""
             }`
         );
     }
