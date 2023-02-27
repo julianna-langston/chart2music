@@ -1514,9 +1514,6 @@ export class c2m {
                       return (x - xMin) / range;
                   }
                 : (x: number) => {
-                      if (x === 0) {
-                          return 0;
-                      }
                       return (
                           (Math.log10(x) - Math.log10(xMin)) / Math.log10(range)
                       );
@@ -1549,9 +1546,6 @@ export class c2m {
                       return 1 - (x - xMin) / range;
                   }
                 : (x: number) => {
-                      if (x === 0) {
-                          return 0;
-                      }
                       return (
                           1 -
                           (Math.log10(x) - Math.log10(xMin)) / Math.log10(range)
@@ -1663,10 +1657,18 @@ export class c2m {
 
         const hertzes = this._getHertzRange();
 
-        const xPan = calcPan(
-            (current.x - this._xAxis.minimum) /
-                (this._xAxis.maximum - this._xAxis.minimum)
-        );
+        const xPan =
+            this._xAxis.type === "log10"
+                ? calcPan(
+                      (Math.log10(current.x) -
+                          Math.log10(this._xAxis.minimum)) /
+                          (Math.log10(this._xAxis.maximum) -
+                              Math.log10(this._xAxis.minimum))
+                  )
+                : calcPan(
+                      (current.x - this._xAxis.minimum) /
+                          (this._xAxis.maximum - this._xAxis.minimum)
+                  );
 
         if (isSimpleDataPoint(current)) {
             if (isUnplayable(current.y, this._yAxis)) {
