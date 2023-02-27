@@ -408,7 +408,8 @@ export class c2m {
                     slice: this._groups[
                         this._visible_group_indices[this._groupIndex]
                     ],
-                    index: this._pointIndex
+                    index: this._pointIndex,
+                    point: this.currentPoint
                 });
             },
             previous_tenth: () => {
@@ -681,6 +682,35 @@ export class c2m {
                 "y2",
                 this._explicitAxes.y2
             );
+        }
+
+        if (
+            this._type === "scatter" &&
+            !("continuous" in this._explicitAxes.x)
+        ) {
+            this._xAxis.continuous = true;
+        }
+
+        if (this._xAxis.continuous) {
+            this._data.forEach((row, index) => {
+                this._data[index] = row.sort((a, b) => {
+                    if (a.x < b.x) {
+                        return -1;
+                    }
+                    if (a.x > b.x) {
+                        return 1;
+                    }
+                    if ("y" in a && "y" in b) {
+                        if (a.y < b.y) {
+                            return -1;
+                        }
+                        if (a.y > b.y) {
+                            return 1;
+                        }
+                    }
+                    return 0;
+                });
+            });
         }
 
         // Generate summary
@@ -1105,7 +1135,8 @@ export class c2m {
                 slice: this._groups[
                     this._visible_group_indices[this._groupIndex]
                 ],
-                index: this._pointIndex
+                index: this._pointIndex,
+                point: this.currentPoint
             });
         };
 
@@ -1477,9 +1508,19 @@ export class c2m {
         const totalTime = SPEEDS[this._speedRateIndex] * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
-        const change = (x) => {
-            return (x - xMin) / range;
-        };
+        const change =
+            this._xAxis.type === "linear"
+                ? (x: number) => {
+                      return (x - xMin) / range;
+                  }
+                : (x: number) => {
+                      if (x === 0) {
+                          return 0;
+                      }
+                      return (
+                          (Math.log10(x) - Math.log10(xMin)) / Math.log10(range)
+                      );
+                  };
         const startingPct = change(startX);
 
         row.forEach((item, index) => {
@@ -1502,9 +1543,20 @@ export class c2m {
         const totalTime = SPEEDS[this._speedRateIndex] * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
-        const change = (x) => {
-            return 1 - (x - xMin) / range;
-        };
+        const change =
+            this._xAxis.type === "linear"
+                ? (x: number) => {
+                      return 1 - (x - xMin) / range;
+                  }
+                : (x: number) => {
+                      if (x === 0) {
+                          return 0;
+                      }
+                      return (
+                          1 -
+                          (Math.log10(x) - Math.log10(xMin)) / Math.log10(range)
+                      );
+                  };
         const startingPct = change(startX);
 
         row.reverse().forEach((item, index) => {
@@ -1729,7 +1781,8 @@ export class c2m {
     private _onFocus() {
         this._options?.onFocusCallback?.({
             slice: this._groups[this._visible_group_indices[this._groupIndex]],
-            index: this._pointIndex
+            index: this._pointIndex,
+            point: this.currentPoint
         });
     }
 

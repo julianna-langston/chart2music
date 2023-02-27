@@ -134,7 +134,8 @@ export enum SUPPORTED_CHART_TYPES {
     CANDLESTICK = "candlestick",
     HISTOGRAM = "histogram",
     BOX = "box",
-    MATRIX = "matrix"
+    MATRIX = "matrix",
+    SCATTER = "scatter"
 }
 
 /**
@@ -177,6 +178,7 @@ export type validAxes = "x" | "y" | "y2";
 export type c2mCallbackType = {
     slice: string;
     index: number;
+    point: SupportedDataPointType;
 };
 
 /**

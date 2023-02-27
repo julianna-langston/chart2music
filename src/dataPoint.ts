@@ -5,6 +5,8 @@
 interface DataPoint {
     /** The x-axis value */
     x: number;
+    label?: string;
+    custom?: Record<string, unknown>;
 }
 
 /**

@@ -102,6 +102,36 @@ test("generating summary", () => {
     ).toBe(
         `Sonified line chart "My title", x is "Growth" from 0% to 100%, y is "Value" from 10 to 20, alternative y is "Volume" from 0 to 100. Use arrow keys to navigate. Press H for more hotkeys.`
     );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 10000,
+                format: defaultFormat,
+                type: "log10"
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20000,
+                format: defaultFormat,
+                type: "log10"
+            },
+            y2: {
+                label: "Volume",
+                minimum: 1,
+                maximum: 10000,
+                format: defaultFormat,
+                type: "log10"
+            },
+            dataRows: 1
+        })
+    ).toBe(
+        `Sonified line chart "My title", x is "Growth" from 0 to 10000 logarithmic, y is "Value" from 10 to 20000 logarithmic, alternative y is "Volume" from 1 to 10000 logarithmic. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
 });
 
 test("adjust percent for panning", () => {
@@ -183,6 +213,17 @@ test("Generate point description", () => {
             defaultFormat
         )
     ).toBe("0, 1");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: 1,
+                label: "Test"
+            },
+            defaultFormat,
+            defaultFormat
+        )
+    ).toBe("0, 1, Test");
     expect(
         generatePointDescription(
             {

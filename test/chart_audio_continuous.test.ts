@@ -266,3 +266,103 @@ test("Continuous-mode: Move around by single events - single line plot", () => {
 // band plot
 // boxplot
 // candlestick
+
+test("C2M sorts out-of-order scatter plot data", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.SCATTER,
+        data: [
+            {
+                x: 123, // ms: 1000
+                y: 5
+            },
+            {
+                x: 12, // ms: 0
+                y: 10
+            },
+            {
+                x: 123456, // ms: 5000
+                y: 8
+            },
+            {
+                x: 12345, // ms: 4000
+                y: 9
+            }
+        ],
+        axes: {
+            x: {
+                continuous: true,
+                type: "log10"
+            }
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine(),
+        options
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent).toContain(
+        `x is "" from 12 to 123456 logarithmic continuously`
+    );
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(1);
+
+    jest.advanceTimersByTime(800);
+    expect(playHistory).toHaveLength(2);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(2);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(3);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(3);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(4);
+
+    playHistory = [];
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Home",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(1);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(2);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(2);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(2);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(2);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(3);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(3);
+
+    jest.advanceTimersByTime(250);
+    expect(playHistory).toHaveLength(4);
+});
