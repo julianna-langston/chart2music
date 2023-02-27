@@ -688,6 +688,35 @@ export class c2m {
             );
         }
 
+        if (
+            this._type === "scatter" &&
+            !("continuous" in this._explicitAxes.x)
+        ) {
+            this._xAxis.continuous = true;
+        }
+
+        if (this._xAxis.continuous) {
+            this._data.forEach((row, index) => {
+                this._data[index] = row.sort((a, b) => {
+                    if (a.x < b.x) {
+                        return -1;
+                    }
+                    if (a.x > b.x) {
+                        return 1;
+                    }
+                    if ("y" in a && "y" in b) {
+                        if (a.y < b.y) {
+                            return -1;
+                        }
+                        if (a.y > b.y) {
+                            return 1;
+                        }
+                    }
+                    return 0;
+                });
+            });
+        }
+
         // Generate summary
         this._generateSummary();
     }
