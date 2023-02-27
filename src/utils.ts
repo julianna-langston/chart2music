@@ -97,19 +97,23 @@ export const generateSummary = ({
     text.push(
         `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
             x.maximum
-        )}${x.continuous ? " continuously" : ""}`
+        )}${x.type === "log10" ? " logarithmic" : ""}${
+            x.continuous ? " continuously" : ""
+        }`
     );
     text.push(
         `y is "${y.label}" from ${y.format(y.minimum)} to ${y.format(
             y.maximum
-        )}`
+        )}${y.type === "log10" ? " logarithmic" : ""}`
     );
 
     if (y2) {
         text.push(
             `alternative y is "${y2.label}" from ${y2.format(
                 y2.minimum
-            )} to ${y2.format(y2.maximum)}`
+            )} to ${y2.format(y2.maximum)}${
+                y.type === "log10" ? " logarithmic" : ""
+            }`
         );
     }
 
