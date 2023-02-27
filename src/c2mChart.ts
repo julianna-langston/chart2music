@@ -1479,9 +1479,16 @@ export class c2m {
         const totalTime = SPEEDS[this._speedRateIndex] * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
-        const change = (x) => {
-            return (x - xMin) / range;
-        };
+        const change =
+            this._xAxis.type === "linear"
+                ? (x: number) => {
+                      return (x - xMin) / range;
+                  }
+                : (x: number) => {
+                      return (
+                          (Math.log10(x) - Math.log10(xMin)) / Math.log10(range)
+                      );
+                  };
         const startingPct = change(startX);
 
         row.forEach((item, index) => {
@@ -1504,9 +1511,17 @@ export class c2m {
         const totalTime = SPEEDS[this._speedRateIndex] * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
-        const change = (x) => {
-            return 1 - (x - xMin) / range;
-        };
+        const change =
+            this._xAxis.type === "linear"
+                ? (x: number) => {
+                      return 1 - (x - xMin) / range;
+                  }
+                : (x: number) => {
+                      return (
+                          1 -
+                          (Math.log10(x) - Math.log10(xMin)) / Math.log10(range)
+                      );
+                  };
         const startingPct = change(startX);
 
         row.reverse().forEach((item, index) => {

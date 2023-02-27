@@ -352,6 +352,186 @@ describe("Check panning/frequency/timing", () => {
                 x: 10000
             });
         });
+        test("X: linear + continuous, Y: linear", () => {
+            const data = [1, 10, 100, 1000, 10000].map((x, y) => {
+                return { x, y };
+            });
+            const mockElement = document.createElement("div");
+            const mockElementCC = document.createElement("div");
+            const { err, data: chart } = c2mChart({
+                type: SUPPORTED_CHART_TYPES.LINE,
+                data,
+                axes: {
+                    x: {
+                        continuous: true
+                    }
+                },
+                element: mockElement,
+                cc: mockElementCC,
+                audioEngine: new MockAudioEngine(),
+                options
+            });
+            expect(err).toBe(null);
+
+            mockElement.dispatchEvent(new Event("focus"));
+
+            // Confirm that a summary was generated
+            expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+            expect(playHistory).toHaveLength(0);
+
+            mockElement.dispatchEvent(
+                new KeyboardEvent("keydown", {
+                    key: "End",
+                    shiftKey: true
+                })
+            );
+            jest.advanceTimersByTime(1);
+            expect(playHistory).toHaveLength(1);
+            expect(lastPanning).toBe(-0.98);
+            expect(Math.round(lastFrequency)).toBe(55);
+            expect(chart?.currentPoint).toEqual({
+                y: 0,
+                x: 1
+            });
+
+            jest.advanceTimersByTime(10);
+            expect(playHistory).toHaveLength(2);
+            expect(lastPanning).toBeCloseTo(-0.978);
+            expect(Math.round(lastFrequency)).toBe(156);
+            expect(chart?.currentPoint).toEqual({
+                y: 1,
+                x: 10
+            });
+
+            jest.advanceTimersByTime(100);
+            expect(playHistory).toHaveLength(3);
+            expect(lastPanning).toBeCloseTo(-0.96);
+            expect(Math.round(lastFrequency)).toBe(466);
+            expect(chart?.currentPoint).toEqual({
+                y: 2,
+                x: 100
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+            expect(lastPanning).toBeCloseTo(-0.784);
+            expect(Math.round(lastFrequency)).toBe(1319);
+            expect(chart?.currentPoint).toEqual({
+                y: 3,
+                x: 1000
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(5);
+            expect(lastPanning).toBe(0.98);
+            expect(Math.round(lastFrequency)).toBe(3951);
+            expect(chart?.currentPoint).toEqual({
+                y: 4,
+                x: 10000
+            });
+
+            playHistory = [];
+            expect(playHistory).toHaveLength(0);
+            mockElement.dispatchEvent(
+                new KeyboardEvent("keydown", {
+                    key: "Home",
+                    shiftKey: true
+                })
+            );
+            jest.advanceTimersByTime(1);
+            expect(playHistory).toHaveLength(1);
+            expect(lastPanning).toBe(0.98);
+            expect(Math.round(lastFrequency)).toBe(3951);
+            expect(chart?.currentPoint).toEqual({
+                y: 4,
+                x: 10000
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(2);
+            expect(lastPanning).toBeCloseTo(-0.784);
+            expect(Math.round(lastFrequency)).toBe(1319);
+            expect(chart?.currentPoint).toEqual({
+                y: 3,
+                x: 1000
+            });
+
+            jest.advanceTimersByTime(230);
+            expect(playHistory).toHaveLength(3);
+            expect(lastPanning).toBeCloseTo(-0.96);
+            expect(Math.round(lastFrequency)).toBe(466);
+            expect(chart?.currentPoint).toEqual({
+                y: 2,
+                x: 100
+            });
+
+            jest.advanceTimersByTime(16);
+            expect(playHistory).toHaveLength(4);
+            expect(lastPanning).toBeCloseTo(-0.978);
+            expect(Math.round(lastFrequency)).toBe(156);
+            expect(chart?.currentPoint).toEqual({
+                y: 1,
+                x: 10
+            });
+
+            jest.advanceTimersByTime(5);
+            expect(playHistory).toHaveLength(5);
+            expect(lastPanning).toBe(-0.98);
+            expect(Math.round(lastFrequency)).toBe(55);
+            expect(chart?.currentPoint).toEqual({
+                y: 0,
+                x: 1
+            });
+        });
         test("X: log, Y: linear", () => {
             const data = [1, 10, 100, 1000, 10000].map((x, y) => {
                 return { x, y };
@@ -422,6 +602,175 @@ describe("Check panning/frequency/timing", () => {
             expect(chart?.currentPoint).toEqual({
                 y: 4,
                 x: 10000
+            });
+        });
+        test("X: log + continuous, Y: linear", () => {
+            const data = [1, 10, 100, 1000, 10000].map((x, y) => {
+                return { x, y };
+            });
+            const mockElement = document.createElement("div");
+            const mockElementCC = document.createElement("div");
+            const { err, data: chart } = c2mChart({
+                type: SUPPORTED_CHART_TYPES.LINE,
+                data,
+                axes: {
+                    x: {
+                        type: "log10",
+                        continuous: true
+                    }
+                },
+                element: mockElement,
+                cc: mockElementCC,
+                audioEngine: new MockAudioEngine(),
+                options
+            });
+            expect(err).toBe(null);
+
+            mockElement.dispatchEvent(new Event("focus"));
+
+            expect(playHistory).toHaveLength(0);
+
+            // Confirm that a summary was generated
+            expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+            mockElement.dispatchEvent(
+                new KeyboardEvent("keydown", {
+                    key: "End",
+                    shiftKey: true
+                })
+            );
+            jest.advanceTimersByTime(5);
+            expect(playHistory).toHaveLength(1);
+            expect(lastPanning).toBe(-0.98);
+            expect(Math.round(lastFrequency)).toBe(55);
+            expect(chart?.currentPoint).toEqual({
+                y: 0,
+                x: 1
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(2);
+            expect(lastPanning).toBe(-0.49);
+            expect(Math.round(lastFrequency)).toBe(156);
+            expect(chart?.currentPoint).toEqual({
+                y: 1,
+                x: 10
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(2);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(3);
+            expect(lastPanning).toBe(0);
+            expect(Math.round(lastFrequency)).toBe(466);
+            expect(chart?.currentPoint).toEqual({
+                y: 2,
+                x: 100
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(3);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(3);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+            expect(lastPanning).toBe(0.49);
+            expect(Math.round(lastFrequency)).toBe(1319);
+            expect(chart?.currentPoint).toEqual({
+                y: 3,
+                x: 1000
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(5);
+            expect(lastPanning).toBe(0.98);
+            expect(Math.round(lastFrequency)).toBe(3951);
+            expect(chart?.currentPoint).toEqual({
+                y: 4,
+                x: 10000
+            });
+
+            playHistory = [];
+
+            mockElement.dispatchEvent(
+                new KeyboardEvent("keydown", {
+                    key: "Home",
+                    shiftKey: true
+                })
+            );
+            jest.advanceTimersByTime(5);
+            expect(playHistory).toHaveLength(1);
+            expect(lastPanning).toBe(0.98);
+            expect(Math.round(lastFrequency)).toBe(3951);
+            expect(chart?.currentPoint).toEqual({
+                y: 4,
+                x: 10000
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(1);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(2);
+            expect(lastPanning).toBe(0.49);
+            expect(Math.round(lastFrequency)).toBe(1319);
+            expect(chart?.currentPoint).toEqual({
+                y: 3,
+                x: 1000
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(2);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(3);
+            expect(lastPanning).toBe(0);
+            expect(Math.round(lastFrequency)).toBe(466);
+            expect(chart?.currentPoint).toEqual({
+                y: 2,
+                x: 100
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(3);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(3);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+            expect(lastPanning).toBe(-0.49);
+            expect(Math.round(lastFrequency)).toBe(156);
+            expect(chart?.currentPoint).toEqual({
+                y: 1,
+                x: 10
+            });
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(4);
+
+            jest.advanceTimersByTime(250);
+            expect(playHistory).toHaveLength(5);
+            expect(lastPanning).toBe(-0.98);
+            expect(Math.round(lastFrequency)).toBe(55);
+            expect(chart?.currentPoint).toEqual({
+                y: 0,
+                x: 1
             });
         });
     });
