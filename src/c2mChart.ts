@@ -408,7 +408,8 @@ export class c2m {
                     slice: this._groups[
                         this._visible_group_indices[this._groupIndex]
                     ],
-                    index: this._pointIndex
+                    index: this._pointIndex,
+                    point: this.currentPoint
                 });
             },
             previous_tenth: () => {
@@ -1105,7 +1106,8 @@ export class c2m {
                 slice: this._groups[
                     this._visible_group_indices[this._groupIndex]
                 ],
-                index: this._pointIndex
+                index: this._pointIndex,
+                point: this.currentPoint
             });
         };
 
@@ -1729,7 +1731,8 @@ export class c2m {
     private _onFocus() {
         this._options?.onFocusCallback?.({
             slice: this._groups[this._visible_group_indices[this._groupIndex]],
-            index: this._pointIndex
+            index: this._pointIndex,
+            point: this.currentPoint
         });
     }
 

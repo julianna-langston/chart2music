@@ -177,6 +177,7 @@ export type validAxes = "x" | "y" | "y2";
 export type c2mCallbackType = {
     slice: string;
     index: number;
+    point: SupportedDataPointType;
 };
 
 /**
