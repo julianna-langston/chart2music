@@ -173,6 +173,7 @@ export class c2m {
     private _silent = false;
     private _outlierIndex = 0;
     private _outlierMode = false;
+    private _announcePointLabelFirst = false;
 
     /**
      * Constructor
@@ -510,13 +511,15 @@ export class c2m {
                     {
                         ...this._hertzClamps,
                         speedIndex: this._speedRateIndex,
-                        continuousMode: this._xAxis.continuous
+                        continuousMode: this._xAxis.continuous,
+                        labelPosition: this._announcePointLabelFirst
                     },
                     (
                         lowerIndex: number,
                         upperIndex: number,
                         speedIndex: number,
-                        continuousMode: boolean
+                        continuousMode: boolean,
+                        labelPosition: boolean
                     ) => {
                         this._setHertzClamps(lowerIndex, upperIndex);
                         if (this._speedRateIndex !== speedIndex) {
@@ -529,6 +532,7 @@ export class c2m {
                             this._xAxis.continuous = continuousMode;
                             this._generateSummary();
                         }
+                        this._announcePointLabelFirst = labelPosition;
                     },
                     (hertzIndex: number) => {
                         this._audioEngine?.playDataPoint(
@@ -1795,7 +1799,8 @@ export class c2m {
                 isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis
             ),
             availableStats[statIndex],
-            this._outlierMode ? this._outlierIndex : null
+            this._outlierMode ? this._outlierIndex : null,
+            this._announcePointLabelFirst
         );
         const text =
             (this._flagNewGroup

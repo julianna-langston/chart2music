@@ -282,6 +282,21 @@ test("Generate point description", () => {
         generatePointDescription(
             {
                 x: 0,
+                y: 1,
+                label: "Test"
+            },
+            defaultFormat,
+            defaultFormat,
+            // eslint-disable-next-line no-undefined
+            undefined,
+            null,
+            true
+        )
+    ).toBe("Test, 0, 1");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
                 y2: 1
             },
             defaultFormat,

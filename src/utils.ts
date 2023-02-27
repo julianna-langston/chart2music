@@ -223,7 +223,8 @@ export const generatePointDescription = (
     xFormat: AxisData["format"],
     yFormat: AxisData["format"],
     stat?: keyof StatBundle,
-    outlierIndex: number | null = null
+    outlierIndex: number | null = null,
+    announcePointLabelFirst = false
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
@@ -257,9 +258,15 @@ export const generatePointDescription = (
     }
 
     if (isSimpleDataPoint(point)) {
-        return `${xFormat(point.x)}, ${yFormat(point.y)}${
-            point.label ? ", " + point.label : ""
-        }`;
+        const details = [xFormat(point.x), yFormat(point.y)];
+        if (point.label) {
+            if (announcePointLabelFirst) {
+                details.unshift(point.label);
+            } else {
+                details.push(point.label);
+            }
+        }
+        return details.join(", ");
     }
 
     if (isAlternateAxisDataPoint(point)) {

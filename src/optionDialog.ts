@@ -5,18 +5,21 @@ export const launchOptionDialog = (
         upper,
         lower,
         speedIndex,
-        continuousMode
+        continuousMode,
+        labelPosition
     }: {
         upper: number;
         lower: number;
         speedIndex: number;
         continuousMode: boolean;
+        labelPosition: boolean;
     },
     cb: (
         lower: number,
         upper: number,
         speed: number,
-        continuousMode: boolean
+        continuousMode: boolean,
+        labelPosition: boolean
     ) => void,
     playCb?: (hertz: number) => void
 ) => {
@@ -69,6 +72,26 @@ export const launchOptionDialog = (
             Continuous mode changes how values are played when you press Shift+Home and Shift+End
         </div>
 
+        <div>
+                <fieldset>
+                    <legend>Show point labels</legend>
+
+                    <label>
+                        <input type="radio" name="point-labels" value="before" ${
+                            labelPosition ? "checked" : ""
+                        } />
+                        before values (eg: "California, 163,696 square miles, 39 million people" )
+                    </label>
+
+                    <label>
+                        <input type="radio" name="point-labels" value="after" ${
+                            labelPosition ? "" : "checked"
+                        } />
+                        after values (eg: "163,696 square miles, 39 million people, California" )
+                    </label>
+                </fieldset>
+        </div>
+
         <input id="save" type="submit" value="Save" />
     </form>
     `;
@@ -85,7 +108,18 @@ export const launchOptionDialog = (
         const speedIndex = Number(speedRange.value);
         const saveGlobal = global.checked;
         const continuousChecked = continuous.checked;
-        cb(lowerValue, upperValue, speedIndex, continuousChecked);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const labelRadioButton: HTMLInputElement = dialog.querySelector(
+            "input[name='point-labels']:checked"
+        );
+        const labelPosition: boolean = labelRadioButton.value === "before";
+        cb(
+            lowerValue,
+            upperValue,
+            speedIndex,
+            continuousChecked,
+            labelPosition
+        );
 
         if (window && saveGlobal) {
             if (!window.__chart2music_options__) {
