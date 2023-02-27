@@ -271,6 +271,17 @@ test("Generate point description", () => {
         generatePointDescription(
             {
                 x: 0,
+                y: 1,
+                label: "Test"
+            },
+            defaultFormat,
+            defaultFormat
+        )
+    ).toBe("0, 1, Test");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
                 y2: 1
             },
             defaultFormat,

@@ -228,7 +228,7 @@ export const generatePointDescription = (
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
             return `${xFormat(point.x)}, ${yFormat(
-                point[stat as keyof OHLCDataPoint]
+                point[stat as keyof OHLCDataPoint] as number
             )}`;
         }
         return `${xFormat(point.x)}, ${yFormat(point.open)} - ${yFormat(
@@ -257,7 +257,9 @@ export const generatePointDescription = (
     }
 
     if (isSimpleDataPoint(point)) {
-        return `${xFormat(point.x)}, ${yFormat(point.y)}`;
+        return `${xFormat(point.x)}, ${yFormat(point.y)}${
+            point.label ? ", " + point.label : ""
+        }`;
     }
 
     if (isAlternateAxisDataPoint(point)) {
