@@ -5,6 +5,7 @@
 interface DataPoint {
     /** The x-axis value */
     x: number;
+    /** Label associated with the data point */
     label?: string;
 }
 
