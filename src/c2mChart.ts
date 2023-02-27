@@ -191,6 +191,9 @@ export class c2m {
         this._ccElement = input.cc ?? this._chartElement;
 
         if (input?.options) {
+            if (this._type === "scatter") {
+                this._options.stack = true;
+            }
             this._options = {
                 ...this._options,
                 ...input?.options
@@ -649,6 +652,42 @@ export class c2m {
     }
 
     /**
+     * Build a new group to represent the stack, or sum, of all other groups
+     */
+    private _buildStackBar() {
+        const freqTable = {};
+        this._data.forEach((row) => {
+            row.forEach((cell) => {
+                if (!isSimpleDataPoint(cell)) {
+                    return;
+                }
+
+                if (!(cell.x in freqTable)) {
+                    freqTable[cell.x] = 0;
+                }
+                freqTable[cell.x] += cell.y;
+            });
+        });
+        const newRow = Object.entries(freqTable).map(([x, y]) => {
+            return { x: Number(x), y } as SimpleDataPoint;
+        });
+
+        this._data.push(newRow);
+        this._groups.push("All");
+        this._visible_group_indices.push(this._groups.length - 1);
+    }
+
+    /**
+     * Build the "All" group for a scatter plot, where it is all of the scatter plot dots combined in one place
+     */
+    private _buildStackScatter() {
+        const newGroup = this._data.flat();
+        this._data.push(newGroup);
+        this._groups.push("All");
+        this._visible_group_indices.push(this._groups.length - 1);
+    }
+
+    /**
      * Assign or re-assign data values
      *
      * @param data - data for the chart
@@ -673,27 +712,12 @@ export class c2m {
 
         this._initializeData(data);
 
-        if (this._options.stack) {
-            const freqTable = {};
-            this._data.forEach((row) => {
-                row.forEach((cell) => {
-                    if (!isSimpleDataPoint(cell)) {
-                        return;
-                    }
-
-                    if (!(cell.x in freqTable)) {
-                        freqTable[cell.x] = 0;
-                    }
-                    freqTable[cell.x] += cell.y;
-                });
-            });
-            const newRow = Object.entries(freqTable).map(([x, y]) => {
-                return { x: Number(x), y } as SimpleDataPoint;
-            });
-
-            this._data.push(newRow);
-            this._groups.push("Stack");
-            this._visible_group_indices.push(this._groups.length - 1);
+        if (this._options.stack && this._data.length > 1) {
+            if (this._type === "scatter") {
+                this._buildStackScatter();
+            } else {
+                this._buildStackBar();
+            }
         }
 
         this._metadataByGroup = calculateMetadataByGroup(this._data);
