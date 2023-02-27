@@ -82,6 +82,8 @@ export const launchOptionDialog = (
                         } />
                         before values (eg: "California, 163,696 square miles, 39 million people" )
                     </label>
+                    
+                    <br/>
 
                     <label>
                         <input type="radio" name="point-labels" value="after" ${
@@ -135,6 +137,16 @@ export const launchOptionDialog = (
 
         dialog.close();
     };
+
+    Array.from(dialog.querySelectorAll("input")).forEach((elem) => {
+        elem.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                save();
+            }
+        });
+    });
 
     dialog.querySelector("#optionForm").addEventListener("submit", (e) => {
         e.preventDefault();
