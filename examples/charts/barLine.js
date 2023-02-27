@@ -76,7 +76,6 @@ export const barLinePlot = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    const slices = ["Adjusted Close", "Volume"];
     const { err } = c2mChart({
         type: ["bar", "line"],
         title: "AAPL Trades",
@@ -100,20 +99,22 @@ export const barLinePlot = (canvas, cc) => {
             "Adjusted Close": adjClose.map((y, x) => {
                 return {
                     x,
-                    y
+                    y,
+                    custom: 0
                 };
             }),
             Volume: volume.map((y2, x) => {
                 return {
                     x,
-                    y2
+                    y2,
+                    custom: 1
                 };
             })
         },
         options: {
-            onFocusCallback: ({ slice, index }) => {
+            onFocusCallback: ({ point, index }) => {
                 myChart.setActiveElements([
-                    { datasetIndex: slices.indexOf(slice), index }
+                    { datasetIndex: point.custom, index }
                 ]);
             },
             onSelectCallback: ({ index }) => {

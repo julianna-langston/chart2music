@@ -5,8 +5,10 @@
 interface DataPoint {
     /** The x-axis value */
     x: number;
+    /** Label associated with the data point */
     label?: string;
-    custom?: Record<string, unknown>;
+    /** Custom metadata provided by the author. Chart2Music will never use the property, nor invalidate on its contents. */
+    custom?: unknown;
 }
 
 /**
