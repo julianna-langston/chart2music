@@ -13,6 +13,7 @@ import { outOfBounds } from "./charts/outOfBounds.js";
 import { logLinePlot } from "./charts/logLinePlot.js";
 import { histogram } from "./charts/histogram.js";
 import { bug120 } from "./charts/bug_gh120.js";
+import { stackedBar } from "./charts/stackedBar.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -33,7 +34,8 @@ window.addEventListener("load", () => {
         histogram,
         bug120,
         continuous,
-        scatter
+        scatter,
+        stackedBar
     ];
 
     chartFn.forEach((fn) => {

@@ -39,7 +39,7 @@ import {
     isOHLCDataPoint,
     isSimpleDataPoint
 } from "./dataPoint";
-import type { SupportedDataPointType } from "./dataPoint";
+import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 
 /**
@@ -153,7 +153,8 @@ export class c2m {
         enableSound: true,
         enableSpeech: true,
         live: false,
-        hertzes: HERTZ
+        hertzes: HERTZ,
+        stack: false
     };
     private _providedAudioEngine?: AudioEngine;
     private _monitorMode = false;
@@ -189,8 +190,6 @@ export class c2m {
 
         this._ccElement = input.cc ?? this._chartElement;
 
-        this._setData(input.data, input.axes);
-
         if (input?.options) {
             this._options = {
                 ...this._options,
@@ -204,6 +203,8 @@ export class c2m {
                 };
             }
         }
+
+        this._setData(input.data, input.axes);
 
         // Generate summary
         this._generateSummary();
@@ -671,6 +672,29 @@ export class c2m {
         };
 
         this._initializeData(data);
+
+        if (this._options.stack) {
+            const freqTable = {};
+            this._data.forEach((row) => {
+                row.forEach((cell) => {
+                    if (!isSimpleDataPoint(cell)) {
+                        return;
+                    }
+
+                    if (!(cell.x in freqTable)) {
+                        freqTable[cell.x] = 0;
+                    }
+                    freqTable[cell.x] += cell.y;
+                });
+            });
+            const newRow = Object.entries(freqTable).map(([x, y]) => {
+                return { x: Number(x), y } as SimpleDataPoint;
+            });
+
+            this._data.push(newRow);
+            this._groups.push("Stack");
+            this._visible_group_indices.push(this._groups.length - 1);
+        }
 
         this._metadataByGroup = calculateMetadataByGroup(this._data);
         this._metadataByGroup = checkForNumberInput(

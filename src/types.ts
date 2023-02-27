@@ -195,6 +195,7 @@ export type c2mOptions = {
     maxWidth?: number;
     customHotkeys?: ExpandedKeyRegistration[];
     hertzes?: number[];
+    stack?: boolean;
 };
 
 /**

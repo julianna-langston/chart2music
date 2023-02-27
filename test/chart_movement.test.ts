@@ -889,3 +889,78 @@ test("Changing groups with continuous mode: 1-1", () => {
         expect(current?.index).toBe(output.index);
     });
 });
+
+test("Stacked bar chart", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            A: [1, 2, 3, 4, 5],
+            B: [10, 11, 12, 13, 14]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false,
+            stack: true
+        }
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent).toContain(`contains 3 categories`);
+
+    // Change groups
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toStrictEqual({
+        index: 0,
+        group: "B",
+        stat: "",
+        point: {
+            x: 0,
+            y: 10
+        }
+    });
+
+    // Change groups
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toStrictEqual({
+        index: 0,
+        group: "Stack",
+        stat: "",
+        point: {
+            x: 0,
+            y: 11
+        }
+    });
+
+    // Change groups
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toStrictEqual({
+        index: 4,
+        group: "Stack",
+        stat: "",
+        point: {
+            x: 4,
+            y: 19
+        }
+    });
+});
