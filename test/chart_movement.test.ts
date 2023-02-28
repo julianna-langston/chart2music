@@ -1163,4 +1163,24 @@ test("Grouped scatter plot", () => {
             }
         }
     });
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "["
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toStrictEqual({
+        index: 24,
+        group: "All",
+        stat: "",
+        point: {
+            label: "New York",
+            x: 54555,
+            y: 0.539,
+            custom: {
+                index: 18
+            }
+        }
+    });
 });
