@@ -1268,9 +1268,15 @@ export class c2m {
         if (this._silent) {
             return;
         }
+        const current =
+            this._data[this._visible_group_indices[this._groupIndex]][
+                this._pointIndex
+            ];
+
         this._playCurrent();
+
         setTimeout(() => {
-            this._speakCurrent();
+            this._speakCurrent(current);
         }, NOTE_LENGTH * 1000);
     }
 
@@ -1842,8 +1848,10 @@ export class c2m {
 
     /**
      * Update the screen reader on the current data point
+     *
+     * @param current - the data point to speak about
      */
-    private _speakCurrent() {
+    private _speakCurrent(current: SupportedDataPointType) {
         if (!this._options.enableSpeech) {
             return;
         }
@@ -1863,11 +1871,6 @@ export class c2m {
         if (this._flagNewStat && availableStats.length === 0) {
             this._flagNewStat = false;
         }
-
-        const current =
-            this._data[this._visible_group_indices[this._groupIndex]][
-                this._pointIndex
-            ];
 
         const point = generatePointDescription(
             current,
