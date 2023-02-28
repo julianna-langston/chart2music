@@ -553,3 +553,107 @@ test("Modifying continuous mode from options dialog", () => {
     jest.advanceTimersByTime(1100);
     expect(playHistory).toHaveLength(3);
 });
+
+test("Pressing Enter while focused on a checkbox will cause the dialog to save", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const checkbox = document.querySelector("input[type='checkbox']");
+    checkbox?.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Enter"
+        })
+    );
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+});
+
+test("Chart not in continuous mode should show continuous mode checked in option dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [
+            { x: 0, y: 1 },
+            { x: 1, y: 2 },
+            { x: 2, y: 3 }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const continuousCheckbox = document.querySelector("#continuous");
+    expect(continuousCheckbox).toHaveProperty("checked", false);
+});
+
+test("Chart in continuous mode should show continuous mode checked in option dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.SCATTER,
+        data: [
+            { x: 0, y: 1 },
+            { x: 1, y: 2 },
+            { x: 2, y: 3 }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const continuousCheckbox = document.querySelector("#continuous");
+    expect(continuousCheckbox).toHaveProperty("checked", true);
+});
