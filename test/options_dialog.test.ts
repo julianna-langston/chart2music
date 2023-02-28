@@ -657,3 +657,53 @@ test("Chart in continuous mode should show continuous mode checked in option dia
     const continuousCheckbox = document.querySelector("#continuous");
     expect(continuousCheckbox).toHaveProperty("checked", true);
 });
+
+test("Options dialog: Changing order for label should persist in dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.SCATTER,
+        data: [
+            { x: 0, y: 1, label: "A" },
+            { x: 1, y: 2, label: "B" },
+            { x: 2, y: 3, label: "C" }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const beforeRadio = document.querySelector(
+        "input[name='point-labels'][value='before']"
+    ) as HTMLInputElement;
+    expect(beforeRadio).toHaveProperty("checked", false);
+
+    beforeRadio.checked = true;
+    expect(beforeRadio).toHaveProperty("checked", true);
+    document.getElementById("save")?.click();
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+    expect(beforeRadio).toHaveProperty("checked", true);
+});
