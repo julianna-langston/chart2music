@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.9.0
+
+* New feature: Add support for scatter plots
+* New feature: Add "continuous mode", which provides a UX optimized for irregularly-spaced data.
+* New feature: Support labels for data points, and provide users the options to control where a label is placed in a data point description.
+* Include a data point's metadata in `onFocusCallback`, `onSelectCallback`, and `getCurrent`.
+* Support a `custom` payload for data points
+* Include in a chart summary if an axis is logarithmic.
+* Change chart description to say 'groups' instead of 'categories', such as in the example text "Sonified line chart 'Income', contains 3 groups..."
+* Fix bug in options dialog where users could not press Enter to save data when they were focused on a checkbox.
+* Fix bug where a logarithmic x-axis calculates audible panning as if the axis were linear.
+* Fix bug where generated dialogs didn't have labels.
+* Fix bug where screen readers would read a data point twice when users move rapidly between points.
+
 ## 1.8.1
 
 * Export type `C2MChartConfig` for typescript users
