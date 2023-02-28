@@ -39,7 +39,7 @@ import {
     isOHLCDataPoint,
     isSimpleDataPoint
 } from "./dataPoint";
-import type { SupportedDataPointType } from "./dataPoint";
+import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 
 /**
@@ -153,7 +153,8 @@ export class c2m {
         enableSound: true,
         enableSpeech: true,
         live: false,
-        hertzes: HERTZ
+        hertzes: HERTZ,
+        stack: false
     };
     private _providedAudioEngine?: AudioEngine;
     private _monitorMode = false;
@@ -189,9 +190,10 @@ export class c2m {
 
         this._ccElement = input.cc ?? this._chartElement;
 
-        this._setData(input.data, input.axes);
-
         if (input?.options) {
+            if (this._type === "scatter") {
+                this._options.stack = true;
+            }
             this._options = {
                 ...this._options,
                 ...input?.options
@@ -204,6 +206,8 @@ export class c2m {
                 };
             }
         }
+
+        this._setData(input.data, input.axes);
 
         // Generate summary
         this._generateSummary();
@@ -648,6 +652,42 @@ export class c2m {
     }
 
     /**
+     * Build a new group to represent the stack, or sum, of all other groups
+     */
+    private _buildStackBar() {
+        const freqTable = {};
+        this._data.forEach((row) => {
+            row.forEach((cell) => {
+                if (!isSimpleDataPoint(cell)) {
+                    return;
+                }
+
+                if (!(cell.x in freqTable)) {
+                    freqTable[cell.x] = 0;
+                }
+                freqTable[cell.x] += cell.y;
+            });
+        });
+        const newRow = Object.entries(freqTable).map(([x, y]) => {
+            return { x: Number(x), y } as SimpleDataPoint;
+        });
+
+        this._data.push(newRow);
+        this._groups.push("All");
+        this._visible_group_indices.push(this._groups.length - 1);
+    }
+
+    /**
+     * Build the "All" group for a scatter plot, where it is all of the scatter plot dots combined in one place
+     */
+    private _buildStackScatter() {
+        const newGroup = this._data.flat();
+        this._data.push(newGroup);
+        this._groups.push("All");
+        this._visible_group_indices.push(this._groups.length - 1);
+    }
+
+    /**
      * Assign or re-assign data values
      *
      * @param data - data for the chart
@@ -672,11 +712,13 @@ export class c2m {
 
         this._initializeData(data);
 
-        this._metadataByGroup = calculateMetadataByGroup(this._data);
-        this._metadataByGroup = checkForNumberInput(
-            this._metadataByGroup,
-            data
-        );
+        if (this._options.stack && this._data.length > 1) {
+            if (this._type === "scatter") {
+                this._buildStackScatter();
+            } else {
+                this._buildStackBar();
+            }
+        }
 
         this._xAxis = initializeAxis(this._data, "x", this._explicitAxes.x);
         this._yAxis = initializeAxis(this._data, "y", this._explicitAxes.y);
@@ -716,6 +758,12 @@ export class c2m {
                 });
             });
         }
+
+        this._metadataByGroup = calculateMetadataByGroup(this._data);
+        this._metadataByGroup = checkForNumberInput(
+            this._metadataByGroup,
+            data
+        );
 
         // Generate summary
         this._generateSummary();
