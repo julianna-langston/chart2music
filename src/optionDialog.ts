@@ -24,6 +24,7 @@ export const launchOptionDialog = (
     playCb?: (hertz: number) => void
 ) => {
     const dialog = document.createElement("dialog");
+    dialog.setAttribute("aria-label", "Options");
     dialog.innerHTML = `<h1>Options</h1>
 
     <p tabIndex="0">While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:</p>
