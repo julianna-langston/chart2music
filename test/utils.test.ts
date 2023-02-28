@@ -73,7 +73,7 @@ test("generating summary", () => {
             dataRows: 5
         })
     ).toBe(
-        `Sonified line chart "My title", contains 5 categories, x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified line chart "My title", contains 5 groups, x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
     );
     expect(
         generateSummary({
@@ -536,7 +536,7 @@ test("Calculate metadata by group", () => {
         }
     ]);
 
-    // Multiple categories
+    // Multiple groups
     expect(
         calculateMetadataByGroup([
             [
