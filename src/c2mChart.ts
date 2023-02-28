@@ -720,12 +720,6 @@ export class c2m {
             }
         }
 
-        this._metadataByGroup = calculateMetadataByGroup(this._data);
-        this._metadataByGroup = checkForNumberInput(
-            this._metadataByGroup,
-            data
-        );
-
         this._xAxis = initializeAxis(this._data, "x", this._explicitAxes.x);
         this._yAxis = initializeAxis(this._data, "y", this._explicitAxes.y);
         if (usesAxis(this._data, "y2")) {
@@ -764,6 +758,12 @@ export class c2m {
                 });
             });
         }
+
+        this._metadataByGroup = calculateMetadataByGroup(this._data);
+        this._metadataByGroup = checkForNumberInput(
+            this._metadataByGroup,
+            data
+        );
 
         // Generate summary
         this._generateSummary();
