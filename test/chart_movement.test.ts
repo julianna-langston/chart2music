@@ -411,7 +411,7 @@ test("Movement for a chart with stats", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified band-line chart "", contains 2 categories, x is "" from 1 to 3, y is "" from 8 to 13. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified band-line chart "", contains 2 groups, x is "" from 1 to 3, y is "" from 8 to 13. Use arrow keys to navigate. Press H for more hotkeys.`
     );
 
     // Move right
@@ -912,7 +912,7 @@ test("Stacked bar chart", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`contains 3 categories`);
+    expect(mockElementCC.textContent).toContain(`contains 3 groups`);
 
     // Change groups
     mockElement.dispatchEvent(
@@ -984,7 +984,7 @@ test("Don't stack a bar chart if it only has 1 group", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).not.toContain(`categories`);
+    expect(mockElementCC.textContent).not.toContain(`groups`);
 });
 
 test("Grouped scatter plot", () => {
@@ -1080,7 +1080,7 @@ test("Grouped scatter plot", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`contains 3 categories`);
+    expect(mockElementCC.textContent).toContain(`contains 3 groups`);
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: " "

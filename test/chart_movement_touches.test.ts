@@ -76,7 +76,7 @@ test("Move around by single events", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified line chart "", x is "" from 0 to 7, y is "" from 0 to 5. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`
+        `Sonified line chart "", x is "" from 0 to 7, y is "" from 0 to 5. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`
     );
 
     // Move right
@@ -360,7 +360,7 @@ test("Movement for a chart with stats", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified band-line chart "", contains 2 categories, x is "" from 1 to 3, y is "" from 8 to 13. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`
+        `Sonified band-line chart "", contains 2 groups, x is "" from 1 to 3, y is "" from 8 to 13. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`
     );
 
     // Move right

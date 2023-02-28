@@ -832,7 +832,7 @@ export class c2m {
         } else {
             if (this._visible_group_indices.includes(groupIndex)) {
                 if (this._visible_group_indices.length === 1) {
-                    return `Group "${name}" can not be hidden. It is the last visible category, and there must always be at least one category visible.`;
+                    return `Group "${name}" can not be hidden. It is the last visible group, and there must always be at least one group visible.`;
                 }
 
                 this._visible_group_indices.splice(
@@ -1049,7 +1049,7 @@ export class c2m {
             },
             this._type === SUPPORTED_CHART_TYPES.MATRIX
                 ? {
-                      title: "Go to previous category",
+                      title: "Go to previous group",
                       key: "ArrowUp",
                       callback: this._availableActions.previous_category
                   }
@@ -1060,7 +1060,7 @@ export class c2m {
                   },
             this._type === SUPPORTED_CHART_TYPES.MATRIX
                 ? {
-                      title: "Go to next category",
+                      title: "Go to next group",
                       key: "ArrowDown",
                       callback: this._availableActions.next_category
                   }
@@ -1070,32 +1070,32 @@ export class c2m {
                       callback: this._availableActions.next_stat
                   },
             {
-                title: "Go to previous category",
+                title: "Go to previous group",
                 key: "PageUp",
                 callback: this._availableActions.previous_category
             },
             {
-                title: "Go to next category",
+                title: "Go to next group",
                 key: "PageDown",
                 callback: this._availableActions.next_category
             },
             {
-                title: "Go to first category",
+                title: "Go to first group",
                 key: "Alt+PageUp",
                 callback: this._availableActions.first_category
             },
             {
-                title: "Go to last category",
+                title: "Go to last group",
                 key: "Alt+PageDown",
                 callback: this._availableActions.last_category
             },
             {
-                title: "Play forwards through categories",
+                title: "Play forwards through groups",
                 key: "Shift+PageDown",
                 callback: this._availableActions.play_forward_category
             },
             {
-                title: "Play backwards through categories",
+                title: "Play backwards through groups",
                 key: "Shift+PageUp",
                 callback: this._availableActions.play_backward_category
             },
@@ -1131,12 +1131,12 @@ export class c2m {
                 callback: this._availableActions.next_tenth
             },
             {
-                title: "Go to category minimum value",
+                title: "Go to group minimum value",
                 key: "[",
                 callback: this._availableActions.go_minimum
             },
             {
-                title: "Go to category maximum value",
+                title: "Go to group maximum value",
                 key: "]",
                 callback: this._availableActions.go_maximum
             },

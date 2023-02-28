@@ -92,7 +92,7 @@ export const generateSummary = ({
         text.push(`Sonified ${live ? "live " : ""}${type} chart "${title}"`);
     }
     if (dataRows > 1) {
-        text.push(`contains ${dataRows} categories`);
+        text.push(`contains ${dataRows} groups`);
     }
     text.push(
         `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
@@ -121,7 +121,7 @@ export const generateSummary = ({
     const keyboardMessage = `Use arrow keys to navigate.${
         live ? " Press M to toggle monitor mode." : ""
     } Press H for more hotkeys.`;
-    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`;
+    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
 
     return `${text.join(", ")}. ${isMobile ? mobileMessage : keyboardMessage}`;
 };
