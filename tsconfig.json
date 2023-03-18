@@ -1,15 +1,19 @@
 {
     "compilerOptions": {
-        "esModuleInterop": true,
-        "declaration": true,
-        "declarationDir": "./types",
-        "outDir": "./dist/",
-        "removeComments": true,
-        "target": "ES2020",
-        "preserveConstEnums": true,
-        "moduleResolution": "Node",
-        "types": ["node"]
+      "target": "ESNext",
+      "useDefineForClassFields": true,
+      "module": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "moduleResolution": "Node",
+      "strict": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "esModuleInterop": true,
+      "noEmit": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noImplicitReturns": true,
+      "skipLibCheck": true
     },
-    "include": ["src/**/*"],
-    "exclude": ["test/**/*"]
+    "include": ["src/**/*"]
 }

@@ -113,6 +113,7 @@ let context: null | AudioContext = null;
  * @returns c2mGolangReturn - A value of "err" (null if no error, or string if error) and "data" (the chart, if there was no error)
  */
 export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
+    console.log("calkled");
     const validationErrorString = validateInput(input);
     if (validationErrorString !== "") {
         return { err: validationErrorString };

@@ -1,60 +1,60 @@
 import { c2mChart } from "../../dist/index.mjs";
 import { movingAverage, upper, lower, days } from "../data/stock.js";
+import numeral from "numeral";
+import { Chart, ChartTypeRegistry } from "chart.js";
 
-export const bandPlot = (canvas, cc) => {
-    const config = {
-        type: "line",
-        data: {
-            labels: days,
-            datasets: [
-                {
-                    label: "Moving average",
-                    data: movingAverage,
-                    backgroundColor: "red",
-                    hoverBorderWidth: 5,
-                    pointRadius: 1
-                },
-                {
-                    label: "Bollinger Upper",
-                    data: upper,
-                    backgroundColor: "silver",
-                    hoverBorderWidth: 5,
-                    fill: "+1",
-                    pointRadius: 0
-                },
-                {
-                    label: "Bollinger Lower",
-                    data: lower,
-                    hoverBorderWidth: 5,
-                    pointRadius: 0
-                }
-            ]
-        },
-        options: {
-            plugins: {
-                "samples-filler-analyser": {
-                    target: "chart-analyser"
-                },
-                title: {
-                    display: true,
-                    text: "AAPL"
-                },
-                legend: {
-                    display: false
-                }
+export const config = {
+    type: "line" as keyof ChartTypeRegistry,
+    data: {
+        labels: days,
+        datasets: [
+            {
+                label: "Moving average",
+                data: movingAverage,
+                backgroundColor: "red",
+                hoverBorderWidth: 5,
+                pointRadius: 1
             },
-            interaction: {
-                intersect: false
+            {
+                label: "Bollinger Upper",
+                data: upper,
+                backgroundColor: "silver",
+                hoverBorderWidth: 5,
+                fill: "+1",
+                pointRadius: 0
+            },
+            {
+                label: "Bollinger Lower",
+                data: lower,
+                hoverBorderWidth: 5,
+                pointRadius: 0
             }
+        ]
+    },
+    options: {
+        plugins: {
+            "samples-filler-analyser": {
+                target: "chart-analyser"
+            },
+            title: {
+                display: true,
+                text: "AAPL"
+            },
+            legend: {
+                display: false
+            }
+        },
+        interaction: {
+            intersect: false
         }
-    };
+    }
+};
 
-    const myChart = new Chart(canvas, config);
-
+export const callback = (myChart: Chart, element: HTMLCanvasElement, cc: HTMLDivElement) => {
     const { err } = c2mChart({
         type: ["line", "band"],
         title: "AAPL",
-        element: canvas,
+        element,
         cc,
         axes: {
             x: {
