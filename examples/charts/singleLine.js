@@ -59,6 +59,13 @@ export const singleLinePlot = (canvas, cc) => {
                     }
                 }
             ]
+        },
+        info: {
+            notes: [
+                "Example note",
+                "Another note",
+                "<script>console.error('How could you let this happen?');</script>"
+            ]
         }
     });
     if (err) {

@@ -70,6 +70,28 @@ test("generating summary", () => {
                 maximum: 20,
                 format: defaultFormat
             },
+            dataRows: 1,
+            hasNotes: true
+        })
+    ).toBe(
+        `Sonified line chart "My title", x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Has notes. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 100,
+                format: (value) => `${value}%`
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20,
+                format: defaultFormat
+            },
             dataRows: 5
         })
     ).toBe(
