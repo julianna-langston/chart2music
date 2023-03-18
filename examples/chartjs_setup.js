@@ -15,29 +15,33 @@ import { histogram } from "./charts/histogram.js";
 import { bug120 } from "./charts/bug_gh120.js";
 import { stackedBar } from "./charts/stackedBar.js";
 import { groupedScatter } from "./charts/groupedScatter.js";
+import { treemap1 } from "./charts/treemap.js";
+import { treemap2 } from "./charts/treemap2.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
     const cc = document.getElementById("cc");
 
     const chartFn = [
-        singleLinePlot,
-        multiLinePlot,
-        floatingBarChart,
-        largeDataLine,
-        barLinePlot,
-        bandPlot,
-        livePlot,
-        livePlotBand,
-        missingData,
-        outOfBounds,
-        logLinePlot,
-        histogram,
-        bug120,
-        continuous,
-        scatter,
-        groupedScatter,
-        stackedBar
+        // singleLinePlot,
+        // multiLinePlot,
+        // floatingBarChart,
+        // largeDataLine,
+        // barLinePlot,
+        // bandPlot,
+        // livePlot,
+        // livePlotBand,
+        // missingData,
+        // outOfBounds,
+        // logLinePlot,
+        // histogram,
+        // bug120,
+        // continuous,
+        // scatter,
+        // groupedScatter,
+        // stackedBar,
+        treemap1,
+        treemap2
     ];
 
     chartFn.forEach((fn) => {

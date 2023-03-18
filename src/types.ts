@@ -135,7 +135,8 @@ export enum SUPPORTED_CHART_TYPES {
     HISTOGRAM = "histogram",
     BOX = "box",
     MATRIX = "matrix",
-    SCATTER = "scatter"
+    SCATTER = "scatter",
+    TREEMAP = "treemap"
 }
 
 /**
