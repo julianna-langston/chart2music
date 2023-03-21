@@ -1,54 +1,16 @@
-import type { AudioEngine } from "../src/audio";
 import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
+import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
+const audioEngine = new MockAudioEngine();
 
 beforeEach(() => {
     jest.clearAllMocks();
-});
-
-/**
- * Info for play history
- */
-type playHistoryType = {
-    frequency: number;
-    panning: number;
-    duration: number;
-};
-
-let playHistory: playHistoryType[] = [];
-
-/**
- * Mock audio engine. Built for testing purposes.
- */
-class MockAudioEngine implements AudioEngine {
-    masterGain: number;
-
-    /**
-     * Constructor
-     */
-    constructor() {
-        playHistory = [];
-    }
-
-    /**
-     * The instructions to play a data point. The details are being recorded for the test system.
-     *
-     * @param frequency - hertz to play
-     * @param panning - panning (-1 to 1) to play at
-     * @param duration - how long to play
-     */
-    playDataPoint(frequency: number, panning: number, duration: number): void {
-        playHistory.push({ frequency, panning, duration });
-    }
-}
-
-beforeEach(() => {
-    playHistory = [];
+    audioEngine.reset();
 });
 
 test("Check missing data - simple data point", () => {
@@ -59,7 +21,7 @@ test("Check missing data - simple data point", () => {
         data: [1, NaN, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine()
+        audioEngine
     });
     expect(err).toBe(null);
 
@@ -74,10 +36,10 @@ test("Check missing data - simple data point", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(1);
+    expect(audioEngine.playHistory.length).toBe(1);
     expect(mockElementCC.textContent).toContain("0, 1");
 
-    playHistory = [];
+    audioEngine.reset();
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -85,7 +47,7 @@ test("Check missing data - simple data point", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(0);
+    expect(audioEngine.playHistory.length).toBe(0);
     expect(mockElementCC.textContent).toContain("1, missing");
 });
 
@@ -108,7 +70,7 @@ test("Check missing data - with y2", () => {
         },
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine()
+        audioEngine
     });
     expect(err).toBe(null);
 
@@ -123,10 +85,10 @@ test("Check missing data - with y2", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(1);
+    expect(audioEngine.playHistory.length).toBe(1);
     expect(mockElementCC.textContent).toContain("1, 2");
 
-    playHistory = [];
+    audioEngine.reset();
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -134,7 +96,7 @@ test("Check missing data - with y2", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(0);
+    expect(audioEngine.playHistory.length).toBe(0);
     expect(mockElementCC.textContent).toContain("2, missing");
 });
 
@@ -157,7 +119,7 @@ test("Check missing data - with HighLow", () => {
         },
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine()
+        audioEngine
     });
     expect(err).toBe(null);
 
@@ -172,10 +134,10 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(2);
+    expect(audioEngine.playHistory.length).toBe(2);
     expect(mockElementCC.textContent).toContain("a, All, 1, 10 - 8");
 
-    playHistory = [];
+    audioEngine.reset();
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -183,10 +145,10 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(1);
+    expect(audioEngine.playHistory.length).toBe(1);
     expect(mockElementCC.textContent).toContain("2, missing");
 
-    playHistory = [];
+    audioEngine.reset();
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -194,7 +156,7 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(0);
+    expect(audioEngine.playHistory.length).toBe(0);
     expect(mockElementCC.textContent).toContain("High, 2, missing");
 
     mockElement.dispatchEvent(
@@ -203,6 +165,6 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(playHistory.length).toBe(1);
+    expect(audioEngine.playHistory.length).toBe(1);
     expect(mockElementCC.textContent).toContain("Low, 2, 9");
 });

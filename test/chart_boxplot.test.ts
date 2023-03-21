@@ -1,34 +1,13 @@
-import type { AudioEngine } from "../src/audio";
 import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
+import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
 
-let playCount = 0;
-
-/**
- * Mock audio engine. Built for testing purposes.
- */
-class MockAudioEngine implements AudioEngine {
-    masterGain: number;
-
-    /**
-     * Constructor
-     */
-    constructor() {
-        playCount = 0;
-    }
-
-    /**
-     * The instructions to play a data point. The details are being recorded for the test system.
-     */
-    playDataPoint(): void {
-        playCount++;
-    }
-}
+const audioEngine = new MockAudioEngine();
 
 const regions = [
     "Western Europe",
@@ -104,7 +83,7 @@ test("Checking out the outliers", () => {
         data,
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine()
+        audioEngine
     });
     expect(err).toBe(null);
 
@@ -230,7 +209,7 @@ test("Checking out the outliers", () => {
         mockElement.dispatchEvent(new KeyboardEvent("keydown", press));
         jest.advanceTimersByTime(250);
         expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(text);
-        expect(playCount).toBe(count);
-        playCount = 0;
+        expect(audioEngine.playCount).toBe(count);
+        audioEngine.reset();
     });
 });
