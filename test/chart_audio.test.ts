@@ -271,11 +271,9 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(2200);
     // All points were played
-    expect(audioEngine.playHistory.length).toBe(8);
+    expect(audioEngine.playCount).toBe(8);
     expect(audioEngine.playHistory[0].panning).toBe(-0.98);
-    expect(
-        audioEngine.playHistory[audioEngine.playHistory.length - 1].panning
-    ).toBe(0.98);
+    expect(audioEngine.lastPanning).toBe(0.98);
 
     audioEngine.reset();
 
@@ -296,7 +294,7 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(2200);
     // Only 3 points were played (at 0ms, 1,000ms, and 2,000ms)
-    expect(audioEngine.playHistory.length).toBe(3);
+    expect(audioEngine.playCount).toBe(3);
     expect(audioEngine.playHistory[0].panning).toBe(0.98);
     expect(audioEngine.playHistory[1].panning).toBeCloseTo(0.699);
     expect(audioEngine.playHistory[2].panning).toBeCloseTo(0.42);
@@ -328,11 +326,9 @@ test("Check play", () => {
         })
     );
     jest.advanceTimersByTime(2000);
-    expect(audioEngine.playHistory.length).toBe(6);
+    expect(audioEngine.playCount).toBe(6);
     expect(audioEngine.playHistory[0].panning).toBeCloseTo(0.42);
-    expect(
-        audioEngine.playHistory[audioEngine.playHistory.length - 1].panning
-    ).toBe(-0.98);
+    expect(audioEngine.lastPanning).toBe(-0.98);
 });
 
 test("Check play through categories", () => {
@@ -376,7 +372,7 @@ test("Check play through categories", () => {
     );
     jest.advanceTimersByTime(2200);
     // All points were played
-    expect(audioEngine.playHistory.length).toBe(3);
+    expect(audioEngine.playCount).toBe(3);
     expect(audioEngine.playHistory[0].panning).toBe(-0.98);
     expect(audioEngine.playHistory[1].panning).toBe(-0.98);
     expect(audioEngine.playHistory[2].panning).toBe(-0.98);
@@ -394,7 +390,7 @@ test("Check play through categories", () => {
     );
     jest.advanceTimersByTime(2200);
     // All points were played
-    expect(audioEngine.playHistory.length).toBe(3);
+    expect(audioEngine.playCount).toBe(3);
     expect(audioEngine.playHistory[0].panning).toBe(-0.98);
     expect(audioEngine.playHistory[1].panning).toBe(-0.98);
     expect(audioEngine.playHistory[2].panning).toBe(-0.98);

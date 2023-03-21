@@ -36,7 +36,7 @@ test("Check missing data - simple data point", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
     expect(mockElementCC.textContent).toContain("0, 1");
 
     audioEngine.reset();
@@ -47,7 +47,7 @@ test("Check missing data - simple data point", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
     expect(mockElementCC.textContent).toContain("1, missing");
 });
 
@@ -85,7 +85,7 @@ test("Check missing data - with y2", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
     expect(mockElementCC.textContent).toContain("1, 2");
 
     audioEngine.reset();
@@ -96,7 +96,7 @@ test("Check missing data - with y2", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
     expect(mockElementCC.textContent).toContain("2, missing");
 });
 
@@ -134,7 +134,7 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(2);
+    expect(audioEngine.playCount).toBe(2);
     expect(mockElementCC.textContent).toContain("a, All, 1, 10 - 8");
 
     audioEngine.reset();
@@ -145,7 +145,7 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
     expect(mockElementCC.textContent).toContain("2, missing");
 
     audioEngine.reset();
@@ -156,7 +156,7 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
     expect(mockElementCC.textContent).toContain("High, 2, missing");
 
     mockElement.dispatchEvent(
@@ -165,6 +165,6 @@ test("Check missing data - with HighLow", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
     expect(mockElementCC.textContent).toContain("Low, 2, 9");
 });

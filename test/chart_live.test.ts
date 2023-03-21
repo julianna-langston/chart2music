@@ -43,7 +43,7 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
     expect(result1?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
-    expect(audioEngine.playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -55,14 +55,14 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
     expect(result2?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
-    expect(audioEngine.playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
 
     mockElement.dispatchEvent(new Event("blur"));
     const result3 = chart?.appendData(5);
     expect(result3?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
-    expect(audioEngine.playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
 });
 
 test("C2M provides details for live mixed charts", () => {
@@ -114,12 +114,12 @@ test("C2M provides details for live mixed charts", () => {
     chart?.appendData({ x: 4, high: 14, low: 7 }, "a");
     jest.advanceTimersByTime(250);
 
-    expect(audioEngine.playHistory.length).toBe(2);
+    expect(audioEngine.playCount).toBe(2);
 
     chart?.appendData({ x: 4, y: 12 }, "b");
     jest.advanceTimersByTime(250);
 
-    expect(audioEngine.playHistory.length).toBe(3);
+    expect(audioEngine.playCount).toBe(3);
     expect(audioEngine.lastPanning).toBe(0.98);
     expect(audioEngine.lastFrequency).toBe(2093.005);
 
@@ -134,7 +134,7 @@ test("C2M provides details for live mixed charts", () => {
     chart?.appendData({ x: 5, y: 12 }, "b");
     jest.advanceTimersByTime(250);
 
-    expect(audioEngine.playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
 });
 
 test("Test axes min/max adjustment - numbers, no clamps", () => {

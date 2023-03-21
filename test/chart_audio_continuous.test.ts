@@ -73,7 +73,7 @@ test("Continuous-mode: Move around by single events - single line plot", () => {
     );
     jest.advanceTimersByTime(250);
     expect(audioEngine.lastPanning).toBe(-0.98);
-    expect(audioEngine.playHistory).toHaveLength(1);
+    expect(audioEngine.playCount).toBe(1);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -82,20 +82,20 @@ test("Continuous-mode: Move around by single events - single line plot", () => {
         })
     );
     jest.advanceTimersByTime(100);
-    expect(audioEngine.playHistory).toHaveLength(2);
+    expect(audioEngine.playCount).toBe(2);
 
     jest.advanceTimersByTime(800);
-    expect(audioEngine.playHistory).toHaveLength(3);
+    expect(audioEngine.playCount).toBe(3);
 
     jest.advanceTimersByTime(500);
-    expect(audioEngine.playHistory).toHaveLength(6);
+    expect(audioEngine.playCount).toBe(6);
 
     // Middle of the pause between x=5 and x=10. Shouldn't play anything
     jest.advanceTimersByTime(500);
-    expect(audioEngine.playHistory).toHaveLength(6);
+    expect(audioEngine.playCount).toBe(6);
 
     jest.advanceTimersByTime(2000);
-    expect(audioEngine.playHistory).toHaveLength(7);
+    expect(audioEngine.playCount).toBe(7);
 
     audioEngine.reset();
     mockElement.dispatchEvent(
@@ -105,13 +105,13 @@ test("Continuous-mode: Move around by single events - single line plot", () => {
         })
     );
     jest.advanceTimersByTime(100);
-    expect(audioEngine.playHistory).toHaveLength(1);
+    expect(audioEngine.playCount).toBe(1);
 
     jest.advanceTimersByTime(500);
-    expect(audioEngine.playHistory).toHaveLength(1);
+    expect(audioEngine.playCount).toBe(1);
 
     jest.advanceTimersByTime(2000);
-    expect(audioEngine.playHistory).toHaveLength(6);
+    expect(audioEngine.playCount).toBe(6);
 
     audioEngine.reset();
     mockElement.dispatchEvent(
@@ -121,7 +121,7 @@ test("Continuous-mode: Move around by single events - single line plot", () => {
         })
     );
     jest.advanceTimersByTime(100);
-    expect(audioEngine.playHistory).toHaveLength(1);
+    expect(audioEngine.playCount).toBe(1);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -130,7 +130,7 @@ test("Continuous-mode: Move around by single events - single line plot", () => {
         })
     );
     jest.advanceTimersByTime(5000);
-    expect(audioEngine.playHistory).toHaveLength(1);
+    expect(audioEngine.playCount).toBe(1);
 });
 
 // grouped line plot
@@ -190,22 +190,22 @@ test("C2M sorts out-of-order scatter plot data", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(1);
+    expect(audioEngine.playCount).toBe(1);
 
     jest.advanceTimersByTime(800);
-    expect(audioEngine.playHistory).toHaveLength(2);
+    expect(audioEngine.playCount).toBe(2);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(2);
+    expect(audioEngine.playCount).toBe(2);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(3);
+    expect(audioEngine.playCount).toBe(3);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(3);
+    expect(audioEngine.playCount).toBe(3);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(4);
+    expect(audioEngine.playCount).toBe(4);
 
     audioEngine.reset();
 
@@ -216,26 +216,26 @@ test("C2M sorts out-of-order scatter plot data", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(1);
+    expect(audioEngine.playCount).toBe(1);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(2);
+    expect(audioEngine.playCount).toBe(2);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(2);
+    expect(audioEngine.playCount).toBe(2);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(2);
+    expect(audioEngine.playCount).toBe(2);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(2);
+    expect(audioEngine.playCount).toBe(2);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(3);
+    expect(audioEngine.playCount).toBe(3);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(3);
+    expect(audioEngine.playCount).toBe(3);
 
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playHistory).toHaveLength(4);
+    expect(audioEngine.playCount).toBe(4);
 });

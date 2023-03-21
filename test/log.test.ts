@@ -254,7 +254,7 @@ describe("Check panning/frequency/timing", () => {
             // Confirm that a summary was generated
             expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
 
-            expect(audioEngine.playHistory).toHaveLength(0);
+            expect(audioEngine.playCount).toBe(0);
 
             mockElement.dispatchEvent(
                 new KeyboardEvent("keydown", {
@@ -263,7 +263,7 @@ describe("Check panning/frequency/timing", () => {
                 })
             );
             jest.advanceTimersByTime(1);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
             expect(audioEngine.lastPanning).toBe(-0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(55);
             expect(chart?.currentPoint).toEqual({
@@ -272,7 +272,7 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(10);
-            expect(audioEngine.playHistory).toHaveLength(2);
+            expect(audioEngine.playCount).toBe(2);
             expect(audioEngine.lastPanning).toBeCloseTo(-0.978);
             expect(Math.round(audioEngine.lastFrequency)).toBe(156);
             expect(chart?.currentPoint).toEqual({
@@ -281,7 +281,7 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(100);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
             expect(audioEngine.lastPanning).toBeCloseTo(-0.96);
             expect(Math.round(audioEngine.lastFrequency)).toBe(466);
             expect(chart?.currentPoint).toEqual({
@@ -290,7 +290,7 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
             expect(audioEngine.lastPanning).toBeCloseTo(-0.784);
             expect(Math.round(audioEngine.lastFrequency)).toBe(1319);
             expect(chart?.currentPoint).toEqual({
@@ -299,31 +299,31 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(5);
+            expect(audioEngine.playCount).toBe(5);
             expect(audioEngine.lastPanning).toBe(0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(3951);
             expect(chart?.currentPoint).toEqual({
@@ -332,7 +332,7 @@ describe("Check panning/frequency/timing", () => {
             });
 
             audioEngine.reset();
-            expect(audioEngine.playHistory).toHaveLength(0);
+            expect(audioEngine.playCount).toBe(0);
             mockElement.dispatchEvent(
                 new KeyboardEvent("keydown", {
                     key: "Home",
@@ -340,7 +340,7 @@ describe("Check panning/frequency/timing", () => {
                 })
             );
             jest.advanceTimersByTime(1);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
             expect(audioEngine.lastPanning).toBe(0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(3951);
             expect(chart?.currentPoint).toEqual({
@@ -349,31 +349,31 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(2);
+            expect(audioEngine.playCount).toBe(2);
             expect(audioEngine.lastPanning).toBeCloseTo(-0.784);
             expect(Math.round(audioEngine.lastFrequency)).toBe(1319);
             expect(chart?.currentPoint).toEqual({
@@ -382,7 +382,7 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(230);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
             expect(audioEngine.lastPanning).toBeCloseTo(-0.96);
             expect(Math.round(audioEngine.lastFrequency)).toBe(466);
             expect(chart?.currentPoint).toEqual({
@@ -391,7 +391,7 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(16);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
             expect(audioEngine.lastPanning).toBeCloseTo(-0.978);
             expect(Math.round(audioEngine.lastFrequency)).toBe(156);
             expect(chart?.currentPoint).toEqual({
@@ -400,7 +400,7 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(5);
-            expect(audioEngine.playHistory).toHaveLength(5);
+            expect(audioEngine.playCount).toBe(5);
             expect(audioEngine.lastPanning).toBe(-0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(55);
             expect(chart?.currentPoint).toEqual({
@@ -504,7 +504,7 @@ describe("Check panning/frequency/timing", () => {
 
             mockElement.dispatchEvent(new Event("focus"));
 
-            expect(audioEngine.playHistory).toHaveLength(0);
+            expect(audioEngine.playCount).toBe(0);
 
             // Confirm that a summary was generated
             expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
@@ -516,7 +516,7 @@ describe("Check panning/frequency/timing", () => {
                 })
             );
             jest.advanceTimersByTime(5);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
             expect(audioEngine.lastPanning).toBe(-0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(55);
             expect(chart?.currentPoint).toEqual({
@@ -525,13 +525,13 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(2);
+            expect(audioEngine.playCount).toBe(2);
             expect(audioEngine.lastPanning).toBe(-0.49);
             expect(Math.round(audioEngine.lastFrequency)).toBe(156);
             expect(chart?.currentPoint).toEqual({
@@ -540,10 +540,10 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(2);
+            expect(audioEngine.playCount).toBe(2);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
             expect(audioEngine.lastPanning).toBe(0);
             expect(Math.round(audioEngine.lastFrequency)).toBe(466);
             expect(chart?.currentPoint).toEqual({
@@ -552,13 +552,13 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
             expect(audioEngine.lastPanning).toBe(0.49);
             expect(Math.round(audioEngine.lastFrequency)).toBe(1319);
             expect(chart?.currentPoint).toEqual({
@@ -567,10 +567,10 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(5);
+            expect(audioEngine.playCount).toBe(5);
             expect(audioEngine.lastPanning).toBe(0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(3951);
             expect(chart?.currentPoint).toEqual({
@@ -587,7 +587,7 @@ describe("Check panning/frequency/timing", () => {
                 })
             );
             jest.advanceTimersByTime(5);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
             expect(audioEngine.lastPanning).toBe(0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(3951);
             expect(chart?.currentPoint).toEqual({
@@ -596,13 +596,13 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(1);
+            expect(audioEngine.playCount).toBe(1);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(2);
+            expect(audioEngine.playCount).toBe(2);
             expect(audioEngine.lastPanning).toBe(0.49);
             expect(Math.round(audioEngine.lastFrequency)).toBe(1319);
             expect(chart?.currentPoint).toEqual({
@@ -611,10 +611,10 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(2);
+            expect(audioEngine.playCount).toBe(2);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
             expect(audioEngine.lastPanning).toBe(0);
             expect(Math.round(audioEngine.lastFrequency)).toBe(466);
             expect(chart?.currentPoint).toEqual({
@@ -623,13 +623,13 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(3);
+            expect(audioEngine.playCount).toBe(3);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
             expect(audioEngine.lastPanning).toBe(-0.49);
             expect(Math.round(audioEngine.lastFrequency)).toBe(156);
             expect(chart?.currentPoint).toEqual({
@@ -638,10 +638,10 @@ describe("Check panning/frequency/timing", () => {
             });
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(4);
+            expect(audioEngine.playCount).toBe(4);
 
             jest.advanceTimersByTime(250);
-            expect(audioEngine.playHistory).toHaveLength(5);
+            expect(audioEngine.playCount).toBe(5);
             expect(audioEngine.lastPanning).toBe(-0.98);
             expect(Math.round(audioEngine.lastFrequency)).toBe(55);
             expect(chart?.currentPoint).toEqual({

@@ -498,11 +498,9 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(2200);
     // All points were played
-    expect(audioEngine.playHistory.length).toBe(8);
+    expect(audioEngine.playCount).toBe(8);
     expect(audioEngine.playHistory[0].panning).toBe(-0.98);
-    expect(
-        audioEngine.playHistory[audioEngine.playHistory.length - 1].panning
-    ).toBe(0.98);
+    expect(audioEngine.lastPanning).toBe(0.98);
 
     audioEngine.reset();
     mockElement.dispatchEvent(
@@ -551,7 +549,7 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(700);
     // Only 3 points were played (at 0ms, 250ms, and 500ms)
-    expect(audioEngine.playHistory.length).toBe(3);
+    expect(audioEngine.playCount).toBe(3);
     expect(audioEngine.playHistory[0].panning).toBe(0.98);
     expect(audioEngine.playHistory[1].panning).toBeCloseTo(0.699);
     expect(audioEngine.playHistory[2].panning).toBeCloseTo(0.42);
@@ -581,7 +579,7 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(2200);
     // No more points were played
-    expect(audioEngine.playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
 
     mockElement.dispatchEvent(
         new TouchEvent("touchstart", {
@@ -628,9 +626,7 @@ test("Check play", () => {
         })
     );
     jest.advanceTimersByTime(2000);
-    expect(audioEngine.playHistory.length).toBe(6);
+    expect(audioEngine.playCount).toBe(6);
     expect(audioEngine.playHistory[0].panning).toBeCloseTo(0.42);
-    expect(
-        audioEngine.playHistory[audioEngine.playHistory.length - 1].panning
-    ).toBe(-0.98);
+    expect(audioEngine.lastPanning).toBe(-0.98);
 });
