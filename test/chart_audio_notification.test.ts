@@ -121,8 +121,6 @@ test("Play All plays notifications (non-continuous mode)", () => {
 
     mockElement.dispatchEvent(new Event("focus"));
 
-    console.log("start test");
-
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             shiftKey: true,
