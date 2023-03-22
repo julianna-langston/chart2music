@@ -7,7 +7,7 @@ const toHtmlEntities = (str: string) => {
     });
 };
 
-export const launchInfoDialog = (info: c2mInfo) => {
+export const launchInfoDialog = (info: c2mInfo, lastMarkerIndex = -1) => {
     const dialog = document.createElement("dialog");
     dialog.setAttribute("aria-label", "Info");
     let content = `<h1>Info</h1>
@@ -19,6 +19,21 @@ export const launchInfoDialog = (info: c2mInfo) => {
         <ul>
             ${info.notes
                 .map((str) => `<li>${toHtmlEntities(str)}</li>`)
+                .join("")}
+        </ul>`;
+    }
+
+    if ("markers" in info) {
+        content += `<h2>Markers</h2>
+        
+        <ul>
+            ${info.markers
+                ?.map(
+                    ({ x, label }, index) =>
+                        `<li ${
+                            index === lastMarkerIndex ? "tabIndex='0'" : ""
+                        } id="marker-${index}">${label} (x = ${x})</li>`
+                )
                 .join("")}
         </ul>`;
     }

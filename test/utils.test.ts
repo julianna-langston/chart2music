@@ -10,7 +10,8 @@ import {
     sentenceCase,
     generatePointDescription,
     calculateMetadataByGroup,
-    detectDataPointType
+    detectDataPointType,
+    isBetween
 } from "../src/utils";
 
 test("sentence case", () => {
@@ -818,3 +819,39 @@ test("detectDataPointType", () => {
     expect(detectDataPointType({})).toBe("unknown");
     expect(detectDataPointType("{}")).toBe("unknown");
 });
+
+test("isBetween - lower first", () => {
+    expect(isBetween(1,4,6)).toBeFalsy();
+    expect(isBetween(4,4,6)).toBeTruthy();
+    expect(isBetween(5,4,6)).toBeTruthy();
+    expect(isBetween(6,4,6)).toBeTruthy();
+    expect(isBetween(9,4,6)).toBeFalsy();
+    expect(isBetween(20,4,6)).toBeFalsy();
+    expect(isBetween(-1,4,6)).toBeFalsy();
+    expect(isBetween(-5,4,6)).toBeFalsy();
+    expect(isBetween(0,4,6)).toBeFalsy();
+    expect(isBetween(Infinity,4,6)).toBeFalsy();
+});
+test("isBetween - same number", () => {
+    expect(isBetween(1,4,4)).toBeFalsy();
+    expect(isBetween(4,4,4)).toBeTruthy();
+    expect(isBetween(9,4,4)).toBeFalsy();
+    expect(isBetween(20,4,4)).toBeFalsy();
+    expect(isBetween(-1,4,4)).toBeFalsy();
+    expect(isBetween(-5,4,4)).toBeFalsy();
+    expect(isBetween(0,4,4)).toBeFalsy();
+    expect(isBetween(Infinity,4,4)).toBeFalsy();
+});
+test("isBetween - higher first", () => {
+    expect(isBetween(1,6,4)).toBeFalsy();
+    expect(isBetween(4,6,4)).toBeTruthy();
+    expect(isBetween(5,6,4)).toBeTruthy();
+    expect(isBetween(6,6,4)).toBeTruthy();
+    expect(isBetween(9,6,4)).toBeFalsy();
+    expect(isBetween(20,6,4)).toBeFalsy();
+    expect(isBetween(-1,6,4)).toBeFalsy();
+    expect(isBetween(-5,6,4)).toBeFalsy();
+    expect(isBetween(0,6,4)).toBeFalsy();
+    expect(isBetween(Infinity,6,4)).toBeFalsy();
+
+})

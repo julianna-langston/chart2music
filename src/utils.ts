@@ -485,3 +485,7 @@ export const detectIfMobile = () => {
         return navigator.userAgent.match(toMatchItem);
     });
 };
+
+export const isBetween = (suspect: number, outer1: number, outer2: number) =>
+    (suspect <= outer1 && suspect >= outer2) ||
+    (suspect >= outer1 && suspect <= outer2);

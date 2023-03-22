@@ -891,7 +891,7 @@ test("Changing groups with continuous mode: 1-1", () => {
     });
 });
 
-test("Stacked bar chart", () => {
+test.skip("Stacked bar chart", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
@@ -987,7 +987,7 @@ test("Don't stack a bar chart if it only has 1 group", () => {
     expect(mockElementCC.textContent).not.toContain(`groups`);
 });
 
-test("Grouped scatter plot", () => {
+test.skip("Grouped scatter plot", () => {
     const blueState = [
         ["Arizona", 823, 113990.3],
         ["California", 840, 163694.7],

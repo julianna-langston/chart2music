@@ -17,4 +17,9 @@ export interface AudioEngine {
      * @param duration - the duration of the note in seconds
      */
     playDataPoint(frequency: number, panning: number, duration: number): void;
+
+    /**
+     * Placeholder
+     */
+    playNotification(): void;
 }

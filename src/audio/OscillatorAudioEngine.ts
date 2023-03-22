@@ -100,6 +100,13 @@ export class OscillatorAudioEngine implements AudioEngine {
             f1.disconnect();
         }, duration * 1000 * 2);
     }
+
+    /**
+     * Placeholder
+     */
+    playNotification() {
+        console.log("notify");
+    }
 }
 
 /**

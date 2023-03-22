@@ -30,7 +30,8 @@ import {
     formatWrapper,
     isUnplayable,
     prepChartElement,
-    checkForNumberInput
+    checkForNumberInput,
+    isBetween
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -76,7 +77,8 @@ enum ActionSet {
     MONITOR = "monitor",
     HELP = "help",
     OPTIONS = "options",
-    INFO = "info"
+    INFO = "info",
+    VIEW_MARKER = "view_marker"
 }
 
 /**
@@ -179,6 +181,7 @@ export class c2m {
     private _outlierMode = false;
     private _announcePointLabelFirst = false;
     private _info: c2mInfo = {};
+    private _lastMarkerIndex = -1;
 
     /**
      * Constructor
@@ -555,6 +558,9 @@ export class c2m {
             },
             info: () => {
                 launchInfoDialog(this._info);
+            },
+            view_marker: () => {
+                launchInfoDialog(this._info, this._lastMarkerIndex);
             }
         };
     }
@@ -682,19 +688,35 @@ export class c2m {
             return { x: Number(x), y } as SimpleDataPoint;
         });
 
-        this._data.push(newRow);
-        this._groups.push("All");
-        this._visible_group_indices.push(this._groups.length - 1);
+        this._data.unshift(newRow);
+        this._groups.unshift("All");
+        this._visible_group_indices.unshift(this._groups.length - 1);
     }
 
     /**
      * Build the "All" group for a scatter plot, where it is all of the scatter plot dots combined in one place
      */
     private _buildStackScatter() {
-        const newGroup = this._data.flat();
-        this._data.push(newGroup);
-        this._groups.push("All");
-        this._visible_group_indices.push(this._groups.length - 1);
+        const newGroup = this._data.flat().sort((a, b) => {
+            if (a.x < b.x) {
+                return 1;
+            }
+            if (a.x > b.x) {
+                return -1;
+            }
+            if ("y" in a && "y" in b) {
+                if (a.y < b.y) {
+                    return 1;
+                }
+                if (a.y > b.y) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        this._data.unshift(newGroup);
+        this._groups.unshift("All");
+        this._visible_group_indices.unshift(this._groups.length - 1);
     }
 
     /**
@@ -1201,6 +1223,15 @@ export class c2m {
             });
         }
 
+        if (this._info.markers?.length > 0) {
+            this._keyEventManager.registerKeyEvent({
+                title: "View marker",
+                caseSensitive: false,
+                key: "a",
+                callback: this._availableActions.view_marker
+            });
+        }
+
         const hotkeyCallbackWrapper = (cb: (args: c2mCallbackType) => void) => {
             cb({
                 slice: this._groups[
@@ -1332,6 +1363,31 @@ export class c2m {
     }
 
     /**
+     * Check to see if movement just passed over any markers
+     *
+     * @param prevPoint - Previous data point in focus
+     * @param nextPoint - Data point about to be in focus
+     */
+    private _checkMarkers(
+        prevPoint: SupportedDataPointType,
+        nextPoint: SupportedDataPointType
+    ) {
+        if(!Array.isArray(this._info.markers) || this._info.markers?.length === 0){
+            return;
+        }
+        const markerIndex = this._info.markers.findIndex(({ x }) =>
+            isBetween(x, prevPoint.x, nextPoint.x)
+        );
+
+        if (markerIndex === -1) {
+            return;
+        }
+
+        this._lastMarkerIndex = markerIndex;
+        this._audioEngine.playNotification();
+    }
+
+    /**
      * Move focus to the next data point to the right, if there is one
      */
     private _moveRight() {
@@ -1339,12 +1395,15 @@ export class c2m {
             return this._moveNextOutlier();
         }
 
+        const prevPoint = this.currentPoint;
+
         const max = this._data[this._groupIndex].length - 1;
         if (this._pointIndex >= max) {
             this._pointIndex = max;
             return false;
         }
         this._pointIndex++;
+        this._checkMarkers(prevPoint, this.currentPoint);
         return true;
     }
 
@@ -1355,11 +1414,13 @@ export class c2m {
         if (this._outlierMode) {
             return this._movePrevOutlier();
         }
+        const prevPoint = this.currentPoint;
         if (this._pointIndex <= 0) {
             this._pointIndex = 0;
             return false;
         }
         this._pointIndex--;
+        this._checkMarkers(prevPoint, this.currentPoint);
         return true;
     }
 
@@ -1409,6 +1470,7 @@ export class c2m {
             this._outlierIndex = Math.max(this._outlierIndex - tenths, 0);
             return true;
         }
+        const prevPoint = this.currentPoint;
         if (this._pointIndex === 0) {
             return false;
         }
@@ -1416,6 +1478,7 @@ export class c2m {
             this._pointIndex - this._metadataByGroup[this._groupIndex].tenths,
             0
         );
+        this._checkMarkers(prevPoint, this.currentPoint);
         return true;
     }
 
@@ -1440,6 +1503,7 @@ export class c2m {
             );
             return true;
         }
+        const prevPoint = this.currentPoint;
 
         if (this._pointIndex === this._data[this._groupIndex].length - 1) {
             return false;
@@ -1448,6 +1512,7 @@ export class c2m {
             this._pointIndex + this._metadataByGroup[this._groupIndex].tenths,
             this._data[this._groupIndex].length - 1
         );
+        this._checkMarkers(prevPoint, this.currentPoint);
         return true;
     }
 
@@ -1543,12 +1608,14 @@ export class c2m {
         }
         const min = 0;
         this._playListInterval = setInterval(() => {
+            const prevPoint = this.currentPoint;
             if (this._pointIndex <= min) {
                 this._pointIndex = min;
                 this._clearPlay();
             } else {
                 this._pointIndex--;
                 this._playCurrent();
+                this._checkMarkers(prevPoint, this.currentPoint);
             }
         }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
         this._playCurrent();
@@ -1605,6 +1672,14 @@ export class c2m {
                 }, (change(item.x) - startingPct) * totalTime)
             );
         });
+
+        (this._info.markers ?? []).forEach((item) => {
+            this._playListContinuous.push(
+                setTimeout(() => {
+                    this._audioEngine.playNotification();
+                }, (change(item.x) - startingPct) * totalTime)
+            );
+        });
     }
 
     /**
@@ -1648,6 +1723,7 @@ export class c2m {
             this._playRightOutlier();
             return;
         }
+        const prevPoint = this.currentPoint;
         if (this._xAxis.continuous) {
             this._playRightContinuous();
             return;
@@ -1663,6 +1739,7 @@ export class c2m {
             }
         }, SPEEDS[this._speedRateIndex]);
         this._playCurrent();
+        this._checkMarkers(prevPoint, this.currentPoint);
     }
 
     /**
