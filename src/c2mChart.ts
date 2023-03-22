@@ -1723,6 +1723,21 @@ export class c2m {
                 }, (change(item.x) - startingPct) * totalTime)
             );
         });
+
+        (this._info.markers ?? []).reverse().forEach((item) => {
+            const delay = (change(item.x) - startingPct) * totalTime;
+            if (delay < 0) {
+                return;
+            }
+
+            this._playListContinuous.push(
+                setTimeout(() => {
+                    this._audioEngine.playNotification?.(
+                        AudioNotificationType.Annotation
+                    );
+                }, delay)
+            );
+        });
     }
 
     /**

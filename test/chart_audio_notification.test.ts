@@ -97,6 +97,19 @@ test("Play All plays notifications (continuous mode)", () => {
 
     expect(audioEngine.playCount).toBe(8);
     expect(audioEngine.notificationCount).toBe(3);
+
+    audioEngine.reset();
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            shiftKey: true,
+            key: "Home"
+        })
+    );
+    jest.advanceTimersByTime(20000);
+
+    expect(audioEngine.playCount).toBe(8);
+    expect(audioEngine.notificationCount).toBe(2);
 });
 
 test("Play All plays notifications (non-continuous mode)", () => {
@@ -131,4 +144,17 @@ test("Play All plays notifications (non-continuous mode)", () => {
 
     expect(audioEngine.playCount).toBe(8);
     expect(audioEngine.notificationCount).toBe(2);
+
+    audioEngine.reset();
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            shiftKey: true,
+            key: "Home"
+        })
+    );
+    jest.advanceTimersByTime(20000);
+
+    expect(audioEngine.playCount).toBe(8);
+    expect(audioEngine.notificationCount).toBe(1);
 });

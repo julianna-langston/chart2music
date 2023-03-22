@@ -200,27 +200,12 @@ export type c2mOptions = {
 };
 
 /**
- * Markers anchored to the X-axis
- */
-type c2mInfoMarkerX = {
-    x: number;
-    y?: number;
-    label: string;
-};
-
-/**
- * Markers anchored to the Y-axis
- */
-type c2mInfoMarkerY = {
-    x?: number;
-    y: number;
-    label: string;
-};
-
-/**
  * Markers
  */
-type c2mInfoMarker = c2mInfoMarkerX | c2mInfoMarkerY;
+type c2mInfoMarker = {
+    x: number;
+    label: string;
+};
 
 /**
  * Notes and other metadata for a chart
