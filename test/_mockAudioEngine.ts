@@ -1,4 +1,5 @@
 import type { AudioEngine } from "../src/audio";
+import type { AudioNotificationType } from "../src/audio/AudioEngine";
 
 /**
  * Info for play history
@@ -7,6 +8,14 @@ type playHistoryType = {
     frequency: number;
     panning: number;
     duration: number;
+};
+
+/**
+ * Info for notification history
+ */
+type NotificationHistoryType = {
+    duration: number;
+    type: AudioNotificationType;
 };
 
 /**
@@ -19,6 +28,8 @@ export class MockAudioEngine implements AudioEngine {
     private _lastPanning = -10;
     private _playHistory: playHistoryType[] = [];
     private _playCount = 0;
+    private _notificationCount = 0;
+    private _notificationHistory: NotificationHistoryType[] = [];
 
     /**
      * The instructions to play a data point. The details are being recorded for the test system.
@@ -36,6 +47,23 @@ export class MockAudioEngine implements AudioEngine {
     }
 
     /**
+     * Mock for playing notifications
+     *
+     * @param notificationType
+     * @param duration
+     */
+    playNotification(
+        notificationType: AudioNotificationType,
+        duration = 0.15
+    ): void {
+        this._notificationCount++;
+        this._notificationHistory.push({
+            type: notificationType,
+            duration
+        });
+    }
+
+    /**
      * Reset history and last* values
      */
     reset() {
@@ -44,6 +72,8 @@ export class MockAudioEngine implements AudioEngine {
         this._lastFrequency = -10;
         this._lastPanning = -10;
         this._playCount = 0;
+        this._notificationCount = 0;
+        this._notificationHistory = [];
     }
 
     /**
@@ -79,5 +109,19 @@ export class MockAudioEngine implements AudioEngine {
      */
     get playCount() {
         return this._playCount;
+    }
+
+    /**
+     * The number of notifications
+     */
+    get notificationCount() {
+        return this._notificationCount;
+    }
+
+    /**
+     * The notification history
+     */
+    get notificationHistory() {
+        return this._notificationHistory;
     }
 }

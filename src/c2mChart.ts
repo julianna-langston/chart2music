@@ -1387,6 +1387,10 @@ export class c2m {
             return;
         }
 
+        if (this._lastMarkerIndex === markerIndex) {
+            return;
+        }
+
         this._lastMarkerIndex = markerIndex;
         this._audioEngine?.playNotification?.(AudioNotificationType.Annotation);
     }
@@ -1729,23 +1733,23 @@ export class c2m {
             this._playRightOutlier();
             return;
         }
-        const prevPoint = this.currentPoint;
         if (this._xAxis.continuous) {
             this._playRightContinuous();
             return;
         }
         const max = this._data[this._groupIndex].length - 1;
         this._playListInterval = setInterval(() => {
+            const prevPoint = this.currentPoint;
             if (this._pointIndex >= max) {
                 this._pointIndex = max;
                 this._clearPlay();
             } else {
                 this._pointIndex++;
+                this._checkMarkers(prevPoint, this.currentPoint);
                 this._playCurrent();
             }
         }, SPEEDS[this._speedRateIndex]);
         this._playCurrent();
-        this._checkMarkers(prevPoint, this.currentPoint);
     }
 
     /**
