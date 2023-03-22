@@ -690,7 +690,7 @@ export class c2m {
 
         this._data.unshift(newRow);
         this._groups.unshift("All");
-        this._visible_group_indices.unshift(this._groups.length - 1);
+        this._visible_group_indices.push(this._groups.length - 1);
     }
 
     /**
@@ -716,7 +716,7 @@ export class c2m {
         });
         this._data.unshift(newGroup);
         this._groups.unshift("All");
-        this._visible_group_indices.unshift(this._groups.length - 1);
+        this._visible_group_indices.push(this._groups.length - 1);
     }
 
     /**
@@ -1372,7 +1372,10 @@ export class c2m {
         prevPoint: SupportedDataPointType,
         nextPoint: SupportedDataPointType
     ) {
-        if(!Array.isArray(this._info.markers) || this._info.markers?.length === 0){
+        if (
+            !Array.isArray(this._info.markers) ||
+            this._info.markers?.length === 0
+        ) {
             return;
         }
         const markerIndex = this._info.markers.findIndex(({ x }) =>
@@ -1384,7 +1387,7 @@ export class c2m {
         }
 
         this._lastMarkerIndex = markerIndex;
-        this._audioEngine.playNotification();
+        this._audioEngine?.playNotification();
     }
 
     /**

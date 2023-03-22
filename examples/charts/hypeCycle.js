@@ -9,9 +9,9 @@ const data_2 = [
     { label: "AI TRiSM", x: 21, y: 49 },
     { label: "Generative AI", x: 26, y: 65 },
     { label: "Synthetic Data", x: 32, y: 71 },
-    { label: "Edge AI", x: 37, y: 71 },
+    { label: "Edge AI", x: 36, y: 71 },
     { label: "Digital Ethics", x: 41, y: 45 },
-    { label: "AI Maker and Teaching Kits", x: 41, y: 37 },
+    { label: "AI Maker and Teaching Kits", x: 42, y: 37 },
     { label: "AI Cloud Services", x: 43, y: 29 },
     { label: "Deep Learning", x: 47, y: 19 },
     { label: "Intelligent Applications", x: 57, y: 21 },
@@ -19,7 +19,7 @@ const data_2 = [
 ];
 const data_5 = [
     { label: "Causal AI", x: 16, y: 25 },
-    { label: "AI Engineering", x: 18, y: 37 },
+    { label: "AI Engineering", x: 19, y: 36 },
     { label: "Operational AI Systems", x: 23, y: 57 },
     { label: "Computing ModelOps", x: 24, y: 60 },
     { label: "Neuromorphic", x: 25, y: 63 },
@@ -27,7 +27,7 @@ const data_5 = [
     { label: "Foundation Models", x: 29, y: 69 },
     { label: "Smart Robots", x: 30, y: 70 },
     { label: "Knowledge Graphs", x: 37, y: 68 },
-    { label: "Natural Language Procesing", x: 41, y: 49 }
+    { label: "Natural Language Procesing", x: 40, y: 49 }
 ];
 const data_10 = [
     { x: 13, y: 15, label: "Aritificial General Intelligence" },
@@ -177,7 +177,7 @@ export const hypeCycle = (canvas, cc) => {
             ],
             markers: [
                 {
-                    x: 8,
+                    x: 14,
                     label: "Innovation Trigger"
                 },
                 {
