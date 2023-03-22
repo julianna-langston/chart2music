@@ -71,6 +71,7 @@ type SummaryTypes = {
     y: AxisData;
     y2?: AxisData;
     live?: boolean;
+    hasNotes?: boolean;
 };
 export const generateSummary = ({
     type,
@@ -79,7 +80,8 @@ export const generateSummary = ({
     x,
     y,
     y2,
-    live = false
+    live = false,
+    hasNotes = false
 }: SummaryTypes) => {
     const text = [];
     if (Array.isArray(type)) {
@@ -123,7 +125,15 @@ export const generateSummary = ({
     } Press H for more hotkeys.`;
     const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
 
-    return `${text.join(", ")}. ${isMobile ? mobileMessage : keyboardMessage}`;
+    const info = [
+        text.join(", ") + ".",
+        isMobile ? mobileMessage : keyboardMessage
+    ];
+
+    if (hasNotes) {
+        info.splice(1, 0, "Has notes.");
+    }
+    return info.join(" ");
 };
 
 export const calculateAxisMinimum = (

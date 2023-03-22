@@ -10,7 +10,8 @@ import type {
     c2mOptions,
     c2mGolangReturn,
     c2mCallbackType,
-    StatBundle
+    StatBundle,
+    c2mInfo
 } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
 import {
@@ -41,6 +42,7 @@ import {
 } from "./dataPoint";
 import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
+import { launchInfoDialog } from "./infoDialog";
 
 /**
  * List of actions that could be activated by keyboard or touch
@@ -73,7 +75,8 @@ enum ActionSet {
     SLOW_DOWN = "slow_down",
     MONITOR = "monitor",
     HELP = "help",
-    OPTIONS = "options"
+    OPTIONS = "options",
+    INFO = "info"
 }
 
 /**
@@ -175,6 +178,7 @@ export class c2m {
     private _outlierIndex = 0;
     private _outlierMode = false;
     private _announcePointLabelFirst = false;
+    private _info: c2mInfo = {};
 
     /**
      * Constructor
@@ -186,6 +190,8 @@ export class c2m {
         this._providedAudioEngine = input.audioEngine;
         this._title = input.title ?? "";
         this._chartElement = input.element;
+        this._info = input.info ?? {};
+
         prepChartElement(this._chartElement, this._title);
 
         this._ccElement = input.cc ?? this._chartElement;
@@ -546,6 +552,9 @@ export class c2m {
                         );
                     }
                 );
+            },
+            info: () => {
+                launchInfoDialog(this._info);
             }
         };
     }
@@ -647,7 +656,8 @@ export class c2m {
             y: this._yAxis,
             dataRows: this._visible_group_indices.length,
             y2: this._y2Axis,
-            live: this._options.live
+            live: this._options.live,
+            hasNotes: this._info.notes?.length > 0
         });
     }
 
@@ -1181,6 +1191,15 @@ export class c2m {
                 callback: this._availableActions.options
             }
         ]);
+
+        if (this._info.notes?.length > 0) {
+            this._keyEventManager.registerKeyEvent({
+                title: "Open info dialog",
+                caseSensitive: false,
+                key: "i",
+                callback: this._availableActions.info
+            });
+        }
 
         const hotkeyCallbackWrapper = (cb: (args: c2mCallbackType) => void) => {
             cb({

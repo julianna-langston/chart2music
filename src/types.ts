@@ -100,6 +100,7 @@ export type SonifyTypes = {
     /** Optional audio engine to replace the default audio engine. */
     audioEngine?: AudioEngine;
     options?: c2mOptions;
+    info?: c2mInfo;
 };
 
 /**
@@ -196,6 +197,13 @@ export type c2mOptions = {
     customHotkeys?: ExpandedKeyRegistration[];
     hertzes?: number[];
     stack?: boolean;
+};
+
+/**
+ * Notes and other metadata for a chart
+ */
+export type c2mInfo = {
+    notes?: string[];
 };
 
 /**
