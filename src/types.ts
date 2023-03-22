@@ -100,6 +100,7 @@ export type SonifyTypes = {
     /** Optional audio engine to replace the default audio engine. */
     audioEngine?: AudioEngine;
     options?: c2mOptions;
+    info?: c2mInfo;
 };
 
 /**
@@ -196,6 +197,37 @@ export type c2mOptions = {
     customHotkeys?: ExpandedKeyRegistration[];
     hertzes?: number[];
     stack?: boolean;
+};
+
+/**
+ * Markers anchored to the X-axis
+ */
+type c2mInfoMarkerX = {
+    x: number;
+    y?: number;
+    label: string;
+};
+
+/**
+ * Markers anchored to the Y-axis
+ */
+type c2mInfoMarkerY = {
+    x?: number;
+    y: number;
+    label: string;
+};
+
+/**
+ * Markers
+ */
+type c2mInfoMarker = c2mInfoMarkerX | c2mInfoMarkerY;
+
+/**
+ * Notes and other metadata for a chart
+ */
+export type c2mInfo = {
+    notes?: string[];
+    markers?: c2mInfoMarker[];
 };
 
 /**

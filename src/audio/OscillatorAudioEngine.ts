@@ -8,7 +8,7 @@ const G3 = 195.9977;
 const C4 = C3 * 2;
 const E4 = E3 * 2;
 const G4 = G3 * 2;
-const C5 = C4 * 2;
+const G5 = G4 * 2;
 
 /**
  * An audio engine which uses oscillators to create sound.
@@ -72,11 +72,11 @@ export class OscillatorAudioEngine implements AudioEngine {
      * Play an audio notification.
      *
      * @param notificationType - the type of audio notification
-     * @param duration - the duration of the notification in seconds
+     * @param duration - the duration of the notification in seconds. Default: 0.25
      */
     playNotification?(
         notificationType: AudioNotificationType,
-        duration: number
+        duration = 0.15
     ) {
         if (notificationType === AudioNotificationType.Annotation) {
             this._playAnnotation(duration);
@@ -165,17 +165,20 @@ export class OscillatorAudioEngine implements AudioEngine {
         this._playDataPoint(C4, 0, duration / 4, gain);
         // After the  C notes finish, play E3 and E4.
         setTimeout(() => {
-            this._playDataPoint(E3, 0, duration / 4, gain);
-            this._playDataPoint(E4, 0, duration / 4, gain);
+            this._playDataPoint(G3, 0, duration / 4, gain);
+            this._playDataPoint(G4, 0, duration / 4, gain);
+            this._playDataPoint(G5, 0, duration / 4, gain);
         }, duration * 1000 * 0.25);
         // After those notes finish, play e3 and e4.
         setTimeout(() => {
+            this._playDataPoint(C3, 0, duration / 4, gain);
+            this._playDataPoint(C4, 0, duration / 4, gain);
+        }, duration * 1000 * 0.5);
+        // After those notes finish, play C6.
+        setTimeout(() => {
             this._playDataPoint(G3, 0, duration / 4, gain);
             this._playDataPoint(G4, 0, duration / 4, gain);
-        }, duration * 1000 * 0.5);
-        // After those notes finish, play C5.
-        setTimeout(() => {
-            this._playDataPoint(C5, 0, duration / 4, gain);
+            this._playDataPoint(G5, 0, duration / 4, gain);
         }, duration * 1000 * 0.75);
         // After everything stops, clean up the nodes.
         setTimeout(() => {

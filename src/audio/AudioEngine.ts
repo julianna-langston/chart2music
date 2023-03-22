@@ -33,10 +33,10 @@ export interface AudioEngine {
      * Not all engines may implement this method, so you should always check before calling it.
      *
      * @param notificationType - The type of notification to play
-     * @param duration - the duration of the notification in seconds
+     * @param [duration] - the duration of the notification in seconds. Default: 0.25
      */
     playNotification?(
         notificationType: AudioNotificationType,
-        duration: number
+        duration?: number
     ): void;
 }
