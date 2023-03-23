@@ -2,13 +2,10 @@ name: Build
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-    paths-ignore: ["**.md"]
+  # Triggers the workflow on pull request events but only for the "main" branch
   pull_request:
     branches: [ "main" ]
-    paths-ignore: ["**.md"]
+    paths-ignore: ["**.md", "test/**/*"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -28,15 +25,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Test linting
-        run: npm run lint-check
-
-      - name: Check deps
-        run: npm run depcheck
-
       - name: Build package (to confirm building works)
         run: npm run build
 
-      - name: Run tests
+      - name: Run tests and collect coverage
         run: npm run test
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage/
+          flags: unittests
+          name: codecov-umbrella
+          verbose: true
 
