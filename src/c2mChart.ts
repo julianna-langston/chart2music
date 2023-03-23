@@ -79,6 +79,7 @@ enum ActionSet {
     HELP = "help",
     OPTIONS = "options",
     INFO = "info",
+    ANNOUNCE_MARKER = "announce_marker",
     VIEW_MARKER = "view_marker"
 }
 
@@ -559,6 +560,15 @@ export class c2m {
             },
             info: () => {
                 launchInfoDialog(this._info);
+            },
+            announce_marker: () => {
+                if (this._lastMarkerIndex < 0) {
+                    this._sr.render("No recent markers.");
+                    return;
+                }
+                this._sr.render(
+                    this._info.markers[this._lastMarkerIndex].label
+                );
             },
             view_marker: () => {
                 launchInfoDialog(this._info, this._lastMarkerIndex);
@@ -1226,9 +1236,15 @@ export class c2m {
 
         if (this._info.markers?.length > 0) {
             this._keyEventManager.registerKeyEvent({
-                title: "View marker",
+                title: "Announce recent marker",
                 caseSensitive: false,
-                key: "a",
+                key: "A",
+                callback: this._availableActions.announce_marker
+            });
+            this._keyEventManager.registerKeyEvent({
+                title: "View all markers",
+                caseSensitive: false,
+                key: "Shift+a",
                 callback: this._availableActions.view_marker
             });
         }

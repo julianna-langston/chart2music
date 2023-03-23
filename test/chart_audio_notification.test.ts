@@ -18,7 +18,7 @@ beforeEach(() => {
     document.querySelector("dialog")?.close();
 });
 
-test("Play notification and respond to the 'a' key", () => {
+test("Play notification and respond to announce commands", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
@@ -38,6 +38,15 @@ test("Play notification and respond to the 'a' key", () => {
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
+            key: "a"
+        })
+    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "No recent markers."
+    );
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
             key: "ArrowRight"
         })
     );
@@ -52,9 +61,17 @@ test("Play notification and respond to the 'a' key", () => {
     expect(audioEngine.playCount).toBe(2);
     expect(audioEngine.notificationCount).toBe(1);
 
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "a"
+        })
+    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("My Test");
+
     expect(document.querySelectorAll("dialog")).toHaveLength(0);
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
+            shiftKey: true,
             key: "a"
         })
     );
