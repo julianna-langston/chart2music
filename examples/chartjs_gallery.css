@@ -6,7 +6,7 @@
     width: 500px;
     padding-top:20px;
 }
-dialog{
+[role='dialog']{
     width: 400px;
     height: fit-content;
     position: absolute;
@@ -17,7 +17,7 @@ dialog{
     background-color: white;
     text-align: center;
 }
-dialog th{
+[role='dialog'] th{
     text-align: left;
 }
 #cc {
