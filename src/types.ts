@@ -200,10 +200,19 @@ export type c2mOptions = {
 };
 
 /**
+ * Markers
+ */
+type c2mInfoMarker = {
+    x: number;
+    label: string;
+};
+
+/**
  * Notes and other metadata for a chart
  */
 export type c2mInfo = {
     notes?: string[];
+    annotations?: c2mInfoMarker[];
 };
 
 /**

@@ -15,29 +15,31 @@ import { histogram } from "./charts/histogram.js";
 import { bug120 } from "./charts/bug_gh120.js";
 import { stackedBar } from "./charts/stackedBar.js";
 import { groupedScatter } from "./charts/groupedScatter.js";
+import { hypeCycle } from "./charts/hypeCycle.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
     const cc = document.getElementById("cc");
 
     const chartFn = [
-        singleLinePlot,
-        multiLinePlot,
-        floatingBarChart,
-        largeDataLine,
-        barLinePlot,
-        bandPlot,
-        livePlot,
-        livePlotBand,
-        missingData,
-        outOfBounds,
-        logLinePlot,
-        histogram,
-        bug120,
-        continuous,
-        scatter,
-        groupedScatter,
-        stackedBar
+        // singleLinePlot,
+        // multiLinePlot,
+        // floatingBarChart,
+        // largeDataLine,
+        // barLinePlot,
+        // bandPlot,
+        // livePlot,
+        // livePlotBand,
+        // missingData,
+        // outOfBounds,
+        // logLinePlot,
+        // histogram,
+        // bug120,
+        // continuous,
+        // scatter,
+        // groupedScatter,
+        // stackedBar,
+        hypeCycle
     ];
 
     chartFn.forEach((fn) => {

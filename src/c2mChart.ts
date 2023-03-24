@@ -43,6 +43,7 @@ import {
 import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
+import { AudioNotificationType } from "./audio/AudioEngine";
 
 /**
  * List of actions that could be activated by keyboard or touch
@@ -682,8 +683,8 @@ export class c2m {
             return { x: Number(x), y } as SimpleDataPoint;
         });
 
-        this._data.push(newRow);
-        this._groups.push("All");
+        this._data.unshift(newRow);
+        this._groups.unshift("All");
         this._visible_group_indices.push(this._groups.length - 1);
     }
 
@@ -692,8 +693,8 @@ export class c2m {
      */
     private _buildStackScatter() {
         const newGroup = this._data.flat();
-        this._data.push(newGroup);
-        this._groups.push("All");
+        this._data.unshift(newGroup);
+        this._groups.unshift("All");
         this._visible_group_indices.push(this._groups.length - 1);
     }
 
@@ -767,6 +768,40 @@ export class c2m {
                     return 0;
                 });
             });
+        }
+
+        if(this._info.annotations?.length > 0){
+            const annos = this._info.annotations.map(({x, label}) => {
+                return {
+                    x,
+                    label,
+                    y: NaN,
+                    type: "annotation",
+                    custom: {
+                        datasetIndex: 0,
+                        index: 0
+                    }
+                } as SupportedDataPointType
+            })
+            this._data.forEach((group, i) => {
+                annos.forEach((a) => {
+                    const index = group.findIndex((g) => g.x >= a.x);
+
+                    if(index === -1){
+                        this._data[i].push(a);
+                        return;
+                    }
+
+                    if(index === 0){
+                        this._data[i].unshift(a);
+                        return;
+                    }
+
+                    this._data[i].splice(index-1, 0, a);
+                });
+            });
+
+            console.log(this._data);
         }
 
         this._metadataByGroup = calculateMetadataByGroup(this._data);
@@ -1732,6 +1767,13 @@ export class c2m {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if(current.type === "annotation"){
+            this._audioEngine.playNotification(AudioNotificationType.Annotation);
+            return;
+        }
+
         const hertzes = this._getHertzRange();
 
         const xPan =
@@ -1858,6 +1900,12 @@ export class c2m {
      * Perform actions when a new data point receives focus
      */
     private _onFocus() {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if(this.currentPoint.type === "annotation"){
+            return;
+        }
+
         this._options?.onFocusCallback?.({
             slice: this._groups[this._visible_group_indices[this._groupIndex]],
             index: this._pointIndex,
@@ -1872,6 +1920,13 @@ export class c2m {
      */
     private _speakCurrent(current: SupportedDataPointType) {
         if (!this._options.enableSpeech) {
+            return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if(current.type === "annotation"){
+            this._sr.render(current.label);
             return;
         }
 
