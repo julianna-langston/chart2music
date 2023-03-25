@@ -682,8 +682,8 @@ export class c2m {
             return { x: Number(x), y } as SimpleDataPoint;
         });
 
-        this._data.push(newRow);
-        this._groups.push("All");
+        this._data.unshift(newRow);
+        this._groups.unshift("All");
         this._visible_group_indices.push(this._groups.length - 1);
     }
 
@@ -692,8 +692,8 @@ export class c2m {
      */
     private _buildStackScatter() {
         const newGroup = this._data.flat();
-        this._data.push(newGroup);
-        this._groups.push("All");
+        this._data.unshift(newGroup);
+        this._groups.unshift("All");
         this._visible_group_indices.push(this._groups.length - 1);
     }
 
