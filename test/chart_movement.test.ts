@@ -923,11 +923,11 @@ test("Stacked bar chart", () => {
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
         index: 0,
-        group: "B",
+        group: "A",
         stat: "",
         point: {
             x: 0,
-            y: 10
+            y: 1
         }
     });
 
@@ -940,11 +940,11 @@ test("Stacked bar chart", () => {
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
         index: 0,
-        group: "All",
+        group: "B",
         stat: "",
         point: {
             x: 0,
-            y: 11
+            y: 10
         }
     });
 
@@ -957,11 +957,11 @@ test("Stacked bar chart", () => {
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
         index: 4,
-        group: "All",
+        group: "B",
         stat: "",
         point: {
             x: 4,
-            y: 19
+            y: 14
         }
     });
 });
@@ -1089,6 +1089,27 @@ test("Grouped scatter plot", () => {
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
         index: 0,
+        group: "All",
+        stat: "",
+        point: {
+            label: "District of Columbia",
+            x: 68.3,
+            y: 0.83,
+            custom: {
+                index: 5
+            }
+        }
+    });
+
+    // Change groups
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(chart?.getCurrent()).toStrictEqual({
+        index: 0,
         group: "Blue",
         stat: "",
         point: {
@@ -1125,34 +1146,13 @@ test("Grouped scatter plot", () => {
     // Change groups
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
-            key: "PageDown"
-        })
-    );
-    jest.advanceTimersByTime(250);
-    expect(chart?.getCurrent()).toStrictEqual({
-        index: 10,
-        group: "All",
-        stat: "",
-        point: {
-            label: "West Virginia",
-            y: 0.876,
-            x: 24230,
-            custom: {
-                index: 23
-            }
-        }
-    });
-
-    // Change groups
-    mockElement.dispatchEvent(
-        new KeyboardEvent("keydown", {
             key: "End"
         })
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
-        index: 50,
-        group: "All",
+        index: 24,
+        group: "Red",
         stat: "",
         point: {
             label: "Alaska",
@@ -1171,15 +1171,15 @@ test("Grouped scatter plot", () => {
     );
     jest.advanceTimersByTime(250);
     expect(chart?.getCurrent()).toStrictEqual({
-        index: 24,
-        group: "All",
+        index: 6,
+        group: "Red",
         stat: "",
         point: {
-            label: "New York",
-            x: 54555,
-            y: 0.539,
+            label: "Mississippi",
+            x: 48431.8,
+            y: 0.692,
             custom: {
-                index: 18
+                index: 10
             }
         }
     });
