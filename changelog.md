@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.0
+* New feature: Add support for annotations
+* New feature: Add an "Info" dialog, which you can open by pressing 'i' on charts with notes.
+* Fix bug where 'All' stack is added to the back, rather than the front.
+
 ## 1.9.0
 
 * New feature: Add support for scatter plots
