@@ -15,6 +15,7 @@ import { histogram } from "./charts/histogram.js";
 import { bug120 } from "./charts/bug_gh120.js";
 import { stackedBar } from "./charts/stackedBar.js";
 import { groupedScatter } from "./charts/groupedScatter.js";
+import { hypeCycle } from "./charts/hypeCycle.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -37,7 +38,8 @@ window.addEventListener("load", () => {
         continuous,
         scatter,
         groupedScatter,
-        stackedBar
+        // stackedBar,
+        hypeCycle
     ];
 
     chartFn.forEach((fn) => {
