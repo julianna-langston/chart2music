@@ -10,8 +10,7 @@ const toHtmlEntities = (str: string) => {
 export const launchInfoDialog = (info: c2mInfo) => {
     const dialog = document.createElement("dialog");
     dialog.setAttribute("aria-label", "Info");
-    let content = `<h1>Info</h1>
-    `;
+    let content = `<h1 tabIndex='0'>Info</h1>`;
 
     if ("notes" in info) {
         content += `<h2>Notes</h2>

@@ -770,8 +770,8 @@ export class c2m {
             });
         }
 
-        if(this._info.annotations?.length > 0){
-            const annos = this._info.annotations.map(({x, label}) => {
+        if (this._info.annotations?.length > 0) {
+            const annos = this._info.annotations.map(({ x, label }) => {
                 return {
                     x,
                     label,
@@ -781,23 +781,23 @@ export class c2m {
                         datasetIndex: 0,
                         index: 0
                     }
-                } as SupportedDataPointType
-            })
+                } as SupportedDataPointType;
+            });
             this._data.forEach((group, i) => {
                 annos.forEach((a) => {
                     const index = group.findIndex((g) => g.x >= a.x);
 
-                    if(index === -1){
+                    if (index === -1) {
                         this._data[i].push(a);
                         return;
                     }
 
-                    if(index === 0){
+                    if (index === 0) {
                         this._data[i].unshift(a);
                         return;
                     }
 
-                    this._data[i].splice(index-1, 0, a);
+                    this._data[i].splice(index - 1, 0, a);
                 });
             });
 
@@ -1767,13 +1767,6 @@ export class c2m {
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        if(current.type === "annotation"){
-            this._audioEngine.playNotification(AudioNotificationType.Annotation);
-            return;
-        }
-
         const hertzes = this._getHertzRange();
 
         const xPan =
@@ -1788,6 +1781,14 @@ export class c2m {
                       (current.x - this._xAxis.minimum) /
                           (this._xAxis.maximum - this._xAxis.minimum)
                   );
+
+        if (current.type === "annotation") {
+            this._audioEngine.playNotification(
+                AudioNotificationType.Annotation,
+                xPan
+            );
+            return;
+        }
 
         if (isSimpleDataPoint(current)) {
             if (isUnplayable(current.y, this._yAxis)) {
@@ -1900,9 +1901,7 @@ export class c2m {
      * Perform actions when a new data point receives focus
      */
     private _onFocus() {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        if(this.currentPoint.type === "annotation"){
+        if (this.currentPoint.type === "annotation") {
             return;
         }
 
@@ -1923,19 +1922,17 @@ export class c2m {
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        if(current.type === "annotation"){
-            this._sr.render(current.label);
-            return;
-        }
-
         // If we're flagged to announce a new group, but the group name is empty, ignore the flag
         if (
             this._flagNewGroup &&
             this._groups[this._visible_group_indices[this._groupIndex]] === ""
         ) {
             this._flagNewGroup = false;
+        }
+
+        if (current.type === "annotation") {
+            this._sr.render(current.label);
+            return;
         }
 
         const { statIndex, availableStats } =

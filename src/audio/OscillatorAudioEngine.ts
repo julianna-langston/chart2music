@@ -72,14 +72,16 @@ export class OscillatorAudioEngine implements AudioEngine {
      * Play an audio notification.
      *
      * @param notificationType - the type of audio notification
-     * @param duration - the duration of the notification in seconds. Default: 0.25
+     * @param [panning] - where to play the sound (-1 <= 0 <= 1, 0 == center). Default: 0
+     * @param [duration] - the duration of the notification in seconds. Default: 0.15
      */
     playNotification?(
         notificationType: AudioNotificationType,
+        panning = 0,
         duration = 0.15
     ) {
         if (notificationType === AudioNotificationType.Annotation) {
-            this._playAnnotation(duration);
+            this._playAnnotation(panning, duration);
         } else {
             // Do nothing.
         }
@@ -154,12 +156,19 @@ export class OscillatorAudioEngine implements AudioEngine {
     /**
      * Play a sound that means that an annotation is present.
      *
-     * @param duration - the duration of the annotation sound in seconds
+     * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
+     * @param duration - the duration of the note in seconds
      */
-    private _playAnnotation(duration: number) {
+    private _playAnnotation(panning: number, duration: number) {
+        // Create panner node.
+        const panner = this._audioContext.createStereoPanner();
+        panner.pan.value = panning;
+        // Create gain node
         const gain = this._audioContext.createGain();
         gain.gain.value = 0.5;
-        gain.connect(this._masterCompressor);
+        // Connect things up
+        gain.connect(panner);
+        panner.connect(this._masterCompressor);
         // Play C3 and C4.
         this._playDataPoint(C3, 0, duration / 4, gain);
         this._playDataPoint(C4, 0, duration / 4, gain);

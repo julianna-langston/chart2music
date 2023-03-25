@@ -26,16 +26,18 @@ export interface AudioEngine {
      * @param duration - the duration of the note in seconds
      */
     playDataPoint(frequency: number, panning: number, duration: number): void;
-    
+
     /**
      * Play a notification sound.
      * Not all engines may implement this method, so you should always check before calling it.
      *
      * @param notificationType - The type of notification to play
-     * @param [duration] - the duration of the notification in seconds. Default: 0.25
+     * @param [panning] - where to play the sound (-1 <= 0 <= 1, 0 == center)
+     * @param [duration] - the duration of the notification in seconds
      */
     playNotification?(
         notificationType: AudioNotificationType,
+        panning?: number,
         duration?: number
     ): void;
 }

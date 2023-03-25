@@ -9,6 +9,7 @@ interface DataPoint {
     label?: string;
     /** Custom metadata provided by the author. Chart2Music will never use the property, nor invalidate on its contents. */
     custom?: unknown;
+    type?: "annotation";
 }
 
 /**
