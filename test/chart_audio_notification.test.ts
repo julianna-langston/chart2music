@@ -52,7 +52,16 @@ test("Play notification and respond to announce commands", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(audioEngine.playCount).toBe(1);
+    expect(audioEngine.playCount).toBe(2);
+    expect(audioEngine.notificationCount).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(audioEngine.playCount).toBe(2);
     expect(audioEngine.notificationCount).toBe(1);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("My Test");
 });
