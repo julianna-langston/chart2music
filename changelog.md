@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.1
+* Fix bug where annotations were placed in the wrong spot in a chart.
+
 ## 1.10.0
 * New feature: Add support for annotations
 * New feature: Add an "Info" dialog, which you can open by pressing 'i' on charts with notes.
