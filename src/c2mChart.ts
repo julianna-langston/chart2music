@@ -797,7 +797,7 @@ export class c2m {
                         return;
                     }
 
-                    this._data[i].splice(index - 1, 0, a);
+                    this._data[i].splice(index, 0, a);
                 });
             });
         }
