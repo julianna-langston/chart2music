@@ -1,5 +1,8 @@
 import { c2mChart } from "../../dist/index.mjs";
 
+let ref = null;
+let groups = ["Boys", "Girls"];
+
 export const stackedBar = (canvas, cc) => {
     const xLabels = ["A", "B", "C", "D", "E"];
     const title = "Test";
@@ -34,12 +37,26 @@ export const stackedBar = (canvas, cc) => {
                     stacked: true
                 }
             }
-        }
+        },
+        plugins: [
+            {
+                id: "test",
+                afterDatasetUpdate: (chart, args) => {
+                    if (!args.mode) {
+                        return;
+                    }
+                    ref?.setCategoryVisibility(
+                        groups[args.index],
+                        args.mode === "show"
+                    );
+                }
+            }
+        ]
     };
 
     const myChart = new Chart(canvas, config);
 
-    const { err } = c2mChart({
+    const { err, data: ref } = c2mChart({
         type: "bar",
         title,
         element: canvas,
@@ -56,7 +73,7 @@ export const stackedBar = (canvas, cc) => {
         options: {
             onFocusCallback: ({ slice, index }) => {
                 const toHighlight = [];
-                if (slice === "Stack") {
+                if (slice === "All") {
                     toHighlight.push({ datasetIndex: 0, index });
                     toHighlight.push({ datasetIndex: 1, index });
                 } else {

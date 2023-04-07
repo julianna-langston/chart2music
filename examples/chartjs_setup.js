@@ -38,7 +38,7 @@ window.addEventListener("load", () => {
         continuous,
         scatter,
         groupedScatter,
-        // stackedBar,
+        stackedBar,
         hypeCycle
     ];
 
