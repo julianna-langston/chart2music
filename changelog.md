@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.2
+* Fix bug where the chart winds up in a bad state when the user focuses on the last group and the visibility of a different group is set to false.
+
 ## 1.10.1
 * Fix bug where annotations were placed in the wrong spot in a chart.
 
