@@ -234,7 +234,9 @@ export class c2m {
      * Getter for current data point
      */
     get currentPoint() {
-        return this._data[this._groupIndex][this._pointIndex];
+        return this._data[this._visible_group_indices[this._groupIndex]][
+            this._pointIndex
+        ];
     }
 
     /**
@@ -884,6 +886,10 @@ export class c2m {
                 );
                 this._sr.render(`${this._title || "Chart"} updated`);
             }
+        }
+
+        if (this._groupIndex >= this._visible_group_indices.length) {
+            this._groupIndex = this._visible_group_indices.length - 1;
         }
 
         if (this._groupIndex === visibleGroupIndex) {

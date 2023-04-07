@@ -17,6 +17,8 @@ const volume = [
     91437000
 ];
 
+let myC2m = null;
+
 export const barLinePlot = (canvas, cc) => {
     const config = {
         type: "bar",
@@ -71,12 +73,30 @@ export const barLinePlot = (canvas, cc) => {
                     }
                 }
             }
-        }
+        },
+        plugins: [
+            {
+                id: "test",
+                afterDatasetUpdate: (chart, args, options) => {
+                    if (!args.mode) {
+                        return;
+                    }
+
+                    const err = myC2m?.setCategoryVisibility(
+                        ["Adjusted Close", "Volume"][args.index],
+                        args.mode === "show"
+                    );
+                    if (err) {
+                        console.error(err);
+                    }
+                }
+            }
+        ]
     };
 
     const myChart = new Chart(canvas, config);
 
-    const { err } = c2mChart({
+    const { err, data: myC2m } = c2mChart({
         type: ["bar", "line"],
         title: "AAPL Trades",
         element: canvas,
@@ -113,9 +133,11 @@ export const barLinePlot = (canvas, cc) => {
         },
         options: {
             onFocusCallback: ({ point, index }) => {
+                console.log(point);
                 myChart.setActiveElements([
                     { datasetIndex: point.custom, index }
                 ]);
+                myChart.update();
             },
             onSelectCallback: ({ index }) => {
                 alert(
