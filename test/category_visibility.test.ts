@@ -334,6 +334,116 @@ test("setCategoryVisibility: error: try to hide all categories", () => {
     );
 });
 
+test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            b: [
+                { x: 1, y: 11 },
+                { x: 2, y: 12 },
+                { x: 3, y: 13 }
+            ]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "b, 1, 11"
+    );
+
+    expect(chart?.setCategoryVisibility("a", false));
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2, 12");
+    expect(chart?.getCurrent()).toEqual({
+        group: "b",
+        index: 1,
+        stat: "",
+        point: {
+            x: 2,
+            y: 12
+        }
+    });
+});
+
+test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            b: [
+                { x: 1, y: 11 },
+                { x: 2, y: 12 },
+                { x: 3, y: 13 }
+            ]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "b, 1, 11"
+    );
+
+    expect(chart?.setCategoryVisibility("b", false));
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 1, 1");
+    expect(chart?.getCurrent()).toEqual({
+        group: "a",
+        stat: "",
+        index: 0,
+        point: {
+            x: 1,
+            y: 1
+        }
+    });
+});
+
 // done: set a visible group to hidden
 // done: set a hidden group to visible
 // done: set an already-visible group to visible
@@ -342,7 +452,7 @@ test("setCategoryVisibility: error: try to hide all categories", () => {
 // done: set current (first) group to hidden
 // done: set current (last) group to hidden
 // set first group to hidden
-// set last group to hidden
+// done: set last group to hidden
 // set group to hidden then visible
 // set last group to hidden, then page down to boundary
 // set first group to hidden, then page up to boundary
