@@ -1,6 +1,7 @@
 import { c2mChart } from "../src/c2mChart";
 import type { SimpleDataPoint } from "../src/dataPoint";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
+import { StarTrekEpisodeRatings, StartTrekEpisodeRatingsX } from "./_test_data";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
@@ -609,6 +610,155 @@ test("Movement for a chart with a y2 axis and formatting", () => {
             y: 3
         }
     });
+});
+
+test("Movement for a matrix", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.MATRIX,
+        element: mockElement,
+        cc: mockElementCC,
+        data: StarTrekEpisodeRatings,
+        axes: {
+            x: {
+                label: "Episodes",
+                valueLabels: StartTrekEpisodeRatingsX
+            }
+        },
+        options: {
+            enableSound: false
+        }
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    // Move right
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("Ep 2, 7");
+
+    // Move left
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowLeft"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 1, 7.2"
+    );
+
+    // Move to end
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 29, 7.5"
+    );
+
+    // Move to home
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Home"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 1, 7.2"
+    );
+
+    // Move to max value
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "]"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 28, 9.2"
+    );
+
+    // Move to min value
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "["
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 27, 5.7"
+    );
+
+    // Move to min value
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "["
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 22, 3.3"
+    );
+
+    // Move to min value
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 29, missing"
+    );
+
+    // Move to min value
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "]"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 19, 9.4"
+    );
+
+    // Move to min value
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "ArrowLeft"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 16, 7.1"
+    );
+
+    // Move to min value
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            ctrlKey: true,
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Ep 19, 9.4"
+    );
 });
 
 // with formatting
