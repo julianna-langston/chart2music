@@ -1,8 +1,6 @@
 import { c2mChart } from "../../dist/index.mjs";
 
 export const example2 = (canvas, cc) => {
-    console.log(canvas);
-
     var data = [
         {
             z: [

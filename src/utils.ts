@@ -424,6 +424,10 @@ export const prepChartElement = (elem: HTMLElement, title: string) => {
     if (!elem.hasAttribute("role")) {
         elem.setAttribute("role", "application");
     }
+
+    if(!elem.hasAttribute("tabIndex")){
+        elem.setAttribute("tabIndex", "0");
+    }
 };
 
 export const checkForNumberInput = (
