@@ -11,7 +11,8 @@ import {
     validateInputType
 } from "../src/validate";
 
-const validTypes = "line, bar, band, pie, candlestick, histogram, box, matrix";
+const validTypes =
+    "line, bar, band, pie, candlestick, histogram, box, matrix, scatter";
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(

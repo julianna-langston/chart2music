@@ -1,34 +1,13 @@
-import type { AudioEngine } from "../src/audio";
 import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
+import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
 
-let playCount = 0;
-
-/**
- * Mock audio engine. Built for testing purposes.
- */
-class MockAudioEngine implements AudioEngine {
-    masterGain: number;
-
-    /**
-     * Constructor
-     */
-    constructor() {
-        playCount = 0;
-    }
-
-    /**
-     * The instructions to play a data point. The details are being recorded for the test system.
-     */
-    playDataPoint(): void {
-        playCount++;
-    }
-}
+const audioEngine = new MockAudioEngine();
 
 const regions = [
     "Western Europe",
@@ -47,7 +26,7 @@ const title = "World Happiness Report";
 const axes = {
     x: {
         label: "Region",
-        format: (index: number) => regions[index]
+        valueLabels: regions
     },
     y: {
         label: "Average Happiness Score"
@@ -104,7 +83,7 @@ test("Checking out the outliers", () => {
         data,
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine()
+        audioEngine
     });
     expect(err).toBe(null);
 
@@ -230,7 +209,141 @@ test("Checking out the outliers", () => {
         mockElement.dispatchEvent(new KeyboardEvent("keydown", press));
         jest.advanceTimersByTime(250);
         expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(text);
-        expect(playCount).toBe(count);
-        playCount = 0;
+        expect(audioEngine.playCount).toBe(count);
+        audioEngine.reset();
+    });
+});
+
+test("Large number of outliers", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.BOX,
+        title: "Test",
+        data: [
+            { x: 0, low: 1, q1: 2, median: 3, q3: 4, high: 5 },
+            { x: 1, low: 1, q1: 2, median: 3, q3: 4, high: 5, outlier: [] },
+            {
+                x: 2,
+                low: 1,
+                q1: 2,
+                median: 3,
+                q3: 4,
+                high: 5,
+                outlier: [
+                    50, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66,
+                    67, 68, 69, 71, 72, 73, 74, 75, 76, 77, 78, 79
+                ]
+            }
+        ],
+        axes: {
+            y: {
+                minimum: 0,
+                maximum: 100
+            }
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    [
+        {
+            press: { key: " " },
+            text: "All, 0, 5 - 1",
+            count: 5
+        },
+        {
+            press: { key: "ArrowRight" },
+            text: "1, 5 - 1",
+            count: 5
+        },
+        {
+            press: { key: "ArrowRight" },
+            text: "2, 5 - 1, with 27 outliers",
+            count: 5
+        },
+        {
+            press: { key: "Home" },
+            text: "0, 5 - 1",
+            count: 5
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "High, 0, 5",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "Q3, 0, 4",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "Median, 0, 3",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "Q1, 0, 2",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "Low, 0, 1",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "Low, 0, 1",
+            count: 0
+        },
+        {
+            press: { key: "ArrowRight" },
+            text: "1, 1",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "1, 1",
+            count: 0
+        },
+        {
+            press: { key: "ArrowRight" },
+            text: "2, 1",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "Outlier, 2, 50, 1 of 27",
+            count: 1
+        },
+        {
+            press: { ctrlKey: true, key: "ArrowRight" },
+            text: "2, 54, 4 of 27",
+            count: 1
+        },
+        {
+            press: { key: "ArrowRight" },
+            text: "2, 55, 5 of 27",
+            count: 1
+        },
+        {
+            press: { ctrlKey: true, key: "ArrowLeft" },
+            text: "2, 52, 2 of 27",
+            count: 1
+        }
+    ].forEach(({ press, text, count }) => {
+        mockElement.dispatchEvent(new KeyboardEvent("keydown", press));
+        jest.advanceTimersByTime(250);
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(text);
+        expect(audioEngine.playCount).toBe(count);
+        audioEngine.reset();
     });
 });

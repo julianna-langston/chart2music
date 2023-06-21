@@ -1,11 +1,12 @@
 import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
-import type { AudioEngine } from "../src/audio/";
+import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
+const audioEngine = new MockAudioEngine();
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - jsdom weirdness
@@ -16,46 +17,7 @@ window.navigator.__defineGetter__("userAgent", function () {
 
 beforeEach(() => {
     jest.clearAllMocks();
-});
-
-/**
- * Info for play history
- */
-type playHistoryType = {
-    frequency: number;
-    panning: number;
-    duration: number;
-};
-
-let playHistory: playHistoryType[] = [];
-
-/**
- * Mock audio engine. Built for testing purposes.
- */
-class MockAudioEngine implements AudioEngine {
-    masterGain: number;
-
-    /**
-     * Constructor
-     */
-    constructor() {
-        playHistory = [];
-    }
-
-    /**
-     * The instructions to play a data point. The details are being recorded for the test system.
-     *
-     * @param frequency - hertz to play
-     * @param panning - panning (-1 to 1) to play at
-     * @param duration - how long to play
-     */
-    playDataPoint(frequency: number, panning: number, duration: number): void {
-        playHistory.push({ frequency, panning, duration });
-    }
-}
-
-beforeEach(() => {
-    playHistory = [];
+    audioEngine.reset();
 });
 
 test("Move around by single events", () => {
@@ -76,7 +38,7 @@ test("Move around by single events", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified line chart "", x is "" from 0 to 7, y is "" from 0 to 5. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`
+        `Sonified line chart "", x is "" from 0 to 7, y is "" from 0 to 5. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`
     );
 
     // Move right
@@ -360,7 +322,7 @@ test("Movement for a chart with stats", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified band-line chart "", contains 2 categories, x is "" from 1 to 3, y is "" from 8 to 13. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`
+        `Sonified band-line chart "", contains 2 groups, x is "" from 1 to 3, y is "" from 8 to 13. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`
     );
 
     // Move right
@@ -482,13 +444,13 @@ test("Check play", () => {
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine()
+        audioEngine
     });
     expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
 
-    playHistory = [];
+    audioEngine.reset();
 
     mockElement.dispatchEvent(
         new TouchEvent("touchstart", {
@@ -536,11 +498,11 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(2200);
     // All points were played
-    expect(playHistory.length).toBe(8);
-    expect(playHistory[0].panning).toBe(-0.98);
-    expect(playHistory[playHistory.length - 1].panning).toBe(0.98);
+    expect(audioEngine.playCount).toBe(8);
+    expect(audioEngine.playHistory[0].panning).toBe(-0.98);
+    expect(audioEngine.lastPanning).toBe(0.98);
 
-    playHistory = [];
+    audioEngine.reset();
     mockElement.dispatchEvent(
         new TouchEvent("touchstart", {
             targetTouches: [
@@ -587,12 +549,12 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(700);
     // Only 3 points were played (at 0ms, 250ms, and 500ms)
-    expect(playHistory.length).toBe(3);
-    expect(playHistory[0].panning).toBe(0.98);
-    expect(playHistory[1].panning).toBeCloseTo(0.699);
-    expect(playHistory[2].panning).toBeCloseTo(0.42);
+    expect(audioEngine.playCount).toBe(3);
+    expect(audioEngine.playHistory[0].panning).toBe(0.98);
+    expect(audioEngine.playHistory[1].panning).toBeCloseTo(0.699);
+    expect(audioEngine.playHistory[2].panning).toBeCloseTo(0.42);
 
-    playHistory = [];
+    audioEngine.reset();
     mockElement.dispatchEvent(
         new TouchEvent("touchstart", {
             targetTouches: [
@@ -617,7 +579,7 @@ test("Check play", () => {
     );
     jest.advanceTimersByTime(2200);
     // No more points were played
-    expect(playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
 
     mockElement.dispatchEvent(
         new TouchEvent("touchstart", {
@@ -664,7 +626,7 @@ test("Check play", () => {
         })
     );
     jest.advanceTimersByTime(2000);
-    expect(playHistory.length).toBe(6);
-    expect(playHistory[0].panning).toBeCloseTo(0.42);
-    expect(playHistory[playHistory.length - 1].panning).toBe(-0.98);
+    expect(audioEngine.playCount).toBe(6);
+    expect(audioEngine.playHistory[0].panning).toBeCloseTo(0.42);
+    expect(audioEngine.lastPanning).toBe(-0.98);
 });

@@ -9,17 +9,21 @@ window.AudioContext = jest.fn().mockImplementation(() => {
 let counter = 0;
 let lastIndex = -1;
 let lastCategory = "";
+let lastPoint: unknown = {};
 
 const onFocusCallback = ({
     slice,
-    index
+    index,
+    point
 }: {
     slice: string;
     index: number;
+    point: unknown;
 }) => {
     counter++;
     lastCategory = slice;
     lastIndex = index;
+    lastPoint = point;
 };
 
 beforeEach(() => {
@@ -57,6 +61,10 @@ test("Move around by single events", () => {
     expect(counter).toBe(1);
     expect(lastCategory).toBe("");
     expect(lastIndex).toBe(1);
+    expect(lastPoint).toEqual({
+        x: 1,
+        y: 2
+    });
 });
 
 test("Movement for a grouped chart", () => {
@@ -100,6 +108,10 @@ test("Movement for a grouped chart", () => {
     expect(counter).toBe(1);
     expect(lastCategory).toBe("a");
     expect(lastIndex).toBe(1);
+    expect(lastPoint).toEqual({
+        x: 2,
+        y: 2
+    });
 
     // Move right
     mockElement.dispatchEvent(
@@ -111,4 +123,8 @@ test("Movement for a grouped chart", () => {
     expect(counter).toBe(2);
     expect(lastCategory).toBe("b");
     expect(lastIndex).toBe(1);
+    expect(lastPoint).toEqual({
+        x: 2,
+        y: 12
+    });
 });

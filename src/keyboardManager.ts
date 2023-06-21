@@ -119,6 +119,7 @@ export class KeyboardEventManager {
         const heading = "Keyboard Manager";
         const h1 = document.createElement("h1");
         h1.textContent = heading;
+        dialog.setAttribute("aria-live", heading);
         dialog.appendChild(h1);
 
         const table = document.createElement("table");

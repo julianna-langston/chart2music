@@ -4,12 +4,27 @@ export const launchOptionDialog = (
     {
         upper,
         lower,
-        speedIndex
-    }: { upper: number; lower: number; speedIndex: number },
-    cb: (lower: number, upper: number, speed: number) => void,
+        speedIndex,
+        continuousMode,
+        labelPosition
+    }: {
+        upper: number;
+        lower: number;
+        speedIndex: number;
+        continuousMode: boolean;
+        labelPosition: boolean;
+    },
+    cb: (
+        lower: number,
+        upper: number,
+        speed: number,
+        continuousMode: boolean,
+        labelPosition: boolean
+    ) => void,
     playCb?: (hertz: number) => void
 ) => {
     const dialog = document.createElement("dialog");
+    dialog.setAttribute("aria-label", "Options");
     dialog.innerHTML = `<h1>Options</h1>
 
     <p tabIndex="0">While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:</p>
@@ -47,6 +62,39 @@ export const launchOptionDialog = (
             </label>
         </div>
 
+        <div>
+            <label>
+                <input type="checkbox" id="continuous" ${
+                    continuousMode ? "checked" : ""
+                } />
+                Use continuous mode
+            </label>
+            <br/>
+            Continuous mode changes how values are played when you press Shift+Home and Shift+End
+        </div>
+
+        <div>
+                <fieldset>
+                    <legend>Show point labels</legend>
+
+                    <label>
+                        <input type="radio" name="point-labels" value="before" ${
+                            labelPosition ? "checked" : ""
+                        } />
+                        before values (eg: "California, 163,696 square miles, 39 million people" )
+                    </label>
+                    
+                    <br/>
+
+                    <label>
+                        <input type="radio" name="point-labels" value="after" ${
+                            labelPosition ? "" : "checked"
+                        } />
+                        after values (eg: "163,696 square miles, 39 million people, California" )
+                    </label>
+                </fieldset>
+        </div>
+
         <input id="save" type="submit" value="Save" />
     </form>
     `;
@@ -55,13 +103,26 @@ export const launchOptionDialog = (
     const upperRange: HTMLInputElement = dialog.querySelector("#upperRange");
     const speedRange: HTMLInputElement = dialog.querySelector("#speedRange");
     const global: HTMLInputElement = dialog.querySelector("#global");
+    const continuous: HTMLInputElement = dialog.querySelector("#continuous");
 
     const save = () => {
         const lowerValue = Number(lowerRange.value);
         const upperValue = Number(upperRange.value);
         const speedIndex = Number(speedRange.value);
         const saveGlobal = global.checked;
-        cb(lowerValue, upperValue, speedIndex);
+        const continuousChecked = continuous.checked;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const labelRadioButton: HTMLInputElement = dialog.querySelector(
+            "input[name='point-labels']:checked"
+        );
+        const labelPosition: boolean = labelRadioButton.value === "before";
+        cb(
+            lowerValue,
+            upperValue,
+            speedIndex,
+            continuousChecked,
+            labelPosition
+        );
 
         if (window && saveGlobal) {
             if (!window.__chart2music_options__) {
@@ -77,6 +138,16 @@ export const launchOptionDialog = (
 
         dialog.close();
     };
+
+    Array.from(dialog.querySelectorAll("input")).forEach((elem) => {
+        elem.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                save();
+            }
+        });
+    });
 
     dialog.querySelector("#optionForm").addEventListener("submit", (e) => {
         e.preventDefault();

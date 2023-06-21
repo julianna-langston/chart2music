@@ -37,7 +37,7 @@ jobs:
       - name: Build package (to confirm building works)
         run: npm run build
 
-      - name: Run tests and collect coverage
+      - name: Run tests
         run: npm run test
 
       - name: Upload coverage reports to Codecov

@@ -1,4 +1,14 @@
 import type { AudioEngine } from "./AudioEngine";
+import { AudioNotificationType } from "./AudioEngine";
+
+// A few constants that will be helpful later.
+const C3 = 130.8128;
+const E3 = 164.8138;
+const G3 = 195.9977;
+const C4 = C3 * 2;
+const E4 = E3 * 2;
+const G4 = G3 * 2;
+const G5 = G4 * 2;
 
 /**
  * An audio engine which uses oscillators to create sound.
@@ -49,6 +59,48 @@ export class OscillatorAudioEngine implements AudioEngine {
      * @param duration - the duration of the note in seconds, defaults to 0.2
      */
     playDataPoint(frequency: number, panning: number, duration = 0.2) {
+        // The sound of the data point routes directly to the master compressor.
+        this._playDataPoint(
+            frequency,
+            panning,
+            duration,
+            this._masterCompressor
+        );
+    }
+
+    /**
+     * Play an audio notification.
+     *
+     * @param notificationType - the type of audio notification
+     * @param [panning] - where to play the sound (-1 <= 0 <= 1, 0 == center). Default: 0
+     * @param [duration] - the duration of the notification in seconds. Default: 0.15
+     */
+    playNotification?(
+        notificationType: AudioNotificationType,
+        panning = 0,
+        duration = 0.15
+    ) {
+        if (notificationType === AudioNotificationType.Annotation) {
+            this._playAnnotation(panning, duration);
+        } else {
+            // Do nothing.
+        }
+    }
+
+    /**
+     * Play a data point, sending the audio to the given destination node.
+     *
+     * @param frequency - the fundimental frequency
+     * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
+     * @param duration - the duration of the note in seconds
+     * @param destinationNode - the node to receive the audio
+     */
+    private _playDataPoint(
+        frequency: number,
+        panning: number,
+        duration: number,
+        destinationNode: AudioNode
+    ) {
         const t = this._audioContext.currentTime;
         // Create the main note.
         const mainFreq = this._audioContext.createOscillator();
@@ -85,7 +137,7 @@ export class OscillatorAudioEngine implements AudioEngine {
         mainFreq.connect(adsr);
         adsr1.connect(adsr);
         adsr.connect(panner);
-        panner.connect(this._masterCompressor);
+        panner.connect(destinationNode);
         setTimeout(() => {
             panner.disconnect();
             adsr.disconnect();
@@ -98,6 +150,48 @@ export class OscillatorAudioEngine implements AudioEngine {
             c1.disconnect();
             a1.disconnect();
             f1.disconnect();
+        }, duration * 1000 * 2);
+    }
+
+    /**
+     * Play a sound that means that an annotation is present.
+     *
+     * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
+     * @param duration - the duration of the note in seconds
+     */
+    private _playAnnotation(panning: number, duration: number) {
+        // Create panner node.
+        const panner = this._audioContext.createStereoPanner();
+        panner.pan.value = panning;
+        // Create gain node
+        const gain = this._audioContext.createGain();
+        gain.gain.value = 0.5;
+        // Connect things up
+        gain.connect(panner);
+        panner.connect(this._masterCompressor);
+        // Play C3 and C4.
+        this._playDataPoint(C3, 0, duration / 4, gain);
+        this._playDataPoint(C4, 0, duration / 4, gain);
+        // After the  C notes finish, play E3 and E4.
+        setTimeout(() => {
+            this._playDataPoint(G3, 0, duration / 4, gain);
+            this._playDataPoint(G4, 0, duration / 4, gain);
+            this._playDataPoint(G5, 0, duration / 4, gain);
+        }, duration * 1000 * 0.25);
+        // After those notes finish, play e3 and e4.
+        setTimeout(() => {
+            this._playDataPoint(C3, 0, duration / 4, gain);
+            this._playDataPoint(C4, 0, duration / 4, gain);
+        }, duration * 1000 * 0.5);
+        // After those notes finish, play C6.
+        setTimeout(() => {
+            this._playDataPoint(G3, 0, duration / 4, gain);
+            this._playDataPoint(G4, 0, duration / 4, gain);
+            this._playDataPoint(G5, 0, duration / 4, gain);
+        }, duration * 1000 * 0.75);
+        // After everything stops, clean up the nodes.
+        setTimeout(() => {
+            gain.disconnect();
         }, duration * 1000 * 2);
     }
 }

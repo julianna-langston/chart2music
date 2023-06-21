@@ -71,6 +71,7 @@ type SummaryTypes = {
     y: AxisData;
     y2?: AxisData;
     live?: boolean;
+    hasNotes?: boolean;
 };
 export const generateSummary = ({
     type,
@@ -79,7 +80,8 @@ export const generateSummary = ({
     x,
     y,
     y2,
-    live = false
+    live = false,
+    hasNotes = false
 }: SummaryTypes) => {
     const text = [];
     if (Array.isArray(type)) {
@@ -92,24 +94,28 @@ export const generateSummary = ({
         text.push(`Sonified ${live ? "live " : ""}${type} chart "${title}"`);
     }
     if (dataRows > 1) {
-        text.push(`contains ${dataRows} categories`);
+        text.push(`contains ${dataRows} groups`);
     }
     text.push(
         `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
             x.maximum
-        )}`
+        )}${x.type === "log10" ? " logarithmic" : ""}${
+            x.continuous ? " continuously" : ""
+        }`
     );
     text.push(
         `y is "${y.label}" from ${y.format(y.minimum)} to ${y.format(
             y.maximum
-        )}`
+        )}${y.type === "log10" ? " logarithmic" : ""}`
     );
 
     if (y2) {
         text.push(
             `alternative y is "${y2.label}" from ${y2.format(
                 y2.minimum
-            )} to ${y2.format(y2.maximum)}`
+            )} to ${y2.format(y2.maximum)}${
+                y2.type === "log10" ? " logarithmic" : ""
+            }`
         );
     }
 
@@ -117,9 +123,17 @@ export const generateSummary = ({
     const keyboardMessage = `Use arrow keys to navigate.${
         live ? " Press M to toggle monitor mode." : ""
     } Press H for more hotkeys.`;
-    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the category.`;
+    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
 
-    return `${text.join(", ")}. ${isMobile ? mobileMessage : keyboardMessage}`;
+    const info = [
+        text.join(", ") + ".",
+        isMobile ? mobileMessage : keyboardMessage
+    ];
+
+    if (hasNotes) {
+        info.splice(1, 0, "Has notes.");
+    }
+    return info.join(" ");
 };
 
 export const calculateAxisMinimum = (
@@ -219,12 +233,13 @@ export const generatePointDescription = (
     xFormat: AxisData["format"],
     yFormat: AxisData["format"],
     stat?: keyof StatBundle,
-    outlierIndex: number | null = null
+    outlierIndex: number | null = null,
+    announcePointLabelFirst = false
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
             return `${xFormat(point.x)}, ${yFormat(
-                point[stat as keyof OHLCDataPoint]
+                point[stat as keyof OHLCDataPoint] as number
             )}`;
         }
         return `${xFormat(point.x)}, ${yFormat(point.open)} - ${yFormat(
@@ -253,7 +268,15 @@ export const generatePointDescription = (
     }
 
     if (isSimpleDataPoint(point)) {
-        return `${xFormat(point.x)}, ${yFormat(point.y)}`;
+        const details = [xFormat(point.x), yFormat(point.y)];
+        if (point.label) {
+            if (announcePointLabelFirst) {
+                details.unshift(point.label);
+            } else {
+                details.push(point.label);
+            }
+        }
+        return details.join(", ");
     }
 
     if (isAlternateAxisDataPoint(point)) {
@@ -348,7 +371,8 @@ export const initializeAxis = (
         maximum: userAxis?.maximum ?? calculateAxisMaximum(data, axisName),
         label: userAxis?.label ?? "",
         type: userAxis?.type ?? "linear",
-        format
+        format,
+        continuous: userAxis.continuous ?? false
     };
 };
 

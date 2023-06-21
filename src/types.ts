@@ -100,6 +100,7 @@ export type SonifyTypes = {
     /** Optional audio engine to replace the default audio engine. */
     audioEngine?: AudioEngine;
     options?: c2mOptions;
+    info?: c2mInfo;
 };
 
 /**
@@ -120,6 +121,7 @@ export type AxisData = {
     format?: (value: number) => string;
     type?: AxisScale;
     valueLabels?: string[];
+    continuous?: boolean;
 };
 
 /**
@@ -133,7 +135,8 @@ export enum SUPPORTED_CHART_TYPES {
     CANDLESTICK = "candlestick",
     HISTOGRAM = "histogram",
     BOX = "box",
-    MATRIX = "matrix"
+    MATRIX = "matrix",
+    SCATTER = "scatter"
 }
 
 /**
@@ -176,6 +179,7 @@ export type validAxes = "x" | "y" | "y2";
 export type c2mCallbackType = {
     slice: string;
     index: number;
+    point: SupportedDataPointType;
 };
 
 /**
@@ -192,6 +196,23 @@ export type c2mOptions = {
     maxWidth?: number;
     customHotkeys?: ExpandedKeyRegistration[];
     hertzes?: number[];
+    stack?: boolean;
+};
+
+/**
+ * Markers
+ */
+type c2mInfoMarker = {
+    x: number;
+    label: string;
+};
+
+/**
+ * Notes and other metadata for a chart
+ */
+export type c2mInfo = {
+    notes?: string[];
+    annotations?: c2mInfoMarker[];
 };
 
 /**

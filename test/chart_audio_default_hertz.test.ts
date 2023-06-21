@@ -1,41 +1,13 @@
-import type { AudioEngine } from "../src/audio";
 import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
+import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
 
-let lastDuration = 0;
-let lastFrequency = 0;
-
-/**
- * Mock audio engine. Built for testing purposes.
- */
-class MockAudioEngine implements AudioEngine {
-    masterGain: number;
-
-    /**
-     * Constructor
-     */
-    constructor() {
-        lastDuration = -10;
-        lastFrequency = -10;
-    }
-
-    /**
-     * The instructions to play a data point. The details are being recorded for the test system.
-     *
-     * @param frequency - hertz to play
-     * @param panning - panning (-1 to 1) to play at
-     * @param duration - how long to play
-     */
-    playDataPoint(frequency: number, panning: number, duration: number): void {
-        lastFrequency = frequency;
-        lastDuration = duration;
-    }
-}
+const audioEngine = new MockAudioEngine();
 
 test("Move around by single events - single line plot", () => {
     const mockElement = document.createElement("div");
@@ -45,7 +17,7 @@ test("Move around by single events - single line plot", () => {
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine()
+        audioEngine
     });
     expect(err).toBe(null);
 
@@ -74,7 +46,7 @@ test("Move around by single events - single line plot", () => {
             })
         );
         jest.advanceTimersByTime(250);
-        expect(Math.round(lastFrequency)).toBe(frequency);
+        expect(Math.round(audioEngine.lastFrequency)).toBe(frequency);
     });
-    expect(lastDuration).toBe(0.25);
+    expect(audioEngine.lastDuration).toBe(0.25);
 });

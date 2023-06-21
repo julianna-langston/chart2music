@@ -2292,6 +2292,11 @@ const categories = Object.keys(data);
 
 // Config for HighCharts
 const myChart = Highcharts.chart("container", {
+    accessibility: {
+        keyboardNavigation: {
+            order: ["legend", "chartMenu"]
+        }
+    },
     chart: {
         type: "line"
     },
@@ -2410,7 +2415,8 @@ const { err, data: c2m } = c2mChart({
         x: {
             label: "Time",
             // Format information for a screen reader user. This format looks like: "2:05 PM"
-            format: (ms) => DateTime.fromMillis(ms).toFormat("h:mm a")
+            format: (ms) => DateTime.fromMillis(ms).toFormat("h:mm a"),
+            continuous: true
         },
         y: {
             label: "Change",

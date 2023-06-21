@@ -70,10 +70,32 @@ test("generating summary", () => {
                 maximum: 20,
                 format: defaultFormat
             },
+            dataRows: 1,
+            hasNotes: true
+        })
+    ).toBe(
+        `Sonified line chart "My title", x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Has notes. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 100,
+                format: (value) => `${value}%`
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20,
+                format: defaultFormat
+            },
             dataRows: 5
         })
     ).toBe(
-        `Sonified line chart "My title", contains 5 categories, x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified line chart "My title", contains 5 groups, x is "Growth" from 0% to 100%, y is "Value" from 10 to 20. Use arrow keys to navigate. Press H for more hotkeys.`
     );
     expect(
         generateSummary({
@@ -101,6 +123,90 @@ test("generating summary", () => {
         })
     ).toBe(
         `Sonified line chart "My title", x is "Growth" from 0% to 100%, y is "Value" from 10 to 20, alternative y is "Volume" from 0 to 100. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 10000,
+                format: defaultFormat,
+                type: "log10"
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20000,
+                format: defaultFormat
+            },
+            y2: {
+                label: "Volume",
+                minimum: 1,
+                maximum: 10000,
+                format: defaultFormat
+            },
+            dataRows: 1
+        })
+    ).toBe(
+        `Sonified line chart "My title", x is "Growth" from 0 to 10000 logarithmic, y is "Value" from 10 to 20000, alternative y is "Volume" from 1 to 10000. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 10000,
+                format: defaultFormat
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20000,
+                format: defaultFormat,
+                type: "log10"
+            },
+            y2: {
+                label: "Volume",
+                minimum: 1,
+                maximum: 10000,
+                format: defaultFormat
+            },
+            dataRows: 1
+        })
+    ).toBe(
+        `Sonified line chart "My title", x is "Growth" from 0 to 10000, y is "Value" from 10 to 20000 logarithmic, alternative y is "Volume" from 1 to 10000. Use arrow keys to navigate. Press H for more hotkeys.`
+    );
+    expect(
+        generateSummary({
+            type: SUPPORTED_CHART_TYPES.LINE,
+            title: "My title",
+            x: {
+                label: "Growth",
+                minimum: 0,
+                maximum: 10000,
+                format: defaultFormat
+            },
+            y: {
+                label: "Value",
+                minimum: 10,
+                maximum: 20000,
+                format: defaultFormat
+            },
+            y2: {
+                label: "Volume",
+                minimum: 1,
+                maximum: 10000,
+                format: defaultFormat,
+                type: "log10"
+            },
+            dataRows: 1
+        })
+    ).toBe(
+        `Sonified line chart "My title", x is "Growth" from 0 to 10000, y is "Value" from 10 to 20000, alternative y is "Volume" from 1 to 10000 logarithmic. Use arrow keys to navigate. Press H for more hotkeys.`
     );
 });
 
@@ -183,6 +289,32 @@ test("Generate point description", () => {
             defaultFormat
         )
     ).toBe("0, 1");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: 1,
+                label: "Test"
+            },
+            defaultFormat,
+            defaultFormat
+        )
+    ).toBe("0, 1, Test");
+    expect(
+        generatePointDescription(
+            {
+                x: 0,
+                y: 1,
+                label: "Test"
+            },
+            defaultFormat,
+            defaultFormat,
+            // eslint-disable-next-line no-undefined
+            undefined,
+            null,
+            true
+        )
+    ).toBe("Test, 0, 1");
     expect(
         generatePointDescription(
             {
@@ -426,7 +558,7 @@ test("Calculate metadata by group", () => {
         }
     ]);
 
-    // Multiple categories
+    // Multiple groups
     expect(
         calculateMetadataByGroup([
             [

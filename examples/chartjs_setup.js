@@ -1,4 +1,6 @@
 import { singleLinePlot } from "./charts/singleLine.js";
+import { continuous } from "./charts/continuous.js";
+import { scatter } from "./charts/scatter.js";
 import { multiLinePlot } from "./charts/multiLine.js";
 import { floatingBarChart } from "./charts/floatingBar.js";
 import { largeDataLine } from "./charts/largeDataLine.js";
@@ -11,6 +13,10 @@ import { outOfBounds } from "./charts/outOfBounds.js";
 import { logLinePlot } from "./charts/logLinePlot.js";
 import { histogram } from "./charts/histogram.js";
 import { bug120 } from "./charts/bug_gh120.js";
+import { stackedBar } from "./charts/stackedBar.js";
+import { groupedScatter } from "./charts/groupedScatter.js";
+import { hypeCycle } from "./charts/hypeCycle.js";
+import { footTraffic } from "./charts/footTraffic.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -29,7 +35,13 @@ window.addEventListener("load", () => {
         outOfBounds,
         logLinePlot,
         histogram,
-        bug120
+        bug120,
+        continuous,
+        scatter,
+        groupedScatter,
+        stackedBar,
+        hypeCycle,
+        footTraffic
     ];
 
     chartFn.forEach((fn) => {

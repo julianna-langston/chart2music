@@ -392,3 +392,318 @@ test("Modifying limits globally impacts other charts", () => {
     mockElement2.dispatchEvent(new Event("focus"));
     expect(chart2._hertzClamps.lower).toBe(0);
 });
+
+test("Modifying speed rate from options dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(playHistory).toHaveLength(0);
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(825);
+    expect(playHistory).toHaveLength(4);
+    jest.advanceTimersByTime(2000);
+    expect(playHistory).toHaveLength(8);
+    playHistory = [];
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const speedRange = document.getElementById(
+        "speedRange"
+    ) as HTMLInputElement;
+    expect(speedRange).toHaveProperty("value", "1");
+    speedRange.value = "2";
+
+    document.getElementById("save")?.click();
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+    expect(mockElementCC.textContent).toContain("Speed, 100");
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Home",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(825);
+    expect(playHistory).toHaveLength(8);
+});
+
+test("Modifying continuous mode from options dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [
+            {
+                x: 0, // ms: 0
+                y: 1
+            },
+            {
+                x: 3, // ms: 750
+                y: 2
+            },
+            {
+                x: 4, // ms: 1000
+                y: 3
+            },
+            {
+                x: 4.5, // ms: 1125
+                y: 0
+            },
+            {
+                x: 5, // ms: 1250
+                y: 4
+            },
+            {
+                x: 10, // ms: 2500
+                y: 5
+            }
+        ],
+        axes: {
+            x: {
+                minimum: 0,
+                maximum: 10
+            }
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+    expect(mockElementCC.textContent).not.toContain("continuously");
+
+    expect(playHistory).toHaveLength(0);
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(1100);
+    expect(playHistory).toHaveLength(5);
+    jest.advanceTimersByTime(2000);
+    expect(playHistory).toHaveLength(6);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Home"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    playHistory = [];
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const continuous = document.getElementById(
+        "continuous"
+    ) as HTMLInputElement;
+    expect(continuous).toHaveProperty("checked", false);
+    continuous.checked = true;
+
+    document.getElementById("save")?.click();
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(new Event("focus"));
+    expect(mockElementCC.textContent).toContain("continuously");
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "End",
+            shiftKey: true
+        })
+    );
+    jest.advanceTimersByTime(1100);
+    expect(playHistory).toHaveLength(3);
+});
+
+test("Pressing Enter while focused on a checkbox will cause the dialog to save", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const checkbox = document.querySelector("input[type='checkbox']");
+    checkbox?.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "Enter"
+        })
+    );
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+});
+
+test("Chart not in continuous mode should show continuous mode checked in option dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [
+            { x: 0, y: 1 },
+            { x: 1, y: 2 },
+            { x: 2, y: 3 }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const continuousCheckbox = document.querySelector("#continuous");
+    expect(continuousCheckbox).toHaveProperty("checked", false);
+});
+
+test("Chart in continuous mode should show continuous mode checked in option dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.SCATTER,
+        data: [
+            { x: 0, y: 1 },
+            { x: 1, y: 2 },
+            { x: 2, y: 3 }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    const continuousCheckbox = document.querySelector("#continuous");
+    expect(continuousCheckbox).toHaveProperty("checked", true);
+});
+
+test("Options dialog: Changing order for label should persist in dialog", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.SCATTER,
+        data: [
+            { x: 0, y: 1, label: "A" },
+            { x: 1, y: 2, label: "B" },
+            { x: 2, y: 3, label: "C" }
+        ],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine: new MockAudioEngine()
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+
+    // Confirm that a summary was generated
+    expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
+
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const beforeRadio = document.querySelector(
+        "input[name='point-labels'][value='before']"
+    ) as HTMLInputElement;
+    expect(beforeRadio).toHaveProperty("checked", false);
+
+    beforeRadio.checked = true;
+    expect(beforeRadio).toHaveProperty("checked", true);
+    document.getElementById("save")?.click();
+    expect(document.querySelectorAll("dialog").length).toBe(0);
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "O"
+        })
+    );
+    expect(document.querySelectorAll("dialog").length).toBe(1);
+    expect(beforeRadio).toHaveProperty("checked", true);
+});

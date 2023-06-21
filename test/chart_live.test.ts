@@ -1,56 +1,16 @@
 import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
-import type { AudioEngine } from "../src/audio/";
+import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
 });
-
-/**
- * Info for play history
- */
-type playHistoryType = {
-    frequency: number;
-    panning: number;
-    duration: number;
-};
-
-let lastFrequency = 0;
-let lastPanning = 0;
-let playHistory: playHistoryType[] = [];
-
-/**
- * Mock audio engine. Built for testing purposes.
- */
-class MockAudioEngine implements AudioEngine {
-    masterGain: number;
-
-    /**
-     * Constructor
-     */
-    constructor() {
-        lastFrequency = -10;
-        lastPanning = -10;
-    }
-
-    /**
-     * The instructions to play a data point. The details are being recorded for the test system.
-     *
-     * @param frequency - hertz to play
-     * @param panning - panning (-1 to 1) to play at
-     * @param duration - how long to play
-     */
-    playDataPoint(frequency: number, panning: number, duration: number): void {
-        lastFrequency = frequency;
-        lastPanning = panning;
-        playHistory.push({ frequency, panning, duration });
-    }
-}
+const audioEngine = new MockAudioEngine();
 
 beforeEach(() => {
     jest.clearAllMocks();
-    playHistory = [];
+    audioEngine.reset();
 });
 
 test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
@@ -66,7 +26,7 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
         },
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true
         }
@@ -83,7 +43,7 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
     expect(result1?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
-    expect(playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -95,14 +55,14 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
     expect(result2?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
-    expect(playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
 
     mockElement.dispatchEvent(new Event("blur"));
     const result3 = chart?.appendData(5);
     expect(result3?.err).toBeNull();
     jest.advanceTimersByTime(250);
 
-    expect(playHistory.length).toBe(1);
+    expect(audioEngine.playCount).toBe(1);
 });
 
 test("C2M provides details for live mixed charts", () => {
@@ -129,7 +89,7 @@ test("C2M provides details for live mixed charts", () => {
         },
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true
         }
@@ -154,14 +114,14 @@ test("C2M provides details for live mixed charts", () => {
     chart?.appendData({ x: 4, high: 14, low: 7 }, "a");
     jest.advanceTimersByTime(250);
 
-    expect(playHistory.length).toBe(2);
+    expect(audioEngine.playCount).toBe(2);
 
     chart?.appendData({ x: 4, y: 12 }, "b");
     jest.advanceTimersByTime(250);
 
-    expect(playHistory.length).toBe(3);
-    expect(lastPanning).toBe(0.98);
-    expect(lastFrequency).toBe(2093.005);
+    expect(audioEngine.playCount).toBe(3);
+    expect(audioEngine.lastPanning).toBe(0.98);
+    expect(audioEngine.lastFrequency).toBe(2093.005);
 
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -170,11 +130,11 @@ test("C2M provides details for live mixed charts", () => {
     );
     expect(mockElementCC.textContent).toContain(`Monitoring off`);
 
-    playHistory = [];
+    audioEngine.reset();
     chart?.appendData({ x: 5, y: 12 }, "b");
     jest.advanceTimersByTime(250);
 
-    expect(playHistory.length).toBe(0);
+    expect(audioEngine.playCount).toBe(0);
 });
 
 test("Test axes min/max adjustment - numbers, no clamps", () => {
@@ -185,7 +145,7 @@ test("Test axes min/max adjustment - numbers, no clamps", () => {
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true
         }
@@ -238,7 +198,7 @@ test("Test axes min/max adjustment - high/low, no clamps", () => {
         ],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true
         }
@@ -280,7 +240,7 @@ test("Test axes min/max adjustment - OHLC, no clamps", () => {
         ],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true
         }
@@ -312,7 +272,7 @@ test("Test appending data to a group that doesn't exist", () => {
         },
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true
         }
@@ -368,7 +328,7 @@ test("Test appending mismatched data", () => {
         },
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true
         }
@@ -390,7 +350,7 @@ test("C2M: test maxWidth adjustment (type = number)", () => {
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true,
             enableSound: false,
@@ -433,7 +393,7 @@ test("C2M: test maxWidth adjustment (with y2)", () => {
         ],
         element: mockElement,
         cc: mockElementCC,
-        audioEngine: new MockAudioEngine(),
+        audioEngine,
         options: {
             live: true,
             enableSound: false,
