@@ -84,18 +84,23 @@ export const generateSummary = ({
     hasNotes = false
 }: SummaryTypes) => {
     const text = [];
-    if (Array.isArray(type)) {
-        text.push(
-            `Sonified ${live ? "live " : ""}${type
-                .sort()
-                .join("-")} chart "${title}"`
-        );
-    } else {
-        text.push(`Sonified ${live ? "live " : ""}${type} chart "${title}"`);
-    }
+    text.push(
+        filteredJoin(
+            [
+                "Sonified",
+                live && "live",
+                Array.isArray(type) ? type.sort().join("-") : type,
+                "chart",
+                `"${title}"`
+            ],
+            " "
+        )
+    );
+
     if (dataRows > 1) {
         text.push(`contains ${dataRows} groups`);
     }
+
     text.push(
         `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
             x.maximum
@@ -120,9 +125,15 @@ export const generateSummary = ({
     }
 
     const isMobile = detectIfMobile();
-    const keyboardMessage = `Use arrow keys to navigate.${
-        live ? " Press M to toggle monitor mode." : ""
-    } Press H for more hotkeys.`;
+    const keyboardMessage = filteredJoin(
+        [
+            `Use arrow keys to navigate.`,
+            live && "Press M to toggle monitor mode.",
+            "Press H for more hotkeys."
+        ],
+        " "
+    );
+
     const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
 
     const info = [
@@ -242,9 +253,12 @@ export const generatePointDescription = (
                 point[stat as keyof OHLCDataPoint] as number
             )}`;
         }
-        return `${xFormat(point.x)}, ${yFormat(point.open)} - ${yFormat(
-            point.high
-        )} - ${yFormat(point.low)} - ${yFormat(point.close)}`;
+        return [
+            `${xFormat(point.x)}, ${yFormat(point.open)}`,
+            yFormat(point.high),
+            yFormat(point.low),
+            yFormat(point.close)
+        ].join(" - ");
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
@@ -486,3 +500,6 @@ export const detectIfMobile = () => {
         return navigator.userAgent.match(toMatchItem);
     });
 };
+
+export const filteredJoin = (arr: string[], joiner: string) =>
+    arr.filter((item) => Boolean(item)).join(joiner);
