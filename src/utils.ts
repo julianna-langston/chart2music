@@ -58,7 +58,7 @@ const interpolateBinLog = (
     return Math.floor(bins * pct);
 };
 
-export const calcPan = (pct: number) => (pct * 2 - 1) * 0.98;
+export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
 /**
  *
@@ -164,10 +164,16 @@ export const generateSummary = ({
 
 export const calculateAxisMinimum = (
     data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2"
+    prop: "x" | "y" | "y2",
+    filterGroupIndex?: number
 ) => {
-    const values: number[] = data
-        .flat()
+    let dataToProcess: SupportedDataPointType[] = data.flat();
+
+    if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
+        dataToProcess = data[filterGroupIndex];
+    }
+
+    const values: number[] = dataToProcess
         .map((point: SupportedDataPointType): number => {
             if (isSimpleDataPoint(point)) {
                 if (prop === "x" || prop === "y") {
@@ -207,10 +213,16 @@ export const calculateAxisMinimum = (
 };
 export const calculateAxisMaximum = (
     data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2"
+    prop: "x" | "y" | "y2",
+    filterGroupIndex?: number
 ) => {
-    const values: number[] = data
-        .flat()
+    let dataToProcess: SupportedDataPointType[] = data.flat();
+
+    if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
+        dataToProcess = data[filterGroupIndex];
+    }
+
+    const values: number[] = dataToProcess
         .map((point: SupportedDataPointType): number => {
             if (isSimpleDataPoint(point)) {
                 if (prop === "x" || prop === "y") {
@@ -387,11 +399,13 @@ export const calculateMetadataByGroup = (
  * @param data - the X/Y values
  * @param axisName - which axis is this? "x" or "y"
  * @param userAxis - metadata provided by the invocation
+ * @param filterGroupIndex -
  */
 export const initializeAxis = (
     data: SupportedDataPointType[][],
     axisName: validAxes,
-    userAxis?: AxisData
+    userAxis?: AxisData,
+    filterGroupIndex?: number
 ): AxisData => {
     const format =
         userAxis?.format ??
@@ -400,8 +414,12 @@ export const initializeAxis = (
             : defaultFormat);
 
     return {
-        minimum: userAxis?.minimum ?? calculateAxisMinimum(data, axisName),
-        maximum: userAxis?.maximum ?? calculateAxisMaximum(data, axisName),
+        minimum:
+            userAxis?.minimum ??
+            calculateAxisMinimum(data, axisName, filterGroupIndex),
+        maximum:
+            userAxis?.maximum ??
+            calculateAxisMaximum(data, axisName, filterGroupIndex),
         label: userAxis?.label ?? "",
         type: userAxis?.type ?? "linear",
         format,

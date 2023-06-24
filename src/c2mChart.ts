@@ -170,7 +170,8 @@ export class c2m {
         enableSpeech: true,
         live: false,
         hertzes: HERTZ,
-        stack: false
+        stack: false,
+        root: null
     };
     private _providedAudioEngine?: AudioEngine;
     private _monitorMode = false;
@@ -792,8 +793,18 @@ export class c2m {
             }
         }
 
-        this._xAxis = initializeAxis(this._data, "x", this._explicitAxes.x);
-        this._yAxis = initializeAxis(this._data, "y", this._explicitAxes.y);
+        this._xAxis = initializeAxis(
+            this._data,
+            "x",
+            this._explicitAxes.x,
+            this._groups.indexOf(this._options.root)
+        );
+        this._yAxis = initializeAxis(
+            this._data,
+            "y",
+            this._explicitAxes.y,
+            this._groups.indexOf(this._options.root)
+        );
         if (usesAxis(this._data, "y2")) {
             this._y2Axis = initializeAxis(
                 this._data,
@@ -1193,11 +1204,17 @@ export class c2m {
                     key: "Alt+PageUp",
                     callback: this._availableActions.first_category
                 },
-                !this._hierarchy && {
-                    title: "Go to last group",
-                    key: "Alt+PageDown",
-                    callback: this._availableActions.last_category
-                },
+                this._hierarchy
+                    ? {
+                          title: "Go to root",
+                          key: "Alt+PageUp",
+                          callback: this._availableActions.go_to_root
+                      }
+                    : {
+                          title: "Go to last group",
+                          key: "Alt+PageDown",
+                          callback: this._availableActions.last_category
+                      },
                 !this._hierarchy && {
                     title: "Play forwards through groups",
                     key: "Shift+PageDown",
@@ -1272,11 +1289,6 @@ export class c2m {
                     title: "Go up a level",
                     key: "Alt+ArrowUp",
                     callback: this._availableActions.drill_up
-                },
-                this._hierarchy && {
-                    title: "Go to the root",
-                    key: "Ctrl+Alt+Home",
-                    callback: this._availableActions.go_to_root
                 },
                 {
                     title: "Speed up",
@@ -1796,13 +1808,14 @@ export class c2m {
         this._flagNewGroup = true;
 
         // Update x range
-        this._xAxis.maximum = this._metadataByGroup[this._groupIndex].size;
-
-        // Update y range
-        this._yAxis.minimum = this._explicitAxes.y.minimum ?? 0;
-        this._yAxis.maximum =
-            this._explicitAxes.y.maximum ??
-            this._metadataByGroup[this._groupIndex].maximumValue;
+        this._xAxis = initializeAxis(this._data, "x", {}, this._groupIndex);
+        this._yAxis = initializeAxis(
+            this._data,
+            "y",
+            { minimum: 0 },
+            this._groupIndex
+        );
+        this._generateSummary();
     }
 
     /**
@@ -1865,7 +1878,7 @@ export class c2m {
         this._updateToNewLevel(groupIndex, pointIndex);
         this._hierarchyBreadcrumbs = [];
 
-        return false;
+        return true;
     }
 
     /**
@@ -1962,13 +1975,6 @@ export class c2m {
             if (isUnplayable(current.y, this._yAxis)) {
                 return;
             }
-
-            console.log(
-                "y: ",
-                current,
-                this._yAxis.minimum,
-                this._yAxis.maximum
-            );
 
             const yBin = interpolateBin(
                 current.y,

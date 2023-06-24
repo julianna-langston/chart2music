@@ -199,7 +199,7 @@ export type c2mOptions = {
     customHotkeys?: ExpandedKeyRegistration[];
     hertzes?: number[];
     stack?: boolean;
-    root?: string;
+    root?: null | string;
 };
 
 /**
