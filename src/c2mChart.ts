@@ -30,7 +30,8 @@ import {
     formatWrapper,
     isUnplayable,
     prepChartElement,
-    checkForNumberInput
+    checkForNumberInput,
+    filteredJoin
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -1957,18 +1958,16 @@ export class c2m {
             this._outlierMode ? this._outlierIndex : null,
             this._announcePointLabelFirst
         );
-        const text =
-            (this._flagNewGroup
-                ? `${
-                      this._groups[
-                          this._visible_group_indices[this._groupIndex]
-                      ]
-                  }, `
-                : "") +
-            (this._flagNewStat
-                ? `${sentenceCase(availableStats[statIndex] ?? "all")}, `
-                : "") +
-            point;
+        const text = filteredJoin(
+            [
+                this._flagNewGroup &&
+                    this._groups[this._visible_group_indices[this._groupIndex]],
+                this._flagNewStat &&
+                    sentenceCase(availableStats[statIndex] ?? "all"),
+                point
+            ],
+            ", "
+        );
 
         this._sr.render(text);
 
