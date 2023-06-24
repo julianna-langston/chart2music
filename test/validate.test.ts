@@ -12,7 +12,7 @@ import {
 } from "../src/validate";
 
 const validTypes =
-    "line, bar, band, pie, candlestick, histogram, box, matrix, scatter";
+    "line, bar, band, pie, candlestick, histogram, box, matrix, scatter, treemap";
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
@@ -239,7 +239,6 @@ test("validateInputDataRowHomogeneity", () => {
     expect(
         validateInputDataRowHomogeneity([
             { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
-            // @ts-ignore: Deliberately using invalid data in order to test error handling
             {
                 x: 1,
                 low: 5.03,
@@ -247,6 +246,7 @@ test("validateInputDataRowHomogeneity", () => {
                 median: 6.91,
                 q3: 7.34,
                 high: 7.53,
+                // @ts-ignore: Deliberately using invalid data in order to test error handling
                 outlier: null
             }
         ])
@@ -256,7 +256,6 @@ test("validateInputDataRowHomogeneity", () => {
     expect(
         validateInputDataRowHomogeneity([
             { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
-            // @ts-ignore: Deliberately using invalid data in order to test error handling
             {
                 x: 1,
                 low: 5.03,
@@ -264,6 +263,7 @@ test("validateInputDataRowHomogeneity", () => {
                 median: 6.91,
                 q3: 7.34,
                 high: 7.53,
+                // @ts-ignore: Deliberately using invalid data in order to test error handling
                 outlier: 5
             }
         ])
@@ -282,7 +282,6 @@ test("validateInputDataRowHomogeneity", () => {
                 high: 7.53,
                 outlier: [5]
             },
-            // @ts-ignore: Deliberately using invalid data in order to test error handling
             {
                 x: 2,
                 low: 5.03,
@@ -290,6 +289,7 @@ test("validateInputDataRowHomogeneity", () => {
                 median: 6.91,
                 q3: 7.34,
                 high: 7.53,
+                // @ts-ignore: Deliberately using invalid data in order to test error handling
                 outlier: [5, null]
             }
         ])

@@ -30,7 +30,8 @@ import {
     formatWrapper,
     isUnplayable,
     prepChartElement,
-    checkForNumberInput
+    checkForNumberInput,
+    filteredJoin
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -44,6 +45,14 @@ import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
+
+/**
+ * Metadata about previous levels. Used to quickly return to parents.
+ */
+type HierarchyBreadcrumbType = {
+    groupIndex: number;
+    pointIndex: number;
+};
 
 /**
  * List of actions that could be activated by keyboard or touch
@@ -72,6 +81,9 @@ enum ActionSet {
     GO_MAXIMUM = "go_maximum",
     GO_TOTAL_MINIMUM = "go_total_minimum",
     GO_TOTAL_MAXIMUM = "go_total_maximum",
+    DRILL_DOWN = "drill_down",
+    DRILL_UP = "drill_up",
+    GO_TO_ROOT = "go_to_root",
     SPEED_UP = "speed_up",
     SLOW_DOWN = "slow_down",
     MONITOR = "monitor",
@@ -180,6 +192,9 @@ export class c2m {
     private _outlierMode = false;
     private _announcePointLabelFirst = false;
     private _info: c2mInfo = {};
+    private _hierarchy = false;
+    private _hierarchyRoot: string | null = null;
+    private _hierarchyBreadcrumbs: HierarchyBreadcrumbType[] = [];
 
     /**
      * Constructor
@@ -215,6 +230,12 @@ export class c2m {
         }
 
         this._setData(input.data, input.axes);
+
+        if (this._options.root) {
+            this._hierarchy = true;
+            this._hierarchyRoot = this._options.root;
+            this._updateToNewLevel(this._groups.indexOf(this._hierarchyRoot));
+        }
 
         // Generate summary
         this._generateSummary();
@@ -264,6 +285,24 @@ export class c2m {
             previous_point: () => {
                 this._clearPlay();
                 if (this._moveLeft()) {
+                    this._playAndSpeak();
+                }
+            },
+            drill_down: () => {
+                this._clearPlay();
+                if (this._drillDown()) {
+                    this._playAndSpeak();
+                }
+            },
+            drill_up: () => {
+                this._clearPlay();
+                if (this._drillUp()) {
+                    this._playAndSpeak();
+                }
+            },
+            go_to_root: () => {
+                this._clearPlay();
+                if (this._drillToRoot()) {
                     this._playAndSpeak();
                 }
             },
@@ -322,6 +361,9 @@ export class c2m {
             },
             previous_category: () => {
                 this._clearPlay();
+                if (this._hierarchy) {
+                    return;
+                }
                 if (this._groupIndex === 0) {
                     return;
                 }
@@ -354,6 +396,9 @@ export class c2m {
             },
             next_category: () => {
                 this._clearPlay();
+                if (this._hierarchy) {
+                    return;
+                }
                 if (
                     this._groupIndex ===
                     this._visible_group_indices.length - 1
@@ -389,12 +434,18 @@ export class c2m {
             },
             first_category: () => {
                 this._clearPlay();
+                if (this._hierarchy) {
+                    return;
+                }
                 this._groupIndex = 0;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
             last_category: () => {
                 this._clearPlay();
+                if (this._hierarchy) {
+                    return;
+                }
                 this._groupIndex = this._visible_group_indices.length - 1;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
@@ -450,6 +501,9 @@ export class c2m {
             },
             go_total_maximum: () => {
                 this._clearPlay();
+                if (this._hierarchy) {
+                    return;
+                }
                 const winner = this._metadataByGroup
                     .filter((g, index) =>
                         this._visible_group_indices.includes(index)
@@ -471,6 +525,9 @@ export class c2m {
             },
             go_total_minimum: () => {
                 this._clearPlay();
+                if (this._hierarchy) {
+                    return;
+                }
                 const winner = this._metadataByGroup
                     .filter((g, index) =>
                         this._visible_group_indices.includes(index)
@@ -660,7 +717,9 @@ export class c2m {
             dataRows: this._visible_group_indices.length,
             y2: this._y2Axis,
             live: this._options.live,
-            hasNotes: this._info.notes?.length > 0
+            hasNotes: this._info.notes?.length > 0,
+            hierarchy: this._hierarchy,
+            hierarchyLevel: this._hierarchyBreadcrumbs.length
         });
     }
 
@@ -1069,167 +1128,188 @@ export class c2m {
      */
     private _initializeKeyActionMap() {
         this._keyEventManager = new KeyboardEventManager(this._chartElement);
-        this._keyEventManager.registerKeyEvents([
-            {
-                title: "Go to next point",
-                key: "ArrowRight",
-                callback: this._availableActions.next_point
-            },
-            {
-                title: "Go to previous point",
-                key: "ArrowLeft",
-                callback: this._availableActions.previous_point
-            },
-            {
-                title: "Play right",
-                key: "Shift+End",
-                callback: this._availableActions.play_right
-            },
-            {
-                title: "Play left",
-                key: "Shift+Home",
-                callback: this._availableActions.play_left
-            },
-            {
-                title: "Cancel play",
-                key: "Ctrl+Control",
-                keyDescription: "Control",
-                callback: this._availableActions.stop_play
-            },
-            this._type === SUPPORTED_CHART_TYPES.MATRIX
-                ? {
-                      title: "Go to previous group",
-                      key: "ArrowUp",
-                      callback: this._availableActions.previous_category
-                  }
-                : {
-                      title: "Navigate to previous statistic",
-                      key: "ArrowUp",
-                      callback: this._availableActions.previous_stat
-                  },
-            this._type === SUPPORTED_CHART_TYPES.MATRIX
-                ? {
-                      title: "Go to next group",
-                      key: "ArrowDown",
-                      callback: this._availableActions.next_category
-                  }
-                : {
-                      title: "Navigate to next statistic",
-                      key: "ArrowDown",
-                      callback: this._availableActions.next_stat
-                  },
-            {
-                title: "Go to previous group",
-                key: "PageUp",
-                callback: this._availableActions.previous_category
-            },
-            {
-                title: "Go to next group",
-                key: "PageDown",
-                callback: this._availableActions.next_category
-            },
-            {
-                title: "Go to first group",
-                key: "Alt+PageUp",
-                callback: this._availableActions.first_category
-            },
-            {
-                title: "Go to last group",
-                key: "Alt+PageDown",
-                callback: this._availableActions.last_category
-            },
-            {
-                title: "Play forwards through groups",
-                key: "Shift+PageDown",
-                callback: this._availableActions.play_forward_category
-            },
-            {
-                title: "Play backwards through groups",
-                key: "Shift+PageUp",
-                callback: this._availableActions.play_backward_category
-            },
-            {
-                title: "Go to first point",
-                key: "Home",
-                callback: this._availableActions.first_point
-            },
-            {
-                title: "Go to last point",
-                key: "End",
-                callback: this._availableActions.last_point
-            },
-            {
-                title: "Replay",
-                key: " ",
-                keyDescription: "Spacebar",
-                callback: this._availableActions.replay
-            },
-            {
-                title: "Select item",
-                key: "Enter",
-                callback: this._availableActions.select
-            },
-            {
-                title: "Go backward by a tenth",
-                key: "Ctrl+ArrowLeft",
-                callback: this._availableActions.previous_tenth
-            },
-            {
-                title: "Go forward by a tenth",
-                key: "Ctrl+ArrowRight",
-                callback: this._availableActions.next_tenth
-            },
-            {
-                title: "Go to group minimum value",
-                key: "[",
-                callback: this._availableActions.go_minimum
-            },
-            {
-                title: "Go to group maximum value",
-                key: "]",
-                callback: this._availableActions.go_maximum
-            },
-            {
-                title: "Go to chart minimum value",
-                key: "Ctrl+[",
-                callback: this._availableActions.go_total_minimum
-            },
-            {
-                title: "Go to chart maximum value",
-                key: "Ctrl+]",
-                callback: this._availableActions.go_total_maximum
-            },
-            {
-                title: "Speed up",
-                caseSensitive: false,
-                key: "q",
-                callback: this._availableActions.speed_up
-            },
-            {
-                title: "Slow down",
-                caseSensitive: false,
-                key: "e",
-                callback: this._availableActions.slow_down
-            },
-            {
-                title: "Toggle monitor mode",
-                caseSensitive: false,
-                key: "m",
-                callback: this._availableActions.monitor
-            },
-            {
-                title: "Open help dialog",
-                caseSensitive: false,
-                key: "h",
-                callback: this._availableActions.help
-            },
-            {
-                title: "Open options dialog",
-                caseSensitive: false,
-                key: "o",
-                callback: this._availableActions.options
-            }
-        ]);
+        this._keyEventManager.registerKeyEvents(
+            [
+                {
+                    title: "Go to next point",
+                    key: "ArrowRight",
+                    callback: this._availableActions.next_point
+                },
+                {
+                    title: "Go to previous point",
+                    key: "ArrowLeft",
+                    callback: this._availableActions.previous_point
+                },
+                {
+                    title: "Play right",
+                    key: "Shift+End",
+                    callback: this._availableActions.play_right
+                },
+                {
+                    title: "Play left",
+                    key: "Shift+Home",
+                    callback: this._availableActions.play_left
+                },
+                {
+                    title: "Cancel play",
+                    key: "Ctrl+Control",
+                    keyDescription: "Control",
+                    callback: this._availableActions.stop_play
+                },
+                this._type === SUPPORTED_CHART_TYPES.MATRIX
+                    ? {
+                          title: "Go to previous group",
+                          key: "ArrowUp",
+                          callback: this._availableActions.previous_category
+                      }
+                    : {
+                          title: "Navigate to previous statistic",
+                          key: "ArrowUp",
+                          callback: this._availableActions.previous_stat
+                      },
+                this._type === SUPPORTED_CHART_TYPES.MATRIX
+                    ? {
+                          title: "Go to next group",
+                          key: "ArrowDown",
+                          callback: this._availableActions.next_category
+                      }
+                    : {
+                          title: "Navigate to next statistic",
+                          key: "ArrowDown",
+                          callback: this._availableActions.next_stat
+                      },
+                !this._hierarchy && {
+                    title: "Go to previous group",
+                    key: "PageUp",
+                    callback: this._availableActions.previous_category
+                },
+                !this._hierarchy && {
+                    title: "Go to next group",
+                    key: "PageDown",
+                    callback: this._availableActions.next_category
+                },
+                !this._hierarchy && {
+                    title: "Go to first group",
+                    key: "Alt+PageUp",
+                    callback: this._availableActions.first_category
+                },
+                !this._hierarchy && {
+                    title: "Go to last group",
+                    key: "Alt+PageDown",
+                    callback: this._availableActions.last_category
+                },
+                !this._hierarchy && {
+                    title: "Play forwards through groups",
+                    key: "Shift+PageDown",
+                    callback: this._availableActions.play_forward_category
+                },
+                !this._hierarchy && {
+                    title: "Play backwards through groups",
+                    key: "Shift+PageUp",
+                    callback: this._availableActions.play_backward_category
+                },
+                {
+                    title: "Go to first point",
+                    key: "Home",
+                    callback: this._availableActions.first_point
+                },
+                {
+                    title: "Go to last point",
+                    key: "End",
+                    callback: this._availableActions.last_point
+                },
+                {
+                    title: "Replay",
+                    key: " ",
+                    keyDescription: "Spacebar",
+                    callback: this._availableActions.replay
+                },
+                {
+                    title: "Select item",
+                    key: "Enter",
+                    callback: this._availableActions.select
+                },
+                {
+                    title: "Go backward by a tenth",
+                    key: "Ctrl+ArrowLeft",
+                    callback: this._availableActions.previous_tenth
+                },
+                {
+                    title: "Go forward by a tenth",
+                    key: "Ctrl+ArrowRight",
+                    callback: this._availableActions.next_tenth
+                },
+                {
+                    title: `Go to ${
+                        this._hierarchy ? "level" : "group"
+                    } minimum value"`,
+                    key: "[",
+                    callback: this._availableActions.go_minimum
+                },
+                {
+                    title: `Go to ${
+                        this._hierarchy ? "level" : "group"
+                    } maximum value`,
+                    key: "]",
+                    callback: this._availableActions.go_maximum
+                },
+                !this._hierarchy && {
+                    title: "Go to chart minimum value",
+                    key: "Ctrl+[",
+                    callback: this._availableActions.go_total_minimum
+                },
+                !this._hierarchy && {
+                    title: "Go to chart maximum value",
+                    key: "Ctrl+]",
+                    callback: this._availableActions.go_total_maximum
+                },
+                this._hierarchy && {
+                    title: "Go down a level",
+                    key: "Alt+ArrowDown",
+                    callback: this._availableActions.drill_down
+                },
+                this._hierarchy && {
+                    title: "Go up a level",
+                    key: "Alt+ArrowUp",
+                    callback: this._availableActions.drill_up
+                },
+                this._hierarchy && {
+                    title: "Go to the root",
+                    key: "Ctrl+Alt+Home",
+                    callback: this._availableActions.go_to_root
+                },
+                {
+                    title: "Speed up",
+                    caseSensitive: false,
+                    key: "q",
+                    callback: this._availableActions.speed_up
+                },
+                {
+                    title: "Slow down",
+                    caseSensitive: false,
+                    key: "e",
+                    callback: this._availableActions.slow_down
+                },
+                {
+                    title: "Toggle monitor mode",
+                    caseSensitive: false,
+                    key: "m",
+                    callback: this._availableActions.monitor
+                },
+                {
+                    title: "Open help dialog",
+                    caseSensitive: false,
+                    key: "h",
+                    callback: this._availableActions.help
+                },
+                {
+                    title: "Open options dialog",
+                    caseSensitive: false,
+                    key: "o",
+                    callback: this._availableActions.options
+                }
+            ].filter((item) => Boolean(item))
+        );
 
         if (this._info.notes?.length > 0) {
             this._keyEventManager.registerKeyEvent({
@@ -1705,6 +1785,90 @@ export class c2m {
     }
 
     /**
+     * Update metadata internally to adjust to a new hierarchical level
+     *
+     * @param groupIndex - The new group index
+     * @param [pointIndex] - The new point index
+     */
+    private _updateToNewLevel(groupIndex: number, pointIndex = 0) {
+        this._groupIndex = groupIndex;
+        this._pointIndex = pointIndex;
+        this._flagNewGroup = true;
+
+        // Update x range
+        this._xAxis.maximum = this._metadataByGroup[this._groupIndex].size;
+
+        // Update y range
+        this._yAxis.minimum = this._explicitAxes.y.minimum ?? 0;
+        this._yAxis.maximum =
+            this._explicitAxes.y.maximum ??
+            this._metadataByGroup[this._groupIndex].maximumValue;
+    }
+
+    /**
+     * Drill down to the next level (hierarchy only)
+     *
+     * @returns if possible
+     */
+    private _drillDown() {
+        const { children } = this.currentPoint;
+
+        if (!children) {
+            return false;
+        }
+
+        const groupIndex = this._groups.indexOf(children);
+        if (groupIndex === -1) {
+            return false;
+        }
+
+        if (groupIndex === this._groupIndex) {
+            return false;
+        }
+
+        this._hierarchyBreadcrumbs.push({
+            groupIndex: this._groupIndex,
+            pointIndex: this._pointIndex
+        });
+        this._updateToNewLevel(groupIndex);
+
+        return true;
+    }
+
+    /**
+     * Drill up to the previous level (hierarchy only)
+     *
+     * @returns if possible
+     */
+    private _drillUp() {
+        if (this._hierarchyBreadcrumbs.length === 0) {
+            return false;
+        }
+
+        const { groupIndex, pointIndex } = this._hierarchyBreadcrumbs.pop();
+        this._updateToNewLevel(groupIndex, pointIndex);
+
+        return true;
+    }
+
+    /**
+     * Go to the root level (hierarchy only)
+     *
+     * @returns if possible
+     */
+    private _drillToRoot() {
+        if (this._hierarchyBreadcrumbs.length === 0) {
+            return false;
+        }
+
+        const { groupIndex, pointIndex } = this._hierarchyBreadcrumbs[0];
+        this._updateToNewLevel(groupIndex, pointIndex);
+        this._hierarchyBreadcrumbs = [];
+
+        return false;
+    }
+
+    /**
      * Get the available hertzes
      *
      * @returns number[]
@@ -1798,6 +1962,13 @@ export class c2m {
             if (isUnplayable(current.y, this._yAxis)) {
                 return;
             }
+
+            console.log(
+                "y: ",
+                current,
+                this._yAxis.minimum,
+                this._yAxis.maximum
+            );
 
             const yBin = interpolateBin(
                 current.y,
@@ -1957,18 +2128,19 @@ export class c2m {
             this._outlierMode ? this._outlierIndex : null,
             this._announcePointLabelFirst
         );
-        const text =
-            (this._flagNewGroup
-                ? `${
-                      this._groups[
-                          this._visible_group_indices[this._groupIndex]
-                      ]
-                  }, `
-                : "") +
-            (this._flagNewStat
-                ? `${sentenceCase(availableStats[statIndex] ?? "all")}, `
-                : "") +
-            point;
+
+        const groupName =
+            this._groups[this._visible_group_indices[this._groupIndex]];
+        const text = filteredJoin(
+            [
+                this._flagNewGroup && groupName,
+                this._flagNewStat &&
+                    sentenceCase(availableStats[statIndex] ?? "all"),
+                point,
+                this._hierarchy && current.children && "has children"
+            ],
+            ", "
+        );
 
         this._sr.render(text);
 

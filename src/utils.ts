@@ -72,6 +72,8 @@ type SummaryTypes = {
     y2?: AxisData;
     live?: boolean;
     hasNotes?: boolean;
+    hierarchy?: boolean;
+    hierarchyLevel?: number;
 };
 export const generateSummary = ({
     type,
@@ -81,21 +83,52 @@ export const generateSummary = ({
     y,
     y2,
     live = false,
-    hasNotes = false
+    hasNotes = false,
+    hierarchy = false,
+    hierarchyLevel
 }: SummaryTypes) => {
     const text = [];
     if (Array.isArray(type)) {
         text.push(
-            `Sonified ${live ? "live " : ""}${type
-                .sort()
-                .join("-")} chart "${title}"`
+            filteredJoin(
+                [
+                    "Sonified",
+                    live && "live",
+                    type.sort().join("-"),
+                    "chart",
+                    `"${title}"`
+                ],
+                " "
+            )
         );
     } else {
-        text.push(`Sonified ${live ? "live " : ""}${type} chart "${title}"`);
+        text.push(
+            filteredJoin(
+                [
+                    "Sonified",
+                    live && "live",
+                    hierarchy && "hierarchical",
+                    type,
+                    "chart",
+                    `"${title}"`
+                ],
+                " "
+            )
+        );
     }
+
     if (dataRows > 1) {
-        text.push(`contains ${dataRows} groups`);
+        if (hierarchy) {
+            if (hierarchyLevel === 0) {
+                text.push("on root level");
+            } else {
+                text.push(`on level ${hierarchyLevel}`);
+            }
+        } else {
+            text.push(`contains ${dataRows} groups`);
+        }
     }
+
     text.push(
         `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
             x.maximum
@@ -120,9 +153,16 @@ export const generateSummary = ({
     }
 
     const isMobile = detectIfMobile();
-    const keyboardMessage = `Use arrow keys to navigate.${
-        live ? " Press M to toggle monitor mode." : ""
-    } Press H for more hotkeys.`;
+    const keyboardMessage = filteredJoin(
+        [
+            "Use arrow keys to navigate.",
+            hierarchy && "Use Alt + Up and Down to navigate between levels.",
+            live && "Press M to toggle monitor mode",
+            "Press H fro more hotkeys."
+        ],
+        " "
+    );
+
     const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
 
     const info = [
@@ -236,39 +276,42 @@ export const generatePointDescription = (
     outlierIndex: number | null = null,
     announcePointLabelFirst = false
 ) => {
+    const xFormatter = (point: SupportedDataPointType) =>
+        point.xLabel ?? xFormat(point.x);
+
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return `${xFormat(point.x)}, ${yFormat(
+            return `${xFormatter(point)}, ${yFormat(
                 point[stat as keyof OHLCDataPoint] as number
             )}`;
         }
-        return `${xFormat(point.x)}, ${yFormat(point.open)} - ${yFormat(
+        return `${xFormatter(point)}, ${yFormat(point.open)} - ${yFormat(
             point.high
         )} - ${yFormat(point.low)} - ${yFormat(point.close)}`;
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return `${xFormat(point.x)}, ${yFormat(point.outlier[outlierIndex])}, ${
-            outlierIndex + 1
-        } of ${point.outlier.length}`;
+        return `${xFormatter(point)}, ${yFormat(
+            point.outlier[outlierIndex]
+        )}, ${outlierIndex + 1} of ${point.outlier.length}`;
     }
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
+            return `${xFormatter(point)}, ${yFormat(point[stat])}`;
         }
         const outlierNote =
             "outlier" in point && point.outlier?.length > 0
                 ? `, with ${point.outlier.length} outliers`
                 : "";
-        return `${xFormat(point.x)}, ${yFormat(point.high)} - ${yFormat(
+        return `${xFormatter(point)}, ${yFormat(point.high)} - ${yFormat(
             point.low
         )}${outlierNote}`;
     }
 
     if (isSimpleDataPoint(point)) {
-        const details = [xFormat(point.x), yFormat(point.y)];
+        const details = [xFormatter(point), yFormat(point.y)];
         if (point.label) {
             if (announcePointLabelFirst) {
                 details.unshift(point.label);
@@ -280,7 +323,7 @@ export const generatePointDescription = (
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return `${xFormat(point.x)}, ${yFormat(point.y2)}`;
+        return `${xFormatter(point)}, ${yFormat(point.y2)}`;
     }
 
     return "";
@@ -342,7 +385,8 @@ export const calculateMetadataByGroup = (
             tenths,
             availableStats,
             statIndex: -1,
-            inputType: detectDataPointType(row[0])
+            inputType: detectDataPointType(row[0]),
+            size: row.length
         };
     });
 };
@@ -485,3 +529,6 @@ export const detectIfMobile = () => {
         return navigator.userAgent.match(toMatchItem);
     });
 };
+
+export const filteredJoin = (arr: string[], joiner: string) =>
+    arr.filter((item) => Boolean(item)).join(joiner);

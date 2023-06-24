@@ -17,31 +17,33 @@ import { stackedBar } from "./charts/stackedBar.js";
 import { groupedScatter } from "./charts/groupedScatter.js";
 import { hypeCycle } from "./charts/hypeCycle.js";
 import { footTraffic } from "./charts/footTraffic.js";
+import { treemap } from "./charts/treemap.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
     const cc = document.getElementById("cc");
 
     const chartFn = [
-        singleLinePlot,
-        multiLinePlot,
-        floatingBarChart,
-        largeDataLine,
-        barLinePlot,
-        bandPlot,
-        livePlot,
-        livePlotBand,
-        missingData,
-        outOfBounds,
-        logLinePlot,
-        histogram,
-        bug120,
-        continuous,
-        scatter,
-        groupedScatter,
-        stackedBar,
-        hypeCycle,
-        footTraffic
+        // singleLinePlot,
+        // multiLinePlot,
+        // floatingBarChart,
+        // largeDataLine,
+        // barLinePlot,
+        // bandPlot,
+        treemap
+        // livePlot,
+        // livePlotBand,
+        // missingData,
+        // outOfBounds,
+        // logLinePlot,
+        // histogram,
+        // bug120,
+        // continuous,
+        // scatter,
+        // groupedScatter,
+        // stackedBar,
+        // hypeCycle,
+        // footTraffic,
     ];
 
     chartFn.forEach((fn) => {
