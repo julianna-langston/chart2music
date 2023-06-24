@@ -2128,7 +2128,6 @@ export class c2m {
             this._outlierMode ? this._outlierIndex : null,
             this._announcePointLabelFirst
         );
-
         const groupName =
             this._groups[this._visible_group_indices[this._groupIndex]];
         const text = filteredJoin(

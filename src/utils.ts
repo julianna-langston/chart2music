@@ -88,34 +88,20 @@ export const generateSummary = ({
     hierarchyLevel
 }: SummaryTypes) => {
     const text = [];
-    if (Array.isArray(type)) {
-        text.push(
-            filteredJoin(
-                [
-                    "Sonified",
-                    live && "live",
-                    type.sort().join("-"),
-                    "chart",
-                    `"${title}"`
-                ],
-                " "
-            )
-        );
-    } else {
-        text.push(
-            filteredJoin(
-                [
-                    "Sonified",
-                    live && "live",
-                    hierarchy && "hierarchical",
-                    type,
-                    "chart",
-                    `"${title}"`
-                ],
-                " "
-            )
-        );
-    }
+
+    text.push(
+        filteredJoin(
+            [
+                "Sonified",
+                live && "live",
+                hierarchy && "hierarchical",
+                Array.isArray(type) ? type.sort().join("-") : type,
+                "chart",
+                `"${title}"`
+            ],
+            " "
+        )
+    );
 
     if (dataRows > 1) {
         if (hierarchy) {
@@ -155,10 +141,10 @@ export const generateSummary = ({
     const isMobile = detectIfMobile();
     const keyboardMessage = filteredJoin(
         [
-            "Use arrow keys to navigate.",
+            `Use arrow keys to navigate.`,
             hierarchy && "Use Alt + Up and Down to navigate between levels.",
-            live && "Press M to toggle monitor mode",
-            "Press H fro more hotkeys."
+            live && "Press M to toggle monitor mode.",
+            "Press H for more hotkeys."
         ],
         " "
     );
@@ -285,9 +271,12 @@ export const generatePointDescription = (
                 point[stat as keyof OHLCDataPoint] as number
             )}`;
         }
-        return `${xFormatter(point)}, ${yFormat(point.open)} - ${yFormat(
-            point.high
-        )} - ${yFormat(point.low)} - ${yFormat(point.close)}`;
+        return [
+            `${xFormat(point.x)}, ${yFormat(point.open)}`,
+            yFormat(point.high),
+            yFormat(point.low),
+            yFormat(point.close)
+        ].join(" - ");
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
