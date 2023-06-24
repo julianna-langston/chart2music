@@ -342,7 +342,8 @@ export const calculateMetadataByGroup = (
             tenths,
             availableStats,
             statIndex: -1,
-            inputType: detectDataPointType(row[0])
+            inputType: detectDataPointType(row[0]),
+            size: row.length
         };
     });
 };

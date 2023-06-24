@@ -166,6 +166,7 @@ export type groupedMetadata = {
     minimumValue: number;
     maximumValue: number;
     index: number;
+    size: number;
 };
 
 /**
