@@ -554,6 +554,7 @@ test("Calculate metadata by group", () => {
             tenths: 0,
             availableStats: [],
             statIndex: -1,
+            size: 3,
             inputType: "SimpleDataPoint"
         }
     ]);
@@ -582,6 +583,7 @@ test("Calculate metadata by group", () => {
             tenths: 0,
             availableStats: [],
             statIndex: -1,
+            size: 3,
             inputType: "SimpleDataPoint"
         },
         {
@@ -593,6 +595,7 @@ test("Calculate metadata by group", () => {
             tenths: 0,
             availableStats: [],
             statIndex: -1,
+            size: 3,
             inputType: "SimpleDataPoint"
         }
     ]);
@@ -616,6 +619,7 @@ test("Calculate metadata by group", () => {
             tenths: 0,
             availableStats: [],
             statIndex: -1,
+            size: 3,
             inputType: "AlternativeAxisDataPoint"
         }
     ]);
@@ -639,6 +643,7 @@ test("Calculate metadata by group", () => {
             tenths: 0,
             availableStats: ["high", "low"],
             statIndex: -1,
+            size: 3,
             inputType: "HighLowDataPoint"
         }
     ]);
@@ -662,6 +667,7 @@ test("Calculate metadata by group", () => {
             tenths: 0,
             availableStats: ["open", "high", "low", "close"],
             statIndex: -1,
+            size: 3,
             inputType: "OHLCDataPoint"
         }
     ]);
@@ -734,6 +740,7 @@ test("Calculate metadata by group", () => {
             tenths: 1,
             availableStats: ["high", "q3", "median", "q1", "low", "outlier"],
             statIndex: -1,
+            size: 10,
             inputType: "BoxDataPoint"
         }
     ]);
@@ -798,6 +805,7 @@ test("Calculate metadata by group", () => {
             tenths: 2,
             availableStats: [],
             statIndex: -1,
+            size: 18,
             inputType: "SimpleDataPoint"
         }
     ]);
