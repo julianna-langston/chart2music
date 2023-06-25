@@ -3,6 +3,7 @@
 import { c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 import {
+    validateHierarchyReferences,
     validateInput,
     validateInputAxes,
     validateInputDataHomogeneity,
@@ -375,5 +376,147 @@ test("validate img tag without cc property", () => {
 
     expect(err).toBe(
         "Error: If the target element is an IMG element, a CC property must be specified."
+    );
+});
+
+test("validateHierarchyReferences", () => {
+    // happy path
+    expect(
+        validateHierarchyReferences(
+            {
+                a: [{ x: 0, y: 1, children: "b" }],
+                b: [{ x: 1, y: 2 }]
+            },
+            { root: "a" }
+        )
+    ).toBe("");
+
+    // childless tree
+    expect(
+        validateHierarchyReferences(
+            {
+                a: [{ x: 0, y: 1 }],
+                b: [{ x: 1, y: 2 }]
+            },
+            { root: "a" }
+        )
+    ).toBe("");
+
+    // data = number[], options = undefined
+    expect(validateHierarchyReferences([1, 2, 3, 4, 5])).toBe("");
+
+    // data = number[], options = {root}}
+    expect(
+        validateHierarchyReferences([1, 2, 3, 4, 5], { root: "a" })
+    ).toContain(
+        `Unexpected data structure. options.root="a", but "a" is not a key in data.`
+    );
+
+    // data = number[][], options = {root}}
+    expect(() =>
+        validateHierarchyReferences(
+            {
+                a: [1, 2, 3, 4, 5],
+                b: [6, 7, 8]
+            },
+            { root: "a" }
+        )
+    ).not.toThrow();
+
+    expect(() =>
+        validateHierarchyReferences(
+            {
+                // @ts-ignore
+                this: "is",
+                // @ts-ignore
+                invalid: "data"
+            },
+            { root: "this" }
+        )
+    ).not.toThrow();
+
+    // data = {key: number[]}, options = undefined
+    expect(validateHierarchyReferences({ a: [1, 2, 3, 4, 5] })).toBe("");
+
+    // data = { key: {x,y}[] }, options = undefined
+    expect(
+        validateHierarchyReferences({
+            a: [{ x: 0, y: 1 }],
+            b: [{ x: 1, y: 2 }]
+        })
+    ).toBe("");
+
+    // data = tree, options = {}
+    expect(
+        validateHierarchyReferences({
+            a: [{ x: 0, y: 1, children: "b" }],
+            b: [{ x: 1, y: 2 }]
+        })
+    ).toBe("");
+
+    // data = tree, options = {root: invalid}
+    expect(
+        validateHierarchyReferences(
+            {
+                a: [{ x: 0, y: 1, children: "b" }],
+                b: [{ x: 1, y: 2 }]
+            },
+            { root: "z" }
+        )
+    ).toBe(
+        "Root points to group 'z', but that group doesn't exist. Valid root values are: a, b."
+    );
+
+    // self-referential children
+    expect(
+        validateHierarchyReferences(
+            {
+                a: [{ x: 0, y: 1, children: "a" }],
+                b: [{ x: 1, y: 2 }]
+            },
+            { root: "a" }
+        )
+    ).toBe(
+        "Error: Group 'a', point index 0: Property 'children' has value 'a'. Unfortunately, children are not allowed to refer to their own group. Valid values are: b."
+    );
+
+    // children pointing to ghosts
+    expect(
+        validateHierarchyReferences(
+            {
+                a: [{ x: 0, y: 1, children: "z" }],
+                b: [{ x: 1, y: 2 }]
+            },
+            { root: "a" }
+        )
+    ).toBe(
+        "Error: Group 'a', point index 0: Property 'children' has value 'z'. Unfortunately, that is not a valid value. Valid values are: b."
+    );
+
+    // children pointing to root
+    expect(
+        validateHierarchyReferences(
+            {
+                a: [{ x: 0, y: 1, children: "b" }],
+                b: [{ x: 1, y: 2, children: "a" }]
+            },
+            { root: "a" }
+        )
+    ).toBe(
+        "Error: Group 'b', point index 0: Property 'children' is pointing to the root value, which is invalid. Valid values are: ."
+    );
+
+    // non-string children
+    expect(
+        validateHierarchyReferences(
+            {
+                // @ts-ignore
+                a: [{ x: 0, y: 1, children: 1 }],
+                b: [{ x: 1, y: 2 }]
+            },
+            { root: "a" }
+        )
+    ).toBe(
+        "Error: Group 'a', point index 0: Expected property 'children' to be of type string. Instead, it was of type 'number'."
     );
 });

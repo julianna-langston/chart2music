@@ -362,9 +362,6 @@ export class c2m {
             },
             previous_category: () => {
                 this._clearPlay();
-                if (this._hierarchy) {
-                    return;
-                }
                 if (this._groupIndex === 0) {
                     return;
                 }
@@ -397,9 +394,6 @@ export class c2m {
             },
             next_category: () => {
                 this._clearPlay();
-                if (this._hierarchy) {
-                    return;
-                }
                 if (
                     this._groupIndex ===
                     this._visible_group_indices.length - 1
@@ -435,18 +429,12 @@ export class c2m {
             },
             first_category: () => {
                 this._clearPlay();
-                if (this._hierarchy) {
-                    return;
-                }
                 this._groupIndex = 0;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
             last_category: () => {
                 this._clearPlay();
-                if (this._hierarchy) {
-                    return;
-                }
                 this._groupIndex = this._visible_group_indices.length - 1;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
@@ -502,9 +490,6 @@ export class c2m {
             },
             go_total_maximum: () => {
                 this._clearPlay();
-                if (this._hierarchy) {
-                    return;
-                }
                 const winner = this._metadataByGroup
                     .filter((g, index) =>
                         this._visible_group_indices.includes(index)
@@ -526,9 +511,6 @@ export class c2m {
             },
             go_total_minimum: () => {
                 this._clearPlay();
-                if (this._hierarchy) {
-                    return;
-                }
                 const winner = this._metadataByGroup
                     .filter((g, index) =>
                         this._visible_group_indices.includes(index)
@@ -1830,14 +1812,9 @@ export class c2m {
             return false;
         }
 
+        // We already validated that 'children' properties validly point to group names that exist
+        // and are not their own group. This was done with the input validation check.
         const groupIndex = this._groups.indexOf(children);
-        if (groupIndex === -1) {
-            return false;
-        }
-
-        if (groupIndex === this._groupIndex) {
-            return false;
-        }
 
         this._hierarchyBreadcrumbs.push({
             groupIndex: this._groupIndex,

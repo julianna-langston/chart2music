@@ -74,6 +74,13 @@ test("Basic treemap example", () => {
         audioEngine.reset();
     });
 
+    // Try to drill down to children that don't exist. Should handle the error condition.
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", { altKey: true, key: "ArrowDown" })
+    );
+    jest.advanceTimersByTime(250);
+    expect(audioEngine.playCount).toBe(0);
+
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
@@ -115,4 +122,31 @@ test("Basic treemap example", () => {
         expect(audioEngine.lastPanning).toBeCloseTo(panning);
         audioEngine.reset();
     });
+
+    const lastText = "root, c, 3, has children";
+
+    // Keystrokes that should be ignored
+    [
+        { key: "PageDown" },
+        { key: "PageUp" },
+        { key: "PageUp", altKey: true },
+        { key: "ArrowUp", altKey: true }
+    ].forEach((press) => {
+        mockElement.dispatchEvent(new KeyboardEvent("keydown", press));
+        jest.advanceTimersByTime(250);
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            lastText
+        );
+        expect(audioEngine.playCount).toBe(0);
+        audioEngine.reset();
+    });
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", { altKey: true, key: "ArrowDown" })
+    );
+    jest.advanceTimersByTime(250);
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", { altKey: true, key: "ArrowDown" })
+    );
+    jest.advanceTimersByTime(250);
 });
