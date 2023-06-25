@@ -5,10 +5,14 @@
 interface DataPoint {
     /** The x-axis value */
     x: number;
+    /** The text representation of the x-axis value */
+    xLabel?: string;
     /** Label associated with the data point */
     label?: string;
     /** Custom metadata provided by the author. Chart2Music will never use the property, nor invalidate on its contents. */
     custom?: unknown;
+    /** Reference to the slice that should be drilled down to */
+    children?: string;
     type?: "annotation";
 }
 

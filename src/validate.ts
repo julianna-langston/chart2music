@@ -18,6 +18,7 @@ export const validateInput = (input: SonifyTypes) => {
     errors.push(validateInputAxes(input.axes));
     errors.push(validateInputDataHomogeneity(input.data));
     errors.push(validateCornerCases(input));
+    errors.push(validateHierarchyReferences(input.data, input.options));
 
     return errors.filter((str) => str !== "").join("\n");
 };
@@ -220,6 +221,81 @@ export const validateCornerCases = (input: SonifyTypes) => {
         typeof input.cc === "undefined"
     ) {
         return "Error: If the target element is an IMG element, a CC property must be specified.";
+    }
+
+    return "";
+};
+
+export const validateHierarchyReferences = (
+    data: SonifyTypes["data"],
+    options: SonifyTypes["options"] = {}
+) => {
+    const { root } = options;
+
+    if (!root) {
+        return "";
+    }
+
+    if (Array.isArray(data)) {
+        return `Unexpected data structure. options.root="${root}", but "${root}" is not a key in data.
+        Data is: ${JSON.stringify(data).replace(/^.{0,100}(.+)$/, "...")}`;
+    }
+
+    // Get all of the group names
+    const groupNames = Object.keys(data);
+
+    if (!groupNames.includes(root)) {
+        return `Root points to group '${root}', but that group doesn't exist. Valid root values are: ${groupNames.join(
+            ", "
+        )}.`;
+    }
+
+    // Get all of the groups
+    const groups = Object.values(data);
+
+    // Go through each group, and find the "children" entries
+    for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+        const group = groups[groupIndex];
+        const groupName = groupNames[groupIndex];
+
+        const omitter = (n) => n !== groupName && n !== root;
+
+        if (!Array.isArray(group)) {
+            continue;
+        }
+
+        for (let cell = 0; cell < group.length; cell++) {
+            if (typeof group[cell] !== "object") {
+                continue;
+            }
+
+            const { children } = group[cell] as SupportedDataPointType;
+            if (!children) {
+                continue;
+            }
+
+            if (typeof children !== "string") {
+                return `Error: Group '${groupName}', point index ${cell}: Expected property 'children' to be of type string. Instead, it was of type '${typeof children}'.`;
+            }
+
+            if (!groupNames.includes(children)) {
+                return `Error: Group '${groupName}', point index ${cell}: Property 'children' has value '${children}'. Unfortunately, that is not a valid value. Valid values are: ${groupNames
+                    .filter(omitter)
+                    .join(", ")}.`;
+            }
+
+            if (children === groupName) {
+                return `Error: Group '${groupName}', point index ${cell}: Property 'children' has value '${children}'. Unfortunately, children are not allowed to refer to their own group. Valid values are: ${groupNames
+                    .filter(omitter)
+                    .join(", ")}.`;
+            }
+
+            if (children === root) {
+                return `Error: Group '${groupName}', point index ${cell}: Property 'children' is pointing to the root value, which is invalid. Valid values are: ${groupNames
+                    .filter(omitter)
+                    .join(", ")}.`;
+            }
+        }
     }
 
     return "";

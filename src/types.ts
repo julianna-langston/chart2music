@@ -136,7 +136,8 @@ export enum SUPPORTED_CHART_TYPES {
     HISTOGRAM = "histogram",
     BOX = "box",
     MATRIX = "matrix",
-    SCATTER = "scatter"
+    SCATTER = "scatter",
+    TREEMAP = "treemap"
 }
 
 /**
@@ -198,6 +199,7 @@ export type c2mOptions = {
     customHotkeys?: ExpandedKeyRegistration[];
     hertzes?: number[];
     stack?: boolean;
+    root?: null | string;
 };
 
 /**

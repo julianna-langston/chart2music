@@ -214,6 +214,7 @@ test("adjust percent for panning", () => {
     expect(calcPan(0)).toBe(-0.98);
     expect(calcPan(0.5)).toBe(0);
     expect(calcPan(1)).toBe(0.98);
+    expect(calcPan(NaN)).toBe(0);
 });
 
 test("calculate axis min/max", () => {
@@ -254,7 +255,17 @@ test("calculate axis min/max", () => {
             return { x, y2 };
         })
     ];
-
+    const hierarchyRows = [
+        [
+            { x: 0, y: 1 },
+            { x: 1, y: 2 },
+            { x: 2, y: 3 }
+        ],
+        [
+            { x: 3, y: 10 },
+            { x: 4, y: 11 }
+        ]
+    ];
     expect(calculateAxisMinimum(singleRow, "x")).toBe(0);
     expect(calculateAxisMinimum(multiRow, "x")).toBe(0);
     expect(calculateAxisMinimum(bundledRow, "x")).toBe(5);
@@ -265,6 +276,8 @@ test("calculate axis min/max", () => {
     expect(calculateAxisMinimum(ohlcRow, "y2")).toBe(NaN);
     expect(calculateAxisMinimum(mixMultiRow, "y")).toBe(100);
     expect(calculateAxisMinimum(mixMultiRow, "y2")).toBe(200);
+    expect(calculateAxisMinimum(hierarchyRows, "x", 0)).toBe(0);
+    expect(calculateAxisMinimum(hierarchyRows, "x", 1)).toBe(3);
 
     expect(calculateAxisMaximum(singleRow, "x")).toBe(6);
     expect(calculateAxisMaximum(multiRow, "x")).toBe(16);
@@ -276,6 +289,8 @@ test("calculate axis min/max", () => {
     expect(calculateAxisMaximum(ohlcRow, "y2")).toBe(NaN);
     expect(calculateAxisMaximum(mixMultiRow, "y")).toBe(103);
     expect(calculateAxisMaximum(mixMultiRow, "y2")).toBe(203);
+    expect(calculateAxisMaximum(hierarchyRows, "x", 0)).toBe(2);
+    expect(calculateAxisMaximum(hierarchyRows, "x", 1)).toBe(4);
 });
 
 test("Generate point description", () => {

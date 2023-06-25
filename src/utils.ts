@@ -58,7 +58,7 @@ const interpolateBinLog = (
     return Math.floor(bins * pct);
 };
 
-export const calcPan = (pct: number) => (pct * 2 - 1) * 0.98;
+export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
 /**
  *
@@ -72,6 +72,8 @@ type SummaryTypes = {
     y2?: AxisData;
     live?: boolean;
     hasNotes?: boolean;
+    hierarchy?: boolean;
+    hierarchyLevel?: number;
 };
 export const generateSummary = ({
     type,
@@ -81,14 +83,18 @@ export const generateSummary = ({
     y,
     y2,
     live = false,
-    hasNotes = false
+    hasNotes = false,
+    hierarchy = false,
+    hierarchyLevel
 }: SummaryTypes) => {
     const text = [];
+
     text.push(
         filteredJoin(
             [
                 "Sonified",
                 live && "live",
+                hierarchy && "hierarchical",
                 Array.isArray(type) ? type.sort().join("-") : type,
                 "chart",
                 `"${title}"`
@@ -98,7 +104,15 @@ export const generateSummary = ({
     );
 
     if (dataRows > 1) {
-        text.push(`contains ${dataRows} groups`);
+        if (hierarchy) {
+            if (hierarchyLevel === 0) {
+                text.push("on root level");
+            } else {
+                text.push(`on level ${hierarchyLevel}`);
+            }
+        } else {
+            text.push(`contains ${dataRows} groups`);
+        }
     }
 
     text.push(
@@ -128,6 +142,7 @@ export const generateSummary = ({
     const keyboardMessage = filteredJoin(
         [
             `Use arrow keys to navigate.`,
+            hierarchy && "Use Alt + Up and Down to navigate between levels.",
             live && "Press M to toggle monitor mode.",
             "Press H for more hotkeys."
         ],
@@ -149,10 +164,16 @@ export const generateSummary = ({
 
 export const calculateAxisMinimum = (
     data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2"
+    prop: "x" | "y" | "y2",
+    filterGroupIndex?: number
 ) => {
-    const values: number[] = data
-        .flat()
+    let dataToProcess: SupportedDataPointType[] = data.flat();
+
+    if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
+        dataToProcess = data[filterGroupIndex];
+    }
+
+    const values: number[] = dataToProcess
         .map((point: SupportedDataPointType): number => {
             if (isSimpleDataPoint(point)) {
                 if (prop === "x" || prop === "y") {
@@ -192,10 +213,16 @@ export const calculateAxisMinimum = (
 };
 export const calculateAxisMaximum = (
     data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2"
+    prop: "x" | "y" | "y2",
+    filterGroupIndex?: number
 ) => {
-    const values: number[] = data
-        .flat()
+    let dataToProcess: SupportedDataPointType[] = data.flat();
+
+    if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
+        dataToProcess = data[filterGroupIndex];
+    }
+
+    const values: number[] = dataToProcess
         .map((point: SupportedDataPointType): number => {
             if (isSimpleDataPoint(point)) {
                 if (prop === "x" || prop === "y") {
@@ -247,9 +274,12 @@ export const generatePointDescription = (
     outlierIndex: number | null = null,
     announcePointLabelFirst = false
 ) => {
+    const xFormatter = (point: SupportedDataPointType) =>
+        point.xLabel ?? xFormat(point.x);
+
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return `${xFormat(point.x)}, ${yFormat(
+            return `${xFormatter(point)}, ${yFormat(
                 point[stat as keyof OHLCDataPoint] as number
             )}`;
         }
@@ -262,27 +292,27 @@ export const generatePointDescription = (
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return `${xFormat(point.x)}, ${yFormat(point.outlier[outlierIndex])}, ${
-            outlierIndex + 1
-        } of ${point.outlier.length}`;
+        return `${xFormatter(point)}, ${yFormat(
+            point.outlier[outlierIndex]
+        )}, ${outlierIndex + 1} of ${point.outlier.length}`;
     }
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
+            return `${xFormatter(point)}, ${yFormat(point[stat])}`;
         }
         const outlierNote =
             "outlier" in point && point.outlier?.length > 0
                 ? `, with ${point.outlier.length} outliers`
                 : "";
-        return `${xFormat(point.x)}, ${yFormat(point.high)} - ${yFormat(
+        return `${xFormatter(point)}, ${yFormat(point.high)} - ${yFormat(
             point.low
         )}${outlierNote}`;
     }
 
     if (isSimpleDataPoint(point)) {
-        const details = [xFormat(point.x), yFormat(point.y)];
+        const details = [xFormatter(point), yFormat(point.y)];
         if (point.label) {
             if (announcePointLabelFirst) {
                 details.unshift(point.label);
@@ -294,7 +324,7 @@ export const generatePointDescription = (
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return `${xFormat(point.x)}, ${yFormat(point.y2)}`;
+        return `${xFormatter(point)}, ${yFormat(point.y2)}`;
     }
 
     return "";
@@ -369,11 +399,13 @@ export const calculateMetadataByGroup = (
  * @param data - the X/Y values
  * @param axisName - which axis is this? "x" or "y"
  * @param userAxis - metadata provided by the invocation
+ * @param filterGroupIndex -
  */
 export const initializeAxis = (
     data: SupportedDataPointType[][],
     axisName: validAxes,
-    userAxis?: AxisData
+    userAxis?: AxisData,
+    filterGroupIndex?: number
 ): AxisData => {
     const format =
         userAxis?.format ??
@@ -382,8 +414,12 @@ export const initializeAxis = (
             : defaultFormat);
 
     return {
-        minimum: userAxis?.minimum ?? calculateAxisMinimum(data, axisName),
-        maximum: userAxis?.maximum ?? calculateAxisMaximum(data, axisName),
+        minimum:
+            userAxis?.minimum ??
+            calculateAxisMinimum(data, axisName, filterGroupIndex),
+        maximum:
+            userAxis?.maximum ??
+            calculateAxisMaximum(data, axisName, filterGroupIndex),
         label: userAxis?.label ?? "",
         type: userAxis?.type ?? "linear",
         format,
