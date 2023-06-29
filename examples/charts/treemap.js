@@ -608,7 +608,7 @@ const c2mData = chartjsToC2mTree(statsByState, GROUPS, "area");
 export const treemap = (canvas, cc) => {
     const myChart = new Chart(canvas, config);
 
-    const { err, data } = c2mChart({
+    const { err } = c2mChart({
         type: "treemap",
         title: "US States by area",
         element: canvas,

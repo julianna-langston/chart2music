@@ -24,26 +24,26 @@ window.addEventListener("load", () => {
     const cc = document.getElementById("cc");
 
     const chartFn = [
-        // singleLinePlot,
-        // multiLinePlot,
-        // floatingBarChart,
-        // largeDataLine,
-        // barLinePlot,
-        // bandPlot,
-        treemap
-        // livePlot,
-        // livePlotBand,
-        // missingData,
-        // outOfBounds,
-        // logLinePlot,
-        // histogram,
-        // bug120,
-        // continuous,
-        // scatter,
-        // groupedScatter,
-        // stackedBar,
-        // hypeCycle,
-        // footTraffic,
+        singleLinePlot,
+        multiLinePlot,
+        floatingBarChart,
+        largeDataLine,
+        barLinePlot,
+        bandPlot,
+        treemap,
+        livePlot,
+        livePlotBand,
+        missingData,
+        outOfBounds,
+        logLinePlot,
+        histogram,
+        bug120,
+        continuous,
+        scatter,
+        groupedScatter,
+        stackedBar,
+        hypeCycle,
+        footTraffic
     ];
 
     chartFn.forEach((fn) => {
