@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.0
+* Add support for chart type 'treemap', as well as supporting hierarchical structures for existing chart types.
+* Support sonifying groups with a single data point (pans to the center)
+
 ## 1.10.2
 * Fix bug where the chart winds up in a bad state when the user focuses on the last group and the visibility of a different group is set to false.
 
