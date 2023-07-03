@@ -274,12 +274,9 @@ export const generatePointDescription = (
     outlierIndex: number | null = null,
     announcePointLabelFirst = false
 ) => {
-    const xFormatter = (point: SupportedDataPointType) =>
-        point.xLabel ?? xFormat(point.x);
-
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return `${xFormatter(point)}, ${yFormat(
+            return `${xFormat(point.x)}, ${yFormat(
                 point[stat as keyof OHLCDataPoint] as number
             )}`;
         }
@@ -292,27 +289,27 @@ export const generatePointDescription = (
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return `${xFormatter(point)}, ${yFormat(
-            point.outlier[outlierIndex]
-        )}, ${outlierIndex + 1} of ${point.outlier.length}`;
+        return `${xFormat(point.x)}, ${yFormat(point.outlier[outlierIndex])}, ${
+            outlierIndex + 1
+        } of ${point.outlier.length}`;
     }
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            return `${xFormatter(point)}, ${yFormat(point[stat])}`;
+            return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
         }
         const outlierNote =
             "outlier" in point && point.outlier?.length > 0
                 ? `, with ${point.outlier.length} outliers`
                 : "";
-        return `${xFormatter(point)}, ${yFormat(point.high)} - ${yFormat(
+        return `${xFormat(point.x)}, ${yFormat(point.high)} - ${yFormat(
             point.low
         )}${outlierNote}`;
     }
 
     if (isSimpleDataPoint(point)) {
-        const details = [xFormatter(point), yFormat(point.y)];
+        const details = [xFormat(point.x), yFormat(point.y)];
         if (point.label) {
             if (announcePointLabelFirst) {
                 details.unshift(point.label);
@@ -324,7 +321,7 @@ export const generatePointDescription = (
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return `${xFormatter(point)}, ${yFormat(point.y2)}`;
+        return `${xFormat(point.x)}, ${yFormat(point.y2)}`;
     }
 
     return "";
@@ -342,7 +339,6 @@ export const usesAxis = (
 
 /**
  * Determine metadata about data sets, to help users navigate more effectively
- *
  * @param data - the X/Y values
  */
 export const calculateMetadataByGroup = (
@@ -395,7 +391,6 @@ export const calculateMetadataByGroup = (
 /**
  * Initialize internal representation of axis metadata. Providing metadata is optional, so we
  * need to generate metadata that hasn't been provided.
- *
  * @param data - the X/Y values
  * @param axisName - which axis is this? "x" or "y"
  * @param userAxis - metadata provided by the invocation

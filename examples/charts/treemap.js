@@ -540,6 +540,7 @@ const rowDict = (table, column, key) => {
 const chartjsToC2mTree = (tree, groups, yKey) => {
     const data = {};
     let chartjsDataOrder = [];
+    const valueLabels = [];
 
     const recursivelyBuildData = (
         branch,
@@ -582,9 +583,9 @@ const chartjsToC2mTree = (tree, groups, yKey) => {
                     h.children = nextLevelName;
                 }
             }
+            valueLabels.push(group_name);
             row.push({
-                x: index,
-                xLabel: group_name,
+                x: valueLabels.length - 1,
                 y: group_value,
                 custom: chartjsDataOrder.indexOf(group_name),
                 ...h
@@ -600,10 +601,14 @@ const chartjsToC2mTree = (tree, groups, yKey) => {
 
     recursivelyBuildData(tree, groups);
 
-    return data;
+    return { data, valueLabels };
 };
 
-const c2mData = chartjsToC2mTree(statsByState, GROUPS, "area");
+const { data: c2mData, valueLabels } = chartjsToC2mTree(
+    statsByState,
+    GROUPS,
+    "area"
+);
 
 export const treemap = (canvas, cc) => {
     const myChart = new Chart(canvas, config);
@@ -616,11 +621,15 @@ export const treemap = (canvas, cc) => {
         data: c2mData,
         axes: {
             x: {
-                label: "Location"
+                label: "Location",
+                valueLabels
             },
             y: {
                 label: "Area",
-                format: (y) => y.toLocaleString()
+                format: (y) => {
+                    console.log(y);
+                    return y.toLocaleString();
+                }
             }
         },
         options: {

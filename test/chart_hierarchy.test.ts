@@ -11,15 +11,17 @@ const audioEngine = new MockAudioEngine();
 
 const title = "Example hierarchy";
 
+const valueLabels = ["a", "b", "c", "aa", "ba", "ca"];
+
 const data = {
     root: [
-        { x: 0, xLabel: "a", y: 1, children: "a" },
-        { x: 1, xLabel: "b", y: 2, children: "b" },
-        { x: 2, xLabel: "c", y: 3, children: "c" }
+        { x: 0, y: 1, children: "a" },
+        { x: 1, y: 2, children: "b" },
+        { x: 2, y: 3, children: "c" }
     ],
-    a: [{ x: 0, xLabel: "aa", y: 10 }],
-    b: [{ x: 0, xLabel: "ba", y: 10 }],
-    c: [{ x: 0, xLabel: "ca", y: 10 }]
+    a: [{ x: 3, y: 10 }],
+    b: [{ x: 4, y: 10 }],
+    c: [{ x: 5, y: 10 }]
 };
 
 test("Basic treemap example", () => {
@@ -30,6 +32,11 @@ test("Basic treemap example", () => {
         type: SUPPORTED_CHART_TYPES.TREEMAP,
         title,
         data,
+        axes: {
+            x: {
+                valueLabels
+            }
+        },
         element: mockElement,
         cc: mockElementCC,
         audioEngine,
@@ -43,7 +50,7 @@ test("Basic treemap example", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toEqual(
-        `Sonified hierarchical treemap chart "${title}", on root level, x is "" from 0 to 2, y is "" from 0 to 3. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
+        `Sonified hierarchical treemap chart "${title}", on root level, x is "" from a to c, y is "" from 0 to 3. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
     );
 
     [
@@ -85,7 +92,7 @@ test("Basic treemap example", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toEqual(
-        `Sonified hierarchical treemap chart "${title}", on level 1, x is "" from 0 to 0, y is "" from 0 to 10. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
+        `Sonified hierarchical treemap chart "${title}", on level 1, x is "" from ba to ba, y is "" from 0 to 10. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
     );
 
     [
