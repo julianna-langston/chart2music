@@ -5,8 +5,6 @@
 interface DataPoint {
     /** The x-axis value */
     x: number;
-    /** The text representation of the x-axis value */
-    xLabel?: string;
     /** Label associated with the data point */
     label?: string;
     /** Custom metadata provided by the author. Chart2Music will never use the property, nor invalidate on its contents. */
@@ -18,7 +16,6 @@ interface DataPoint {
 
 /**
  * Check if an object implements the DataPoint interface.
- *
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
@@ -36,7 +33,6 @@ export interface SimpleDataPoint extends DataPoint {
 
 /**
  * Check if an object implements the SimpleDataPoint interface.
- *
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
@@ -54,7 +50,6 @@ export interface AlternateAxisDataPoint extends DataPoint {
 
 /**
  * Check if an object implements the AlternateAxisDataPoint interface.
- *
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
@@ -76,7 +71,6 @@ export interface HighLowDataPoint extends DataPoint {
 
 /**
  * Check if an object implements the HighLowDataPoint interface.
- *
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
@@ -96,7 +90,6 @@ export interface OHLCDataPoint extends HighLowDataPoint {
 
 /**
  * Check if an object implements the HighLowDataPoint interface.
- *
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
@@ -119,7 +112,6 @@ export interface BoxDataPoint extends HighLowDataPoint {
 
 /**
  * Check if an object implements the HighLowDataPoint interface.
- *
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */

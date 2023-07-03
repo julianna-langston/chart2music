@@ -124,7 +124,6 @@ let context: null | AudioContext = null;
 
 /**
  * Validates and initializes a single chart that should be sonified
- *
  * @param {SonifyTypes} input - data, config, and options for the chart
  * @returns c2mGolangReturn - A value of "err" (null if no error, or string if error) and "data" (the chart, if there was no error)
  */
@@ -199,7 +198,6 @@ export class c2m {
 
     /**
      * Constructor
-     *
      * @param input - data/config provided by the invocation
      */
     constructor(input: SonifyTypes) {
@@ -744,7 +742,6 @@ export class c2m {
 
     /**
      * Assign or re-assign data values
-     *
      * @param data - data for the chart
      * @param [axes] - updated axes metadata
      */
@@ -868,7 +865,6 @@ export class c2m {
 
     /**
      * Assign or re-assign data values
-     *
      * @param data - data for the chart
      * @param [axes] - updated axes metadata
      * @param [pointIndex] - the pointIndex to focus on
@@ -904,7 +900,6 @@ export class c2m {
 
     /**
      * Change the visibility of a category
-     *
      * @param name - name of category
      * @param [state] - should the category be visible? true = visible, false = hidden
      * @returns string - indicates error message
@@ -956,7 +951,6 @@ export class c2m {
 
     /**
      * Get the data point that the user is currently focused on
-     *
      * @returns - the current group name and data point
      */
     getCurrent() {
@@ -1033,7 +1027,6 @@ export class c2m {
 
     /**
      * Append data in a live chart
-     *
      * @param dataPoint - the data point
      * @param group - which group to apply to, if there are multiple groups
      */
@@ -1337,7 +1330,6 @@ export class c2m {
 
     /**
      * Change the range of playable hertz
-     *
      * @param lowerIndex - index of the lower end of the HERTZ
      * @param upperIndex - index of the upper end of the HERTZ
      */
@@ -1349,7 +1341,6 @@ export class c2m {
     /**
      * Initialize internal data structure. The user can provide data is several different types of formats,
      * so those formats will need to be unified here.
-     *
      * @param userData - data provided by the invocation
      */
     private _initializeData(userData: SonifyTypes["data"]) {
@@ -1478,7 +1469,6 @@ export class c2m {
 
     /**
      * Move focus to the lowest value data point
-     *
      * @returns - if move was completed
      */
     private _moveToMinimum() {
@@ -1492,7 +1482,6 @@ export class c2m {
 
     /**
      * Move focus to the lowest value data point
-     *
      * @returns - if move was completed
      */
     private _moveToMaximum() {
@@ -1578,7 +1567,6 @@ export class c2m {
 
     /**
      * Move to the next stat
-     *
      * @returns if possible
      */
     private _movePrevStat() {
@@ -1594,7 +1582,6 @@ export class c2m {
 
     /**
      * Move to the next stat
-     *
      * @returns if possible
      */
     private _moveNextStat() {
@@ -1780,7 +1767,6 @@ export class c2m {
 
     /**
      * Update metadata internally to adjust to a new hierarchical level
-     *
      * @param groupIndex - The new group index
      * @param [pointIndex] - The new point index
      */
@@ -1790,11 +1776,19 @@ export class c2m {
         this._flagNewGroup = true;
 
         // Update x range
-        this._xAxis = initializeAxis(this._data, "x", {}, this._groupIndex);
+        this._xAxis = initializeAxis(
+            this._data,
+            "x",
+            this._explicitAxes.x,
+            this._groupIndex
+        );
         this._yAxis = initializeAxis(
             this._data,
             "y",
-            { minimum: 0 },
+            {
+                ...this._explicitAxes.y,
+                minimum: 0
+            },
             this._groupIndex
         );
         this._generateSummary();
@@ -1802,7 +1796,6 @@ export class c2m {
 
     /**
      * Drill down to the next level (hierarchy only)
-     *
      * @returns if possible
      */
     private _drillDown() {
@@ -1827,7 +1820,6 @@ export class c2m {
 
     /**
      * Drill up to the previous level (hierarchy only)
-     *
      * @returns if possible
      */
     private _drillUp() {
@@ -1843,7 +1835,6 @@ export class c2m {
 
     /**
      * Go to the root level (hierarchy only)
-     *
      * @returns if possible
      */
     private _drillToRoot() {
@@ -1860,7 +1851,6 @@ export class c2m {
 
     /**
      * Get the available hertzes
-     *
      * @returns number[]
      */
     private _getHertzRange() {
@@ -1904,7 +1894,6 @@ export class c2m {
 
     /**
      * Play a given data point
-     *
      * @param current - the data point to play
      * @param statIndex - which stat is present, if available
      * @param availableStats - which stats are available
@@ -2072,7 +2061,6 @@ export class c2m {
 
     /**
      * Update the screen reader on the current data point
-     *
      * @param current - the data point to speak about
      */
     private _speakCurrent(current: SupportedDataPointType) {

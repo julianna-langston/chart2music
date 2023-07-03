@@ -37,7 +37,7 @@ export const singleLinePlot = (canvas, cc) => {
         cc,
         data: highs.map((y, x) => {
             return {
-                x,
+                x: months[x],
                 y
             };
         }),
