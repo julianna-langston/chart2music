@@ -20,7 +20,6 @@ export interface AudioEngine {
 
     /**
      * Play a sound to represent a data point.
-     *
      * @param frequency - the fundimental frequency
      * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
      * @param duration - the duration of the note in seconds
@@ -30,7 +29,6 @@ export interface AudioEngine {
     /**
      * Play a notification sound.
      * Not all engines may implement this method, so you should always check before calling it.
-     *
      * @param notificationType - The type of notification to play
      * @param [panning] - where to play the sound (-1 <= 0 <= 1, 0 == center)
      * @param [duration] - the duration of the notification in seconds

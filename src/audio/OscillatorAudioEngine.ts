@@ -3,10 +3,10 @@ import { AudioNotificationType } from "./AudioEngine";
 
 // A few constants that will be helpful later.
 const C3 = 130.8128;
-const E3 = 164.8138;
+// const E3 = 164.8138;
 const G3 = 195.9977;
 const C4 = C3 * 2;
-const E4 = E3 * 2;
+// const E4 = E3 * 2;
 const G4 = G3 * 2;
 const G5 = G4 * 2;
 
@@ -20,7 +20,6 @@ export class OscillatorAudioEngine implements AudioEngine {
 
     /**
      * Create a new OscillatorAudioEngine.
-     *
      * @param context - the audio context
      */
     constructor(context: AudioContext) {
@@ -53,7 +52,6 @@ export class OscillatorAudioEngine implements AudioEngine {
 
     /**
      * Play a sound to represent a data point.
-     *
      * @param frequency - the fundimental frequency
      * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
      * @param duration - the duration of the note in seconds, defaults to 0.2
@@ -70,7 +68,6 @@ export class OscillatorAudioEngine implements AudioEngine {
 
     /**
      * Play an audio notification.
-     *
      * @param notificationType - the type of audio notification
      * @param [panning] - where to play the sound (-1 <= 0 <= 1, 0 == center). Default: 0
      * @param [duration] - the duration of the notification in seconds. Default: 0.15
@@ -89,7 +86,6 @@ export class OscillatorAudioEngine implements AudioEngine {
 
     /**
      * Play a data point, sending the audio to the given destination node.
-     *
      * @param frequency - the fundimental frequency
      * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
      * @param duration - the duration of the note in seconds
@@ -155,7 +151,6 @@ export class OscillatorAudioEngine implements AudioEngine {
 
     /**
      * Play a sound that means that an annotation is present.
-     *
      * @param panning - where to play the sound (-1 <= 0 <= 1, 0 == center)
      * @param duration - the duration of the note in seconds
      */
@@ -198,7 +193,6 @@ export class OscillatorAudioEngine implements AudioEngine {
 
 /**
  * Create a FM synth operator.
- *
  * @param context - the audio context
  * @param carrierFrequency - the main frequency
  * @param modulatorFrequency - the frequency of the modulator
