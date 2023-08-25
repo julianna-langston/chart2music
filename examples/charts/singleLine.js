@@ -35,11 +35,13 @@ export const singleLinePlot = (canvas, cc) => {
         type: "line",
         element: canvas,
         cc,
+        axes: {
+            x: {
+                valueLabels: months
+            }
+        },
         data: highs.map((y, x) => {
-            return {
-                x: months[x],
-                y
-            };
+            return { x, y };
         }),
         options: {
             onFocusCallback: ({ index }) => {
