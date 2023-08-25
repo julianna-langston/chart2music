@@ -11,7 +11,6 @@ export const keyboardEventToString = (e: KeyboardEvent) => {
  * Keyboard event manager enables:
  * - registering/unregistering custom keyboard events
  * - generating documentations listing keyboard events
- *
  * @internal
  */
 export class KeyboardEventManager {
@@ -23,7 +22,6 @@ export class KeyboardEventManager {
 
     /**
      * Initialize keyboard event manager
-     *
      * @param target - target element
      */
     constructor(target: HTMLElement) {
@@ -40,7 +38,6 @@ export class KeyboardEventManager {
 
     /**
      * Handle the keydown event
-     *
      * @param event - keydown event
      */
     private _handleKeyEvents(event: KeyboardEvent) {
@@ -56,7 +53,6 @@ export class KeyboardEventManager {
 
     /**
      * Register a key event
-     *
      * @param details - the details of the key event
      * @param details.key - the key event
      * @param details.callback - the function if the key event is pressed
@@ -90,7 +86,6 @@ export class KeyboardEventManager {
     /**
      * Register multiple key events
      * Effectively a shortcut to calling .registerKeyEvent multiple times
-     *
      * @param keyRegistrationList - list of key events to register
      */
     registerKeyEvents(keyRegistrationList: KeyRegistration[]) {
