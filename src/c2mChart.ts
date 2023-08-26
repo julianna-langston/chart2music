@@ -149,7 +149,7 @@ export class c2m {
     private _groups: string[];
     private _visible_group_indices: number[] = [];
     private _data: SupportedDataPointType[][];
-    private _groupIndex = 0;
+    private _visibleGroupIndex = 0;
     private _pointIndex = 0;
     private _sr: ScreenReaderBridge;
     private _xAxis: AxisData;
@@ -251,12 +251,31 @@ export class c2m {
     }
 
     /**
+     * Index for the current group
+     */
+    get _groupIndex() {
+        return this._visible_group_indices[this._visibleGroupIndex];
+    }
+
+    /**
+     * The current group's data
+     */
+    get _currentDataRow() {
+        return this._data[this._groupIndex];
+    }
+
+    /**
      * Getter for current data point
      */
     get currentPoint() {
-        return this._data[this._visible_group_indices[this._groupIndex]][
-            this._pointIndex
-        ];
+        return this._currentDataRow[this._pointIndex];
+    }
+
+    /**
+     * Get the name of the current group
+     */
+    private get _currentGroupName() {
+        return this._groups[this._groupIndex];
     }
 
     /**
@@ -317,11 +336,11 @@ export class c2m {
                 this._clearPlay();
                 const max = this._visible_group_indices.length - 1;
                 this._playListInterval = setInterval(() => {
-                    if (this._groupIndex >= max) {
-                        this._groupIndex = max;
+                    if (this._visibleGroupIndex >= max) {
+                        this._visibleGroupIndex = max;
                         this._clearPlay();
                     } else {
-                        this._groupIndex++;
+                        this._visibleGroupIndex++;
                         this._playCurrent();
                     }
                 }, SPEEDS[this._speedRateIndex]);
@@ -331,11 +350,11 @@ export class c2m {
                 this._clearPlay();
                 const min = 0;
                 this._playListInterval = setInterval(() => {
-                    if (this._groupIndex <= min) {
-                        this._groupIndex = min;
+                    if (this._visibleGroupIndex <= min) {
+                        this._visibleGroupIndex = min;
                         this._clearPlay();
                     } else {
-                        this._groupIndex--;
+                        this._visibleGroupIndex--;
                         this._playCurrent();
                     }
                 }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
@@ -360,80 +379,67 @@ export class c2m {
             },
             previous_category: () => {
                 this._clearPlay();
-                if (this._groupIndex === 0) {
+                if (this._visibleGroupIndex === 0) {
                     return;
                 }
                 const currentX = this.currentPoint.x;
-                this._groupIndex--;
+                this._visibleGroupIndex--;
                 this._flagNewGroup = true;
                 if (
                     this._xAxis.continuous &&
                     (!this.currentPoint || this.currentPoint.x !== currentX)
                 ) {
-                    const differences = this._data[this._groupIndex].map(
-                        ({ x }) => Math.abs(currentX - x)
+                    const differences = this._currentDataRow.map(({ x }) =>
+                        Math.abs(currentX - x)
                     );
                     const smallestDifference = Math.min(...differences);
                     const closestIndex =
                         differences.indexOf(smallestDifference);
                     this._pointIndex = closestIndex;
                 }
-                if (
-                    this._pointIndex >=
-                    this._data[this._visible_group_indices[this._groupIndex]]
-                        .length
-                ) {
-                    this._pointIndex =
-                        this._data[
-                            this._visible_group_indices[this._groupIndex]
-                        ].length - 1;
+                if (this._pointIndex >= this._currentDataRow.length) {
+                    this._pointIndex = this._currentDataRow.length - 1;
                 }
                 this._playAndSpeak();
             },
             next_category: () => {
                 this._clearPlay();
                 if (
-                    this._groupIndex ===
+                    this._visibleGroupIndex ===
                     this._visible_group_indices.length - 1
                 ) {
                     return;
                 }
                 const currentX = this.currentPoint.x;
-                this._groupIndex++;
+                this._visibleGroupIndex++;
                 this._flagNewGroup = true;
                 if (
                     this._xAxis.continuous &&
                     (!this.currentPoint || this.currentPoint.x !== currentX)
                 ) {
-                    const differences = this._data[this._groupIndex].map(
-                        ({ x }) => Math.abs(currentX - x)
+                    const differences = this._currentDataRow.map(({ x }) =>
+                        Math.abs(currentX - x)
                     );
                     const smallestDifference = Math.min(...differences);
                     const closestIndex =
                         differences.indexOf(smallestDifference);
                     this._pointIndex = closestIndex;
                 }
-                if (
-                    this._pointIndex >=
-                    this._data[this._visible_group_indices[this._groupIndex]]
-                        .length
-                ) {
-                    this._pointIndex =
-                        this._data[
-                            this._visible_group_indices[this._groupIndex]
-                        ].length - 1;
+                if (this._pointIndex >= this._currentDataRow.length) {
+                    this._pointIndex = this._currentDataRow.length - 1;
                 }
                 this._playAndSpeak();
             },
             first_category: () => {
                 this._clearPlay();
-                this._groupIndex = 0;
+                this._visibleGroupIndex = 0;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
             last_category: () => {
                 this._clearPlay();
-                this._groupIndex = this._visible_group_indices.length - 1;
+                this._visibleGroupIndex =
+                    this._visible_group_indices.length - 1;
                 this._flagNewGroup = true;
                 this._playAndSpeak();
             },
@@ -444,9 +450,7 @@ export class c2m {
             },
             last_point: () => {
                 this._clearPlay();
-                this._pointIndex =
-                    this._data[this._visible_group_indices[this._groupIndex]]
-                        .length - 1;
+                this._pointIndex = this._currentDataRow.length - 1;
                 this._playAndSpeak();
             },
             replay: () => {
@@ -457,9 +461,7 @@ export class c2m {
             },
             select: () => {
                 this._options.onSelectCallback?.({
-                    slice: this._groups[
-                        this._visible_group_indices[this._groupIndex]
-                    ],
+                    slice: this._currentGroupName,
                     index: this._pointIndex,
                     point: this.currentPoint
                 });
@@ -501,7 +503,7 @@ export class c2m {
                 if (!winner) {
                     return;
                 }
-                this._groupIndex = this._visible_group_indices.indexOf(
+                this._visibleGroupIndex = this._visible_group_indices.indexOf(
                     winner.index
                 );
                 this._pointIndex = winner.maximumPointIndex;
@@ -522,7 +524,7 @@ export class c2m {
                 if (!winner) {
                     return;
                 }
-                this._groupIndex = this._visible_group_indices.indexOf(
+                this._visibleGroupIndex = this._visible_group_indices.indexOf(
                     winner.index
                 );
                 this._pointIndex = winner.minimumPointIndex;
@@ -883,7 +885,7 @@ export class c2m {
             Math.max(pointIndex ?? 0, 0),
             this._data[0].length - 1
         );
-        this._groupIndex =
+        this._visibleGroupIndex =
             this._visible_group_indices[
                 Math.max(this._groups.indexOf(groupName), 0)
             ];
@@ -935,11 +937,11 @@ export class c2m {
             }
         }
 
-        if (this._groupIndex >= this._visible_group_indices.length) {
-            this._groupIndex = this._visible_group_indices.length - 1;
+        if (this._visibleGroupIndex >= this._visible_group_indices.length) {
+            this._visibleGroupIndex = this._visible_group_indices.length - 1;
         }
 
-        if (this._groupIndex === visibleGroupIndex) {
+        if (this._visibleGroupIndex === visibleGroupIndex) {
             this._silent = true;
             this._availableActions.previous_category();
             if (visibleGroupIndex > 0) this._availableActions.next_category();
@@ -955,15 +957,11 @@ export class c2m {
      */
     getCurrent() {
         const { statIndex, availableStats } =
-            this._metadataByGroup[
-                this._visible_group_indices[this._groupIndex]
-            ];
+            this._metadataByGroup[this._groupIndex];
         return {
             index: this._pointIndex,
-            group: this._groups[this._visible_group_indices[this._groupIndex]],
-            point: this._data[this._visible_group_indices[this._groupIndex]][
-                this._pointIndex
-            ],
+            group: this._currentGroupName,
+            point: this.currentPoint,
             stat: availableStats[statIndex] ?? ("" as keyof StatBundle | "")
         };
     }
@@ -1309,9 +1307,7 @@ export class c2m {
 
         const hotkeyCallbackWrapper = (cb: (args: c2mCallbackType) => void) => {
             cb({
-                slice: this._groups[
-                    this._visible_group_indices[this._groupIndex]
-                ],
+                slice: this._currentGroupName,
                 index: this._pointIndex,
                 point: this.currentPoint
             });
@@ -1391,15 +1387,11 @@ export class c2m {
         if (this._silent) {
             return;
         }
-        const current =
-            this._data[this._visible_group_indices[this._groupIndex]][
-                this._pointIndex
-            ];
 
         this._playCurrent();
 
         setTimeout(() => {
-            this._speakCurrent(current);
+            this._speakCurrent(this.currentPoint);
         }, NOTE_LENGTH * 1000);
     }
 
@@ -1407,9 +1399,11 @@ export class c2m {
      * Move focus to the next outlier, if there is one
      */
     private _moveNextOutlier() {
-        const currentPoint = this._data[this._groupIndex][this._pointIndex];
-        if (isBoxDataPoint(currentPoint) && "outlier" in currentPoint) {
-            const { outlier } = currentPoint;
+        if (
+            isBoxDataPoint(this.currentPoint) &&
+            "outlier" in this.currentPoint
+        ) {
+            const { outlier } = this.currentPoint;
             if (this._outlierIndex >= outlier.length - 1) {
                 return false;
             }
@@ -1423,8 +1417,10 @@ export class c2m {
      * Move focus to the previous outlier, if there is one
      */
     private _movePrevOutlier() {
-        const currentPoint = this._data[this._groupIndex][this._pointIndex];
-        if (isBoxDataPoint(currentPoint) && "outlier" in currentPoint) {
+        if (
+            isBoxDataPoint(this.currentPoint) &&
+            "outlier" in this.currentPoint
+        ) {
             if (this._outlierIndex <= 0) {
                 this._outlierIndex = 0;
                 return false;
@@ -1443,7 +1439,7 @@ export class c2m {
             return this._moveNextOutlier();
         }
 
-        const max = this._data[this._groupIndex].length - 1;
+        const max = this._currentDataRow.length - 1;
         if (this._pointIndex >= max) {
             this._pointIndex = max;
             return false;
@@ -1543,7 +1539,7 @@ export class c2m {
             return true;
         }
 
-        if (this._pointIndex === this._data[this._groupIndex].length - 1) {
+        if (this._pointIndex === this._currentDataRow.length - 1) {
             return false;
         }
         this._pointIndex = Math.min(
@@ -1658,11 +1654,15 @@ export class c2m {
      * Play all outliers to the right, if there are any
      */
     private _playRightOutlier() {
-        const currentPoint = this._data[this._groupIndex][this._pointIndex];
-        if (!(isBoxDataPoint(currentPoint) && "outlier" in currentPoint)) {
+        if (
+            !(
+                isBoxDataPoint(this.currentPoint) &&
+                "outlier" in this.currentPoint
+            )
+        ) {
             return;
         }
-        const max = currentPoint.outlier?.length - 1 ?? 0;
+        const max = this.currentPoint.outlier?.length - 1 ?? 0;
         this._playListInterval = setInterval(() => {
             if (this._outlierIndex >= max) {
                 this._outlierIndex = max;
@@ -1681,7 +1681,7 @@ export class c2m {
     private _playRightContinuous() {
         const startIndex = this._pointIndex;
         const startX = this.getCurrent().point.x;
-        const row = this._data[this._groupIndex].slice(startIndex);
+        const row = this._currentDataRow.slice(startIndex);
         const totalTime = SPEEDS[this._speedRateIndex] * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
@@ -1716,7 +1716,7 @@ export class c2m {
     private _playLeftContinuous() {
         const startIndex = this._pointIndex;
         const startX = this.getCurrent().point.x;
-        const row = this._data[this._groupIndex].slice(0, startIndex + 1);
+        const row = this._currentDataRow.slice(0, startIndex + 1);
         const totalTime = SPEEDS[this._speedRateIndex] * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
@@ -1758,7 +1758,7 @@ export class c2m {
             this._playRightContinuous();
             return;
         }
-        const max = this._data[this._groupIndex].length - 1;
+        const max = this._currentDataRow.length - 1;
         this._playListInterval = setInterval(() => {
             if (this._pointIndex >= max) {
                 this._pointIndex = max;
@@ -1777,7 +1777,7 @@ export class c2m {
      * @param [pointIndex] - The new point index
      */
     private _updateToNewLevel(groupIndex: number, pointIndex = 0) {
-        this._groupIndex = groupIndex;
+        this._visibleGroupIndex = groupIndex;
         this._pointIndex = pointIndex;
         this._flagNewGroup = true;
 
@@ -1786,7 +1786,7 @@ export class c2m {
             this._data,
             "x",
             this._explicitAxes.x,
-            this._groupIndex
+            this._visibleGroupIndex
         );
         this._yAxis = initializeAxis(
             this._data,
@@ -1795,7 +1795,7 @@ export class c2m {
                 ...this._explicitAxes.y,
                 minimum: 0
             },
-            this._groupIndex
+            this._visibleGroupIndex
         );
         this._generateSummary();
     }
@@ -1816,7 +1816,7 @@ export class c2m {
         const groupIndex = this._groups.indexOf(children);
 
         this._hierarchyBreadcrumbs.push({
-            groupIndex: this._groupIndex,
+            groupIndex: this._visibleGroupIndex,
             pointIndex: this._pointIndex
         });
         this._updateToNewLevel(groupIndex);
@@ -1878,9 +1878,7 @@ export class c2m {
         const { statIndex, availableStats } =
             this._metadataByGroup[this._groupIndex];
 
-        const current = this._data[this._groupIndex][this._pointIndex];
-
-        this._playDataPoint(current, statIndex, availableStats);
+        this._playDataPoint(this.currentPoint, statIndex, availableStats);
         this._onFocus();
     }
 
@@ -2062,7 +2060,7 @@ export class c2m {
         }
 
         this._options?.onFocusCallback?.({
-            slice: this._groups[this._visible_group_indices[this._groupIndex]],
+            slice: this._currentGroupName,
             index: this._pointIndex,
             point: this.currentPoint
         });
@@ -2078,10 +2076,7 @@ export class c2m {
         }
 
         // If we're flagged to announce a new group, but the group name is empty, ignore the flag
-        if (
-            this._flagNewGroup &&
-            this._groups[this._visible_group_indices[this._groupIndex]] === ""
-        ) {
+        if (this._flagNewGroup && this._currentGroupName === "") {
             this._flagNewGroup = false;
         }
 
@@ -2091,9 +2086,7 @@ export class c2m {
         }
 
         const { statIndex, availableStats } =
-            this._metadataByGroup[
-                this._visible_group_indices[this._groupIndex]
-            ];
+            this._metadataByGroup[this._groupIndex];
         if (this._flagNewStat && availableStats.length === 0) {
             this._flagNewStat = false;
         }
@@ -2108,11 +2101,9 @@ export class c2m {
             this._outlierMode ? this._outlierIndex : null,
             this._announcePointLabelFirst
         );
-        const groupName =
-            this._groups[this._visible_group_indices[this._groupIndex]];
         const text = filteredJoin(
             [
-                this._flagNewGroup && groupName,
+                this._flagNewGroup && this._currentGroupName,
                 this._flagNewStat &&
                     sentenceCase(availableStats[statIndex] ?? "all"),
                 point,
