@@ -243,6 +243,15 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "b".`
+    );
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "b, 2, 12"
     );
@@ -278,6 +287,13 @@ test("Movement for a grouped chart", () => {
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "PageUp"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(`Line chart showing "a".`);
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
         })
     );
     jest.advanceTimersByTime(250);
@@ -412,7 +428,7 @@ test("Movement for a chart with stats", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified band-line chart "", contains 2 groups, x is "" from 1 to 3, y is "" from 8 to 13. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified chart with 2 groups. Band chart showing "a". X is "" from 1 to 3. Y is "" from 8 to 13. Use arrow keys to navigate. Press H for more hotkeys.`
     );
 
     // Move right
@@ -553,10 +569,23 @@ test("Movement for a chart with a y2 axis and formatting", () => {
         }
     });
 
-    // Move right
+    // Move to next category
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "PageDown"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "b".`
+    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Alternate Y is "" from 11% to 13%.`
+    );
+    // Play
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
         })
     );
     jest.advanceTimersByTime(250);
@@ -591,10 +620,22 @@ test("Movement for a chart with a y2 axis and formatting", () => {
         }
     });
 
-    // Move right
+    // Move to previous category
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "PageUp"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "a".`
+    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Y is "" from $1 to $3.`
+    );
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
         })
     );
     jest.advanceTimersByTime(250);
@@ -837,7 +878,7 @@ test("Move with tickLabels option", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`x is "" from A to H`);
+    expect(mockElementCC.textContent).toContain(`X is "" from A to H`);
 
     // Move right
     mockElement.dispatchEvent(
@@ -1062,7 +1103,7 @@ test("Stacked bar chart", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`contains 3 groups`);
+    expect(mockElementCC.textContent).toContain(`with 3 groups`);
 
     // Change groups
     mockElement.dispatchEvent(
@@ -1230,7 +1271,7 @@ test("Grouped scatter plot", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`contains 3 groups`);
+    expect(mockElementCC.textContent).toContain(`with 3 groups`);
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: " "

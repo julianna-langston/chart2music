@@ -97,7 +97,7 @@ export const barLinePlot = (canvas, cc) => {
     const myChart = new Chart(canvas, config);
 
     const { err, data: myC2m } = c2mChart({
-        type: ["bar", "line"],
+        type: ["line", "bar"],
         title: "AAPL Trades",
         element: canvas,
         cc,

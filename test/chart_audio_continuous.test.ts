@@ -180,7 +180,7 @@ test("C2M sorts out-of-order scatter plot data", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toContain(
-        `x is "" from 12 to 123456 logarithmic continuously`
+        `X is "" from 12 to 123456 logarithmic continuously`
     );
 
     mockElement.dispatchEvent(

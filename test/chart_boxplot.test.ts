@@ -91,7 +91,7 @@ test("Checking out the outliers", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toEqual(
-        `Sonified box chart "World Happiness Report", x is "Region" from Western Europe to Southern Asia, y is "Average Happiness Score" from 2.91 to 7.53. Use arrow keys to navigate. Press H for more hotkeys.`
+        `Sonified chart titled "World Happiness Report". Box chart. X is "Region" from Western Europe to Southern Asia. Y is "Average Happiness Score" from 2.91 to 7.53. Use arrow keys to navigate. Press H for more hotkeys.`
     );
 
     [

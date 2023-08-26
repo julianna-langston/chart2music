@@ -16,7 +16,6 @@ import type {
 import { SUPPORTED_CHART_TYPES } from "./types";
 import {
     calcPan,
-    generateSummary,
     interpolateBin,
     sentenceCase,
     generatePointDescription,
@@ -31,7 +30,10 @@ import {
     isUnplayable,
     prepChartElement,
     checkForNumberInput,
-    filteredJoin
+    filteredJoin,
+    generateChartSummary,
+    generateInstructions,
+    generateAxisSummary
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -145,7 +147,8 @@ export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
 export class c2m {
     private _chartElement: HTMLElement;
     private _ccElement: HTMLElement;
-    private _summary: string;
+    private _chartSummary: string;
+    private _instructions: string;
     private _groups: string[];
     private _visible_group_indices: number[] = [];
     private _data: SupportedDataPointType[][];
@@ -250,13 +253,27 @@ export class c2m {
         this._startListening();
     }
 
+    private get _visibleGroupIndex() {
+        return this._visible_group_indices[this._groupIndex];
+    }
+
+    private get _currentGroupName() {
+        return this._groups[this._visibleGroupIndex];
+    }
+
+    private get _currentGroupType() {
+        if(Array.isArray(this._type)){
+            return this._type[this._visibleGroupIndex];
+        }else{
+            return this._type;
+        }
+    }
+
     /**
      * Getter for current data point
      */
     get currentPoint() {
-        return this._data[this._visible_group_indices[this._groupIndex]][
-            this._pointIndex
-        ];
+        return this._data[this._visibleGroupIndex][this._pointIndex];
     }
 
     /**
@@ -380,15 +397,13 @@ export class c2m {
                 }
                 if (
                     this._pointIndex >=
-                    this._data[this._visible_group_indices[this._groupIndex]]
+                    this._data[this._visibleGroupIndex]
                         .length
                 ) {
                     this._pointIndex =
-                        this._data[
-                            this._visible_group_indices[this._groupIndex]
-                        ].length - 1;
+                        this._data[this._visibleGroupIndex].length - 1;
                 }
-                this._playAndSpeak();
+                this._announceCategoryChange();
             },
             next_category: () => {
                 this._clearPlay();
@@ -415,15 +430,15 @@ export class c2m {
                 }
                 if (
                     this._pointIndex >=
-                    this._data[this._visible_group_indices[this._groupIndex]]
+                    this._data[this._visibleGroupIndex]
                         .length
                 ) {
                     this._pointIndex =
                         this._data[
-                            this._visible_group_indices[this._groupIndex]
+                            this._visibleGroupIndex
                         ].length - 1;
                 }
-                this._playAndSpeak();
+                this._announceCategoryChange();
             },
             first_category: () => {
                 this._clearPlay();
@@ -445,7 +460,7 @@ export class c2m {
             last_point: () => {
                 this._clearPlay();
                 this._pointIndex =
-                    this._data[this._visible_group_indices[this._groupIndex]]
+                    this._data[this._visibleGroupIndex]
                         .length - 1;
                 this._playAndSpeak();
             },
@@ -457,9 +472,7 @@ export class c2m {
             },
             select: () => {
                 this._options.onSelectCallback?.({
-                    slice: this._groups[
-                        this._visible_group_indices[this._groupIndex]
-                    ],
+                    slice: this._groups[this._visibleGroupIndex],
                     index: this._pointIndex,
                     point: this.currentPoint
                 });
@@ -690,17 +703,16 @@ export class c2m {
      * Generate (or regenerate) chart summary
      */
     private _generateSummary() {
-        this._summary = generateSummary({
-            type: this._type,
+        this._chartSummary = generateChartSummary({
             title: this._title,
-            x: this._xAxis,
-            y: this._yAxis,
-            dataRows: this._visible_group_indices.length,
-            y2: this._y2Axis,
+            groupCount: this._visible_group_indices.length,
             live: this._options.live,
-            hasNotes: this._info.notes?.length > 0,
+            hierarchy: this._hierarchy
+        });
+        this._instructions = generateInstructions({
+            live: this._options.live,
             hierarchy: this._hierarchy,
-            hierarchyLevel: this._hierarchyBreadcrumbs.length
+            hasNotes: this._info?.notes?.length > 0
         });
     }
 
@@ -955,13 +967,11 @@ export class c2m {
      */
     getCurrent() {
         const { statIndex, availableStats } =
-            this._metadataByGroup[
-                this._visible_group_indices[this._groupIndex]
-            ];
+            this._metadataByGroup[this._visibleGroupIndex];
         return {
             index: this._pointIndex,
-            group: this._groups[this._visible_group_indices[this._groupIndex]],
-            point: this._data[this._visible_group_indices[this._groupIndex]][
+            group: this._groups[this._visibleGroupIndex],
+            point: this._data[this._visibleGroupIndex][
                 this._pointIndex
             ],
             stat: availableStats[statIndex] ?? ("" as keyof StatBundle | "")
@@ -1309,9 +1319,7 @@ export class c2m {
 
         const hotkeyCallbackWrapper = (cb: (args: c2mCallbackType) => void) => {
             cb({
-                slice: this._groups[
-                    this._visible_group_indices[this._groupIndex]
-                ],
+                slice: this._currentGroupName,
                 index: this._pointIndex,
                 point: this.currentPoint
             });
@@ -1361,6 +1369,29 @@ export class c2m {
         this._data = [convertDataRow(userData)];
     }
 
+    private generateGroupSummary(){
+        const text = [sentenceCase(this._currentGroupType)];
+
+        const groupName = this._groups[this._visibleGroupIndex];
+
+        if(groupName.length > 0){
+            text.push(`chart showing "${groupName}".`);
+        }else{
+            text.push("chart.");
+        }
+
+        // Data has to have X axis value
+        text.push(generateAxisSummary("x", this._xAxis));
+
+        if(isAlternateAxisDataPoint(this.currentPoint)){
+            text.push(generateAxisSummary("y2", this._y2Axis));
+        }else{
+            text.push(generateAxisSummary("y", this._yAxis));
+        }
+        
+        return text.join(" ");
+    }
+
     /**
      * Listen to various events, and drive interactions
      */
@@ -1371,7 +1402,7 @@ export class c2m {
                 this._generateSummary();
             }
             if (this._options.enableSpeech) {
-                this._sr.render(this._summary);
+                this._sr.render(this._chartSummary + " " + this.generateGroupSummary() + " " + this._instructions);
             }
             if (window.__chart2music_options__?._hertzClamps) {
                 const { lower, upper } =
@@ -1384,6 +1415,24 @@ export class c2m {
         });
     }
 
+    private _announceCategoryChange() {
+        if(this._silent){
+            return;
+        }
+
+        const axisCollection = {x: this._xAxis};
+
+        if(isAlternateAxisDataPoint(this.currentPoint)){
+            axisCollection["y2"] = this._y2Axis;
+        }else{
+            axisCollection["y"] = this._yAxis;
+        }
+
+        const newGroupSummary = this.generateGroupSummary();
+
+        this._sr.render(newGroupSummary);
+    }
+
     /**
      * Play an individual data point, and then speak its details
      */
@@ -1392,7 +1441,7 @@ export class c2m {
             return;
         }
         const current =
-            this._data[this._visible_group_indices[this._groupIndex]][
+            this._data[this._visibleGroupIndex][
                 this._pointIndex
             ];
 

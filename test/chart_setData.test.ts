@@ -20,14 +20,14 @@ test("setData: setting new data (no starting explicit axis) (no axes)", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 1 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 1 to 5.`);
 
     chart?.setData([10, 11, 12]);
 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 10 to 12.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 10 to 12.`);
 });
 
 test("setData: setting new data (starting explicit axis) (no axes)", () => {
@@ -49,14 +49,14 @@ test("setData: setting new data (starting explicit axis) (no axes)", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 0 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 0 to 5.`);
 
     chart?.setData([10, 11, 12]);
 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 0 to 12.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 0 to 12.`);
 });
 
 test("setData: setting new data (starting explicit format) (no overwrite)", () => {
@@ -78,14 +78,14 @@ test("setData: setting new data (starting explicit format) (no overwrite)", () =
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from $1 to $5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from $1 to $5.`);
 
     chart?.setData([10, 11, 12]);
 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from $10 to $12.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from $10 to $12.`);
 });
 
 test("setData: setting new data (starting explicit format) (overwrite)", () => {
@@ -107,7 +107,7 @@ test("setData: setting new data (starting explicit format) (overwrite)", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from $1 to $5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from $1 to $5.`);
 
     chart?.setData([10, 11, 12], {
         y: {
@@ -118,7 +118,7 @@ test("setData: setting new data (starting explicit format) (overwrite)", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 10% to 12%.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 10% to 12%.`);
 
     // Confirm that set format retains
     chart?.setData([20, 21, 22]);
@@ -126,7 +126,7 @@ test("setData: setting new data (starting explicit format) (overwrite)", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 20% to 22%.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 20% to 22%.`);
 });
 
 test("setData: setting new data (no starting explicit format) (add format)", () => {
@@ -143,7 +143,7 @@ test("setData: setting new data (no starting explicit format) (add format)", () 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 1 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 1 to 5.`);
 
     chart?.setData([10, 11, 12], {
         y: {
@@ -154,7 +154,7 @@ test("setData: setting new data (no starting explicit format) (add format)", () 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 10% to 12%.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 10% to 12%.`);
 
     // Confirm that set format retains
     chart?.setData([20, 21, 22]);
@@ -162,7 +162,7 @@ test("setData: setting new data (no starting explicit format) (add format)", () 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 20% to 22%.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 20% to 22%.`);
 });
 
 test("setData: setting new data (starting explicit minimum) (no overwrite)", () => {
@@ -184,14 +184,14 @@ test("setData: setting new data (starting explicit minimum) (no overwrite)", () 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 0 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 0 to 5.`);
 
     chart?.setData([10, 11, 12]);
 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 0 to 12.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 0 to 12.`);
 });
 
 test("setData: setting new data (starting explicit minimum) (overwrite)", () => {
@@ -213,7 +213,7 @@ test("setData: setting new data (starting explicit minimum) (overwrite)", () => 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 0 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 0 to 5.`);
 
     chart?.setData([10, 11, 12], {
         y: {
@@ -224,7 +224,7 @@ test("setData: setting new data (starting explicit minimum) (overwrite)", () => 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 9 to 12.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 9 to 12.`);
 
     // Confirm that set format retains
     chart?.setData([20, 21, 22]);
@@ -232,7 +232,7 @@ test("setData: setting new data (starting explicit minimum) (overwrite)", () => 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 9 to 22.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 9 to 22.`);
 });
 
 test("setData: setting new data (no starting explicit minimum) (add minimum)", () => {
@@ -249,7 +249,7 @@ test("setData: setting new data (no starting explicit minimum) (add minimum)", (
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 1 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 1 to 5.`);
 
     chart?.setData([10, 11, 12], {
         y: {
@@ -260,7 +260,7 @@ test("setData: setting new data (no starting explicit minimum) (add minimum)", (
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 9 to 12.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 9 to 12.`);
 
     // Confirm that set format retains
     chart?.setData([20, 21, 22]);
@@ -268,7 +268,7 @@ test("setData: setting new data (no starting explicit minimum) (add minimum)", (
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 9 to 22.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 9 to 22.`);
 });
 
 test("setData: setting new data with starting pointIndex", () => {
@@ -285,7 +285,7 @@ test("setData: setting new data with starting pointIndex", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 1 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 1 to 5.`);
 
     chart?.setData([10, 11, 12], {}, 1);
 

@@ -52,7 +52,7 @@ test("C2M setup handles partial axis info", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`y is "" from 0 to 5.`);
+    expect(mockElementCC.textContent).toContain(`Y is "" from 0 to 5.`);
 
     // Confirm
     expect(mockElementCC.textContent).not.toContain(`Sonified live chart`);
@@ -106,7 +106,7 @@ test("C2M sorts out-of-order scatter plot data", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toContain(
-        `x is "" from 823 to 1030 continuously`
+        `X is "" from 823 to 1030 continuously`
     );
 
     // Confirm

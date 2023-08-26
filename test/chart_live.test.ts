@@ -30,13 +30,14 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
         options: {
             live: true
         }
-    });
+    })
     expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`Sonified live line chart`);
+    expect(mockElementCC.textContent).toContain(`Sonified live chart`);
+    expect(mockElementCC.textContent).toContain(`Line chart`);
     expect(mockElementCC.textContent).toContain(`Press M`);
 
     const result1 = chart?.appendData(4);
@@ -100,8 +101,9 @@ test("C2M provides details for live mixed charts", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toContain(
-        `Sonified live band-line chart`
+        `Sonified live chart`
     );
+    expect(mockElementCC.textContent).toContain("Band chart showing");
     expect(mockElementCC.textContent).toContain(`Press M`);
 
     mockElement.dispatchEvent(

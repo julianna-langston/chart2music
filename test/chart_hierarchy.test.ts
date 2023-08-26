@@ -49,9 +49,7 @@ test("Basic treemap example", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toEqual(
-        `Sonified hierarchical treemap chart "${title}", on root level, x is "" from a to c, y is "" from 0 to 3. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
-    );
+    expect(mockElementCC.textContent).toContain(`Sonified hierarchical chart with 4 groups titled "Example hierarchy". Treemap chart showing "root". X is "" from a to c. Y is "" from 0 to 3. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`);
 
     [
         {
@@ -92,7 +90,7 @@ test("Basic treemap example", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toEqual(
-        `Sonified hierarchical treemap chart "${title}", on level 1, x is "" from ba to ba, y is "" from 0 to 10. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
+        `Sonified hierarchical chart with 4 groups titled "${title}". Treemap chart showing "b". X is "" from ba to ba. Y is "" from 0 to 10. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
     );
 
     [
