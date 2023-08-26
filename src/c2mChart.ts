@@ -162,7 +162,7 @@ export class c2m {
     private _playListInterval: NodeJS.Timeout | null = null;
     private _playListContinuous: NodeJS.Timeout[] = [];
     private _speedRateIndex = 1;
-    private _flagNewGroup = false;
+    private _flagNewLevel = false;
     private _flagNewStat = false;
     private _keyEventManager: KeyboardEventManager;
     private _audioEngine: AudioEngine | null = null;
@@ -253,18 +253,33 @@ export class c2m {
         this._startListening();
     }
 
+    /**
+     * Get the index for the current, visible group
+     * To get the current group, use:
+     * ```js
+     * this._data[this._visibleGroupIndex]
+     * ```
+     */
     private get _visibleGroupIndex() {
         return this._visible_group_indices[this._groupIndex];
     }
 
+    /**
+     * Get the name of the current group
+     */
     private get _currentGroupName() {
         return this._groups[this._visibleGroupIndex];
     }
 
+    /**
+     * Get the chart type of the current group
+     */
     private get _currentGroupType() {
-        if(Array.isArray(this._type)){
+        if (Array.isArray(this._type)) {
+            // Example type: ["bar", "line"]
             return this._type[this._visibleGroupIndex];
-        }else{
+        } else {
+            // Example type: "bar"
             return this._type;
         }
     }
@@ -382,7 +397,6 @@ export class c2m {
                 }
                 const currentX = this.currentPoint.x;
                 this._groupIndex--;
-                this._flagNewGroup = true;
                 if (
                     this._xAxis.continuous &&
                     (!this.currentPoint || this.currentPoint.x !== currentX)
@@ -397,8 +411,7 @@ export class c2m {
                 }
                 if (
                     this._pointIndex >=
-                    this._data[this._visibleGroupIndex]
-                        .length
+                    this._data[this._visibleGroupIndex].length
                 ) {
                     this._pointIndex =
                         this._data[this._visibleGroupIndex].length - 1;
@@ -415,7 +428,6 @@ export class c2m {
                 }
                 const currentX = this.currentPoint.x;
                 this._groupIndex++;
-                this._flagNewGroup = true;
                 if (
                     this._xAxis.continuous &&
                     (!this.currentPoint || this.currentPoint.x !== currentX)
@@ -430,26 +442,21 @@ export class c2m {
                 }
                 if (
                     this._pointIndex >=
-                    this._data[this._visibleGroupIndex]
-                        .length
+                    this._data[this._visibleGroupIndex].length
                 ) {
                     this._pointIndex =
-                        this._data[
-                            this._visibleGroupIndex
-                        ].length - 1;
+                        this._data[this._visibleGroupIndex].length - 1;
                 }
                 this._announceCategoryChange();
             },
             first_category: () => {
                 this._clearPlay();
                 this._groupIndex = 0;
-                this._flagNewGroup = true;
                 this._playAndSpeak();
             },
             last_category: () => {
                 this._clearPlay();
                 this._groupIndex = this._visible_group_indices.length - 1;
-                this._flagNewGroup = true;
                 this._playAndSpeak();
             },
             first_point: () => {
@@ -460,13 +467,11 @@ export class c2m {
             last_point: () => {
                 this._clearPlay();
                 this._pointIndex =
-                    this._data[this._visibleGroupIndex]
-                        .length - 1;
+                    this._data[this._visibleGroupIndex].length - 1;
                 this._playAndSpeak();
             },
             replay: () => {
                 this._clearPlay();
-                this._flagNewGroup = true;
                 this._flagNewStat = true;
                 this._playAndSpeak();
             },
@@ -971,9 +976,7 @@ export class c2m {
         return {
             index: this._pointIndex,
             group: this._groups[this._visibleGroupIndex],
-            point: this._data[this._visibleGroupIndex][
-                this._pointIndex
-            ],
+            point: this._data[this._visibleGroupIndex][this._pointIndex],
             stat: availableStats[statIndex] ?? ("" as keyof StatBundle | "")
         };
     }
@@ -1369,26 +1372,29 @@ export class c2m {
         this._data = [convertDataRow(userData)];
     }
 
-    private generateGroupSummary(){
+    /**
+     * Generate a context summary for the current group
+     */
+    private generateGroupSummary() {
         const text = [sentenceCase(this._currentGroupType)];
 
         const groupName = this._groups[this._visibleGroupIndex];
 
-        if(groupName.length > 0){
+        if (groupName.length > 0) {
             text.push(`chart showing "${groupName}".`);
-        }else{
+        } else {
             text.push("chart.");
         }
 
         // Data has to have X axis value
         text.push(generateAxisSummary("x", this._xAxis));
 
-        if(isAlternateAxisDataPoint(this.currentPoint)){
+        if (isAlternateAxisDataPoint(this.currentPoint)) {
             text.push(generateAxisSummary("y2", this._y2Axis));
-        }else{
+        } else {
             text.push(generateAxisSummary("y", this._yAxis));
         }
-        
+
         return text.join(" ");
     }
 
@@ -1402,7 +1408,13 @@ export class c2m {
                 this._generateSummary();
             }
             if (this._options.enableSpeech) {
-                this._sr.render(this._chartSummary + " " + this.generateGroupSummary() + " " + this._instructions);
+                this._sr.render(
+                    this._chartSummary +
+                        " " +
+                        this.generateGroupSummary() +
+                        " " +
+                        this._instructions
+                );
             }
             if (window.__chart2music_options__?._hertzClamps) {
                 const { lower, upper } =
@@ -1415,16 +1427,19 @@ export class c2m {
         });
     }
 
+    /**
+     * Speak the context for the new group
+     */
     private _announceCategoryChange() {
-        if(this._silent){
+        if (this._silent) {
             return;
         }
 
-        const axisCollection = {x: this._xAxis};
+        const axisCollection = { x: this._xAxis };
 
-        if(isAlternateAxisDataPoint(this.currentPoint)){
+        if (isAlternateAxisDataPoint(this.currentPoint)) {
             axisCollection["y2"] = this._y2Axis;
-        }else{
+        } else {
             axisCollection["y"] = this._yAxis;
         }
 
@@ -1440,10 +1455,7 @@ export class c2m {
         if (this._silent) {
             return;
         }
-        const current =
-            this._data[this._visibleGroupIndex][
-                this._pointIndex
-            ];
+        const current = this._data[this._visibleGroupIndex][this._pointIndex];
 
         this._playCurrent();
 
@@ -1822,7 +1834,7 @@ export class c2m {
     private _updateToNewLevel(groupIndex: number, pointIndex = 0) {
         this._groupIndex = groupIndex;
         this._pointIndex = pointIndex;
-        this._flagNewGroup = true;
+        this._flagNewLevel = true;
 
         // Update x range
         this._xAxis = initializeAxis(
@@ -2117,14 +2129,6 @@ export class c2m {
             return;
         }
 
-        // If we're flagged to announce a new group, but the group name is empty, ignore the flag
-        if (
-            this._flagNewGroup &&
-            this._groups[this._visible_group_indices[this._groupIndex]] === ""
-        ) {
-            this._flagNewGroup = false;
-        }
-
         if (current.type === "annotation") {
             this._sr.render(current.label);
             return;
@@ -2152,7 +2156,7 @@ export class c2m {
             this._groups[this._visible_group_indices[this._groupIndex]];
         const text = filteredJoin(
             [
-                this._flagNewGroup && groupName,
+                this._flagNewLevel && groupName,
                 this._flagNewStat &&
                     sentenceCase(availableStats[statIndex] ?? "all"),
                 point,
@@ -2163,7 +2167,7 @@ export class c2m {
 
         this._sr.render(text);
 
-        this._flagNewGroup = false;
+        this._flagNewLevel = false;
         this._flagNewStat = false;
     }
 }

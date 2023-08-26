@@ -135,7 +135,7 @@ test("Check missing data - with HighLow", () => {
     );
     jest.advanceTimersByTime(250);
     expect(audioEngine.playCount).toBe(2);
-    expect(mockElementCC.textContent).toContain("a, All, 1, 10 - 8");
+    expect(mockElementCC.textContent).toContain("All, 1, 10 - 8");
 
     audioEngine.reset();
 

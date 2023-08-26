@@ -252,9 +252,7 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 2, 12"
-    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2, 12");
     expect(chart?.getCurrent()).toStrictEqual({
         index: 1,
         group: "b",
@@ -290,14 +288,16 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(`Line chart showing "a".`);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "a".`
+    );
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: " "
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 3, 3");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 3");
     expect(chart?.getCurrent()).toStrictEqual({
         index: 2,
         group: "a",
@@ -589,9 +589,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 2!, 12%"
-    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("2!, 12%");
     expect(chart?.getCurrent()).toStrictEqual({
         index: 1,
         group: "b",
@@ -639,9 +637,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "a, 3!, $3"
-    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3!, $3");
     expect(chart?.getCurrent()).toStrictEqual({
         index: 2,
         group: "a",
@@ -656,7 +652,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
 test("Movement for a matrix", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
-    const { err, data: chart } = c2mChart({
+    const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.MATRIX,
         element: mockElement,
         cc: mockElementCC,

@@ -224,7 +224,7 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(350);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("b, 3, 13");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("3, 13");
     expect(chart?.getCurrent()).toStrictEqual({
         index: 2,
         group: "b",
@@ -281,7 +281,9 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(350);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(`Line chart showing "a"`);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "a"`
+    );
     expect(chart?.getCurrent()).toStrictEqual({
         index: 2,
         group: "a",
@@ -321,7 +323,9 @@ test("Movement for a chart with stats", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`Sonified chart with 2 groups.`);
+    expect(mockElementCC.textContent).toContain(
+        `Sonified chart with 2 groups.`
+    );
     expect(mockElementCC.textContent).toContain(`Band chart showing "a".`);
 
     // Move right

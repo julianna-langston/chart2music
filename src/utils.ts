@@ -379,12 +379,15 @@ export const formatWrapper = (axis: AxisData) => {
     return format;
 };
 
+/**
+ *
+ */
 type ChartSummaryType = {
     groupCount: number;
     title: string;
     live?: boolean;
     hierarchy?: boolean;
-}
+};
 export const generateChartSummary = ({
     title,
     groupCount,
@@ -393,41 +396,55 @@ export const generateChartSummary = ({
 }: ChartSummaryType) => {
     const text = ["Sonified"];
 
-    if(live){
+    if (live) {
         text.push("live");
     }
 
-    if(hierarchy){
+    if (hierarchy) {
         text.push("hierarchical");
     }
 
     text.push("chart");
 
-    if(groupCount > 1){
+    if (groupCount > 1) {
         text.push(`with ${groupCount} groups`);
     }
 
-    if(title.length > 0){
+    if (title.length > 0) {
         text.push(`titled "${title}"`);
     }
 
     return text.join(" ") + ".";
-}
+};
 
 const axisDescriptions = {
     x: "X",
     y: "Y",
     y2: "Alternate Y"
-}
-export const generateAxisSummary = (axisLetter: "x" | "y" | "y2", axis: AxisData) =>
-    `${axisDescriptions[axisLetter]} is "${axis.label ?? ""}" from ${axis.format(axis.minimum)} to ${axis.format(axis.maximum)}${axis.type === "log10" ? " logarithmic" : ""}${axisLetter === "x" && axis.continuous ? " continuously" : ""}.`;
+};
+export const generateAxisSummary = (
+    axisLetter: "x" | "y" | "y2",
+    axis: AxisData
+) =>
+    `${axisDescriptions[axisLetter]} is "${
+        axis.label ?? ""
+    }" from ${axis.format(axis.minimum)} to ${axis.format(axis.maximum)}${
+        axis.type === "log10" ? " logarithmic" : ""
+    }${axisLetter === "x" && axis.continuous ? " continuously" : ""}.`;
 
+/**
+ *
+ */
 type InstructionsType = {
     hierarchy: boolean;
     live: boolean;
     hasNotes: boolean;
 };
-export const generateInstructions = ({hierarchy, live, hasNotes}: InstructionsType) => {
+export const generateInstructions = ({
+    hierarchy,
+    live,
+    hasNotes
+}: InstructionsType) => {
     const isMobile = detectIfMobile();
     const keyboardMessage = filteredJoin(
         [
@@ -441,15 +458,13 @@ export const generateInstructions = ({hierarchy, live, hasNotes}: InstructionsTy
 
     const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
 
-    const info = [
-        isMobile ? mobileMessage : keyboardMessage
-    ];
+    const info = [isMobile ? mobileMessage : keyboardMessage];
 
     if (hasNotes) {
         info.unshift("Has notes.");
     }
     return info.join(" ");
-}
+};
 
 export const isUnplayable = (yValue: number, yAxis: AxisData) => {
     return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
