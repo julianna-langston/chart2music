@@ -1699,10 +1699,13 @@ export class c2m {
 
         row.forEach((item, index) => {
             this._playListContinuous.push(
-                setTimeout(() => {
-                    this._pointIndex = startIndex + index;
-                    this._playCurrent();
-                }, (change(item.x) - startingPct) * totalTime)
+                setTimeout(
+                    () => {
+                        this._pointIndex = startIndex + index;
+                        this._playCurrent();
+                    },
+                    (change(item.x) - startingPct) * totalTime
+                )
             );
         });
     }
@@ -1732,10 +1735,13 @@ export class c2m {
 
         row.reverse().forEach((item, index) => {
             this._playListContinuous.push(
-                setTimeout(() => {
-                    this._pointIndex = startIndex - index;
-                    this._playCurrent();
-                }, (change(item.x) - startingPct) * totalTime)
+                setTimeout(
+                    () => {
+                        this._pointIndex = startIndex - index;
+                        this._playCurrent();
+                    },
+                    (change(item.x) - startingPct) * totalTime
+                )
             );
         });
     }
@@ -2033,13 +2039,16 @@ export class c2m {
                     hertzes.length - 1,
                     this._yAxis.type
                 );
-                setTimeout(() => {
-                    this._audioEngine.playDataPoint(
-                        hertzes[yBin],
-                        xPan,
-                        NOTE_LENGTH
-                    );
-                }, SPEEDS[this._speedRateIndex] * interval * index);
+                setTimeout(
+                    () => {
+                        this._audioEngine.playDataPoint(
+                            hertzes[yBin],
+                            xPan,
+                            NOTE_LENGTH
+                        );
+                    },
+                    SPEEDS[this._speedRateIndex] * interval * index
+                );
             });
         }
     }
