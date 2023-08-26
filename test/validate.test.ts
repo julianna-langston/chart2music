@@ -14,7 +14,7 @@ import {
 } from "../src/validate";
 
 const validTypes =
-    "line, bar, band, pie, candlestick, histogram, box, matrix, scatter, treemap";
+    "line, bar, band, pie, candlestick, histogram, box, matrix, scatter, treemap, unsupported";
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
@@ -358,6 +358,17 @@ test("validateInputDataHomogeneity", () => {
     ).toBe(
         `Error for data category b: The first item is an alternate axis data point (x/y2), but item index 1 is not (value: {"x":2,"y":2}). All items should be of the same type.`
     );
+
+    expect(
+        validateInputDataHomogeneity({
+            a: [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            b: null
+        })
+    ).toBe("");
 });
 
 test("c2mChart validation", () => {

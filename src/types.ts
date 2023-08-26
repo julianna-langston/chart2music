@@ -107,7 +107,7 @@ export type SonifyTypes = {
  * A dictionary of data, where the key is the group name, and the value is the array of data points
  */
 export type dataSet = {
-    [groupName: string]: SupportedInputType[];
+    [groupName: string]: SupportedInputType[] | null;
 };
 
 /**
@@ -137,7 +137,8 @@ export enum SUPPORTED_CHART_TYPES {
     BOX = "box",
     MATRIX = "matrix",
     SCATTER = "scatter",
-    TREEMAP = "treemap"
+    TREEMAP = "treemap",
+    UNSUPPORTED = "unsupported"
 }
 
 /**

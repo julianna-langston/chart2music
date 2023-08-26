@@ -128,6 +128,9 @@ export const validateInputDataHomogeneity = (data: SonifyTypes["data"]) => {
         return validateInputDataRowHomogeneity(data);
     }
     for (const key in data) {
+        if (data[key] === null) {
+            continue;
+        }
         const result = validateInputDataRowHomogeneity(data[key]);
         if (result !== "") {
             return `Error for data category ${key}: ${result}`;

@@ -59,12 +59,14 @@ const interpolateBinLog = (
 
 export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
+const isNotNull = (tmp: unknown) => tmp !== null;
+
 export const calculateAxisMinimum = (
     data: SupportedDataPointType[][],
     prop: "x" | "y" | "y2",
     filterGroupIndex?: number
 ) => {
-    let dataToProcess: SupportedDataPointType[] = data.flat();
+    let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
         dataToProcess = data[filterGroupIndex];
@@ -113,7 +115,7 @@ export const calculateAxisMaximum = (
     prop: "x" | "y" | "y2",
     filterGroupIndex?: number
 ) => {
-    let dataToProcess: SupportedDataPointType[] = data.flat();
+    let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
         dataToProcess = data[filterGroupIndex];
@@ -228,7 +230,7 @@ export const usesAxis = (
     data: SupportedDataPointType[][],
     axisName: "x" | "y" | "y2"
 ) => {
-    const firstUseOfAxis = data.find((row) => {
+    const firstUseOfAxis = data.filter(isNotNull).find((row) => {
         return row.find((point) => axisName in point);
     });
     return typeof firstUseOfAxis !== "undefined";
@@ -239,9 +241,24 @@ export const usesAxis = (
  * @param data - the X/Y values
  */
 export const calculateMetadataByGroup = (
-    data: SupportedDataPointType[][]
+    data: (SupportedDataPointType[] | null)[]
 ): groupedMetadata[] => {
     return data.map((row, index) => {
+        if (row === null) {
+            return {
+                index,
+                minimumPointIndex: null,
+                maximumPointIndex: null,
+                minimumValue: NaN,
+                maximumValue: NaN,
+                tenths: NaN,
+                availableStats: [],
+                statIndex: -1,
+                inputType: null,
+                size: 0
+            };
+        }
+
         let yValues: number[] = [];
         let availableStats = [];
         if (isSimpleDataPoint(row[0])) {
@@ -350,7 +367,13 @@ export const detectDataPointType = (query: unknown): detectableDataPoint => {
     return "unknown";
 };
 
-export const convertDataRow = (row: (SupportedDataPointType | number)[]) => {
+export const convertDataRow = (
+    row: (SupportedDataPointType | number)[] | null
+) => {
+    if (row === null) {
+        return null;
+    }
+
     return row.map((point: number | SupportedDataPointType, index: number) => {
         if (typeof point === "number") {
             return {
@@ -489,7 +512,10 @@ export const checkForNumberInput = (
     } else {
         let index = 0;
         for (const group in data) {
-            if (detectDataPointType((data as dataSet)[group][0]) === "number") {
+            if (
+                data[group] !== null &&
+                detectDataPointType((data as dataSet)[group][0]) === "number"
+            ) {
                 metadataByGroup[index].inputType = "number";
             }
             index++;

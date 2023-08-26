@@ -276,14 +276,28 @@ export class c2m {
     /**
      * The current group's data
      */
-    get _currentDataRow() {
+    private get _currentDataRow() {
         return this._data[this._groupIndex];
+    }
+
+    /**
+     * Is movement available based on the current context
+     */
+    private get _movementAvailable() {
+        if (this._currentDataRow === null) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Getter for current data point
      */
     get currentPoint() {
+        if (this._currentDataRow === null) {
+            return null;
+        }
         return this._currentDataRow[this._pointIndex];
     }
 
@@ -312,12 +326,18 @@ export class c2m {
         return {
             next_point: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 if (this._moveRight()) {
                     this._playAndSpeak();
                 }
             },
             previous_point: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 if (this._moveLeft()) {
                     this._playAndSpeak();
                 }
@@ -342,14 +362,23 @@ export class c2m {
             },
             play_right: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._playRight();
             },
             play_left: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._playLeft();
             },
             play_forward_category: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 const max = this._visible_group_indices.length - 1;
                 this._playListInterval = setInterval(() => {
                     if (this._visibleGroupIndex >= max) {
@@ -364,6 +393,9 @@ export class c2m {
             },
             play_backward_category: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 const min = 0;
                 this._playListInterval = setInterval(() => {
                     if (this._visibleGroupIndex <= min) {
@@ -381,6 +413,9 @@ export class c2m {
             },
             previous_stat: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 if (this._movePrevStat()) {
                     this._flagNewStat = true;
                     this._playAndSpeak();
@@ -388,6 +423,9 @@ export class c2m {
             },
             next_stat: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 if (this._moveNextStat()) {
                     this._flagNewStat = true;
                     this._playAndSpeak();
@@ -398,24 +436,11 @@ export class c2m {
                 if (this._visibleGroupIndex === 0) {
                     return;
                 }
-                const currentX = this.currentPoint.x;
+                const currentX = this.currentPoint?.x ?? this._pointIndex;
                 this._visibleGroupIndex--;
-                if (
-                    this._xAxis.continuous &&
-                    (!this.currentPoint || this.currentPoint.x !== currentX)
-                ) {
-                    const differences = this._currentDataRow.map(({ x }) =>
-                        Math.abs(currentX - x)
-                    );
-                    const smallestDifference = Math.min(...differences);
-                    const closestIndex =
-                        differences.indexOf(smallestDifference);
-                    this._pointIndex = closestIndex;
-                }
-                if (this._pointIndex >= this._currentDataRow.length) {
-                    this._pointIndex = this._currentDataRow.length - 1;
-                }
+
                 this._announceCategoryChange();
+                this._cleanupAfterCategoryChange(currentX);
             },
             next_category: () => {
                 this._clearPlay();
@@ -427,22 +452,9 @@ export class c2m {
                 }
                 const currentX = this.currentPoint.x;
                 this._visibleGroupIndex++;
-                if (
-                    this._xAxis.continuous &&
-                    (!this.currentPoint || this.currentPoint.x !== currentX)
-                ) {
-                    const differences = this._currentDataRow.map(({ x }) =>
-                        Math.abs(currentX - x)
-                    );
-                    const smallestDifference = Math.min(...differences);
-                    const closestIndex =
-                        differences.indexOf(smallestDifference);
-                    this._pointIndex = closestIndex;
-                }
-                if (this._pointIndex >= this._currentDataRow.length) {
-                    this._pointIndex = this._currentDataRow.length - 1;
-                }
+
                 this._announceCategoryChange();
+                this._cleanupAfterCategoryChange(currentX);
             },
             first_category: () => {
                 this._clearPlay();
@@ -457,20 +469,32 @@ export class c2m {
             },
             first_point: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._pointIndex = 0;
                 this._playAndSpeak();
             },
             last_point: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._pointIndex = this._currentDataRow.length - 1;
                 this._playAndSpeak();
             },
             replay: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._flagNewStat = true;
                 this._playAndSpeak();
             },
             select: () => {
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._options.onSelectCallback?.({
                     slice: this._currentGroupName,
                     index: this._pointIndex,
@@ -479,22 +503,34 @@ export class c2m {
             },
             previous_tenth: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._moveLeftTenths();
                 this._playAndSpeak();
             },
             next_tenth: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 this._moveRightTenths();
                 this._playAndSpeak();
             },
             go_minimum: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 if (this._moveToMinimum()) {
                     this._playAndSpeak();
                 }
             },
             go_maximum: () => {
                 this._clearPlay();
+                if (!this._movementAvailable) {
+                    return;
+                }
                 if (this._moveToMaximum()) {
                     this._playAndSpeak();
                 }
@@ -611,6 +647,33 @@ export class c2m {
                 launchInfoDialog(this._info);
             }
         };
+    }
+
+    /**
+     * Make any necessary adjustments to the point index based on changing groups.
+     * (This is necessary because groups are sometimes uneven. For example, if you're on group A at index 10, and you
+     * move to group B, which only goes up to 5 items, you're going to need to adjust your index to account for the new, smaller group.)
+     * @param previousX - the X value of the previous data point
+     */
+    private _cleanupAfterCategoryChange(previousX: number) {
+        if (this._currentDataRow === null) {
+            return;
+        }
+
+        if (
+            this._xAxis.continuous &&
+            (!this.currentPoint || this.currentPoint.x !== previousX)
+        ) {
+            const differences = this._currentDataRow.map(({ x }) =>
+                Math.abs(previousX - x)
+            );
+            const smallestDifference = Math.min(...differences);
+            const closestIndex = differences.indexOf(smallestDifference);
+            this._pointIndex = closestIndex;
+        }
+        if (this._pointIndex >= this._currentDataRow.length) {
+            this._pointIndex = this._currentDataRow.length - 1;
+        }
     }
 
     /**
@@ -1371,12 +1434,14 @@ export class c2m {
      * Generate a context summary for the current group
      */
     private generateGroupSummary() {
+        if (this._currentGroupType === SUPPORTED_CHART_TYPES.UNSUPPORTED) {
+            return `Group titled "${this._currentGroupName}" uses an unsupported chart type.`;
+        }
+
         const text = [sentenceCase(this._currentGroupType)];
 
-        const groupName = this._groups[this._visibleGroupIndex];
-
-        if (groupName.length > 0) {
-            text.push(`chart showing "${groupName}".`);
+        if (this._currentGroupName.length > 0) {
+            text.push(`chart showing "${this._currentGroupName}".`);
         } else {
             text.push("chart.");
         }
@@ -1430,17 +1495,7 @@ export class c2m {
             return;
         }
 
-        const axisCollection = { x: this._xAxis };
-
-        if (isAlternateAxisDataPoint(this.currentPoint)) {
-            axisCollection["y2"] = this._y2Axis;
-        } else {
-            axisCollection["y"] = this._yAxis;
-        }
-
-        const newGroupSummary = this.generateGroupSummary();
-
-        this._sr.render(newGroupSummary);
+        this._sr.render(this.generateGroupSummary());
     }
 
     /**

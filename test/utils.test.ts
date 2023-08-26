@@ -10,7 +10,8 @@ import {
     calculateMetadataByGroup,
     detectDataPointType,
     generateChartSummary,
-    generateAxisSummary
+    generateAxisSummary,
+    convertDataRow
 } from "../src/utils";
 
 describe("utils", () => {
@@ -682,6 +683,22 @@ describe("utils", () => {
                 inputType: "SimpleDataPoint"
             }
         ]);
+
+        // When data row is `null`
+        expect(calculateMetadataByGroup([null])).toEqual([
+            {
+                index: 0,
+                minimumPointIndex: null,
+                maximumPointIndex: null,
+                minimumValue: NaN,
+                maximumValue: NaN,
+                tenths: NaN,
+                availableStats: [],
+                statIndex: -1,
+                inputType: null,
+                size: 0
+            }
+        ]);
     });
 
     test("detectDataPointType", () => {
@@ -808,5 +825,9 @@ describe("utils", () => {
         expect(generateAxisSummary("y2", { ...axis, continuous: true })).toBe(
             `Alternate Y is "Revenue" from $0 to $1,000,000.`
         );
+    });
+
+    test("convertDataRow", () => {
+        expect(convertDataRow(null)).toBeNull();
     });
 });
