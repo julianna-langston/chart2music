@@ -215,7 +215,7 @@ export class c2m {
         this._ccElement = input.cc ?? this._chartElement;
 
         if (input?.options) {
-            if (this._type === "scatter") {
+            if (this._type === SUPPORTED_CHART_TYPES.SCATTER) {
                 this._options.stack = true;
             }
             this._options = {
@@ -777,7 +777,7 @@ export class c2m {
         this._initializeData(data);
 
         if (this._options.stack && this._data.length > 1) {
-            if (this._type === "scatter") {
+            if (this._type === SUPPORTED_CHART_TYPES.SCATTER) {
                 this._buildStackScatter();
             } else {
                 this._buildStackBar();
@@ -805,7 +805,7 @@ export class c2m {
         }
 
         if (
-            this._type === "scatter" &&
+            this._type === SUPPORTED_CHART_TYPES.SCATTER &&
             !("continuous" in this._explicitAxes.x)
         ) {
             this._xAxis.continuous = true;

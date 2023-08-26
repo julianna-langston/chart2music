@@ -5,7 +5,6 @@
  * spoken.
  * The "caption" element must have a specific list of aria attributes to properly work, see the static method
  * "addAriaAttributes" for more details.
- *
  * @internal
  */
 export class ScreenReaderBridge {
@@ -26,11 +25,10 @@ export class ScreenReaderBridge {
      * roll: status
      * aria-atomic: true
      * aria-relevant: additions text
-     *   For the aria-live attribute, "polite" may also work, but that will create a queue of messages for the screen
-     *   reader to read out one after another which is probably not what you want.
-     *
+     * For the aria-live attribute, "polite" may also work, but that will create a queue of messages for the screen
+     * reader to read out one after another which is probably not what you want.
      * @param element - the "caption" element which will host the messages for the screen reader to speak
-     * @param [ariaLive="assertive"] - the politeness of the aria-live attribute, one of "off", "assertive", or "polite"
+     * @param [ariaLive] - the politeness of the aria-live attribute, one of "off", "assertive", or "polite"
      * @static
      */
     public static addAriaAttributes(
@@ -45,7 +43,6 @@ export class ScreenReaderBridge {
 
     /**
      * Create a ScreenReaderBridge instance.
-     *
      * @param captionElement - the "caption" element, typically a span or div element
      */
     public constructor(captionElement: HTMLElement) {
@@ -69,7 +66,6 @@ export class ScreenReaderBridge {
 
     /**
      * Speak the provided text.
-     *
      * @param text - the text to speak
      */
     public render(text: string): void {
@@ -96,7 +92,6 @@ export class ScreenReaderBridge {
     /**
      * Pad the provided text with the padding character.
      * Padding the text tricks screen readers into speaking it, even if they think it should be suppressed.
-     *
      * @param text - the text to pad
      * @private
      */
@@ -115,7 +110,6 @@ export class ScreenReaderBridge {
      * Remove any hidden elements that were hidden longer than the set milliseconds.
      * We wait to remove those elements even though they are hidden because some screen readers don't like the DOM
      * changing that much.
-     *
      * @private
      */
     private _removeOldElements(): void {

@@ -21,7 +21,6 @@
         "no-alert": "warn",
         "@typescript-eslint/consistent-type-imports": "error",
         "no-duplicate-imports": "off",
-        "@typescript-eslint/no-duplicate-imports": "error",
         "consistent-return": "error",
         "eqeqeq": "error",
         "grouped-accessor-pairs": [
