@@ -9,7 +9,8 @@ import {
     validateInputDataHomogeneity,
     validateInputDataRowHomogeneity,
     validateInputElement,
-    validateInputType
+    validateInputType,
+    validateInputTypeCountsMatchData
 } from "../src/validate";
 
 const validTypes =
@@ -518,5 +519,34 @@ test("validateHierarchyReferences", () => {
         )
     ).toBe(
         "Error: Group 'a', point index 0: Expected property 'children' to be of type string. Instead, it was of type 'number'."
+    );
+});
+
+test("validateInputTypeCountsMatchData", () => {
+    const dataWith2Rows = {
+        A: [1, 2, 3],
+        B: [4, 5, 6]
+    };
+
+    expect(
+        validateInputTypeCountsMatchData(
+            SUPPORTED_CHART_TYPES.LINE,
+            dataWith2Rows
+        )
+    ).toBe("");
+    expect(
+        validateInputTypeCountsMatchData(
+            [SUPPORTED_CHART_TYPES.LINE, SUPPORTED_CHART_TYPES.BAR],
+            dataWith2Rows
+        )
+    ).toBe("");
+
+    expect(
+        validateInputTypeCountsMatchData(
+            [SUPPORTED_CHART_TYPES.LINE],
+            dataWith2Rows
+        )
+    ).toBe(
+        "Error: Number of types (1) and number of data groups (2) don't match."
     );
 });
