@@ -43,8 +43,8 @@ export const launchOptionDialog = (
             <label>
                 Upper hertz:
                 <input type="range" min="${lower + 1}" max="${
-        HERTZ.length - 1
-    }" step="1" id="upperRange" value="${upper}" />
+                    HERTZ.length - 1
+                }" step="1" id="upperRange" value="${upper}" />
             </label>
         </div>
 

@@ -134,19 +134,22 @@ export class OscillatorAudioEngine implements AudioEngine {
         adsr1.connect(adsr);
         adsr.connect(panner);
         panner.connect(destinationNode);
-        setTimeout(() => {
-            panner.disconnect();
-            adsr.disconnect();
-            adsr1.disconnect();
-            mainFreq.stop();
-            mainFreq.disconnect();
-            m1.stop();
-            m1.disconnect();
-            c1.stop();
-            c1.disconnect();
-            a1.disconnect();
-            f1.disconnect();
-        }, duration * 1000 * 2);
+        setTimeout(
+            () => {
+                panner.disconnect();
+                adsr.disconnect();
+                adsr1.disconnect();
+                mainFreq.stop();
+                mainFreq.disconnect();
+                m1.stop();
+                m1.disconnect();
+                c1.stop();
+                c1.disconnect();
+                a1.disconnect();
+                f1.disconnect();
+            },
+            duration * 1000 * 2
+        );
     }
 
     /**
@@ -168,26 +171,38 @@ export class OscillatorAudioEngine implements AudioEngine {
         this._playDataPoint(C3, 0, duration / 4, gain);
         this._playDataPoint(C4, 0, duration / 4, gain);
         // After the  C notes finish, play E3 and E4.
-        setTimeout(() => {
-            this._playDataPoint(G3, 0, duration / 4, gain);
-            this._playDataPoint(G4, 0, duration / 4, gain);
-            this._playDataPoint(G5, 0, duration / 4, gain);
-        }, duration * 1000 * 0.25);
+        setTimeout(
+            () => {
+                this._playDataPoint(G3, 0, duration / 4, gain);
+                this._playDataPoint(G4, 0, duration / 4, gain);
+                this._playDataPoint(G5, 0, duration / 4, gain);
+            },
+            duration * 1000 * 0.25
+        );
         // After those notes finish, play e3 and e4.
-        setTimeout(() => {
-            this._playDataPoint(C3, 0, duration / 4, gain);
-            this._playDataPoint(C4, 0, duration / 4, gain);
-        }, duration * 1000 * 0.5);
+        setTimeout(
+            () => {
+                this._playDataPoint(C3, 0, duration / 4, gain);
+                this._playDataPoint(C4, 0, duration / 4, gain);
+            },
+            duration * 1000 * 0.5
+        );
         // After those notes finish, play C6.
-        setTimeout(() => {
-            this._playDataPoint(G3, 0, duration / 4, gain);
-            this._playDataPoint(G4, 0, duration / 4, gain);
-            this._playDataPoint(G5, 0, duration / 4, gain);
-        }, duration * 1000 * 0.75);
+        setTimeout(
+            () => {
+                this._playDataPoint(G3, 0, duration / 4, gain);
+                this._playDataPoint(G4, 0, duration / 4, gain);
+                this._playDataPoint(G5, 0, duration / 4, gain);
+            },
+            duration * 1000 * 0.75
+        );
         // After everything stops, clean up the nodes.
-        setTimeout(() => {
-            gain.disconnect();
-        }, duration * 1000 * 2);
+        setTimeout(
+            () => {
+                gain.disconnect();
+            },
+            duration * 1000 * 2
+        );
     }
 }
 
