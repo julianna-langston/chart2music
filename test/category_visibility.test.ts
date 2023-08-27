@@ -48,8 +48,13 @@ test("setCategoryVisibility: toggle middle (non-current) category", () => {
             key: "PageDown"
         })
     );
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("c, 1, 7");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 7");
     expect(chart?.getCurrent()).toStrictEqual({
         index: 0,
         group: "c",
@@ -71,8 +76,13 @@ test("setCategoryVisibility: toggle middle (non-current) category", () => {
             key: "PageUp"
         })
     );
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 1, 1");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 1");
 
     chart?.setCategoryVisibility("b", true);
     jest.advanceTimersByTime(250);
@@ -85,10 +95,13 @@ test("setCategoryVisibility: toggle middle (non-current) category", () => {
             key: "PageDown"
         })
     );
-    jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 1, 11"
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
     );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 11");
     chart?.setCategoryVisibility("b", true);
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).not.toBe(
@@ -173,9 +186,7 @@ test("setCategoryVisibility: Hide current category (first)", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 1, 11"
-    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 11");
 });
 test("setCategoryVisibility: Hide current category (last)", () => {
     const mockElement = document.createElement("div");
@@ -212,15 +223,18 @@ test("setCategoryVisibility: Hide current category (last)", () => {
             key: "PageDown"
         })
     );
-    jest.advanceTimersByTime(250);
-
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: "PageDown"
         })
     );
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("c, 1, 7");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 7");
 
     const funcError = chart?.setCategoryVisibility("c", false);
     expect(funcError).toBe("");
@@ -236,9 +250,7 @@ test("setCategoryVisibility: Hide current category (last)", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 1, 11"
-    );
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 11");
 });
 test("setCategoryVisibility: Hide current category (middle)", () => {
     const mockElement = document.createElement("div");
@@ -275,10 +287,14 @@ test("setCategoryVisibility: Hide current category (middle)", () => {
             key: "PageDown"
         })
     );
-    jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 1, 11"
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
     );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 11");
 
     const funcError = chart?.setCategoryVisibility("b", false);
     expect(funcError).toBe("");
@@ -294,7 +310,7 @@ test("setCategoryVisibility: Hide current category (middle)", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("c, 1, 7");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 7");
 });
 
 test("setCategoryVisibility: error: try to hide all categories", () => {
@@ -365,9 +381,17 @@ test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 1, 11"
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "b".`
     );
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 11");
 
     expect(chart?.setCategoryVisibility("a", false));
 
@@ -420,9 +444,17 @@ test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 1, 11"
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "b".`
     );
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 11");
 
     expect(chart?.setCategoryVisibility("b", false));
 
@@ -432,7 +464,7 @@ test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 1, 1");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 1");
     expect(chart?.getCurrent()).toEqual({
         group: "a",
         stat: "",

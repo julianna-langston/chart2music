@@ -19,6 +19,7 @@ export const validateInput = (input: SonifyTypes) => {
     errors.push(validateInputDataHomogeneity(input.data));
     errors.push(validateCornerCases(input));
     errors.push(validateHierarchyReferences(input.data, input.options));
+    errors.push(validateInputTypeCountsMatchData(input.type, input.data));
 
     return errors.filter((str) => str !== "").join("\n");
 };
@@ -53,6 +54,23 @@ export const validateInputType = (
     return `Invalid input type: ${type}. Valid types are: ${Object.values(
         SUPPORTED_CHART_TYPES
     ).join(", ")}`;
+};
+
+export const validateInputTypeCountsMatchData = (
+    type: SUPPORTED_CHART_TYPES | SUPPORTED_CHART_TYPES[],
+    data: SonifyTypes["data"]
+) => {
+    if (!Array.isArray(type)) {
+        return "";
+    }
+
+    // If `type` is an array, confirm that the number of items matches the number of items in `data`
+    const keys = Object.keys(data);
+    if (type.length === keys.length) {
+        return "";
+    }
+
+    return `Error: Number of types (${type.length}) and number of data groups (${keys.length}) don't match.`;
 };
 
 export const validateInputElement = (element: HTMLElement | SVGSVGElement) => {
@@ -110,6 +128,9 @@ export const validateInputDataHomogeneity = (data: SonifyTypes["data"]) => {
         return validateInputDataRowHomogeneity(data);
     }
     for (const key in data) {
+        if (data[key] === null) {
+            continue;
+        }
         const result = validateInputDataRowHomogeneity(data[key]);
         if (result !== "") {
             return `Error for data category ${key}: ${result}`;

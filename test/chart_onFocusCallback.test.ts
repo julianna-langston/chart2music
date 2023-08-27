@@ -120,6 +120,14 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(250);
+    expect(counter).toBe(1);
+    
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
     expect(counter).toBe(2);
     expect(lastCategory).toBe("b");
     expect(lastIndex).toBe(1);

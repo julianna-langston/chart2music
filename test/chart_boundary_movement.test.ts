@@ -192,6 +192,17 @@ test("Move at boundaries - grouped and stat'd", () => {
                 stat: "",
                 point: { x: 1, y: 11 }
             },
+            timer: 3
+        },
+        {
+            // Play sounds
+            key: " ",
+            point: {
+                index: 0,
+                group: "b",
+                stat: "",
+                point: { x: 1, y: 11 }
+            },
             timer: 4
         },
         {

@@ -14,7 +14,6 @@ import {
 import type {
     AxisData,
     StatBundle,
-    SUPPORTED_CHART_TYPES,
     validAxes,
     detectableDataPoint,
     groupedMetadata,
@@ -60,114 +59,14 @@ const interpolateBinLog = (
 
 export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
-/**
- *
- */
-type SummaryTypes = {
-    type: SUPPORTED_CHART_TYPES | SUPPORTED_CHART_TYPES[];
-    title: string;
-    dataRows: number;
-    x: AxisData;
-    y: AxisData;
-    y2?: AxisData;
-    live?: boolean;
-    hasNotes?: boolean;
-    hierarchy?: boolean;
-    hierarchyLevel?: number;
-};
-export const generateSummary = ({
-    type,
-    title,
-    dataRows,
-    x,
-    y,
-    y2,
-    live = false,
-    hasNotes = false,
-    hierarchy = false,
-    hierarchyLevel
-}: SummaryTypes) => {
-    const text = [];
-
-    text.push(
-        filteredJoin(
-            [
-                "Sonified",
-                live && "live",
-                hierarchy && "hierarchical",
-                Array.isArray(type) ? type.sort().join("-") : type,
-                "chart",
-                `"${title}"`
-            ],
-            " "
-        )
-    );
-
-    if (dataRows > 1) {
-        if (hierarchy) {
-            if (hierarchyLevel === 0) {
-                text.push("on root level");
-            } else {
-                text.push(`on level ${hierarchyLevel}`);
-            }
-        } else {
-            text.push(`contains ${dataRows} groups`);
-        }
-    }
-
-    text.push(
-        `x is "${x.label}" from ${x.format(x.minimum)} to ${x.format(
-            x.maximum
-        )}${x.type === "log10" ? " logarithmic" : ""}${
-            x.continuous ? " continuously" : ""
-        }`
-    );
-    text.push(
-        `y is "${y.label}" from ${y.format(y.minimum)} to ${y.format(
-            y.maximum
-        )}${y.type === "log10" ? " logarithmic" : ""}`
-    );
-
-    if (y2) {
-        text.push(
-            `alternative y is "${y2.label}" from ${y2.format(
-                y2.minimum
-            )} to ${y2.format(y2.maximum)}${
-                y2.type === "log10" ? " logarithmic" : ""
-            }`
-        );
-    }
-
-    const isMobile = detectIfMobile();
-    const keyboardMessage = filteredJoin(
-        [
-            `Use arrow keys to navigate.`,
-            hierarchy && "Use Alt + Up and Down to navigate between levels.",
-            live && "Press M to toggle monitor mode.",
-            "Press H for more hotkeys."
-        ],
-        " "
-    );
-
-    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
-
-    const info = [
-        text.join(", ") + ".",
-        isMobile ? mobileMessage : keyboardMessage
-    ];
-
-    if (hasNotes) {
-        info.splice(1, 0, "Has notes.");
-    }
-    return info.join(" ");
-};
+const isNotNull = (tmp: unknown) => tmp !== null;
 
 export const calculateAxisMinimum = (
     data: SupportedDataPointType[][],
     prop: "x" | "y" | "y2",
     filterGroupIndex?: number
 ) => {
-    let dataToProcess: SupportedDataPointType[] = data.flat();
+    let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
         dataToProcess = data[filterGroupIndex];
@@ -216,7 +115,7 @@ export const calculateAxisMaximum = (
     prop: "x" | "y" | "y2",
     filterGroupIndex?: number
 ) => {
-    let dataToProcess: SupportedDataPointType[] = data.flat();
+    let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
         dataToProcess = data[filterGroupIndex];
@@ -331,7 +230,7 @@ export const usesAxis = (
     data: SupportedDataPointType[][],
     axisName: "x" | "y" | "y2"
 ) => {
-    const firstUseOfAxis = data.find((row) => {
+    const firstUseOfAxis = data.filter(isNotNull).find((row) => {
         return row.find((point) => axisName in point);
     });
     return typeof firstUseOfAxis !== "undefined";
@@ -342,9 +241,24 @@ export const usesAxis = (
  * @param data - the X/Y values
  */
 export const calculateMetadataByGroup = (
-    data: SupportedDataPointType[][]
+    data: (SupportedDataPointType[] | null)[]
 ): groupedMetadata[] => {
     return data.map((row, index) => {
+        if (row === null) {
+            return {
+                index,
+                minimumPointIndex: null,
+                maximumPointIndex: null,
+                minimumValue: NaN,
+                maximumValue: NaN,
+                tenths: NaN,
+                availableStats: [],
+                statIndex: -1,
+                inputType: null,
+                size: 0
+            };
+        }
+
         let yValues: number[] = [];
         let availableStats = [];
         if (isSimpleDataPoint(row[0])) {
@@ -453,7 +367,13 @@ export const detectDataPointType = (query: unknown): detectableDataPoint => {
     return "unknown";
 };
 
-export const convertDataRow = (row: (SupportedDataPointType | number)[]) => {
+export const convertDataRow = (
+    row: (SupportedDataPointType | number)[] | null
+) => {
+    if (row === null) {
+        return null;
+    }
+
     return row.map((point: number | SupportedDataPointType, index: number) => {
         if (typeof point === "number") {
             return {
@@ -482,6 +402,93 @@ export const formatWrapper = (axis: AxisData) => {
     return format;
 };
 
+/**
+ *
+ */
+type ChartSummaryType = {
+    groupCount: number;
+    title: string;
+    live?: boolean;
+    hierarchy?: boolean;
+};
+export const generateChartSummary = ({
+    title,
+    groupCount,
+    live = false,
+    hierarchy = false
+}: ChartSummaryType) => {
+    const text = ["Sonified"];
+
+    if (live) {
+        text.push("live");
+    }
+
+    if (hierarchy) {
+        text.push("hierarchical");
+    }
+
+    text.push("chart");
+
+    if (groupCount > 1) {
+        text.push(`with ${groupCount} groups`);
+    }
+
+    if (title.length > 0) {
+        text.push(`titled "${title}"`);
+    }
+
+    return text.join(" ") + ".";
+};
+
+const axisDescriptions = {
+    x: "X",
+    y: "Y",
+    y2: "Alternate Y"
+};
+export const generateAxisSummary = (
+    axisLetter: "x" | "y" | "y2",
+    axis: AxisData
+) =>
+    `${axisDescriptions[axisLetter]} is "${
+        axis.label ?? ""
+    }" from ${axis.format(axis.minimum)} to ${axis.format(axis.maximum)}${
+        axis.type === "log10" ? " logarithmic" : ""
+    }${axisLetter === "x" && axis.continuous ? " continuously" : ""}.`;
+
+/**
+ *
+ */
+type InstructionsType = {
+    hierarchy: boolean;
+    live: boolean;
+    hasNotes: boolean;
+};
+export const generateInstructions = ({
+    hierarchy,
+    live,
+    hasNotes
+}: InstructionsType) => {
+    const isMobile = detectIfMobile();
+    const keyboardMessage = filteredJoin(
+        [
+            `Use arrow keys to navigate.`,
+            hierarchy && "Use Alt + Up and Down to navigate between levels.",
+            live && "Press M to toggle monitor mode.",
+            "Press H for more hotkeys."
+        ],
+        " "
+    );
+
+    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
+
+    const info = [isMobile ? mobileMessage : keyboardMessage];
+
+    if (hasNotes) {
+        info.unshift("Has notes.");
+    }
+    return info.join(" ");
+};
+
 export const isUnplayable = (yValue: number, yAxis: AxisData) => {
     return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
 };
@@ -505,7 +512,10 @@ export const checkForNumberInput = (
     } else {
         let index = 0;
         for (const group in data) {
-            if (detectDataPointType((data as dataSet)[group][0]) === "number") {
+            if (
+                data[group] !== null &&
+                detectDataPointType((data as dataSet)[group][0]) === "number"
+            ) {
                 metadataByGroup[index].inputType = "number";
             }
             index++;

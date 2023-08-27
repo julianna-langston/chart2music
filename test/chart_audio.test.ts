@@ -208,6 +208,11 @@ test("Move around by single events - plot with y and y2", () => {
             key: "PageDown"
         })
     );
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
     expect(setTimeout).toHaveBeenCalledTimes(2);
     jest.advanceTimersByTime(50);
     expect(audioEngine.lastPanning).toBe(-0.98);

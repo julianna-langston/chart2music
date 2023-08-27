@@ -38,7 +38,7 @@ test("Move around by single events", () => {
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toBe(
-        `Sonified line chart "", x is "" from 0 to 7, y is "" from 0 to 5. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`
+        `Sonified chart. Line chart. X is "" from 0 to 7. Y is "" from 0 to 5. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`
     );
 
     // Move right
@@ -196,8 +196,8 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(350);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "b, 2, 12"
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "b".`
     );
 
     // Move right
@@ -281,7 +281,9 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(350);
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("a, 3, 3");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toContain(
+        `Line chart showing "a"`
+    );
     expect(chart?.getCurrent()).toStrictEqual({
         index: 2,
         group: "a",
@@ -321,9 +323,10 @@ test("Movement for a chart with stats", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toBe(
-        `Sonified band-line chart "", contains 2 groups, x is "" from 1 to 3, y is "" from 8 to 13. Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`
+    expect(mockElementCC.textContent).toContain(
+        `Sonified chart with 2 groups.`
     );
+    expect(mockElementCC.textContent).toContain(`Band chart showing "a".`);
 
     // Move right
     mockElement.dispatchEvent(
