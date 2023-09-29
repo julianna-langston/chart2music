@@ -90,7 +90,7 @@
 
 ## 1.2.0
 
-* New feature: Add support for mobile interactions
+* New experimental feature: Add support for mobile interactions
 
 ## 1.1.0
 

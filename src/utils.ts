@@ -468,7 +468,6 @@ export const generateInstructions = ({
     live,
     hasNotes
 }: InstructionsType) => {
-    const isMobile = detectIfMobile();
     const keyboardMessage = filteredJoin(
         [
             `Use arrow keys to navigate.`,
@@ -479,9 +478,7 @@ export const generateInstructions = ({
         " "
     );
 
-    const mobileMessage = `Swipe left or right to navigate. 2 finger swipe left or right to play the rest of the group.`;
-
-    const info = [isMobile ? mobileMessage : keyboardMessage];
+    const info = [keyboardMessage];
 
     if (hasNotes) {
         info.unshift("Has notes.");
@@ -523,23 +520,6 @@ export const checkForNumberInput = (
     }
 
     return metadataByGroup;
-};
-
-// https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
-export const detectIfMobile = () => {
-    const toMatch = [
-        /Android/i,
-        /webOS/i,
-        /iPhone/i,
-        /iPad/i,
-        /iPod/i,
-        /BlackBerry/i,
-        /Windows Phone/i
-    ];
-
-    return toMatch.some((toMatchItem) => {
-        return navigator.userAgent.match(toMatchItem);
-    });
 };
 
 export const filteredJoin = (arr: string[], joiner: string) =>
