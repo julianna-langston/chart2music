@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.0
+* Update the end-user interaction model for navigating between multiple groups in a chart. Users are now given information about the chart type and X-/Y-axis information for each group, rather than for the chart as a whole. This helps users focus on what is relevant to their interests.
+* Allow for an "unsupported" chart type.
+
 ## 1.11.0
 * Add support for chart type 'treemap', as well as supporting hierarchical structures for existing chart types.
 * Support sonifying groups with a single data point (pans to the center)
