@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.12.1
+* Remove experimental mobile support, since it is causing problems in normal usage.
+
 ## 1.12.0
 * Update the end-user interaction model for navigating between multiple groups in a chart. Users are now given information about the chart type and X-/Y-axis information for each group, rather than for the chart as a whole. This helps users focus on what is relevant to their interests.
 * Allow for an "unsupported" chart type.
