@@ -33,7 +33,8 @@ import {
     filteredJoin,
     generateChartSummary,
     generateInstructions,
-    generateAxisSummary
+    generateAxisSummary,
+    detectIfMobile
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -190,6 +191,11 @@ export class c2m {
      * @param input - data/config provided by the invocation
      */
     constructor(input: SonifyTypes) {
+        // Since we don't support mobile devices, don't do anything if we're on mobile
+        if (detectIfMobile()) {
+            return;
+        }
+
         this._type = input.type;
         this._providedAudioEngine = input.audioEngine;
         this._title = input.title ?? "";

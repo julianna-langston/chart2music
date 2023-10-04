@@ -522,5 +522,22 @@ export const checkForNumberInput = (
     return metadataByGroup;
 };
 
+// https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
+export const detectIfMobile = () => {
+    const toMatch = [
+        /Android/i,
+        /webOS/i,
+        /iPhone/i,
+        /iPad/i,
+        /iPod/i,
+        /BlackBerry/i,
+        /Windows Phone/i
+    ];
+
+    return toMatch.some((toMatchItem) => {
+        return navigator.userAgent.match(toMatchItem);
+    });
+};
+
 export const filteredJoin = (arr: string[], joiner: string) =>
     arr.filter((item) => Boolean(item)).join(joiner);

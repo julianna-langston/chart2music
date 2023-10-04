@@ -11,7 +11,8 @@ import {
     detectDataPointType,
     generateChartSummary,
     generateAxisSummary,
-    convertDataRow
+    convertDataRow,
+    detectIfMobile
 } from "../src/utils";
 
 describe("utils", () => {
@@ -829,5 +830,25 @@ describe("utils", () => {
 
     test("convertDataRow", () => {
         expect(convertDataRow(null)).toBeNull();
+    });
+
+    test("detectIfMobile", () => {
+        const userAgentGetter = jest.spyOn(
+            window.navigator,
+            "userAgent",
+            "get"
+        );
+
+        // Mobile Android + Firefox
+        userAgentGetter.mockReturnValue(
+            "Mozilla/5.0 (Android 13; Mobile; rv:109.0) Gecko/118.0 Firefox/118.0"
+        );
+        expect(detectIfMobile()).toBeTruthy();
+
+        // Win10 + Chrome
+        userAgentGetter.mockReturnValue(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        );
+        expect(detectIfMobile()).toBeFalsy();
     });
 });
