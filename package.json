@@ -6,6 +6,7 @@
     "exports": {
         "import": "./dist/index.mjs"
     },
+    "type": "commonjs",
     "types": "dist/index.d.ts",
     "description": "Turns charts into music so the blind can hear data",
     "files": [
@@ -35,7 +36,7 @@
         "node": ">16.14"
     },
     "scripts": {
-        "build": "rollup -c rollup.config.js --silent",
+        "build": "rollup -c rollup.config.js --silent --bundleConfigAsCjs",
         "clean": "rimraf ./dist ./coverage",
         "depcheck": "depcheck",
         "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\"",
@@ -64,8 +65,8 @@
         "lint-staged": "15.0.2",
         "prettier": "3.0.3",
         "rimraf": "5.0.5",
-        "rollup": "2.79.1",
-        "rollup-plugin-dts": "4.2.3",
+        "rollup": "4.2.0",
+        "rollup-plugin-dts": "6.1.0",
         "rollup-plugin-delete": "2.0.0",
         "ts-jest": "28.0.8",
         "tslib": "2.6.2",
