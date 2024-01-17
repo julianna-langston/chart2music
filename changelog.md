@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.13.0
+* Added support for CommonJS (thank you [ayjayt](https://github.com/ayjayt))
+
 ## 1.12.1
 * Remove experimental mobile support, since it is causing problems in normal usage.
 
