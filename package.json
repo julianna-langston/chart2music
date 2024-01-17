@@ -4,7 +4,8 @@
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "exports": {
-        "import": "./dist/index.mjs"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs"
     },
     "type": "commonjs",
     "types": "dist/index.d.ts",
@@ -36,7 +37,8 @@
         "node": ">16.14"
     },
     "scripts": {
-        "build": "rollup -c rollup.config.js --silent --bundleConfigAsCjs",
+        "build": "rollup -c rollup.config.js --silent --bundleConfigAsCjs && npm run build-cjs",
+        "build-cjs": "npx babel ./dist/index.mjs --out-file ./dist/index.cjs",
         "clean": "rimraf ./dist ./coverage",
         "depcheck": "depcheck",
         "start": "concurrently \"rollup -c rollup.config.js -w\" \"http-server .\"",
@@ -49,6 +51,10 @@
     },
     "license": "MIT",
     "devDependencies": {
+        "@babel/cli": "^7.23.4",
+        "@babel/core": "^7.23.7",
+        "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+        "@babel/preset-env": "^7.23.8",
         "@rollup/plugin-typescript": "11.1.5",
         "@types/jest": "^29.2.1",
         "@typescript-eslint/eslint-plugin": "6.18.0",
@@ -66,8 +72,8 @@
         "prettier": "3.1.0",
         "rimraf": "5.0.5",
         "rollup": "4.9.4",
-        "rollup-plugin-dts": "6.1.0",
         "rollup-plugin-delete": "2.0.0",
+        "rollup-plugin-dts": "6.1.0",
         "ts-jest": "28.0.8",
         "tslib": "2.6.2",
         "typescript": "5.3.3"
