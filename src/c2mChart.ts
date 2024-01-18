@@ -892,11 +892,14 @@ export class c2m {
                 )
             );
         }
-        this._sr.render(
-            translate(this._language, "updated", {
-                title: this._title || "Chart"
-            })
-        );
+
+        if (this._title) {
+            this._sr.render(
+                translate(this._language, "updated", { title: this._title })
+            );
+        } else {
+            this._sr.render(translate(this._language, "updated-untitled"));
+        }
     }
 
     /**

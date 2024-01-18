@@ -3,6 +3,7 @@ import type { translationDict } from ".";
 const dictionary: translationDict = {
     description: "{title}, Sonified chart",
     updated: "{title} updated",
+    "updated-untitled": "Chart updated",
     missing: "missing",
     close: "Close", // Used to close dialogs
     save: "Save", // Used to save settings in dialogs

@@ -1,5 +1,5 @@
 import en from "./en";
-import zz from "./zz";
+import fr from "./fr";
 
 /**
  *
@@ -18,4 +18,4 @@ export type translatableEntity = string | number | boolean;
  */
 export type translateEvaluators = Record<string, translatableEntity>;
 
-export { en, zz };
+export { en, fr };

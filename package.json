@@ -37,7 +37,7 @@
         "node": ">16.14"
     },
     "scripts": {
-        "build": "rollup -c rollup.config.js --silent --bundleConfigAsCjs && npm run build-cjs",
+        "build": "rollup -c rollup.config.mjs --silent --bundleConfigAsCjs && npm run build-cjs",
         "build-cjs": "npx babel ./dist/index.mjs --out-file ./dist/index.cjs",
         "clean": "rimraf ./dist ./coverage",
         "depcheck": "depcheck",
@@ -55,6 +55,7 @@
         "@babel/core": "^7.23.7",
         "@babel/plugin-transform-modules-commonjs": "^7.23.3",
         "@babel/preset-env": "^7.23.8",
+        "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-typescript": "11.1.5",
         "@types/jest": "^29.2.1",
         "@typescript-eslint/eslint-plugin": "6.19.0",

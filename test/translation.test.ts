@@ -10,7 +10,8 @@ test("Get feedback in a non-default language", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        lang: "zz",
+        lang: "fr",
+        title: "EXEMPLE",
         type: SUPPORTED_CHART_TYPES.LINE,
         data: {
             a: [
@@ -40,6 +41,6 @@ test("Get feedback in a non-default language", () => {
     chart?.setCategoryVisibility("b", false);
     jest.advanceTimersByTime(250);
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "ZChart updatedZ"
+        "EXEMPLE mis à jour"
     );
 });
