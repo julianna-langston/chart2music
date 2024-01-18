@@ -12,7 +12,7 @@ type translateEvaluators = Record<string, translatableEntity>;
 
 const DEFAULT_LANGUAGE = "en-US";
 const language = {
-    "en-US": {
+    en: {
         description: "{{title}}, Sonified chart",
         updated: "{{title}} updated",
         missing: "missing",

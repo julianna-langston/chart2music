@@ -25,15 +25,15 @@ export const launchOptionDialog = (
     playCb?: (hertz: number) => void
 ) => {
     const dialog = document.createElement("dialog");
-    dialog.setAttribute("aria-label", translate("en-US", "options-title"));
-    dialog.innerHTML = `<h1>${translate("en-US", "options-title")}</h1>
+    dialog.setAttribute("aria-label", translate("en", "options-title"));
+    dialog.innerHTML = `<h1>${translate("en", "options-title")}</h1>
 
-    <p tabIndex="0">${translate("en-US", "options-frontmatter")}:</p>
+    <p tabIndex="0">${translate("en", "options-frontmatter")}:</p>
 
     <form id="optionForm">
         <div>
             <label>
-                ${translate("en-US", "options-hertz-lower")}:
+                ${translate("en", "options-hertz-lower")}:
                 <input type="range" min="0" max="${
                     upper - 1
                 }" step="1" id="lowerRange" value="${lower}" />
@@ -42,7 +42,7 @@ export const launchOptionDialog = (
 
         <div>
             <label>
-            ${translate("en-US", "options-hertz-upper")}:
+            ${translate("en", "options-hertz-upper")}:
                 <input type="range" min="${lower + 1}" max="${
                     HERTZ.length - 1
                 }" step="1" id="upperRange" value="${upper}" />
@@ -51,7 +51,7 @@ export const launchOptionDialog = (
 
         <div>
             <label>
-            ${translate("en-US", "options-speed-label")}:
+            ${translate("en", "options-speed-label")}:
                 <input type="range" min="0" max="4" id="speedRange" value="${speedIndex}" />
             </label>
         </div>
@@ -59,7 +59,7 @@ export const launchOptionDialog = (
         <div>
             <label>
                 <input type="checkbox" id="global" checked />
-                ${translate("en-US", "options-set-global")}
+                ${translate("en", "options-set-global")}
             </label>
         </div>
 
@@ -68,21 +68,21 @@ export const launchOptionDialog = (
                 <input type="checkbox" id="continuous" ${
                     continuousMode ? "checked" : ""
                 } />
-                ${translate("en-US", "options-use-continuous")}
+                ${translate("en", "options-use-continuous")}
             </label>
             <br/>
-            ${translate("en-US", "options-continuous-descr")}
+            ${translate("en", "options-continuous-descr")}
         </div>
 
         <div>
             <fieldset>
-                <legend>${translate("en-US", "options-point-labels")}</legend>
+                <legend>${translate("en", "options-point-labels")}</legend>
 
                 <label>
                     <input type="radio" name="point-labels" value="before" ${
                         labelPosition ? "checked" : ""
                     } />
-                    ${translate("en-US", "options-point-labels-before")}
+                    ${translate("en", "options-point-labels-before")}
                 </label>
                 
                 <br/>
@@ -91,12 +91,12 @@ export const launchOptionDialog = (
                     <input type="radio" name="point-labels" value="after" ${
                         labelPosition ? "" : "checked"
                     } />
-                    ${translate("en-US", "options-point-labels-after")}
+                    ${translate("en", "options-point-labels-after")}
                 </label>
             </fieldset>
         </div>
 
-        <input id="save" type="submit" value="${translate("en-US", "save")}" />
+        <input id="save" type="submit" value="${translate("en", "save")}" />
     </form>
     `;
 

@@ -173,16 +173,16 @@ export const generatePointDescription = (
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translate("en-US", "point-xy", {
+            return translate("en", "point-xy", {
                 x: xFormat(point.x),
                 y: yFormat(point[stat as keyof OHLCDataPoint] as number)
             });
         }
-        return translate("en-US", "point-xohlc", point);
+        return translate("en", "point-xohlc", point);
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return translate("en-US", "point-outlier", {
+        return translate("en", "point-outlier", {
             x: xFormat(point.x),
             y: point.outlier[outlierIndex],
             index: outlierIndex + 1,
@@ -192,7 +192,7 @@ export const generatePointDescription = (
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translate("en-US", "point-xy", {
+            return translate("en", "point-xy", {
                 x: xFormat(point.x),
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 y: yFormat(point[stat])
@@ -207,13 +207,13 @@ export const generatePointDescription = (
         };
 
         if ("outlier" in point && point.outlier?.length > 0) {
-            return translate("en-US", "point-xhl-outlier", {
+            return translate("en", "point-xhl-outlier", {
                 ...formattedPoint,
                 count: point.outlier.length
             });
         }
 
-        return translate("en-US", "point-xhl", formattedPoint);
+        return translate("en", "point-xhl", formattedPoint);
     }
 
     if (isSimpleDataPoint(point)) {
@@ -229,7 +229,7 @@ export const generatePointDescription = (
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return translate("en-US", "point-xy", {
+        return translate("en", "point-xy", {
             x: xFormat(point.x),
             y: yFormat(point.y2)
         });
@@ -400,13 +400,13 @@ export const convertDataRow = (
 export const formatWrapper = (axis: AxisData) => {
     const format = (num: number) => {
         if (isNaN(num)) {
-            return translate("en-US", "missing");
+            return translate("en", "missing");
         }
         if (axis.minimum && num < axis.minimum) {
-            return translate("en-US", "tooLow");
+            return translate("en", "tooLow");
         }
         if (axis.maximum && num > axis.maximum) {
-            return translate("en-US", "tooHigh");
+            return translate("en", "tooHigh");
         }
         return axis.format(num);
     };
@@ -447,7 +447,7 @@ export const generateChartSummary = ({
         text.push("title");
     }
 
-    return translate("en-US", text.join("-"), {
+    return translate("en", text.join("-"), {
         groupCount,
         title
     });
@@ -470,7 +470,7 @@ export const generateAxisSummary = (
         code.push("con");
     }
 
-    return translate("en-US", code.join("-"), {
+    return translate("en", code.join("-"), {
         letter: axisDescriptions[axisLetter],
         label: axis.label ?? "",
         min: axis.format(axis.minimum),
@@ -493,10 +493,10 @@ export const generateInstructions = ({
 }: InstructionsType) => {
     const keyboardMessage = filteredJoin(
         [
-            translate("en-US", "instructionArrows"),
-            hierarchy && translate("en-US", "instructionHierarchy"),
-            live && translate("en-US", "instructionLive"),
-            translate("en-US", "instructionHotkeys")
+            translate("en", "instructionArrows"),
+            hierarchy && translate("en", "instructionHierarchy"),
+            live && translate("en", "instructionLive"),
+            translate("en", "instructionHotkeys")
         ],
         " "
     );
@@ -517,7 +517,7 @@ export const prepChartElement = (elem: HTMLElement, title: string) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
         elem.setAttribute(
             "aria-label",
-            translate("en-US", "description", { title })
+            translate("en", "description", { title })
         );
     }
 

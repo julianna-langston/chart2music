@@ -103,7 +103,7 @@ export class KeyboardEventManager {
 
         const closeButton = document.createElement("button");
         closeButton.textContent = "X";
-        closeButton.ariaLabel = translate("en-US", "close");
+        closeButton.ariaLabel = translate("en", "close");
         closeButton.style.position = "absolute";
         closeButton.style.top = "10px";
         closeButton.style.right = "10px";
@@ -112,7 +112,7 @@ export class KeyboardEventManager {
         });
         dialog.appendChild(closeButton);
 
-        const heading = translate("en-US", "kbmg-title");
+        const heading = translate("en", "kbmg-title");
         const h1 = document.createElement("h1");
         h1.textContent = heading;
         dialog.setAttribute("aria-live", heading);
