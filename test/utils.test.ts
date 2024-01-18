@@ -313,7 +313,7 @@ describe("utils", () => {
                 defaultFormat,
                 defaultFormat
             )
-        ).toBe("0, 10 - 5, with 1 outliers");
+        ).toBe("0, 10 - 5, with 1 outlier");
         expect(
             generatePointDescription(
                 "en",

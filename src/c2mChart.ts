@@ -599,10 +599,9 @@ export class c2m {
                 }
                 this._monitorMode = !this._monitorMode;
                 this._sr.render(
-                    translate(
-                        this._language,
-                        `kbr-mon-${this._monitorMode ? "on" : "off"}`
-                    )
+                    translate(this._language, "monitoring", {
+                        switch: this._monitorMode
+                    })
                 );
             },
             help: () => {

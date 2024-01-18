@@ -102,7 +102,7 @@ test("Checking out the outliers", () => {
         },
         {
             press: { key: "ArrowRight" },
-            text: "Latin America and Caribbean, 7.09 - 4.87, with 1 outliers",
+            text: "Latin America and Caribbean, 7.09 - 4.87, with 1 outlier",
             count: 5
         },
         {

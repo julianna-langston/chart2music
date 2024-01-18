@@ -1,27 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { createIntl } from "@formatjs/intl";
 import * as translations from "./translations";
-import type { translateEvaluators, translationLibrary } from "./translations";
+import type { translateEvaluators } from "./translations";
 
 export const DEFAULT_LANGUAGE = "en";
 
-const replace = (str: string, evaluators: translateEvaluators) => {
-    let tmp = `${str}`;
-    Object.entries(evaluators).forEach(([entity, replacement]) => {
-        tmp = tmp.replace(new RegExp(`{{${entity}}}`), `${replacement}`);
-    });
-    return tmp;
-};
+const translators = Object.fromEntries(
+    Object.entries(translations).map(([locale, messages]) => [
+        locale,
+        createIntl({ locale, messages })
+    ])
+);
 
 export const translate = (
     lang: string,
     verbiage_code: string,
-    evaluators: translateEvaluators = {},
-    customDictionary?: translationLibrary
-) =>
-    replace(
-        customDictionary?.[lang]?.[verbiage_code] ??
-            translations[lang]?.[verbiage_code] ??
-            translations[DEFAULT_LANGUAGE]?.[verbiage_code],
-        evaluators
-    ) ?? "";
+    evaluators: translateEvaluators = {}
+) => translators[lang].formatMessage({ id: verbiage_code }, evaluators);

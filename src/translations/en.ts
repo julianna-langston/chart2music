@@ -1,8 +1,8 @@
 import type { translationDict } from ".";
 
 const dictionary: translationDict = {
-    description: "{{title}}, Sonified chart",
-    updated: "{{title}} updated",
+    description: "{title}, Sonified chart",
+    updated: "{title} updated",
     missing: "missing",
     close: "Close", // Used to close dialogs
     save: "Save", // Used to save settings in dialogs
@@ -18,31 +18,59 @@ const dictionary: translationDict = {
     "summ-chart": "Sonified chart.",
     "summ-chart-live": "Sonified live chart.",
     "summ-chart-hier": "Sonified hierarchical chart.",
-    "summ-chart-group": "Sonified chart with {{groupCount}} groups.",
-    "summ-chart-title": `Sonified chart titled "{{title}}".`,
+    "summ-chart-group": "Sonified chart with {groupCount} groups.",
+    "summ-chart-title": `Sonified chart titled "{title}".`,
     "summ-chart-live-hier": "Sonified live hierarchical chart.",
-    "summ-chart-live-group": `Sonified live chart with {{groupCount}} groups.`,
-    "summ-chart-live-title": `Sonified live chart titled "{{title}}".`,
-    "summ-chart-hier-group": `Sonified hierarchical chart with {{groupCount}} groups.`,
-    "summ-chart-hier-title": `Sonified hierarchical chart titled "{{title}}".`,
-    "summ-chart-group-title": `Sonified chart with {{groupCount}} groups titled "{{title}}".`,
-    "summ-chart-live-hier-group": `Sonified live hierarchical chart with {{groupCount}} groups.`,
-    "summ-chart-live-hier-title": `Sonified live hierarchical chart titled "{{title}}".`,
-    "summ-chart-live-group-title": `Sonified live chart with {{groupCount}} groups titled" {{title}}".`,
-    "summ-chart-hier-group-title": `Sonified hierarchical chart with {{groupCount}} groups titled "{{title}}".`,
-    "summ-chart-live-hier-group-title": `Sonified live hierarchical chart with {{groupCount}} groups titled "{{title}}".`,
+    "summ-chart-live-group": `Sonified live chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    }.`,
+    "summ-chart-live-title": `Sonified live chart titled "{title}".`,
+    "summ-chart-hier-group": `Sonified hierarchical chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    }.`,
+    "summ-chart-hier-title": `Sonified hierarchical chart titled "{title}".`,
+    "summ-chart-group-title": `Sonified chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    } titled "{title}".`,
+    "summ-chart-live-hier-group": `Sonified live hierarchical chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    }.`,
+    "summ-chart-live-hier-title": `Sonified live hierarchical chart titled "{title}".`,
+    "summ-chart-live-group-title": `Sonified live chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    } titled" {title}".`,
+    "summ-chart-hier-group-title": `Sonified hierarchical chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    } titled "{title}".`,
+    "summ-chart-live-hier-group-title": `Sonified live hierarchical chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    } titled "{title}".`,
 
-    "axis-desc": `{{letter}} is "{{label}}" from {{min}} to {{max}}.`,
-    "axis-desc-log": `{{letter}} is "{{label}}" from {{min}} to {{max}} logarithmic.`,
-    "axis-desc-con": `{{letter}} is "{{label}}" from {{min}} to {{max}} continuously.`,
-    "axis-desc-log-con": `{{letter}} is "{{label}}" from {{min}} to {{max}} logarithmic continuously.`,
+    "axis-desc": `{letter} is "{label}" from {min} to {max}.`,
+    "axis-desc-log": `{letter} is "{label}" from {min} to {max} logarithmic.`,
+    "axis-desc-con": `{letter} is "{label}" from {min} to {max} continuously.`,
+    "axis-desc-log-con": `{letter} is "{label}" from {min} to {max} logarithmic continuously.`,
 
-    "kbr-speed": `Speed, {{rate_in_ms}}`,
+    "kbr-speed": `Speed, {rate_in_ms}`,
     "kbr-not-live": "Not a live chart",
-    "kbr-mon-on": "Monitoring on",
-    "kbr-mon-off": "Monitoring off",
+    monitoring:
+        "Monitoring {switch, select, true {on} false {off} other {unknown}}",
 
-    "group-unknown": `Group titled "{{title}}" uses an unsupported chart type.`,
+    "group-unknown": `Group titled "{title}" uses an unsupported chart type.`,
 
     "chart-line": "Line chart.",
     "chart-bar": "Bar chart.",
@@ -55,16 +83,16 @@ const dictionary: translationDict = {
     "chart-scatter": "Scatter chart.",
     "chart-treemap": "Treemap chart.",
 
-    "chart-line-labeled": `Line chart showing "{{label}}".`,
-    "chart-bar-labeled": `Bar chart showing "{{label}}".`,
-    "chart-band-labeled": `Band chart showing "{{label}}".`,
-    "chart-pie-labeled": `Pie chart showing "{{label}}".`,
-    "chart-candlestick-labeled": `Candlestick chart showing "{{label}}".`,
-    "chart-histogram-labeled": `Histogram showing "{{label}}".`,
-    "chart-box-labeled": `Box plot showing "{{label}}".`,
-    "chart-matrix-labeled": `Matrix plot showing "{{label}}".`,
-    "chart-scatter-labeled": `Scatter plot showing "{{label}}".`,
-    "chart-treemap-labeled": `Treemap chart showing "{{label}}".`,
+    "chart-line-labeled": `Line chart showing "{label}".`,
+    "chart-bar-labeled": `Bar chart showing "{label}".`,
+    "chart-band-labeled": `Band chart showing "{label}".`,
+    "chart-pie-labeled": `Pie chart showing "{label}".`,
+    "chart-candlestick-labeled": `Candlestick chart showing "{label}".`,
+    "chart-histogram-labeled": `Histogram showing "{label}".`,
+    "chart-box-labeled": `Box plot showing "{label}".`,
+    "chart-matrix-labeled": `Matrix plot showing "{label}".`,
+    "chart-scatter-labeled": `Scatter plot showing "{label}".`,
+    "chart-treemap-labeled": `Treemap chart showing "{label}".`,
 
     "stat-all": "All",
     // In Finance, OHLC (Open, High, Low, Close) charts are sometimes called candlestick charts.
@@ -80,11 +108,12 @@ const dictionary: translationDict = {
     "stat-q3": "Q3",
     "stat-outlier": "Outlier",
 
-    "point-xy": "{{x}}, {{y}}",
-    "point-xohlc": "{{x}}, {{open}} - {{high}} - {{low}} - {{close}}",
-    "point-outlier": "{{x}}, {{y}}, {{index}} of {{count}}",
-    "point-xhl": "{{x}}, {{high}} - {{low}}",
-    "point-xhl-outlier": "{{x}}, {{high}} - {{low}}, with {{count}} outliers",
+    "point-xy": "{x}, {y}",
+    "point-xohlc": "{x}, {open} - {high} - {low} - {close}",
+    "point-outlier": "{x}, {y}, {index} of {count}",
+    "point-xhl": "{x}, {high} - {low}",
+    "point-xhl-outlier":
+        "{x}, {high} - {low}, with {count, plural, =0 {no outliers} one {{count} outlier} other {{count} outliers}}",
 
     "info-open": "Open info dialog",
     "info-title": "Info",
@@ -127,7 +156,7 @@ const dictionary: translationDict = {
 
     "options-title": "Options",
     "options-frontmatter":
-        "While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound",
+        "While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:",
     "options-hertz-lower": "Lower hertz",
     "options-hertz-upper": "Upper hertz",
     "options-speed-label": "Play speed (aka, press 'Q' and 'E')",

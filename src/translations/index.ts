@@ -1,4 +1,5 @@
 import en from "./en";
+import zz from "./zz";
 
 /**
  *
@@ -11,10 +12,10 @@ export type translationLibrary = Record<string, translationDict>;
 /**
  *
  */
-export type translatableEntity = string | number;
+export type translatableEntity = string | number | boolean;
 /**
  *
  */
 export type translateEvaluators = Record<string, translatableEntity>;
 
-export { en };
+export { en, zz };

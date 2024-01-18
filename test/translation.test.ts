@@ -1,35 +1,45 @@
-import { translate } from "../src/translator";
+import { c2mChart } from "../src/c2mChart";
+import { SUPPORTED_CHART_TYPES } from "../src/types";
 
-const customDictionary = {
-    custom: {
-        no_entity: "Hello world",
-        with_entity: "Hello {{title}}"
-    },
-    custom2: {
-        no_entity: "Hello World!"
-    }
-};
+jest.useFakeTimers();
+window.AudioContext = jest.fn().mockImplementation(() => {
+    return {};
+});
 
-describe("translation", () => {
-    test("no entities", () => {
-        expect(translate("custom", "no_entity", {}, customDictionary)).toBe(
-            "Hello world"
-        );
-        expect(translate("custom2", "no_entity", {}, customDictionary)).toBe(
-            "Hello World!"
-        );
+test("Get feedback in a non-default language", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        lang: "zz",
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: {
+            a: [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            b: [
+                { x: 1, y: 11 },
+                { x: 2, y: 12 },
+                { x: 3, y: 13 }
+            ],
+            c: [
+                { x: 1, y: 7 },
+                { x: 2, y: 8 },
+                { x: 3, y: 9 }
+            ]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
     });
-    test("check english dictionary", () => {
-        expect(translate("en", "tooHigh")).toBe("too high");
-    });
-    test("check entities", () => {
-        expect(
-            translate(
-                "custom",
-                "with_entity",
-                { title: "universe" },
-                customDictionary
-            )
-        ).toBe("Hello universe");
-    });
+    expect(err).toBe(null);
+
+    chart?.setCategoryVisibility("b", false);
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "ZChart updatedZ"
+    );
 });
