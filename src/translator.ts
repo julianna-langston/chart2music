@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import * as translations from "./translations";
-import type { translateEvaluators } from "./translations";
+import type { translateEvaluators, translationLibrary } from "./translations";
 
 export const DEFAULT_LANGUAGE = "en";
 
@@ -16,10 +16,12 @@ const replace = (str: string, evaluators: translateEvaluators) => {
 export const translate = (
     lang: string,
     verbiage_code: string,
-    evaluators: translateEvaluators = {}
+    evaluators: translateEvaluators = {},
+    customDictionary?: translationLibrary
 ) =>
     replace(
-        translations[lang]?.[verbiage_code] ??
+        customDictionary?.[lang]?.[verbiage_code] ??
+            translations[lang]?.[verbiage_code] ??
             translations[DEFAULT_LANGUAGE]?.[verbiage_code],
         evaluators
     ) ?? "";
