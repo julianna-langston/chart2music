@@ -19,7 +19,11 @@ const dictionary: translationDict = {
     "summ-chart": "Sonified chart.",
     "summ-chart-live": "Sonified live chart.",
     "summ-chart-hier": "Sonified hierarchical chart.",
-    "summ-chart-group": "Sonified chart with {groupCount} groups.",
+    "summ-chart-group": `Sonified chart with {groupCount, plural,
+        =0 {no groups}
+        one {1 group}
+        other {{groupCount} groups}
+    }.`,
     "summ-chart-title": `Sonified chart titled "{title}".`,
     "summ-chart-live-hier": "Sonified live hierarchical chart.",
     "summ-chart-live-group": `Sonified live chart with {groupCount, plural,
@@ -113,8 +117,11 @@ const dictionary: translationDict = {
     "point-xohlc": "{x}, {open} - {high} - {low} - {close}",
     "point-outlier": "{x}, {y}, {index} of {count}",
     "point-xhl": "{x}, {high} - {low}",
-    "point-xhl-outlier":
-        "{x}, {high} - {low}, with {count, plural, =0 {no outliers} one {{count} outlier} other {{count} outliers}}",
+    "point-xhl-outlier": `{x}, {high} - {low}, with {count, plural, 
+        =0 {no outliers} 
+        one {{count} outlier} 
+        other {{count} outliers}
+    }`,
 
     "info-open": "Open info dialog",
     "info-title": "Info",
