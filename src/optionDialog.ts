@@ -31,7 +31,7 @@ export const launchOptionDialog = (
     dialog.setAttribute("aria-label", translate(language, "options-title"));
     dialog.innerHTML = `<h1>${translate(language, "options-title")}</h1>
 
-    <p tabIndex="0">${translate(language, "options-frontmatter")}:</p>
+    <p tabIndex="0">${translate(language, "options-frontmatter")}</p>
 
     <form id="optionForm">
         <div>

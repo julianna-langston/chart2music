@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { createIntl } from "@formatjs/intl";
 import * as translations from "./translations";
 import type { translateEvaluators } from "./translations";

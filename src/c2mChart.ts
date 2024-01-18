@@ -203,6 +203,7 @@ export class c2m {
         this._chartElement = input.element;
         this._info = input.info ?? {};
         this._language = input.lang ?? DEFAULT_LANGUAGE;
+        prepChartElement(this._chartElement, this._title, this._language);
 
         this._ccElement = input.cc ?? this._chartElement;
 
@@ -222,8 +223,6 @@ export class c2m {
                 };
             }
         }
-
-        prepChartElement(this._chartElement, this._title, this._language);
 
         this._setData(input.data, input.axes);
 
