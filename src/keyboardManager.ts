@@ -97,13 +97,15 @@ export class KeyboardEventManager {
 
     /**
      * Build a help dialog
+     * @param lang Language of the dialog - used in attribute, and for i18n
      */
-    generateHelpDialog() {
+    generateHelpDialog(lang: string) {
         const dialog = document.createElement("dialog");
+        dialog.setAttribute("lang", lang);
 
         const closeButton = document.createElement("button");
         closeButton.textContent = "X";
-        closeButton.ariaLabel = translate("en", "close");
+        closeButton.ariaLabel = translate(lang, "close");
         closeButton.style.position = "absolute";
         closeButton.style.top = "10px";
         closeButton.style.right = "10px";
@@ -112,7 +114,7 @@ export class KeyboardEventManager {
         });
         dialog.appendChild(closeButton);
 
-        const heading = translate("en", "kbmg-title");
+        const heading = translate(lang, "kbmg-title");
         const h1 = document.createElement("h1");
         h1.textContent = heading;
         dialog.setAttribute("aria-live", heading);
@@ -145,10 +147,11 @@ export class KeyboardEventManager {
 
     /**
      * Launch help dialog
+     * @param lang Language of the dialog - used in attribute, and for i18n
      */
-    launchHelpDialog() {
+    launchHelpDialog(lang: string) {
         if (this._dialog === null) {
-            this._dialog = this.generateHelpDialog();
+            this._dialog = this.generateHelpDialog(lang);
             document.body.appendChild(this._dialog);
         }
         this._dialog.showModal();

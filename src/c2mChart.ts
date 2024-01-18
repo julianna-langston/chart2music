@@ -47,7 +47,7 @@ import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
-import { translate } from "./translator";
+import { DEFAULT_LANGUAGE, translate } from "./translator";
 
 /**
  * Metadata about previous levels. Used to quickly return to parents.
@@ -185,6 +185,7 @@ export class c2m {
     private _hierarchy = false;
     private _hierarchyRoot: string | null = null;
     private _hierarchyBreadcrumbs: HierarchyBreadcrumbType[] = [];
+    private _language: string;
 
     /**
      * Constructor
@@ -201,8 +202,7 @@ export class c2m {
         this._title = input.title ?? "";
         this._chartElement = input.element;
         this._info = input.info ?? {};
-
-        prepChartElement(this._chartElement, this._title);
+        this._language = input.lang ?? DEFAULT_LANGUAGE;
 
         this._ccElement = input.cc ?? this._chartElement;
 
@@ -222,6 +222,8 @@ export class c2m {
                 };
             }
         }
+
+        prepChartElement(this._chartElement, this._title, this._language);
 
         this._setData(input.data, input.axes);
 
@@ -574,7 +576,7 @@ export class c2m {
                     this._speedRateIndex++;
                 }
                 this._sr.render(
-                    translate("en", "kbr-speed", {
+                    translate(this._language, "kbr-speed", {
                         rate_in_ms: SPEEDS[this._speedRateIndex]
                     })
                 );
@@ -585,27 +587,27 @@ export class c2m {
                     this._speedRateIndex--;
                 }
                 this._sr.render(
-                    translate("en", "kbr-speed", {
+                    translate(this._language, "kbr-speed", {
                         rate_in_ms: SPEEDS[this._speedRateIndex]
                     })
                 );
             },
             monitor: () => {
                 if (!this._options.live) {
-                    this._sr.render(translate("en", "kbr-not-live"));
+                    this._sr.render(translate(this._language, "kbr-not-live"));
                     return;
                 }
                 this._monitorMode = !this._monitorMode;
                 this._sr.render(
                     translate(
-                        "en",
+                        this._language,
                         `kbr-mon-${this._monitorMode ? "on" : "off"}`
                     )
                 );
             },
             help: () => {
                 this._clearPlay();
-                this._keyEventManager.launchHelpDialog();
+                this._keyEventManager.launchHelpDialog(this._language);
             },
             options: () => {
                 this._checkAudioEngine();
@@ -614,7 +616,8 @@ export class c2m {
                         ...this._hertzClamps,
                         speedIndex: this._speedRateIndex,
                         continuousMode: this._xAxis.continuous,
-                        labelPosition: this._announcePointLabelFirst
+                        labelPosition: this._announcePointLabelFirst,
+                        language: this._language
                     },
                     (
                         lowerIndex: number,
@@ -627,7 +630,7 @@ export class c2m {
                         if (this._speedRateIndex !== speedIndex) {
                             this._speedRateIndex = speedIndex;
                             this._sr.render(
-                                translate("en", "kbr-speed", {
+                                translate(this._language, "kbr-speed", {
                                     rate_in_ms: SPEEDS[this._speedRateIndex]
                                 })
                             );
@@ -648,7 +651,7 @@ export class c2m {
                 );
             },
             info: () => {
-                launchInfoDialog(this._info);
+                launchInfoDialog(this._info, this._language);
             }
         };
     }
@@ -685,12 +688,14 @@ export class c2m {
      */
     private _generateSummary() {
         this._chartSummary = generateChartSummary({
+            language: this._language,
             title: this._title,
             groupCount: this._visible_group_indices.length,
             live: this._options.live,
             hierarchy: this._hierarchy
         });
         this._instructions = generateInstructions({
+            language: this._language,
             live: this._options.live,
             hierarchy: this._hierarchy,
             hasNotes: this._info?.notes?.length > 0
@@ -889,7 +894,9 @@ export class c2m {
             );
         }
         this._sr.render(
-            translate("en", "updated", { title: this._title || "Chart" })
+            translate(this._language, "updated", {
+                title: this._title || "Chart"
+            })
         );
     }
 
@@ -915,7 +922,7 @@ export class c2m {
                 this._visible_group_indices.push(groupIndex);
                 this._visible_group_indices.sort();
                 this._sr.render(
-                    translate("en", "updated", {
+                    translate(this._language, "updated", {
                         title: this._title || "Chart"
                     })
                 );
@@ -931,7 +938,7 @@ export class c2m {
                     1
                 );
                 this._sr.render(
-                    translate("en", "updated", {
+                    translate(this._language, "updated", {
                         title: this._title || "Chart"
                     })
                 );
@@ -1116,123 +1123,123 @@ export class c2m {
         this._keyEventManager.registerKeyEvents(
             [
                 {
-                    title: translate("en", "key-point-next"),
+                    title: translate(this._language, "key-point-next"),
                     key: "ArrowRight",
                     callback: this._availableActions.next_point
                 },
                 {
-                    title: translate("en", "key-point-prev"),
+                    title: translate(this._language, "key-point-prev"),
                     key: "ArrowLeft",
                     callback: this._availableActions.previous_point
                 },
                 {
-                    title: translate("en", "key-play-fwd"),
+                    title: translate(this._language, "key-play-fwd"),
                     key: "Shift+End",
                     callback: this._availableActions.play_right
                 },
                 {
-                    title: translate("en", "key-play-back"),
+                    title: translate(this._language, "key-play-back"),
                     key: "Shift+Home",
                     callback: this._availableActions.play_left
                 },
                 {
-                    title: translate("en", "key-play-cancel"),
+                    title: translate(this._language, "key-play-cancel"),
                     key: "Ctrl+Control",
                     keyDescription: "Control",
                     callback: this._availableActions.stop_play
                 },
                 this._type === SUPPORTED_CHART_TYPES.MATRIX
                     ? {
-                          title: translate("en", "key-group-prev"),
+                          title: translate(this._language, "key-group-prev"),
                           key: "ArrowUp",
                           callback: this._availableActions.previous_category
                       }
                     : {
-                          title: translate("en", "key-stat-prev"),
+                          title: translate(this._language, "key-stat-prev"),
                           key: "ArrowUp",
                           callback: this._availableActions.previous_stat
                       },
                 this._type === SUPPORTED_CHART_TYPES.MATRIX
                     ? {
-                          title: translate("en", "key-group-next"),
+                          title: translate(this._language, "key-group-next"),
                           key: "ArrowDown",
                           callback: this._availableActions.next_category
                       }
                     : {
-                          title: translate("en", "key-stat-next"),
+                          title: translate(this._language, "key-stat-next"),
                           key: "ArrowDown",
                           callback: this._availableActions.next_stat
                       },
                 !this._hierarchy && {
-                    title: translate("en", "key-group-prev"),
+                    title: translate(this._language, "key-group-prev"),
                     key: "PageUp",
                     callback: this._availableActions.previous_category
                 },
                 !this._hierarchy && {
-                    title: translate("en", "key-group-next"),
+                    title: translate(this._language, "key-group-next"),
                     key: "PageDown",
                     callback: this._availableActions.next_category
                 },
                 !this._hierarchy && {
-                    title: translate("en", "key-group-first"),
+                    title: translate(this._language, "key-group-first"),
                     key: "Alt+PageUp",
                     callback: this._availableActions.first_category
                 },
                 this._hierarchy
                     ? {
-                          title: translate("en", "key-hier-root"),
+                          title: translate(this._language, "key-hier-root"),
                           key: "Alt+PageUp",
                           callback: this._availableActions.go_to_root
                       }
                     : {
-                          title: translate("en", "key-group-last"),
+                          title: translate(this._language, "key-group-last"),
                           key: "Alt+PageDown",
                           callback: this._availableActions.last_category
                       },
                 !this._hierarchy && {
-                    title: translate("en", "key-play-fwd-group"),
+                    title: translate(this._language, "key-play-fwd-group"),
                     key: "Shift+PageDown",
                     callback: this._availableActions.play_forward_category
                 },
                 !this._hierarchy && {
-                    title: translate("en", "key-play-back-group"),
+                    title: translate(this._language, "key-play-back-group"),
                     key: "Shift+PageUp",
                     callback: this._availableActions.play_backward_category
                 },
                 {
-                    title: translate("en", "key-point-first"),
+                    title: translate(this._language, "key-point-first"),
                     key: "Home",
                     callback: this._availableActions.first_point
                 },
                 {
-                    title: translate("en", "key-point-last"),
+                    title: translate(this._language, "key-point-last"),
                     key: "End",
                     callback: this._availableActions.last_point
                 },
                 {
-                    title: translate("en", "key-replay"),
+                    title: translate(this._language, "key-replay"),
                     key: " ",
                     keyDescription: "Spacebar",
                     callback: this._availableActions.replay
                 },
                 {
-                    title: translate("en", "key-select"),
+                    title: translate(this._language, "key-select"),
                     key: "Enter",
                     callback: this._availableActions.select
                 },
                 {
-                    title: translate("en", "key-tenth-prev"),
+                    title: translate(this._language, "key-tenth-prev"),
                     key: "Ctrl+ArrowLeft",
                     callback: this._availableActions.previous_tenth
                 },
                 {
-                    title: translate("en", "key-tenth-next"),
+                    title: translate(this._language, "key-tenth-next"),
                     key: "Ctrl+ArrowRight",
                     callback: this._availableActions.next_tenth
                 },
                 {
                     title: translate(
-                        "en",
+                        this._language,
                         `key-${this._hierarchy ? "level" : "group"}-min`
                     ),
                     key: "[",
@@ -1240,58 +1247,58 @@ export class c2m {
                 },
                 {
                     title: translate(
-                        "en",
+                        this._language,
                         `key-${this._hierarchy ? "level" : "group"}-max`
                     ),
                     key: "]",
                     callback: this._availableActions.go_maximum
                 },
                 !this._hierarchy && {
-                    title: translate("en", "key-chart-min"),
+                    title: translate(this._language, "key-chart-min"),
                     key: "Ctrl+[",
                     callback: this._availableActions.go_total_minimum
                 },
                 !this._hierarchy && {
-                    title: translate("en", "key-chart-max"),
+                    title: translate(this._language, "key-chart-max"),
                     key: "Ctrl+]",
                     callback: this._availableActions.go_total_maximum
                 },
                 this._hierarchy && {
-                    title: translate("en", "key-level-decr"),
+                    title: translate(this._language, "key-level-decr"),
                     key: "Alt+ArrowDown",
                     callback: this._availableActions.drill_down
                 },
                 this._hierarchy && {
-                    title: translate("en", "key-level-incr"),
+                    title: translate(this._language, "key-level-incr"),
                     key: "Alt+ArrowUp",
                     callback: this._availableActions.drill_up
                 },
                 {
-                    title: translate("en", "key-speed-incr"),
+                    title: translate(this._language, "key-speed-incr"),
                     caseSensitive: false,
                     key: "q",
                     callback: this._availableActions.speed_up
                 },
                 {
-                    title: translate("en", "key-speed-decr"),
+                    title: translate(this._language, "key-speed-decr"),
                     caseSensitive: false,
                     key: "e",
                     callback: this._availableActions.slow_down
                 },
                 {
-                    title: translate("en", "key-monitor-toggle"),
+                    title: translate(this._language, "key-monitor-toggle"),
                     caseSensitive: false,
                     key: "m",
                     callback: this._availableActions.monitor
                 },
                 {
-                    title: translate("en", "key-dialog-help"),
+                    title: translate(this._language, "key-dialog-help"),
                     caseSensitive: false,
                     key: "h",
                     callback: this._availableActions.help
                 },
                 {
-                    title: translate("en", "key-dialog-options"),
+                    title: translate(this._language, "key-dialog-options"),
                     caseSensitive: false,
                     key: "o",
                     callback: this._availableActions.options
@@ -1301,7 +1308,7 @@ export class c2m {
 
         if (this._info.notes?.length > 0) {
             this._keyEventManager.registerKeyEvent({
-                title: translate("en", "info-open"),
+                title: translate(this._language, "info-open"),
                 caseSensitive: false,
                 key: "i",
                 callback: this._availableActions.info
@@ -1365,7 +1372,7 @@ export class c2m {
      */
     private generateGroupSummary() {
         if (this._currentGroupType === SUPPORTED_CHART_TYPES.UNSUPPORTED) {
-            return translate("en", "group-unknown", {
+            return translate(this._language, "group-unknown", {
                 title: this._currentGroupName
             });
         }
@@ -1377,13 +1384,13 @@ export class c2m {
         }
 
         const text = [
-            translate("en", code.join("-"), {
+            translate(this._language, code.join("-"), {
                 label: this._currentGroupName
             }),
-            generateAxisSummary("x", this._xAxis),
+            generateAxisSummary("x", this._xAxis, this._language),
             isAlternateAxisDataPoint(this.currentPoint)
-                ? generateAxisSummary("y2", this._y2Axis)
-                : generateAxisSummary("y", this._yAxis)
+                ? generateAxisSummary("y2", this._y2Axis, this._language)
+                : generateAxisSummary("y", this._yAxis, this._language)
         ];
 
         return text.join(" ");
@@ -2136,10 +2143,12 @@ export class c2m {
         }
 
         const point = generatePointDescription(
+            this._language,
             current,
-            formatWrapper(this._xAxis),
+            formatWrapper(this._xAxis, this._language),
             formatWrapper(
-                isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis
+                isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis,
+                this._language
             ),
             availableStats[statIndex],
             this._outlierMode ? this._outlierIndex : null,
@@ -2150,13 +2159,13 @@ export class c2m {
                 this._flagNewLevel && this._currentGroupName,
                 this._flagNewStat &&
                     translate(
-                        "en",
+                        this._language,
                         `stat-${availableStats[statIndex] ?? "all"}`
                     ),
                 point,
                 this._hierarchy &&
                     current.children &&
-                    translate("en", "nodeHasChildren")
+                    translate(this._language, "nodeHasChildren")
             ],
             ", "
         );

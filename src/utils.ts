@@ -164,6 +164,7 @@ export const calculateAxisMaximum = (
 export const defaultFormat = (value: number) => `${value}`;
 
 export const generatePointDescription = (
+    language: string,
     point: SupportedDataPointType,
     xFormat: AxisData["format"],
     yFormat: AxisData["format"],
@@ -173,16 +174,17 @@ export const generatePointDescription = (
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translate("en", "point-xy", {
+            return translate(language, "point-xy", {
                 x: xFormat(point.x),
                 y: yFormat(point[stat as keyof OHLCDataPoint] as number)
             });
         }
-        return translate("en", "point-xohlc", point);
+        // @ts-expect-error: ts weirdness. It doesn't think "open"/"high"/"low"/"close"/"x" are strings.
+        return translate(language, "point-xohlc", point);
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return translate("en", "point-outlier", {
+        return translate(language, "point-outlier", {
             x: xFormat(point.x),
             y: point.outlier[outlierIndex],
             index: outlierIndex + 1,
@@ -192,7 +194,7 @@ export const generatePointDescription = (
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translate("en", "point-xy", {
+            return translate(language, "point-xy", {
                 x: xFormat(point.x),
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 y: yFormat(point[stat])
@@ -207,13 +209,13 @@ export const generatePointDescription = (
         };
 
         if ("outlier" in point && point.outlier?.length > 0) {
-            return translate("en", "point-xhl-outlier", {
+            return translate(language, "point-xhl-outlier", {
                 ...formattedPoint,
                 count: point.outlier.length
             });
         }
 
-        return translate("en", "point-xhl", formattedPoint);
+        return translate(language, "point-xhl", formattedPoint);
     }
 
     if (isSimpleDataPoint(point)) {
@@ -229,7 +231,7 @@ export const generatePointDescription = (
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return translate("en", "point-xy", {
+        return translate(language, "point-xy", {
             x: xFormat(point.x),
             y: yFormat(point.y2)
         });
@@ -397,16 +399,16 @@ export const convertDataRow = (
     });
 };
 
-export const formatWrapper = (axis: AxisData) => {
+export const formatWrapper = (axis: AxisData, language: string) => {
     const format = (num: number) => {
         if (isNaN(num)) {
-            return translate("en", "missing");
+            return translate(language, "missing");
         }
         if (axis.minimum && num < axis.minimum) {
-            return translate("en", "tooLow");
+            return translate(language, "tooLow");
         }
         if (axis.maximum && num > axis.maximum) {
-            return translate("en", "tooHigh");
+            return translate(language, "tooHigh");
         }
         return axis.format(num);
     };
@@ -418,12 +420,14 @@ export const formatWrapper = (axis: AxisData) => {
  *
  */
 type ChartSummaryType = {
+    language: string;
     groupCount: number;
     title: string;
     live?: boolean;
     hierarchy?: boolean;
 };
 export const generateChartSummary = ({
+    language,
     title,
     groupCount,
     live = false,
@@ -447,7 +451,7 @@ export const generateChartSummary = ({
         text.push("title");
     }
 
-    return translate("en", text.join("-"), {
+    return translate(language, text.join("-"), {
         groupCount,
         title
     });
@@ -460,7 +464,8 @@ const axisDescriptions = {
 };
 export const generateAxisSummary = (
     axisLetter: "x" | "y" | "y2",
-    axis: AxisData
+    axis: AxisData,
+    language: string
 ) => {
     const code = ["axis", "desc"];
     if (axis.type === "log10") {
@@ -470,7 +475,7 @@ export const generateAxisSummary = (
         code.push("con");
     }
 
-    return translate("en", code.join("-"), {
+    return translate(language, code.join("-"), {
         letter: axisDescriptions[axisLetter],
         label: axis.label ?? "",
         min: axis.format(axis.minimum),
@@ -485,18 +490,20 @@ type InstructionsType = {
     hierarchy: boolean;
     live: boolean;
     hasNotes: boolean;
+    language: string;
 };
 export const generateInstructions = ({
     hierarchy,
     live,
-    hasNotes
+    hasNotes,
+    language
 }: InstructionsType) => {
     const keyboardMessage = filteredJoin(
         [
-            translate("en", "instructionArrows"),
-            hierarchy && translate("en", "instructionHierarchy"),
-            live && translate("en", "instructionLive"),
-            translate("en", "instructionHotkeys")
+            translate(language, "instructionArrows"),
+            hierarchy && translate(language, "instructionHierarchy"),
+            live && translate(language, "instructionLive"),
+            translate(language, "instructionHotkeys")
         ],
         " "
     );
@@ -513,11 +520,15 @@ export const isUnplayable = (yValue: number, yAxis: AxisData) => {
     return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
 };
 
-export const prepChartElement = (elem: HTMLElement, title: string) => {
+export const prepChartElement = (
+    elem: HTMLElement,
+    title: string,
+    language: string
+) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
         elem.setAttribute(
             "aria-label",
-            translate("en", "description", { title })
+            translate(language, "description", { title })
         );
     }
 

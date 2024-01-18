@@ -113,6 +113,7 @@ describe("utils", () => {
     test("Generate point description", () => {
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     y: 1
@@ -123,6 +124,7 @@ describe("utils", () => {
         ).toBe("0, 1");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     y: 1,
@@ -134,6 +136,7 @@ describe("utils", () => {
         ).toBe("0, 1, Test");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     y: 1,
@@ -149,6 +152,7 @@ describe("utils", () => {
         ).toBe("Test, 0, 1");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     y2: 1
@@ -159,6 +163,7 @@ describe("utils", () => {
         ).toBe("0, 1");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     high: 10,
@@ -170,6 +175,7 @@ describe("utils", () => {
         ).toBe("0, 10 - 5");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     high: 10,
@@ -182,6 +188,7 @@ describe("utils", () => {
         ).toBe("0, 10");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     high: 10,
@@ -194,6 +201,7 @@ describe("utils", () => {
         ).toBe("0, 5");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     open: 8,
@@ -207,6 +215,7 @@ describe("utils", () => {
         ).toBe("0, 8 - 10 - 5 - 7");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     open: 8,
@@ -221,6 +230,7 @@ describe("utils", () => {
         ).toBe("0, 10");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     open: 8,
@@ -235,6 +245,7 @@ describe("utils", () => {
         ).toBe("0, 8");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     y: 1
@@ -245,6 +256,7 @@ describe("utils", () => {
         ).toBe("$0, 1");
         expect(
             generatePointDescription(
+                "en",
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore - Deliberately using invalid values to test handling of invalid values
                 {
@@ -257,6 +269,7 @@ describe("utils", () => {
         ).toBe("");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     low: 5,
@@ -271,6 +284,7 @@ describe("utils", () => {
         ).toBe("0, 10 - 5");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     low: 5,
@@ -286,6 +300,7 @@ describe("utils", () => {
         ).toBe("0, 5");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     low: 5,
@@ -301,6 +316,7 @@ describe("utils", () => {
         ).toBe("0, 10 - 5, with 1 outliers");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     low: 5,
@@ -316,6 +332,7 @@ describe("utils", () => {
         ).toBe("0, 10 - 5, with 2 outliers");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     low: 5,
@@ -332,6 +349,7 @@ describe("utils", () => {
         ).toBe("0, 5");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     low: 5,
@@ -349,6 +367,7 @@ describe("utils", () => {
         ).toBe("0, 20, 1 of 2");
         expect(
             generatePointDescription(
+                "en",
                 {
                     x: 0,
                     low: 5,
@@ -711,11 +730,12 @@ describe("utils", () => {
     });
 
     test("generateChartSummary", () => {
-        expect(generateChartSummary({ title: "", groupCount: 1 })).toBe(
-            `Sonified chart.`
-        );
+        expect(
+            generateChartSummary({ language: "en", title: "", groupCount: 1 })
+        ).toBe(`Sonified chart.`);
         expect(
             generateChartSummary({
+                language: "en",
                 title: "Test",
                 groupCount: 1,
                 live: false,
@@ -724,6 +744,7 @@ describe("utils", () => {
         ).toBe(`Sonified chart titled "Test".`);
         expect(
             generateChartSummary({
+                language: "en",
                 title: "Test",
                 groupCount: 2,
                 live: false,
@@ -732,6 +753,7 @@ describe("utils", () => {
         ).toBe(`Sonified chart with 2 groups titled "Test".`);
         expect(
             generateChartSummary({
+                language: "en",
                 title: "",
                 groupCount: 2,
                 live: false,
@@ -740,6 +762,7 @@ describe("utils", () => {
         ).toBe(`Sonified chart with 2 groups.`);
         expect(
             generateChartSummary({
+                language: "en",
                 title: "Test",
                 groupCount: 1,
                 live: true,
@@ -748,6 +771,7 @@ describe("utils", () => {
         ).toBe(`Sonified live chart titled "Test".`);
         expect(
             generateChartSummary({
+                language: "en",
                 title: "Test",
                 groupCount: 2,
                 live: false,
@@ -756,6 +780,7 @@ describe("utils", () => {
         ).toBe(`Sonified hierarchical chart with 2 groups titled "Test".`);
         expect(
             generateChartSummary({
+                language: "en",
                 title: "",
                 groupCount: 2,
                 live: true,
@@ -773,13 +798,13 @@ describe("utils", () => {
         };
 
         // Standard axes
-        expect(generateAxisSummary("x", axis)).toBe(
+        expect(generateAxisSummary("x", axis, "en")).toBe(
             `X is "Revenue" from $0 to $1,000,000.`
         );
-        expect(generateAxisSummary("y", axis)).toBe(
+        expect(generateAxisSummary("y", axis, "en")).toBe(
             `Y is "Revenue" from $0 to $1,000,000.`
         );
-        expect(generateAxisSummary("y2", axis)).toBe(
+        expect(generateAxisSummary("y2", axis, "en")).toBe(
             `Alternate Y is "Revenue" from $0 to $1,000,000.`
         );
 
@@ -789,35 +814,39 @@ describe("utils", () => {
             maximum: 1000000
         };
         // Unlabelled axis
-        expect(generateAxisSummary("x", unlablledAxis)).toBe(
+        expect(generateAxisSummary("x", unlablledAxis, "en")).toBe(
             `X is "" from * to *.`
         );
         // Continuous
-        expect(generateAxisSummary("x", { ...axis, continuous: true })).toBe(
-            `X is "Revenue" from $0 to $1,000,000 continuously.`
-        );
+        expect(
+            generateAxisSummary("x", { ...axis, continuous: true }, "en")
+        ).toBe(`X is "Revenue" from $0 to $1,000,000 continuously.`);
         // Logarithmic
-        expect(generateAxisSummary("x", { ...axis, type: "log10" })).toBe(
+        expect(generateAxisSummary("x", { ...axis, type: "log10" }, "en")).toBe(
             `X is "Revenue" from $0 to $1,000,000 logarithmic.`
         );
         // Logarithmic + Continuous
         expect(
-            generateAxisSummary("x", {
-                ...axis,
-                continuous: true,
-                type: "log10"
-            })
+            generateAxisSummary(
+                "x",
+                {
+                    ...axis,
+                    continuous: true,
+                    type: "log10"
+                },
+                "en"
+            )
         ).toBe(
             `X is "Revenue" from $0 to $1,000,000 logarithmic continuously.`
         );
 
         // Special case: Y and Y2 axes should not be announced as "continuous"
-        expect(generateAxisSummary("y", { ...axis, continuous: true })).toBe(
-            `Y is "Revenue" from $0 to $1,000,000.`
-        );
-        expect(generateAxisSummary("y2", { ...axis, continuous: true })).toBe(
-            `Alternate Y is "Revenue" from $0 to $1,000,000.`
-        );
+        expect(
+            generateAxisSummary("y", { ...axis, continuous: true }, "en")
+        ).toBe(`Y is "Revenue" from $0 to $1,000,000.`);
+        expect(
+            generateAxisSummary("y2", { ...axis, continuous: true }, "en")
+        ).toBe(`Alternate Y is "Revenue" from $0 to $1,000,000.`);
     });
 
     test("convertDataRow", () => {

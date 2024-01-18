@@ -79,6 +79,10 @@ export type SonifyTypes = {
      */
     element: HTMLElement;
     /**
+     * The language of the instructions and dialogs. Defaults to "en".
+     */
+    lang?: string;
+    /**
      * Optional metadata for the chart.
      * If you do not provide this metadata, it will be calculated automatically from the chart data.
      */
