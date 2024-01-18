@@ -34,7 +34,7 @@ export const singleLinePlot = (canvas, cc) => {
     const { err } = c2mChart({
         type: "line",
         element: canvas,
-        title: "Raleigh's High Temperatures (2000)",
+        title: "Raleigh's High Temperatures (2020)",
         cc,
         axes: {
             x: {
