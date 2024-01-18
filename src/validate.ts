@@ -27,10 +27,12 @@ export const validateInput = (input: SonifyTypes) => {
 export const validateInputType = (
     type?: SUPPORTED_CHART_TYPES | SUPPORTED_CHART_TYPES[]
 ): string => {
+    const SUPPORTED_TYPES_LIST = Object.values(SUPPORTED_CHART_TYPES).join(
+        ", "
+    );
+
     if (typeof type === "undefined") {
-        return `Required parameter 'type' was left undefined. Supported types are: ${Object.values(
-            SUPPORTED_CHART_TYPES
-        ).join(", ")}`;
+        return `Required parameter 'type' was left undefined. Supported types are: ${SUPPORTED_TYPES_LIST}`;
     }
 
     if (Array.isArray(type)) {
@@ -42,18 +44,14 @@ export const validateInputType = (
         }
         return `Invalid input types: ${unsupported_types.join(
             ", "
-        )}. Valid types are: ${Object.values(SUPPORTED_CHART_TYPES).join(
-            ", "
-        )}`;
+        )}. Valid types are: ${SUPPORTED_TYPES_LIST}`;
     }
 
     if (Object.values(SUPPORTED_CHART_TYPES).includes(type)) {
         return "";
     }
 
-    return `Invalid input type: ${type}. Valid types are: ${Object.values(
-        SUPPORTED_CHART_TYPES
-    ).join(", ")}`;
+    return `Invalid input type: ${type}. Valid types are: ${SUPPORTED_TYPES_LIST}`;
 };
 
 export const validateInputTypeCountsMatchData = (

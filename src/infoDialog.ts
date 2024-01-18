@@ -1,3 +1,4 @@
+import { translate } from "./translator";
 import type { c2mInfo } from "./types";
 
 const toHtmlEntities = (str: string) => {
@@ -9,11 +10,11 @@ const toHtmlEntities = (str: string) => {
 
 export const launchInfoDialog = (info: c2mInfo) => {
     const dialog = document.createElement("dialog");
-    dialog.setAttribute("aria-label", "Info");
-    let content = `<h1 tabIndex='0'>Info</h1>`;
+    dialog.setAttribute("aria-label", translate("en-US", "info-title"));
+    let content = `<h1 tabIndex='0'>${translate("en-US", "info-title")}</h1>`;
 
     if ("notes" in info) {
-        content += `<h2>Notes</h2>
+        content += `<h2>${translate("en-US", "info-notes")}</h2>
 
         <ul>
             ${info.notes

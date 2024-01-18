@@ -1,3 +1,4 @@
+import { translate } from "./translator";
 import type { KeyDetails, KeyRegistration } from "./types";
 
 /* eslint-disable @typescript-eslint/unbound-method */
@@ -102,7 +103,7 @@ export class KeyboardEventManager {
 
         const closeButton = document.createElement("button");
         closeButton.textContent = "X";
-        closeButton.ariaLabel = "Close";
+        closeButton.ariaLabel = translate("en-US", "close");
         closeButton.style.position = "absolute";
         closeButton.style.top = "10px";
         closeButton.style.right = "10px";
@@ -111,7 +112,7 @@ export class KeyboardEventManager {
         });
         dialog.appendChild(closeButton);
 
-        const heading = "Keyboard Manager";
+        const heading = translate("en-US", "kbmg-title");
         const h1 = document.createElement("h1");
         h1.textContent = heading;
         dialog.setAttribute("aria-live", heading);

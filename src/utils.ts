@@ -11,6 +11,7 @@ import {
     isSimpleDataPoint,
     isBoxDataPoint
 } from "./dataPoint";
+import { translate } from "./translator";
 import type {
     AxisData,
     StatBundle,
@@ -162,9 +163,6 @@ export const calculateAxisMaximum = (
 
 export const defaultFormat = (value: number) => `${value}`;
 
-export const sentenceCase = (str: string) =>
-    `${str.substring(0, 1).toUpperCase()}${str.substring(1).toLowerCase()}`;
-
 export const generatePointDescription = (
     point: SupportedDataPointType,
     xFormat: AxisData["format"],
@@ -175,36 +173,47 @@ export const generatePointDescription = (
 ) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return `${xFormat(point.x)}, ${yFormat(
-                point[stat as keyof OHLCDataPoint] as number
-            )}`;
+            return translate("en-US", "point-xy", {
+                x: xFormat(point.x),
+                y: yFormat(point[stat as keyof OHLCDataPoint] as number)
+            });
         }
-        return [
-            `${xFormat(point.x)}, ${yFormat(point.open)}`,
-            yFormat(point.high),
-            yFormat(point.low),
-            yFormat(point.close)
-        ].join(" - ");
+        return translate("en-US", "point-xohlc", point);
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return `${xFormat(point.x)}, ${yFormat(point.outlier[outlierIndex])}, ${
-            outlierIndex + 1
-        } of ${point.outlier.length}`;
+        return translate("en-US", "point-outlier", {
+            x: xFormat(point.x),
+            y: point.outlier[outlierIndex],
+            index: outlierIndex + 1,
+            count: point.outlier.length
+        });
     }
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            return `${xFormat(point.x)}, ${yFormat(point[stat])}`;
+            return translate("en-US", "point-xy", {
+                x: xFormat(point.x),
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                y: yFormat(point[stat])
+            });
         }
-        const outlierNote =
-            "outlier" in point && point.outlier?.length > 0
-                ? `, with ${point.outlier.length} outliers`
-                : "";
-        return `${xFormat(point.x)}, ${yFormat(point.high)} - ${yFormat(
-            point.low
-        )}${outlierNote}`;
+
+        const { x, high, low } = point;
+        const formattedPoint = {
+            x: xFormat(x),
+            high: yFormat(high),
+            low: yFormat(low)
+        };
+
+        if ("outlier" in point && point.outlier?.length > 0) {
+            return translate("en-US", "point-xhl-outlier", {
+                ...formattedPoint,
+                count: point.outlier.length
+            });
+        }
+
+        return translate("en-US", "point-xhl", formattedPoint);
     }
 
     if (isSimpleDataPoint(point)) {
@@ -220,7 +229,10 @@ export const generatePointDescription = (
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return `${xFormat(point.x)}, ${yFormat(point.y2)}`;
+        return translate("en-US", "point-xy", {
+            x: xFormat(point.x),
+            y: yFormat(point.y2)
+        });
     }
 
     return "";
@@ -388,13 +400,13 @@ export const convertDataRow = (
 export const formatWrapper = (axis: AxisData) => {
     const format = (num: number) => {
         if (isNaN(num)) {
-            return "missing";
+            return translate("en-US", "missing");
         }
         if (axis.minimum && num < axis.minimum) {
-            return "too low";
+            return translate("en-US", "tooLow");
         }
         if (axis.maximum && num > axis.maximum) {
-            return "too high";
+            return translate("en-US", "tooHigh");
         }
         return axis.format(num);
     };
@@ -417,27 +429,28 @@ export const generateChartSummary = ({
     live = false,
     hierarchy = false
 }: ChartSummaryType) => {
-    const text = ["Sonified"];
+    const text = ["summ", "chart"];
 
     if (live) {
         text.push("live");
     }
 
     if (hierarchy) {
-        text.push("hierarchical");
+        text.push("hier");
     }
 
-    text.push("chart");
-
     if (groupCount > 1) {
-        text.push(`with ${groupCount} groups`);
+        text.push("group");
     }
 
     if (title.length > 0) {
-        text.push(`titled "${title}"`);
+        text.push("title");
     }
 
-    return text.join(" ") + ".";
+    return translate("en-US", text.join("-"), {
+        groupCount,
+        title
+    });
 };
 
 const axisDescriptions = {
@@ -448,12 +461,22 @@ const axisDescriptions = {
 export const generateAxisSummary = (
     axisLetter: "x" | "y" | "y2",
     axis: AxisData
-) =>
-    `${axisDescriptions[axisLetter]} is "${
-        axis.label ?? ""
-    }" from ${axis.format(axis.minimum)} to ${axis.format(axis.maximum)}${
-        axis.type === "log10" ? " logarithmic" : ""
-    }${axisLetter === "x" && axis.continuous ? " continuously" : ""}.`;
+) => {
+    const code = ["axis", "desc"];
+    if (axis.type === "log10") {
+        code.push("log");
+    }
+    if (axisLetter === "x" && axis.continuous) {
+        code.push("con");
+    }
+
+    return translate("en-US", code.join("-"), {
+        letter: axisDescriptions[axisLetter],
+        label: axis.label ?? "",
+        min: axis.format(axis.minimum),
+        max: axis.format(axis.maximum)
+    });
+};
 
 /**
  *
@@ -470,10 +493,10 @@ export const generateInstructions = ({
 }: InstructionsType) => {
     const keyboardMessage = filteredJoin(
         [
-            `Use arrow keys to navigate.`,
-            hierarchy && "Use Alt + Up and Down to navigate between levels.",
-            live && "Press M to toggle monitor mode.",
-            "Press H for more hotkeys."
+            translate("en-US", "instructionArrows"),
+            hierarchy && translate("en-US", "instructionHierarchy"),
+            live && translate("en-US", "instructionLive"),
+            translate("en-US", "instructionHotkeys")
         ],
         " "
     );
@@ -492,7 +515,10 @@ export const isUnplayable = (yValue: number, yAxis: AxisData) => {
 
 export const prepChartElement = (elem: HTMLElement, title: string) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
-        elem.setAttribute("aria-label", `${title}, Sonified chart`);
+        elem.setAttribute(
+            "aria-label",
+            translate("en-US", "description", { title })
+        );
     }
 
     if (!elem.hasAttribute("role")) {

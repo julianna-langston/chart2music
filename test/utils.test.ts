@@ -5,7 +5,6 @@ import {
     calculateAxisMinimum,
     defaultFormat,
     interpolateBin,
-    sentenceCase,
     generatePointDescription,
     calculateMetadataByGroup,
     detectDataPointType,
@@ -16,13 +15,6 @@ import {
 } from "../src/utils";
 
 describe("utils", () => {
-    test("sentence case", () => {
-        expect(sentenceCase("test")).toBe("Test");
-        expect(sentenceCase("TEST")).toBe("Test");
-        expect(sentenceCase("Test")).toBe("Test");
-        expect(sentenceCase("HELLO WORLD")).toBe("Hello world");
-    });
-
     test("interpolate bin - linear", () => {
         expect(interpolateBin(5, 0, 100, 100, "linear")).toBe(5);
         expect(interpolateBin(5, 5, 100, 10, "linear")).toBe(0);

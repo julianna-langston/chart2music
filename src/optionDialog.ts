@@ -1,4 +1,5 @@
 import { HERTZ } from "./constants";
+import { translate } from "./translator";
 
 export const launchOptionDialog = (
     {
@@ -24,15 +25,15 @@ export const launchOptionDialog = (
     playCb?: (hertz: number) => void
 ) => {
     const dialog = document.createElement("dialog");
-    dialog.setAttribute("aria-label", "Options");
-    dialog.innerHTML = `<h1>Options</h1>
+    dialog.setAttribute("aria-label", translate("en-US", "options-title"));
+    dialog.innerHTML = `<h1>${translate("en-US", "options-title")}</h1>
 
-    <p tabIndex="0">While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:</p>
+    <p tabIndex="0">${translate("en-US", "options-frontmatter")}:</p>
 
     <form id="optionForm">
         <div>
             <label>
-                Lower hertz:
+                ${translate("en-US", "options-hertz-lower")}:
                 <input type="range" min="0" max="${
                     upper - 1
                 }" step="1" id="lowerRange" value="${lower}" />
@@ -41,7 +42,7 @@ export const launchOptionDialog = (
 
         <div>
             <label>
-                Upper hertz:
+            ${translate("en-US", "options-hertz-upper")}:
                 <input type="range" min="${lower + 1}" max="${
                     HERTZ.length - 1
                 }" step="1" id="upperRange" value="${upper}" />
@@ -50,7 +51,7 @@ export const launchOptionDialog = (
 
         <div>
             <label>
-                Play speed (aka, press 'Q' and 'E'):
+            ${translate("en-US", "options-speed-label")}:
                 <input type="range" min="0" max="4" id="speedRange" value="${speedIndex}" />
             </label>
         </div>
@@ -58,7 +59,7 @@ export const launchOptionDialog = (
         <div>
             <label>
                 <input type="checkbox" id="global" checked />
-                Save my options for other charts on this page
+                ${translate("en-US", "options-set-global")}
             </label>
         </div>
 
@@ -67,35 +68,35 @@ export const launchOptionDialog = (
                 <input type="checkbox" id="continuous" ${
                     continuousMode ? "checked" : ""
                 } />
-                Use continuous mode
+                ${translate("en-US", "options-use-continuous")}
             </label>
             <br/>
-            Continuous mode changes how values are played when you press Shift+Home and Shift+End
+            ${translate("en-US", "options-continuous-descr")}
         </div>
 
         <div>
-                <fieldset>
-                    <legend>Show point labels</legend>
+            <fieldset>
+                <legend>${translate("en-US", "options-point-labels")}</legend>
 
-                    <label>
-                        <input type="radio" name="point-labels" value="before" ${
-                            labelPosition ? "checked" : ""
-                        } />
-                        before values (eg: "California, 163,696 square miles, 39 million people" )
-                    </label>
-                    
-                    <br/>
+                <label>
+                    <input type="radio" name="point-labels" value="before" ${
+                        labelPosition ? "checked" : ""
+                    } />
+                    ${translate("en-US", "options-point-labels-before")}
+                </label>
+                
+                <br/>
 
-                    <label>
-                        <input type="radio" name="point-labels" value="after" ${
-                            labelPosition ? "" : "checked"
-                        } />
-                        after values (eg: "163,696 square miles, 39 million people, California" )
-                    </label>
-                </fieldset>
+                <label>
+                    <input type="radio" name="point-labels" value="after" ${
+                        labelPosition ? "" : "checked"
+                    } />
+                    ${translate("en-US", "options-point-labels-after")}
+                </label>
+            </fieldset>
         </div>
 
-        <input id="save" type="submit" value="Save" />
+        <input id="save" type="submit" value="${translate("en-US", "save")}" />
     </form>
     `;
 
