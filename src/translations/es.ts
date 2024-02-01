@@ -12,7 +12,8 @@ const dictionary: translationDict = {
     tooHigh: "Muy alto",
     nodeHasChildren: "tiene hijos", // secundarios
     instructionArrows: "Use las flechas para navegar.",
-    instructionHierarchy: "Use Alt + Arriba y Abajo para navegar entre niveles.",
+    instructionHierarchy:
+        "Use Alt + Arriba y Abajo para navegar entre niveles.",
     instructionLive: "Presione M para cambiar modo de pantalla.",
     instructionHotkeys: "Presione H para más atajos.",
 
@@ -168,7 +169,8 @@ const dictionary: translationDict = {
     "options-hertz-lower": "Hertz más bajo",
     "options-hertz-upper": "Hertz más alto",
     "options-speed-label": "Play speed (aka, press 'Q' and 'E')",
-    "options-set-global": "Guardar mis opciones para otros gráficos en esta página",
+    "options-set-global":
+        "Guardar mis opciones para otros gráficos en esta página",
     "options-use-continuous": "Usar modo continuo",
     "options-continuous-descr":
         "El modo continuo cambia cómo se reproducen los valores al presionar Shift+Home y Shift+End",
