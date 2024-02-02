@@ -74,7 +74,7 @@ const dictionary: translationDict = {
     "kbr-speed": `Velocidad, {rate_in_ms}`,
     "kbr-not-live": "No es un gráfico en vivo",
     monitoring:
-        "Reproducción {switch, select, true {encendido} false {apagado} other {desconocido}}",
+        "Reproducción {switch, select, true {encendida} false {apagada} other {desconocida}}",
 
     "group-unknown": `Grupo llamado "{title}" usa un tipo de gráfico no compatible.`,
 
