@@ -4,7 +4,7 @@ const dictionary: translationDict = {
     description: "{title}, Gráfico Sonificado",
     updated: "{title} Actualizado",
     "updated-untitled": "Gráfico Actualizado",
-    missing: "Falta", // Faltante is better depending on context, where do we use this?
+    missing: "Falta",
     close: "Cerrar", // Used to close dialogs
     save: "Guardar", // Used to save settings in dialogs
 
@@ -74,7 +74,7 @@ const dictionary: translationDict = {
     "kbr-speed": `Velocidad, {rate_in_ms}`,
     "kbr-not-live": "No es un gráfico en vivo",
     monitoring:
-        "Monitoring {switch, select, true {on} false {off} other {unknown}}",
+        "Reproducción {switch, select, true {encendido} false {apagado} other {desconocido}}",
 
     "group-unknown": `Grupo llamado "{title}" usa un tipo de gráfico no compatible.`,
 
@@ -168,15 +168,15 @@ const dictionary: translationDict = {
         "Al navegar este gráfico algunos sonidos pueden reusltar muy altos o muy bajos para que los escuche. Adicionalmente, si desea expandir el rango de sonidos disponibles, deslice los controles para ajustar el rango de sonido:",
     "options-hertz-lower": "Hertz más bajo",
     "options-hertz-upper": "Hertz más alto",
-    "options-speed-label": "Play speed (aka, press 'Q' and 'E')",
+    "options-speed-label": "Velocidad de reproducción (presione 'Q' y 'E')",
     "options-set-global":
         "Guardar mis opciones para otros gráficos en esta página",
     "options-use-continuous": "Usar modo continuo",
     "options-continuous-descr":
         "El modo continuo cambia cómo se reproducen los valores al presionar Shift+Home y Shift+End",
     "options-point-labels": "Mostrar etiquetas del punto",
-    "options-point-labels-before": `valores anteriores (eg: "California, 163,696 square miles, 39 million people" )`,
-    "options-point-labels-after": `valores siguientes (eg: "163,696 square miles, 39 million people, California" )`
+    "options-point-labels-before": `valores anteriores (ejemplo: "California, 163,1802 kilómetros cuadrados, 39 millones de personas" )`,
+    "options-point-labels-after": `valores siguientes (ejemplo: "163,1802 kilómetros cuadrados, 39 millones de personas, California" )`
 };
 
 export default dictionary;
