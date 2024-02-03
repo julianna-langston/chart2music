@@ -47,7 +47,7 @@ import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
-import { DEFAULT_LANGUAGE, translate } from "./translator";
+import { DEFAULT_LANGUAGE, translate, AVAILABLE_LANGUAGES } from "./translator";
 
 /**
  * Metadata about previous levels. Used to quickly return to parents.
@@ -243,6 +243,13 @@ export class c2m {
 
         this._initializeKeyActionMap();
         this._startListening();
+    }
+
+    /**
+     * The available languages. ie: "en", "es"
+     */
+    static get languages() {
+        return AVAILABLE_LANGUAGES;
     }
 
     /**

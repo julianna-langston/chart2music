@@ -3,6 +3,7 @@ import * as translations from "./translations";
 import type { translateEvaluators } from "./translations";
 
 export const DEFAULT_LANGUAGE = "en";
+export const AVAILABLE_LANGUAGES = Object.keys(translations);
 
 const translators = Object.fromEntries(
     Object.entries(translations).map(([locale, messages]) => [

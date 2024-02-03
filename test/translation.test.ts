@@ -1,4 +1,4 @@
-import { c2mChart } from "../src/c2mChart";
+import { c2m, c2mChart } from "../src/c2mChart";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
@@ -43,4 +43,10 @@ test("Get feedback in a non-default language", () => {
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
         "EXEMPLE Actualizado"
     );
+});
+
+test("Get list of available languages", () => {
+    expect(c2m.languages).toHaveLength(2);
+    expect(c2m.languages).toContain("en");
+    expect(c2m.languages).toContain("es");
 });
