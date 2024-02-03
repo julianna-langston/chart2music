@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { c2m } from "./c2mChart";
 import type { BoxDataPoint, SupportedDataPointType } from "./dataPoint";
 import {
     isAlternateAxisDataPoint,
@@ -14,6 +15,7 @@ export const validateInput = (input: SonifyTypes) => {
     const errors = [];
 
     errors.push(validateInputType(input.type));
+    errors.push(validateInputLang(input.lang));
     errors.push(validateInputElement(input.element));
     errors.push(validateInputAxes(input.axes));
     errors.push(validateInputDataHomogeneity(input.data));
@@ -52,6 +54,18 @@ export const validateInputType = (
     }
 
     return `Invalid input type: ${type}. Valid types are: ${SUPPORTED_TYPES_LIST}`;
+};
+
+export const validateInputLang = (lang?: string) => {
+    if (typeof lang === "undefined") {
+        return "";
+    }
+
+    if (c2m.languages.includes(lang)) {
+        return "";
+    }
+
+    return `Error: Unrecognized language "${lang}". Available languages: ${c2m.languages.join(", ")}.`;
 };
 
 export const validateInputTypeCountsMatchData = (

@@ -9,6 +9,7 @@ import {
     validateInputDataHomogeneity,
     validateInputDataRowHomogeneity,
     validateInputElement,
+    validateInputLang,
     validateInputType,
     validateInputTypeCountsMatchData
 } from "../src/validate";
@@ -41,6 +42,14 @@ test("validateInputType", () => {
             SUPPORTED_CHART_TYPES.LINE
         ])
     ).toBe("");
+});
+
+test("validateInputLang", () => {
+    expect(validateInputLang()).toBe("");
+    expect(validateInputLang("en")).toBe("");
+    expect(validateInputLang("xx")).toBe(
+        `Error: Unrecognized language "xx". Available languages: en, es.`
+    );
 });
 
 test("validateInputElement", () => {
