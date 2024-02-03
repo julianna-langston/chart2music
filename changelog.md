@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.14.0
+* Added internationalization support
+* Added Spanish translation (thank you [ploperav](https://github.com/ploperav))
+
 ## 1.13.0
 * Added support for CommonJS (thank you [ayjayt](https://github.com/ayjayt))
 
