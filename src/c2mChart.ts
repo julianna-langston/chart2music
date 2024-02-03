@@ -237,6 +237,7 @@ export class c2m {
 
         // Initialize SRB
         ScreenReaderBridge.addAriaAttributes(this._ccElement);
+        this._ccElement.setAttribute("lang", this._language);
         this._sr = new ScreenReaderBridge(this._ccElement);
 
         this._availableActions = this._initializeActionMap();
