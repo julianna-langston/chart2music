@@ -1,5 +1,5 @@
 import en from "./en";
-import fr from "./fr";
+import es from "./es";
 
 /**
  * A dictionary of messages, which will be used by the i18n formatter
@@ -10,4 +10,4 @@ export type translationDict = Record<string, string>;
  */
 export type translateEvaluators = Record<string, string | number | boolean>;
 
-export { en, fr };
+export { en, es };

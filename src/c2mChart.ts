@@ -47,7 +47,7 @@ import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
-import { DEFAULT_LANGUAGE, translate } from "./translator";
+import { DEFAULT_LANGUAGE, translate, AVAILABLE_LANGUAGES } from "./translator";
 
 /**
  * Metadata about previous levels. Used to quickly return to parents.
@@ -237,12 +237,20 @@ export class c2m {
 
         // Initialize SRB
         ScreenReaderBridge.addAriaAttributes(this._ccElement);
+        this._ccElement.setAttribute("lang", this._language);
         this._sr = new ScreenReaderBridge(this._ccElement);
 
         this._availableActions = this._initializeActionMap();
 
         this._initializeKeyActionMap();
         this._startListening();
+    }
+
+    /**
+     * The available languages. ie: "en", "es"
+     */
+    static get languages() {
+        return AVAILABLE_LANGUAGES;
     }
 
     /**
