@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.15.0
+* Added French, German, and Italian translations (thank you [glow](https://github.com/Neo-Oli) and their team at the [Swiss Red ross](https://github.com/swissredcross))
+
 ## 1.14.0
 * Added internationalization support
 * Added Spanish translation (thank you [ploperav](https://github.com/ploperav))
