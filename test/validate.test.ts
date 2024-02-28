@@ -16,6 +16,7 @@ import {
 
 const validTypes =
     "line, bar, band, pie, candlestick, histogram, box, matrix, scatter, treemap, unsupported";
+const validLanguages = "en, de, es, fr, it";
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
@@ -48,7 +49,7 @@ test("validateInputLang", () => {
     expect(validateInputLang()).toBe("");
     expect(validateInputLang("en")).toBe("");
     expect(validateInputLang("xx")).toBe(
-        `Error: Unrecognized language "xx". Available languages: en, es.`
+        `Error: Unrecognized language "xx". Available languages: ${validLanguages}.`
     );
 });
 
