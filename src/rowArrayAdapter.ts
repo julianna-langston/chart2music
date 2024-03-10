@@ -23,9 +23,53 @@ export interface RowArrayAdapter {
 export function isRowArrayAdapter(obj: unknown): obj is RowArrayAdapter {
     return (
         typeof obj === "object" &&
-        "length" in obj &&
+        "length" in obj && // TODO: Could, if they give us "length()" instead of "length", we fix it for them?
         "min" in obj &&
         "max" in obj &&
         "at" in obj
     );
+}
+
+/**
+ * Create a RowArrayAdapter from an actual array. This is meant to aid in testing.
+ */
+export class ArrayAsAdapter {
+    _array: number[];
+
+    /**
+     * Construct adapter from supplied array
+     * @param array - the underlying array from the adapter
+     */
+    constructor(array: number[]) {
+        this._array = array; // Don't inherit array, we want to fail Array.isArray()
+    }
+    /**
+     * Shims the Array.length property
+     * @returns the length of the array
+     */
+    get length(): number {
+        return this._array.length;
+    }
+    /**
+     * Implements a min() function, in this case a shim over Math.min()
+     * @returns the minimum value of the array
+     */
+    min(): number {
+        return Math.min(...this._array);
+    } // TODO: I forget if we want value or index
+    /**
+     * Implements a max() function, in this case a shim over Math.max()
+     * @returns the maximum value of the array
+     */
+    max(): number {
+        return Math.max(...this._array);
+    } // TODO: ^^
+    /**
+     * Shims the Array.at() function
+     * @param index - the index of the value you'd like to access
+     * @returns the value at the supplied index
+     */
+    at(index: number): number {
+        return this._array.at(index);
+    }
 }
