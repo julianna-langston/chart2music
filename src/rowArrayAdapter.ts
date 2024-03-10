@@ -13,6 +13,7 @@ export interface RowArrayAdapter {
     min: () => number;
     max: () => number;
     at: (index: number) => SupportedDataPointType;
+    findIndex(test: (any) => boolean): number;
 }
 
 /**
@@ -43,6 +44,7 @@ export class ArrayAsAdapter {
     constructor(array: number[]) {
         this._array = array; // Don't inherit array, we want to fail Array.isArray()
     }
+
     /**
      * Shims the Array.length property
      * @returns the length of the array
@@ -50,6 +52,7 @@ export class ArrayAsAdapter {
     get length(): number {
         return this._array.length;
     }
+
     /**
      * Implements a min() function, in this case a shim over Math.min()
      * @returns the minimum value of the array
@@ -57,13 +60,15 @@ export class ArrayAsAdapter {
     min(): number {
         return Math.min(...this._array);
     } // TODO: I forget if we want value or index
+
     /**
      * Implements a max() function, in this case a shim over Math.max()
      * @returns the maximum value of the array
      */
     max(): number {
         return Math.max(...this._array);
-    } // TODO: ^^
+    } // TODO: Same as above
+
     /**
      * Shims the Array.at() function
      * @param index - the index of the value you'd like to access
@@ -71,5 +76,14 @@ export class ArrayAsAdapter {
      */
     at(index: number): number {
         return this._array.at(index);
+    }
+
+    /**
+     * Shims the Array.findIndex() function, finds index of first element which satisfies the test function
+     * @param test - then function by which we test
+     * @returns index of first element
+     */
+    findIndex(test: (any) => boolean): number {
+        return this._array.findIndex(test);
     }
 }
