@@ -2,6 +2,7 @@
 import type { AudioEngine } from "./audio/";
 import type { c2m } from "./c2mChart";
 import type { SupportedDataPointType } from "./dataPoint";
+import type { RowArrayAdapter } from "./rowArrayAdapter";
 
 /**
  * Details for a given hotkey
@@ -71,7 +72,7 @@ export type SonifyTypes = {
      * The data that should be presented in this chart.
      * This key is required for all charts.
      */
-    data: dataSet | SupportedInputType[];
+    data: dataSet | SupportedInputType[] | RowArrayAdapter;
     /**
      * The HTML element in the DOM that represents this chart.
      * This will be used to handle keyboard events to enable the user to interact with the chart.
@@ -111,7 +112,7 @@ export type SonifyTypes = {
  * A dictionary of data, where the key is the group name, and the value is the array of data points
  */
 export type dataSet = {
-    [groupName: string]: SupportedInputType[] | null;
+    [groupName: string]: SupportedInputType[] | RowArrayAdapter | null;
 };
 
 /**
