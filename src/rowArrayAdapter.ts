@@ -36,15 +36,15 @@ export function isRowArrayAdapter(obj: unknown): obj is RowArrayAdapter {
  * If passed a number array, it will use convertDataRow just like C2M does.
  * If you've already constructed an array of dataPoints, it just wraps it.
  */
-export class ArrayAsAdapter {
-    _array: SupportedDataPointType[];
+export class ArrayAsAdapter<T extends SupportedDataPointType> {
+    _array: T[];
 
     /**
      * Construct adapter from supplied array
      * @param array - the underlying array from the adapter
      */
     constructor(array: number[]) {
-        this._array = convertDataRow(array); // Don't inherit array, we want to fail Array.isArray()
+        this._array = convertDataRow(array) as T[]; // Don't inherit array, we want to fail Array.isArray()
     }
 
     /**
@@ -76,7 +76,7 @@ export class ArrayAsAdapter {
      * @param index - the index of the value you'd like to access
      * @returns the value at the supplied index
      */
-    at(index: number): SupportedDataPointType {
+    at(index: number): T {
         return this._array.at(index);
     }
 
@@ -85,7 +85,7 @@ export class ArrayAsAdapter {
      * @param test - then function by which we test
      * @returns index of first element
      */
-    findIndex(test: (RowArrayAdapter) => boolean): number {
+    findIndex(test: (T) => boolean): number {
         return this._array.findIndex(test);
     }
 }
