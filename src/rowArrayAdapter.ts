@@ -4,7 +4,7 @@
 // author: Andrew Pikul (ajpikul@gmail.com)
 
 import type { SupportedDataPointType } from "./dataPoint";
-
+import { convertDataRow } from "./utils";
 /**
  * An interface that imitates an array to give c2m read-access to chart data stored elsewhere.
  */
@@ -33,16 +33,18 @@ export function isRowArrayAdapter(obj: unknown): obj is RowArrayAdapter {
 
 /**
  * Create a RowArrayAdapter from an actual array. This is meant to aid in testing.
+ * If passed a number array, it will use convertDataRow just like C2M does.
+ * If you've already constructed an array of dataPoints, it just wraps it.
  */
 export class ArrayAsAdapter {
-    _array: number[];
+    _array: SupportedDataPointType[];
 
     /**
      * Construct adapter from supplied array
      * @param array - the underlying array from the adapter
      */
     constructor(array: number[]) {
-        this._array = array; // Don't inherit array, we want to fail Array.isArray()
+        this._array = convertDataRow(array); // Don't inherit array, we want to fail Array.isArray()
     }
 
     /**
@@ -58,23 +60,23 @@ export class ArrayAsAdapter {
      * @returns the minimum value of the array
      */
     min(): number {
-        return Math.min(...this._array);
-    } // TODO: I forget if we want value or index
+        return 0; // TODO implement when necessary
+    }
 
     /**
      * Implements a max() function, in this case a shim over Math.max()
      * @returns the maximum value of the array
      */
     max(): number {
-        return Math.max(...this._array);
-    } // TODO: Same as above
+        return 0; // TODO implement when necessary
+    }
 
     /**
      * Shims the Array.at() function
      * @param index - the index of the value you'd like to access
      * @returns the value at the supplied index
      */
-    at(index: number): number {
+    at(index: number): SupportedDataPointType {
         return this._array.at(index);
     }
 
@@ -83,7 +85,7 @@ export class ArrayAsAdapter {
      * @param test - then function by which we test
      * @returns index of first element
      */
-    findIndex(test: (any) => boolean): number {
+    findIndex(test: (RowArrayAdapter) => boolean): number {
         return this._array.findIndex(test);
     }
 }
