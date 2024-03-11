@@ -9,7 +9,7 @@ import type { SupportedDataPointType } from "./dataPoint";
  * An interface that imitates an array to give c2m read-access to chart data stored elsewhere.
  */
 export interface RowArrayAdapter {
-    length: () => number;
+    length: number;
     min: () => number;
     max: () => number;
     at: (index: number) => SupportedDataPointType;
