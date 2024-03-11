@@ -1,11 +1,14 @@
 import * as adapter from "../src/rowArrayAdapter";
 import type { SimpleDataPoint } from "../src/dataPoint";
+import { convertDataRow } from "../src/utils";
 
 test("test if ArrayAsAdapter successful constructs a proper RowArrayAdapter", () => {
     const x = [1, 2, 3, 4];
     expect(adapter.isRowArrayAdapter(x)).toBeFalsy();
 
-    const xAdapter = new adapter.ArrayAsAdapter<SimpleDataPoint>(x);
+    const xAdapter = new adapter.ArrayAsAdapter<SimpleDataPoint>(
+        convertDataRow(x)
+    );
     expect(adapter.isRowArrayAdapter(xAdapter)).toBeTruthy();
     expect(xAdapter.length).toBe(x.length);
     // expect(xAdapter.min()).toBe(Math.min(...x)); // not yet

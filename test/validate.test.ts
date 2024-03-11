@@ -151,6 +151,7 @@ test("validateInput", () => {
 });
 
 test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
+    const n = new AdapterTypeRandomizer<number>(p);
     const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
     const y2 = new AdapterTypeRandomizer<AlternativeAxisDataPoint>(p);
 
@@ -159,9 +160,9 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
 
     // @ts-ignore - deliberately generating error condition
     // Invalidate on number heterogeneity
-    expect(validateInputDataRowHomogeneity([1, 2, "a", 4, 5])).toBe(
+    expect(validateInputDataRowHomogeneity(n.a([1, 2, "a", 4, 5]))).toBe(
         `The first item is a number, but item index 2 is not (value: "a"). All items should be of the same type.`
-    );
+    ); // To keep typing simpler, adapters don't replace actual native arrays like number[], they will always
 
     // Confirm simple data point homogeneity
     expect(
@@ -178,7 +179,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
         validateInputDataRowHomogeneity([{ x: 1, y: 1 }, { x: 2, y: 2 }, 3])
     ).toBe(
         `The first item is a simple data point (x/y), but item index 2 is not (value: 3). All items should be of the same type.`
-    ); // wrapping in adapter would fix this error
+    ); // wrapping in adapter would fix this error!
 
     // Confirm simple data point homogeneity
     expect(

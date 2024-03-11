@@ -4,7 +4,6 @@
 // author: Andrew Pikul (ajpikul@gmail.com)
 
 import type { SupportedDataPointType } from "./dataPoint";
-import { convertDataRow } from "./utils";
 /**
  * An interface that imitates an array to give c2m read-access to chart data stored elsewhere.
  */
@@ -43,8 +42,13 @@ export class ArrayAsAdapter<T extends SupportedDataPointType> {
      * Construct adapter from supplied array
      * @param array - the underlying array from the adapter
      */
-    constructor(array: number[]) {
-        this._array = convertDataRow(array) as T[]; // Don't inherit array, we want to fail Array.isArray()
+    constructor(array: (number | SupportedDataPointType)[]) {
+        // I don't know how c2m handles empty data
+        if (!array) {
+            this._array = [] as T[];
+            return; // This is bad, we should throw an error.
+        }
+        this._array = array as T[]; // Don't inherit array, we want to fail Array.isArray()
     }
 
     /**
