@@ -176,10 +176,12 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     ).toBe("");
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([{ x: 1, y: 1 }, { x: 2, y: 2 }, 3])
+        validateInputDataRowHomogeneity(
+            s.a([{ x: 1, y: 1 }, { x: 2, y: 2 }, 3])
+        )
     ).toBe(
         `The first item is a simple data point (x/y), but item index 2 is not (value: 3). All items should be of the same type.`
-    ); // wrapping in adapter would fix this error!
+    );
 
     // Confirm simple data point homogeneity
     expect(
