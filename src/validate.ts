@@ -8,6 +8,10 @@ import {
     isOHLCDataPoint,
     isBoxDataPoint
 } from "./dataPoint";
+import { isRowArrayAdapter } from "./rowArrayAdapter";
+
+import type { RowArrayAdapter } from "./rowArrayAdapter";
+
 import type { SonifyTypes } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
 
@@ -136,7 +140,7 @@ export const validateInputAxes = (axes?: SonifyTypes["axes"]) => {
 };
 
 export const validateInputDataHomogeneity = (data: SonifyTypes["data"]) => {
-    if (Array.isArray(data)) {
+    if (Array.isArray(data) || isRowArrayAdapter(data)) {
         return validateInputDataRowHomogeneity(data);
     }
     for (const key in data) {
@@ -152,16 +156,18 @@ export const validateInputDataHomogeneity = (data: SonifyTypes["data"]) => {
 };
 
 export const validateInputDataRowHomogeneity = (
-    row: (number | SupportedDataPointType)[]
+    row: (number | SupportedDataPointType)[] | RowArrayAdapter
 ) => {
-    const first = row[0];
+    const first = row.at(0);
+    // TODO: how does c2m handle empty data?
+
     if (typeof first === "number") {
         const failure = row.findIndex((cell) => !(typeof cell === "number"));
         if (failure === -1) {
             return "";
         }
         return `The first item is a number, but item index ${failure} is not (value: ${JSON.stringify(
-            row[failure]
+            row.at(failure)
         )}). All items should be of the same type.`;
     }
 
@@ -178,7 +184,7 @@ export const validateInputDataRowHomogeneity = (
             return "";
         }
         return `The first item is a simple data point (x/y), but item index ${failure} is not (value: ${JSON.stringify(
-            row[failure]
+            row.at(failure)
         )}). All items should be of the same type.`;
     }
     if (isAlternateAxisDataPoint(first)) {
@@ -189,7 +195,7 @@ export const validateInputDataRowHomogeneity = (
             return "";
         }
         return `The first item is an alternate axis data point (x/y2), but item index ${failure} is not (value: ${JSON.stringify(
-            row[failure]
+            row.at(failure)
         )}). All items should be of the same type.`;
     }
     if (isOHLCDataPoint(first)) {
@@ -198,14 +204,14 @@ export const validateInputDataRowHomogeneity = (
             return "";
         }
         return `The first item is an OHLC data point (x/open/high/low/close), but item index ${failure} is not (value: ${JSON.stringify(
-            row[failure]
+            row.at(failure)
         )}). All items should be of the same type.`;
     }
     if (isBoxDataPoint(first)) {
         const failure = row.findIndex((cell) => !isBoxDataPoint(cell));
         if (failure >= 0) {
             return `The first item is a box data point (x/low/q1/median/q3/high), but item index ${failure} is not (value: ${JSON.stringify(
-                row[failure]
+                row.at(failure)
             )}). All items should be of the same type.`;
         }
 
@@ -216,7 +222,7 @@ export const validateInputDataRowHomogeneity = (
         );
         if (nonArray >= 0) {
             return `At least one box provided an outlier that was not an array. An outliers should be an array of numbers. The box is question is: ${JSON.stringify(
-                row[nonArray]
+                row.at(nonArray)
             )}`;
         }
 
@@ -228,7 +234,7 @@ export const validateInputDataRowHomogeneity = (
         );
         if (nonArrayNumber >= 0) {
             return `At least one box has a non-numeric outlier. Box outliers must be an array of numbers. The box in question is: ${JSON.stringify(
-                row[nonArrayNumber]
+                row.at(nonArrayNumber)
             )}`;
         }
         return "";
@@ -239,7 +245,7 @@ export const validateInputDataRowHomogeneity = (
             return "";
         }
         return `The first item is a high low data point (x/high/low), but item index ${failure} is not (value: ${JSON.stringify(
-            row[failure]
+            row.at(failure)
         )}). All items should be of the same type.`;
     }
 
@@ -269,7 +275,7 @@ export const validateHierarchyReferences = (
         return "";
     }
 
-    if (Array.isArray(data)) {
+    if (Array.isArray(data) || isRowArrayAdapter(data)) {
         return `Unexpected data structure. options.root="${root}", but "${root}" is not a key in data.
         Data is: ${JSON.stringify(data).replace(/^.{0,100}(.+)$/, "...")}`;
     }
@@ -288,21 +294,22 @@ export const validateHierarchyReferences = (
 
     // Go through each group, and find the "children" entries
     for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-        const group = groups[groupIndex];
+        const group = groups.at(groupIndex); // TODO: was this tested
         const groupName = groupNames[groupIndex];
 
         const omitter = (n) => n !== groupName && n !== root;
 
-        if (!Array.isArray(group)) {
+        if (!Array.isArray(group) && !isRowArrayAdapter(group)) {
+            // not sure this is being tested...
             continue;
         }
 
         for (let cell = 0; cell < group.length; cell++) {
-            if (typeof group[cell] !== "object") {
+            if (typeof group.at(cell) !== "object") {
                 continue;
             }
 
-            const { children } = group[cell] as SupportedDataPointType;
+            const { children } = group.at(cell) as SupportedDataPointType;
             if (!children) {
                 continue;
             }

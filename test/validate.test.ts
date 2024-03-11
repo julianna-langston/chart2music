@@ -14,6 +14,8 @@ import {
     validateInputTypeCountsMatchData
 } from "../src/validate";
 
+import { AdapterTypeRandomizer, probabilities } from "./_adapter_utilities";
+
 const validTypes =
     "line, bar, band, pie, candlestick, histogram, box, matrix, scatter, treemap, unsupported";
 const validLanguages = "en, de, es, fr, it";
@@ -148,9 +150,12 @@ test("validateInput", () => {
     );
 });
 
-test("validateInputDataRowHomogeneity", () => {
+test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
+    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
+    const y2 = new AdapterTypeRandomizer<AlternativeAxisDataPoint>(p);
+
     // Confirm number homogeneity
-    expect(validateInputDataRowHomogeneity([1, 2, 3, 4, 5])).toBe("");
+    expect(validateInputDataRowHomogeneity(s.a([1, 2, 3, 4, 5]))).toBe("");
 
     // @ts-ignore - deliberately generating error condition
     // Invalidate on number heterogeneity
@@ -160,188 +165,262 @@ test("validateInputDataRowHomogeneity", () => {
 
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 3, y: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            s.a([
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ])
+        )
     ).toBe("");
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity([{ x: 1, y: 1 }, { x: 2, y: 2 }, 3])
     ).toBe(
         `The first item is a simple data point (x/y), but item index 2 is not (value: 3). All items should be of the same type.`
-    );
+    ); // wrapping in adapter would fix this error
 
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 1, y2: 1 },
-            { x: 2, y2: 2 },
-            { x: 3, y2: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            y2.a([
+                { x: 1, y2: 1 },
+                { x: 2, y2: 2 },
+                { x: 3, y2: 3 }
+            ])
+        )
     ).toBe("");
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 1, y2: 1 },
-            { x: 2, y: 2 },
-            { x: 3, y2: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            y2.a([
+                { x: 1, y2: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y2: 3 }
+            ])
+        )
     ).toBe(
         `The first item is an alternate axis data point (x/y2), but item index 1 is not (value: {"x":2,"y":2}). All items should be of the same type.`
     );
 
+    const hl = new AdapterTypeRandomizer<HighLowDataPoint>(p);
+
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 1, high: 1, low: 1 },
-            { x: 2, high: 2, low: 2 },
-            { x: 3, high: 3, low: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            hl.a([
+                { x: 1, high: 1, low: 1 },
+                { x: 2, high: 2, low: 2 },
+                { x: 3, high: 3, low: 3 }
+            ])
+        )
     ).toBe("");
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 1, high: 1, low: 1 },
-            { x: 2, y: 2 },
-            { x: 3, y2: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            hl.a([
+                { x: 1, high: 1, low: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y2: 3 }
+            ])
+        )
     ).toBe(
         `The first item is a high low data point (x/high/low), but item index 1 is not (value: {"x":2,"y":2}). All items should be of the same type.`
     );
 
+    const ohlc = new AdapterTypeRandomizer<OHLCDataPoint>(p);
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 1, open: 1, high: 1, low: 1, close: 1 },
-            { x: 2, open: 2, high: 2, low: 2, close: 2 },
-            { x: 3, open: 3, high: 3, low: 3, close: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            ohlc.a([
+                { x: 1, open: 1, high: 1, low: 1, close: 1 },
+                { x: 2, open: 2, high: 2, low: 2, close: 2 },
+                { x: 3, open: 3, high: 3, low: 3, close: 3 }
+            ])
+        )
     ).toBe("");
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 1, high: 1, low: 1, open: 1, close: 1 },
-            { x: 2, high: 2, low: 1 },
-            { x: 3, y2: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            ohlc.a([
+                { x: 1, high: 1, low: 1, open: 1, close: 1 },
+                { x: 2, high: 2, low: 1 },
+                { x: 3, y2: 3 }
+            ])
+        )
     ).toBe(
         `The first item is an OHLC data point (x/open/high/low/close), but item index 1 is not (value: {"x":2,"high":2,"low":1}). All items should be of the same type.`
     );
 
+    const box = new AdapterTypeRandomizer<BoxDataPoint>(p);
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
-            { x: 1, low: 7.1, q1: 7.18, median: 7.25, q3: 7.33, high: 7.4 },
-            { x: 2, low: 7.31, q1: 7.32, median: 7.32, q3: 7.33, high: 7.33 }
-        ])
+        validateInputDataRowHomogeneity(
+            box.a([
+                {
+                    x: 0,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53
+                },
+                { x: 1, low: 7.1, q1: 7.18, median: 7.25, q3: 7.33, high: 7.4 },
+                {
+                    x: 2,
+                    low: 7.31,
+                    q1: 7.32,
+                    median: 7.32,
+                    q3: 7.33,
+                    high: 7.33
+                }
+            ])
+        )
     ).toBe("");
     // Confirm simple data point homogeneity
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
-            { x: 2, high: 2, low: 1 },
-            { x: 3, y2: 3 }
-        ])
+        validateInputDataRowHomogeneity(
+            box.a([
+                {
+                    x: 0,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53
+                },
+                { x: 2, high: 2, low: 1 },
+                { x: 3, y2: 3 }
+            ])
+        )
     ).toBe(
         `The first item is a box data point (x/low/q1/median/q3/high), but item index 1 is not (value: {"x":2,"high":2,"low":1}). All items should be of the same type.`
     );
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
-            {
-                x: 1,
-                low: 5.03,
-                q1: 6.36,
-                median: 6.91,
-                q3: 7.34,
-                high: 7.53,
-                // @ts-ignore: Deliberately using invalid data in order to test error handling
-                outlier: null
-            }
-        ])
+        validateInputDataRowHomogeneity(
+            box.a([
+                {
+                    x: 0,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53
+                },
+                {
+                    x: 1,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53,
+                    // @ts-ignore: Deliberately using invalid data in order to test error handling
+                    outlier: null
+                }
+            ])
+        )
     ).toBe(
         `At least one box provided an outlier that was not an array. An outliers should be an array of numbers. The box is question is: {"x":1,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"outlier":null}`
     );
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
-            {
-                x: 1,
-                low: 5.03,
-                q1: 6.36,
-                median: 6.91,
-                q3: 7.34,
-                high: 7.53,
-                // @ts-ignore: Deliberately using invalid data in order to test error handling
-                outlier: 5
-            }
-        ])
+        validateInputDataRowHomogeneity(
+            box.a([
+                {
+                    x: 0,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53
+                },
+                {
+                    x: 1,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53,
+                    // @ts-ignore: Deliberately using invalid data in order to test error handling
+                    outlier: 5
+                }
+            ])
+        )
     ).toBe(
         `At least one box provided an outlier that was not an array. An outliers should be an array of numbers. The box is question is: {"x":1,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"outlier":5}`
     );
     expect(
-        validateInputDataRowHomogeneity([
-            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
-            {
-                x: 1,
-                low: 5.03,
-                q1: 6.36,
-                median: 6.91,
-                q3: 7.34,
-                high: 7.53,
-                outlier: [5]
-            },
-            {
-                x: 2,
-                low: 5.03,
-                q1: 6.36,
-                median: 6.91,
-                q3: 7.34,
-                high: 7.53,
-                // @ts-ignore: Deliberately using invalid data in order to test error handling
-                outlier: [5, null]
-            }
-        ])
+        validateInputDataRowHomogeneity(
+            box.a([
+                {
+                    x: 0,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53
+                },
+                {
+                    x: 1,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53,
+                    outlier: [5]
+                },
+                {
+                    x: 2,
+                    low: 5.03,
+                    q1: 6.36,
+                    median: 6.91,
+                    q3: 7.34,
+                    high: 7.53,
+                    // @ts-ignore: Deliberately using invalid data in order to test error handling
+                    outlier: [5, null]
+                }
+            ])
+        )
     ).toBe(
         `At least one box has a non-numeric outlier. Box outliers must be an array of numbers. The box in question is: {"x":2,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"outlier":[5,null]}`
     );
 
     // @ts-ignore - deliberately generating error condition
     // Confirm number homogeneity
-    expect(validateInputDataRowHomogeneity(["1", 2, 3, 4, 5])).toBe(
+    expect(validateInputDataRowHomogeneity(s.a(["1", 2, 3, 4, 5]))).toBe(
         `The first item is of an unrecognized type (value: "1"). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`
     );
 
     expect(
-        validateInputDataRowHomogeneity([
-            // @ts-ignore
-            { x: new Date(), y: 1 }
-        ])
+        validateInputDataRowHomogeneity(
+            s.a([
+                // @ts-ignore
+                { x: new Date(), y: 1 }
+            ])
+        )
     ).toContain(
         "The first item is a date, which is not a supported format type"
     );
 });
 
-test("validateInputDataHomogeneity", () => {
+test.each(probabilities)("validateInputDataHomogeneity", (p) => {
+    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
+    const y2 = new AdapterTypeRandomizer<AlternativeAxisDataPoint>(p);
     // Good, 1 row
-    expect(validateInputDataHomogeneity([1, 2, 3, 4, 5])).toBe("");
+    expect(validateInputDataHomogeneity(s.a([1, 2, 3, 4, 5]))).toBe("");
 
     // Good, multiple rows
     expect(
         validateInputDataHomogeneity({
-            a: [
+            a: s.a([
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y: 3 }
-            ],
-            b: [
+            ]),
+            b: y2.a([
                 { x: 1, y2: 1 },
                 { x: 2, y2: 2 },
                 { x: 3, y2: 3 }
-            ]
+            ])
         })
     ).toBe("");
 
@@ -349,21 +428,21 @@ test("validateInputDataHomogeneity", () => {
     // Bad, 1 row
     expect(validateInputDataRowHomogeneity([1, 2, "a", 4, 5])).toBe(
         `The first item is a number, but item index 2 is not (value: "a"). All items should be of the same type.`
-    );
+    ); // Error changes on type, so we don't use our type randomizer
 
     // Bad, multiple rows
     expect(
         validateInputDataHomogeneity({
-            a: [
+            a: s.a([
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y: 3 }
-            ],
-            b: [
+            ]),
+            b: y2.a([
                 { x: 1, y2: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y2: 3 }
-            ]
+            ])
         })
     ).toBe(
         `Error for data category b: The first item is an alternate axis data point (x/y2), but item index 1 is not (value: {"x":2,"y":2}). All items should be of the same type.`
@@ -371,11 +450,11 @@ test("validateInputDataHomogeneity", () => {
 
     expect(
         validateInputDataHomogeneity({
-            a: [
+            a: s.a([
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y: 3 }
-            ],
+            ]),
             b: null
         })
     ).toBe("");
@@ -401,13 +480,14 @@ test("validate img tag without cc property", () => {
     );
 });
 
-test("validateHierarchyReferences", () => {
+test.each(probabilities)("validateHierarchyReferences", (p) => {
+    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
     // happy path
     expect(
         validateHierarchyReferences(
             {
-                a: [{ x: 0, y: 1, children: "b" }],
-                b: [{ x: 1, y: 2 }]
+                a: s.a([{ x: 0, y: 1, children: "b" }]),
+                b: s.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -417,19 +497,19 @@ test("validateHierarchyReferences", () => {
     expect(
         validateHierarchyReferences(
             {
-                a: [{ x: 0, y: 1 }],
-                b: [{ x: 1, y: 2 }]
+                a: s.a([{ x: 0, y: 1 }]),
+                b: s.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
     ).toBe("");
 
     // data = number[], options = undefined
-    expect(validateHierarchyReferences([1, 2, 3, 4, 5])).toBe("");
+    expect(validateHierarchyReferences(s.a([1, 2, 3, 4, 5]))).toBe("");
 
     // data = number[], options = {root}}
     expect(
-        validateHierarchyReferences([1, 2, 3, 4, 5], { root: "a" })
+        validateHierarchyReferences(s.a([1, 2, 3, 4, 5]), { root: "a" })
     ).toContain(
         `Unexpected data structure. options.root="a", but "a" is not a key in data.`
     );
@@ -438,8 +518,8 @@ test("validateHierarchyReferences", () => {
     expect(() =>
         validateHierarchyReferences(
             {
-                a: [1, 2, 3, 4, 5],
-                b: [6, 7, 8]
+                a: s.a([1, 2, 3, 4, 5]),
+                b: s.a([6, 7, 8])
             },
             { root: "a" }
         )
@@ -458,21 +538,21 @@ test("validateHierarchyReferences", () => {
     ).not.toThrow();
 
     // data = {key: number[]}, options = undefined
-    expect(validateHierarchyReferences({ a: [1, 2, 3, 4, 5] })).toBe("");
+    expect(validateHierarchyReferences({ a: s.a([1, 2, 3, 4, 5]) })).toBe("");
 
     // data = { key: {x,y}[] }, options = undefined
     expect(
         validateHierarchyReferences({
-            a: [{ x: 0, y: 1 }],
-            b: [{ x: 1, y: 2 }]
+            a: s.a([{ x: 0, y: 1 }]),
+            b: s.a([{ x: 1, y: 2 }])
         })
     ).toBe("");
 
     // data = tree, options = {}
     expect(
         validateHierarchyReferences({
-            a: [{ x: 0, y: 1, children: "b" }],
-            b: [{ x: 1, y: 2 }]
+            a: s.a([{ x: 0, y: 1, children: "b" }]),
+            b: s.a([{ x: 1, y: 2 }])
         })
     ).toBe("");
 
@@ -480,8 +560,8 @@ test("validateHierarchyReferences", () => {
     expect(
         validateHierarchyReferences(
             {
-                a: [{ x: 0, y: 1, children: "b" }],
-                b: [{ x: 1, y: 2 }]
+                a: s.a([{ x: 0, y: 1, children: "b" }]),
+                b: s.a([{ x: 1, y: 2 }])
             },
             { root: "z" }
         )
@@ -493,8 +573,8 @@ test("validateHierarchyReferences", () => {
     expect(
         validateHierarchyReferences(
             {
-                a: [{ x: 0, y: 1, children: "a" }],
-                b: [{ x: 1, y: 2 }]
+                a: s.a([{ x: 0, y: 1, children: "a" }]),
+                b: s.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -506,8 +586,8 @@ test("validateHierarchyReferences", () => {
     expect(
         validateHierarchyReferences(
             {
-                a: [{ x: 0, y: 1, children: "z" }],
-                b: [{ x: 1, y: 2 }]
+                a: s.a([{ x: 0, y: 1, children: "z" }]),
+                b: s.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -519,8 +599,8 @@ test("validateHierarchyReferences", () => {
     expect(
         validateHierarchyReferences(
             {
-                a: [{ x: 0, y: 1, children: "b" }],
-                b: [{ x: 1, y: 2, children: "a" }]
+                a: s.a([{ x: 0, y: 1, children: "b" }]),
+                b: s.a([{ x: 1, y: 2, children: "a" }])
             },
             { root: "a" }
         )
@@ -533,8 +613,8 @@ test("validateHierarchyReferences", () => {
         validateHierarchyReferences(
             {
                 // @ts-ignore
-                a: [{ x: 0, y: 1, children: 1 }],
-                b: [{ x: 1, y: 2 }]
+                a: s.a([{ x: 0, y: 1, children: 1 }]),
+                b: s.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -543,10 +623,11 @@ test("validateHierarchyReferences", () => {
     );
 });
 
-test("validateInputTypeCountsMatchData", () => {
+test.each(probabilities)("validateInputTypeCountsMatchData", (p) => {
+    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
     const dataWith2Rows = {
-        A: [1, 2, 3],
-        B: [4, 5, 6]
+        A: s.a([1, 2, 3]),
+        B: s.a([4, 5, 6])
     };
 
     expect(
