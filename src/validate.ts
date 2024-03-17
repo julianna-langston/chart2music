@@ -156,7 +156,9 @@ export const validateInputDataHomogeneity = (data: SonifyTypes["data"]) => {
 };
 
 export const validateInputDataRowHomogeneity = (
-    row: (number | SupportedDataPointType)[] | RowArrayAdapter
+    row:
+        | (number | SupportedDataPointType)[]
+        | RowArrayAdapter<SupportedDataPointType>
 ) => {
     const first = row.at(0);
     // TODO: how does c2m handle empty data?

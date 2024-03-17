@@ -5,7 +5,6 @@ import { convertDataRow } from "../src/utils";
 test("test if ArrayAsAdapter successful constructs a proper RowArrayAdapter", () => {
     const x = [1, 2, 3, 4];
     expect(adapter.isRowArrayAdapter(x)).toBeFalsy();
-
     const xAdapter = new adapter.ArrayAsAdapter<SimpleDataPoint>(
         convertDataRow(x)
     );

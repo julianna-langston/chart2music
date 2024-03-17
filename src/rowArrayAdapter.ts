@@ -7,12 +7,12 @@ import type { SupportedDataPointType } from "./dataPoint";
 /**
  * An interface that imitates an array to give c2m read-access to chart data stored elsewhere.
  */
-export interface RowArrayAdapter {
+export interface RowArrayAdapter<T> {
     length: number;
     min: () => number;
     max: () => number;
-    at: (index: number) => SupportedDataPointType;
-    findIndex(test: (any) => boolean): number;
+    at: (index: number) => T;
+    findIndex(test: (T) => boolean): number;
 }
 
 /**
@@ -20,7 +20,9 @@ export interface RowArrayAdapter {
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
-export function isRowArrayAdapter(obj: unknown): obj is RowArrayAdapter {
+export function isRowArrayAdapter(
+    obj: unknown
+): obj is RowArrayAdapter<unknown> {
     return (
         typeof obj === "object" &&
         "length" in obj && // TODO: Could, if they give us "length()" instead of "length", we fix it for them?
@@ -31,22 +33,20 @@ export function isRowArrayAdapter(obj: unknown): obj is RowArrayAdapter {
 }
 
 /**
- * Create a RowArrayAdapter from an actual array. This is meant to aid in testing.
- * If passed a number array, it will use convertDataRow just like C2M does.
- * If you've already constructed an array of dataPoints, it just wraps it.
+ * Create a RowArrayAdapter from an actual array.
  */
-export class ArrayAsAdapter<T extends SupportedDataPointType> {
+export class ArrayAsAdapter<T> {
     _array: T[];
 
     /**
      * Construct adapter from supplied array
      * @param array - the underlying array from the adapter
      */
-    constructor(array: (number | SupportedDataPointType)[]) {
-        // I don't know how c2m handles empty data
+    constructor(array: (T | SupportedDataPointType)[]) {
+        // NOTE: If you give us a SupportedDataPointType, we will attempt to cast it for you to type T
         if (!array) {
             this._array = [] as T[];
-            return; // This is bad, we should throw an error.
+            return; // (Should throw error? don't think c2m allows empty data)
         }
         this._array = array as T[]; // Don't inherit array, we want to fail Array.isArray()
     }
