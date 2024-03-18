@@ -151,23 +151,21 @@ test("validateInput", () => {
 });
 
 test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
-    const n = new AdapterTypeRandomizer<number>(p);
-    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
-    const y2 = new AdapterTypeRandomizer<AlternativeAxisDataPoint>(p);
+    const maybeMakeAdapter = new AdapterTypeRandomizer(p);
 
     // Confirm number homogeneity
-    expect(validateInputDataRowHomogeneity(s.a([1, 2, 3, 4, 5]))).toBe("");
+    expect(validateInputDataRowHomogeneity(maybeMakeAdapter.a([1, 2, 3, 4, 5]))).toBe("");
 
     // @ts-ignore - deliberately generating error condition
     // Invalidate on number heterogeneity
-    expect(validateInputDataRowHomogeneity(n.a([1, 2, "a", 4, 5]))).toBe(
+    expect(validateInputDataRowHomogeneity(maybeMakeAdapter.a([1, 2, "a", 4, 5]))).toBe(
         `The first item is a number, but item index 2 is not (value: "a"). All items should be of the same type.`
     ); // To keep typing simpler, adapters don't replace actual native arrays like number[], they will always
 
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            s.a([
+            maybeMakeAdapter.a([
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y: 3 }
@@ -177,7 +175,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            s.a([{ x: 1, y: 1 }, { x: 2, y: 2 }, 3])
+            maybeMakeAdapter.a([{ x: 1, y: 1 }, { x: 2, y: 2 }, 3])
         )
     ).toBe(
         `The first item is a simple data point (x/y), but item index 2 is not (value: 3). All items should be of the same type.`
@@ -186,7 +184,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            y2.a([
+            maybeMakeAdapter.a([
                 { x: 1, y2: 1 },
                 { x: 2, y2: 2 },
                 { x: 3, y2: 3 }
@@ -196,7 +194,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            y2.a([
+            maybeMakeAdapter.a([
                 { x: 1, y2: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y2: 3 }
@@ -206,12 +204,10 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
         `The first item is an alternate axis data point (x/y2), but item index 1 is not (value: {"x":2,"y":2}). All items should be of the same type.`
     );
 
-    const hl = new AdapterTypeRandomizer<HighLowDataPoint>(p);
-
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            hl.a([
+            maybeMakeAdapter.a([
                 { x: 1, high: 1, low: 1 },
                 { x: 2, high: 2, low: 2 },
                 { x: 3, high: 3, low: 3 }
@@ -221,7 +217,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            hl.a([
+            maybeMakeAdapter.a([
                 { x: 1, high: 1, low: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y2: 3 }
@@ -231,11 +227,10 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
         `The first item is a high low data point (x/high/low), but item index 1 is not (value: {"x":2,"y":2}). All items should be of the same type.`
     );
 
-    const ohlc = new AdapterTypeRandomizer<OHLCDataPoint>(p);
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            ohlc.a([
+            maybeMakeAdapter.a([
                 { x: 1, open: 1, high: 1, low: 1, close: 1 },
                 { x: 2, open: 2, high: 2, low: 2, close: 2 },
                 { x: 3, open: 3, high: 3, low: 3, close: 3 }
@@ -245,7 +240,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            ohlc.a([
+            maybeMakeAdapter.a([
                 { x: 1, high: 1, low: 1, open: 1, close: 1 },
                 { x: 2, high: 2, low: 1 },
                 { x: 3, y2: 3 }
@@ -255,11 +250,10 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
         `The first item is an OHLC data point (x/open/high/low/close), but item index 1 is not (value: {"x":2,"high":2,"low":1}). All items should be of the same type.`
     );
 
-    const box = new AdapterTypeRandomizer<BoxDataPoint>(p);
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            box.a([
+            maybeMakeAdapter.a([
                 {
                     x: 0,
                     low: 5.03,
@@ -283,7 +277,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity(
-            box.a([
+            maybeMakeAdapter.a([
                 {
                     x: 0,
                     low: 5.03,
@@ -301,7 +295,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     );
     expect(
         validateInputDataRowHomogeneity(
-            box.a([
+            maybeMakeAdapter.a([
                 {
                     x: 0,
                     low: 5.03,
@@ -327,7 +321,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     );
     expect(
         validateInputDataRowHomogeneity(
-            box.a([
+            maybeMakeAdapter.a([
                 {
                     x: 0,
                     low: 5.03,
@@ -353,7 +347,7 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
     );
     expect(
         validateInputDataRowHomogeneity(
-            box.a([
+            maybeMakeAdapter.a([
                 {
                     x: 0,
                     low: 5.03,
@@ -389,13 +383,13 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
 
     // @ts-ignore - deliberately generating error condition
     // Confirm number homogeneity
-    expect(validateInputDataRowHomogeneity(s.a(["1", 2, 3, 4, 5]))).toBe(
+    expect(validateInputDataRowHomogeneity(maybeMakeAdapter.a(["1", 2, 3, 4, 5]))).toBe(
         `The first item is of an unrecognized type (value: "1"). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`
     );
 
     expect(
         validateInputDataRowHomogeneity(
-            s.a([
+            maybeMakeAdapter.a([
                 // @ts-ignore
                 { x: new Date(), y: 1 }
             ])
@@ -406,20 +400,19 @@ test.each(probabilities)("validateInputDataRowHomogeneity", (p) => {
 });
 
 test.each(probabilities)("validateInputDataHomogeneity", (p) => {
-    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
-    const y2 = new AdapterTypeRandomizer<AlternativeAxisDataPoint>(p);
+    const maybeMakeAdapter = new AdapterTypeRandomizer(p);
     // Good, 1 row
-    expect(validateInputDataHomogeneity(s.a([1, 2, 3, 4, 5]))).toBe("");
+    expect(validateInputDataHomogeneity(maybeMakeAdapter.a([1, 2, 3, 4, 5]))).toBe("");
 
     // Good, multiple rows
     expect(
         validateInputDataHomogeneity({
-            a: s.a([
+            a: maybeMakeAdapter.a([
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y: 3 }
             ]),
-            b: y2.a([
+            b: maybeMakeAdapter.a([
                 { x: 1, y2: 1 },
                 { x: 2, y2: 2 },
                 { x: 3, y2: 3 }
@@ -436,12 +429,12 @@ test.each(probabilities)("validateInputDataHomogeneity", (p) => {
     // Bad, multiple rows
     expect(
         validateInputDataHomogeneity({
-            a: s.a([
+            a: maybeMakeAdapter.a([
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y: 3 }
             ]),
-            b: y2.a([
+            b: maybeMakeAdapter.a([
                 { x: 1, y2: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y2: 3 }
@@ -453,7 +446,7 @@ test.each(probabilities)("validateInputDataHomogeneity", (p) => {
 
     expect(
         validateInputDataHomogeneity({
-            a: s.a([
+            a: maybeMakeAdapter.a([
                 { x: 1, y: 1 },
                 { x: 2, y: 2 },
                 { x: 3, y: 3 }
@@ -484,13 +477,13 @@ test("validate img tag without cc property", () => {
 });
 
 test.each(probabilities)("validateHierarchyReferences", (p) => {
-    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
+    const maybeMakeAdapter = new AdapterTypeRandomizer(p);
     // happy path
     expect(
         validateHierarchyReferences(
             {
-                a: s.a([{ x: 0, y: 1, children: "b" }]),
-                b: s.a([{ x: 1, y: 2 }])
+                a: maybeMakeAdapter.a([{ x: 0, y: 1, children: "b" }]),
+                b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -500,19 +493,19 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
     expect(
         validateHierarchyReferences(
             {
-                a: s.a([{ x: 0, y: 1 }]),
-                b: s.a([{ x: 1, y: 2 }])
+                a: maybeMakeAdapter.a([{ x: 0, y: 1 }]),
+                b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
     ).toBe("");
 
     // data = number[], options = undefined
-    expect(validateHierarchyReferences(s.a([1, 2, 3, 4, 5]))).toBe("");
+    expect(validateHierarchyReferences(maybeMakeAdapter.a([1, 2, 3, 4, 5]))).toBe("");
 
     // data = number[], options = {root}}
     expect(
-        validateHierarchyReferences(s.a([1, 2, 3, 4, 5]), { root: "a" })
+        validateHierarchyReferences(maybeMakeAdapter.a([1, 2, 3, 4, 5]), { root: "a" })
     ).toContain(
         `Unexpected data structure. options.root="a", but "a" is not a key in data.`
     );
@@ -521,8 +514,8 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
     expect(() =>
         validateHierarchyReferences(
             {
-                a: s.a([1, 2, 3, 4, 5]),
-                b: s.a([6, 7, 8])
+                a: maybeMakeAdapter.a([1, 2, 3, 4, 5]),
+                b: maybeMakeAdapter.a([6, 7, 8])
             },
             { root: "a" }
         )
@@ -541,21 +534,21 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
     ).not.toThrow();
 
     // data = {key: number[]}, options = undefined
-    expect(validateHierarchyReferences({ a: s.a([1, 2, 3, 4, 5]) })).toBe("");
+    expect(validateHierarchyReferences({ a: maybeMakeAdapter.a([1, 2, 3, 4, 5]) })).toBe("");
 
     // data = { key: {x,y}[] }, options = undefined
     expect(
         validateHierarchyReferences({
-            a: s.a([{ x: 0, y: 1 }]),
-            b: s.a([{ x: 1, y: 2 }])
+            a: maybeMakeAdapter.a([{ x: 0, y: 1 }]),
+            b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
         })
     ).toBe("");
 
     // data = tree, options = {}
     expect(
         validateHierarchyReferences({
-            a: s.a([{ x: 0, y: 1, children: "b" }]),
-            b: s.a([{ x: 1, y: 2 }])
+            a: maybeMakeAdapter.a([{ x: 0, y: 1, children: "b" }]),
+            b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
         })
     ).toBe("");
 
@@ -563,8 +556,8 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
     expect(
         validateHierarchyReferences(
             {
-                a: s.a([{ x: 0, y: 1, children: "b" }]),
-                b: s.a([{ x: 1, y: 2 }])
+                a: maybeMakeAdapter.a([{ x: 0, y: 1, children: "b" }]),
+                b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
             },
             { root: "z" }
         )
@@ -576,8 +569,8 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
     expect(
         validateHierarchyReferences(
             {
-                a: s.a([{ x: 0, y: 1, children: "a" }]),
-                b: s.a([{ x: 1, y: 2 }])
+                a: maybeMakeAdapter.a([{ x: 0, y: 1, children: "a" }]),
+                b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -589,8 +582,8 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
     expect(
         validateHierarchyReferences(
             {
-                a: s.a([{ x: 0, y: 1, children: "z" }]),
-                b: s.a([{ x: 1, y: 2 }])
+                a: maybeMakeAdapter.a([{ x: 0, y: 1, children: "z" }]),
+                b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -602,8 +595,8 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
     expect(
         validateHierarchyReferences(
             {
-                a: s.a([{ x: 0, y: 1, children: "b" }]),
-                b: s.a([{ x: 1, y: 2, children: "a" }])
+                a: maybeMakeAdapter.a([{ x: 0, y: 1, children: "b" }]),
+                b: maybeMakeAdapter.a([{ x: 1, y: 2, children: "a" }])
             },
             { root: "a" }
         )
@@ -616,8 +609,8 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
         validateHierarchyReferences(
             {
                 // @ts-ignore
-                a: s.a([{ x: 0, y: 1, children: 1 }]),
-                b: s.a([{ x: 1, y: 2 }])
+                a: maybeMakeAdapter.a([{ x: 0, y: 1, children: 1 }]),
+                b: maybeMakeAdapter.a([{ x: 1, y: 2 }])
             },
             { root: "a" }
         )
@@ -627,10 +620,10 @@ test.each(probabilities)("validateHierarchyReferences", (p) => {
 });
 
 test.each(probabilities)("validateInputTypeCountsMatchData", (p) => {
-    const s = new AdapterTypeRandomizer<SimpleDataPoint>(p);
+    const maybeMakeAdapter = new AdapterTypeRandomizer(p);
     const dataWith2Rows = {
-        A: s.a([1, 2, 3]),
-        B: s.a([4, 5, 6])
+        A: maybeMakeAdapter.a([1, 2, 3]),
+        B: maybeMakeAdapter.a([4, 5, 6])
     };
 
     expect(
