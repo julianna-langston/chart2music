@@ -1,4 +1,3 @@
-import type { SimpleDataPoint } from "../src/dataPoint";
 import {
     calcPan,
     calculateAxisMaximum,
@@ -13,6 +12,7 @@ import {
     convertDataRow,
     detectIfMobile
 } from "../src/utils";
+import { AdapterTypeRandomizer, probabilities } from "./_adapter_utilities";
 
 describe("utils", () => {
     test("interpolate bin - linear", () => {
@@ -34,11 +34,14 @@ describe("utils", () => {
         expect(calcPan(NaN)).toBe(0);
     });
 
-    test("calculate axis min/max", () => {
-        const singleRow: SimpleDataPoint[][] = [
-            [1, 5, 2, 0, 3, 6].map((x) => {
-                return { x, y: 0 };
-            })
+    test.each(probabilities)("calculate axis min/max", (p) => {
+        const maybeMakeAdapter = new AdapterTypeRandomizer(p);
+        const singleRow = [
+            maybeMakeAdapter.a(
+                [1, 5, 2, 0, 3, 6].map((x) => {
+                    return { x, y: 0 };
+                })
+            )
         ];
         const multiRow = [
             [1, 5, 2, 0, 3, 6].map((x) => {
