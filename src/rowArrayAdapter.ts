@@ -26,6 +26,7 @@ export function isRowArrayAdapter(
     obj: unknown
 ): obj is RowArrayAdapter<unknown> {
     return (
+        obj &&
         typeof obj === "object" &&
         "length" in obj && // TODO: Could, if they give us "length()" instead of "length", we fix it for them?
         "min" in obj &&
@@ -37,7 +38,7 @@ export function isRowArrayAdapter(
 /**
  * Create a RowArrayAdapter from an actual array.
  */
-export class ArrayAsAdapter<T> {
+export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
     _array: T[];
 
     /**
