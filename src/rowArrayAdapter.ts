@@ -76,13 +76,12 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
                     if (prop) return NaN;
                     val = point;
                     // eslint and tsc disagree about whether or not the above condition
-                    // is sufficient to guarentee type exclusion, tsc says no. the argument
+                    // is sufficient to guarantee type exclusion, tsc says no. the argument
                     // gets rather abstract wrt `extends`, but this is just a test implementation
                     // and real implementations should not support numbers anyway
                     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                 } else if (prop in (point as SupportedDataPointType)) {
                     // online linter wants me to specify [index: string]:number to use `in`
-                    // nor should I have to cast re: type exclusion,
                     val = point[prop] as number;
                 } else if (isOHLCDataPoint(point) && prop === "y") {
                     val = Math.min(
