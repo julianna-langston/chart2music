@@ -83,6 +83,7 @@ test("test if ArrayAsAdapter successful constructs a proper RowArrayAdapter", ()
     // [x] max
     // [x] at
     // [x] forEach
+    // [ ] find
     // [ ] map
     // [ ] filter
     // [ ] for(in of)

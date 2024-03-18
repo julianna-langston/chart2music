@@ -255,7 +255,7 @@ export const generatePointDescription = (
 };
 
 export const usesAxis = (
-    data: SupportedDataPointType[][],
+    data: SupportedDataPointType[][], // TODO
     axisName: "x" | "y" | "y2"
 ) => {
     const firstUseOfAxis = data.filter(isNotNull).find((row) => {
@@ -269,7 +269,7 @@ export const usesAxis = (
  * @param data - the X/Y values
  */
 export const calculateMetadataByGroup = (
-    data: (SupportedDataPointType[] | null)[]
+    data: (SupportedDataPointType[] | null)[] // TODO
 ): groupedMetadata[] => {
     return data.map((row, index) => {
         if (row === null) {
@@ -339,7 +339,7 @@ export const calculateMetadataByGroup = (
  * @param filterGroupIndex -
  */
 export const initializeAxis = (
-    data: SupportedDataPointType[][],
+    data: SupportedDataPointType[][], // TODO
     axisName: validAxes,
     userAxis?: AxisData,
     filterGroupIndex?: number
@@ -396,7 +396,7 @@ export const detectDataPointType = (query: unknown): detectableDataPoint => {
 };
 
 export const convertDataRow = (
-    row: (SupportedDataPointType | number)[] | null
+    row: (SupportedDataPointType | number)[] | null // TODO
 ) => {
     if (row === null) {
         return null;
@@ -552,6 +552,7 @@ export const prepChartElement = (
 };
 
 export const checkForNumberInput = (
+    // TODO What is this lol
     metadataByGroup: groupedMetadata[],
     data: SonifyTypes["data"]
 ) => {

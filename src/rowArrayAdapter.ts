@@ -75,7 +75,7 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
                 if (typeof point === "number") {
                     if (prop) return NaN;
                     val = point;
-                } else if (prop in (point as SupportedDataPointType)) {
+                } else if (prop in point) {
                     // online linter wants me to specify [index: string]:number to use `in`
                     // nor should I have to cast re: type exclusion,
                     val = point[prop] as number;
@@ -111,7 +111,7 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
                 if (typeof point === "number") {
                     if (prop) return NaN;
                     val = point;
-                } else if (prop in (point as SupportedDataPointType)) {
+                } else if (prop in point) {
                     val = point[prop] as number;
                 } else if (isOHLCDataPoint(point) && prop === "y") {
                     val = Math.max(
@@ -162,13 +162,16 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
      * @param thisArg - an optional argument to set as "this" in your callbackFn.
      * As in Array.prototype.forEach(), if the callbackFn is defined by arrow syntax,
      * the arrow syntax will lexically bind its own this and ignore thisArg.
-     * @returns nothing.
      */
     forEach(
         callbackFn: (value: T, index: number, array: ArrayAsAdapter<T>) => void,
         thisArg?: unknown
     ): void {
-        this._array.forEach((innerValue: T, innerIndex: number, innerArray: T[]) => {
+        this._array.forEach((innerValue: T, innerIndex: number) => {
+            // typescript doesn't like us binding thisArg which is `unknown` type
+            // but we're shimming a javascript function and the user has the right
+            // to assign legitimately any value they'd like as `this`
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             callbackFn.bind(thisArg)(innerValue, innerIndex, this);
         }); // purposely use => because we need our lexically-scoped this
     }
