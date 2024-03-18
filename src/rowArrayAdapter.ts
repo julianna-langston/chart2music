@@ -4,13 +4,15 @@
 // author: Andrew Pikul (ajpikul@gmail.com)
 
 import type { SupportedDataPointType } from "./dataPoint";
+import { isHighLowDataPoint, isOHLCDataPoint } from "./dataPoint";
+
 /**
  * An interface that imitates an array to give c2m read-access to chart data stored elsewhere.
  */
 export interface RowArrayAdapter<T> {
     length: number;
-    min: () => number;
-    max: () => number;
+    min: (prop: string) => number;
+    max: (prop: string) => number;
     at: (index: number) => T;
     findIndex(test: (T) => boolean): number;
 }
@@ -61,18 +63,72 @@ export class ArrayAsAdapter<T> {
 
     /**
      * Implements a min() function, in this case a shim over Math.min()
+     * @param prop - a string indicating the property that is assessed for min
      * @returns the minimum value of the array
      */
-    min(): number {
-        return 0; // TODO implement when necessary
+    min(prop: string): number {
+        if (!this._array) return NaN;
+        return this._array.reduce(
+            (localMinimum: number, point: T): number => {
+                let val: number = NaN;
+                if (typeof point === "number") {
+                    if (prop) return NaN;
+                    val = point;
+                } else if (prop in (point as SupportedDataPointType)) {
+                    // online linter wants me to specify [index: string]:number to use `in`
+                    // nor should I have to cast re: type exclusion,
+                    val = point[prop] as number;
+                } else if (isOHLCDataPoint(point) && prop === "y") {
+                    val = Math.min(
+                        point.high,
+                        point.low,
+                        point.open,
+                        point.close
+                    );
+                } else if (isHighLowDataPoint(point) && prop === "y") {
+                    val = Math.min(point.high, point.low);
+                } else return localMinimum;
+                if (isNaN(localMinimum)) {
+                    return val;
+                }
+                return val < localMinimum ? val : localMinimum;
+            },
+            NaN // Initial value of reduce()
+        );
     }
 
     /**
      * Implements a max() function, in this case a shim over Math.max()
+     * @param prop - a string indicating the property that is assessed for min
      * @returns the maximum value of the array
      */
-    max(): number {
-        return 0; // TODO implement when necessary
+    max(prop: string): number {
+        if (!this._array) return NaN;
+        return this._array.reduce(
+            (localMaximum: number, point: T): number => {
+                let val: number = NaN;
+                if (typeof point === "number") {
+                    if (prop) return NaN;
+                    val = point;
+                } else if (prop in (point as SupportedDataPointType)) {
+                    val = point[prop] as number;
+                } else if (isOHLCDataPoint(point) && prop === "y") {
+                    val = Math.max(
+                        point.high,
+                        point.low,
+                        point.open,
+                        point.close
+                    );
+                } else if (isHighLowDataPoint(point) && prop === "y") {
+                    val = Math.max(point.high, point.low);
+                } else return localMaximum;
+                if (isNaN(localMaximum)) {
+                    return val;
+                }
+                return val > localMaximum ? val : localMaximum;
+            },
+            NaN // Initial value of reduce()
+        );
     }
 
     /**
