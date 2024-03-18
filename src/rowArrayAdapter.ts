@@ -149,4 +149,27 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
     findIndex(test: (T) => boolean): number {
         return this._array.findIndex(test);
     }
+
+    /**
+     * forEach imitates an arrays forEach():
+     * @param callbackFn - a function to execute for each element in the "array".
+     * It accepts three arguments:
+     * value: T
+     * index: number
+     * array: the current ArrayAsAdapter<T>
+     *
+     * and returns nothing.
+     * @param thisArg - an optional argument to set as "this" in your callbackFn.
+     * As in Array.prototype.forEach(), if the callbackFn is defined by arrow syntax,
+     * the arrow syntax will lexically bind its own this and ignore thisArg.
+     * @returns nothing.
+     */
+    forEach(
+        callbackFn: (value: T, index: number, array: ArrayAsAdapter<T>) => void,
+        thisArg?: unknown
+    ): void {
+        this._array.forEach((innerValue: T, innerIndex: number, innerArray: T[]) => {
+            callbackFn.bind(thisArg)(innerValue, innerIndex, this);
+        }); // purposely use => because we need our lexically-scoped this
+    }
 }
