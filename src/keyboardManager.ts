@@ -101,6 +101,8 @@ export class KeyboardEventManager {
      */
     generateHelpDialog(lang: string) {
         const dialog = document.createElement("dialog");
+        dialog.classList.add("chart2music-dialog");
+        dialog.classList.add("chart2music-help-dialog");
         dialog.setAttribute("lang", lang);
 
         const closeButton = document.createElement("button");

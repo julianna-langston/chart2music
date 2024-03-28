@@ -27,6 +27,8 @@ export const launchOptionDialog = (
     playCb?: (hertz: number) => void
 ) => {
     const dialog = document.createElement("dialog");
+    dialog.classList.add("chart2music-dialog");
+    dialog.classList.add("chart2music-option-dialog");
     dialog.setAttribute("lang", language);
     dialog.setAttribute("aria-label", translate(language, "options-title"));
     dialog.innerHTML = `<h1>${translate(language, "options-title")}</h1>

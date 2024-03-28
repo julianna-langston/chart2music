@@ -10,6 +10,8 @@ const toHtmlEntities = (str: string) => {
 
 export const launchInfoDialog = (info: c2mInfo, language: string) => {
     const dialog = document.createElement("dialog");
+    dialog.classList.add("chart2music-dialog");
+    dialog.classList.add("chart2music-info-dialog");
     dialog.setAttribute("aria-label", translate(language, "info-title"));
     let content = `<h1 tabIndex='0'>${translate(language, "info-title")}</h1>`;
 
