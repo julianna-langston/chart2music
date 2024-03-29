@@ -523,17 +523,20 @@ export const isUnplayable = (yValue: number, yAxis: AxisData) => {
 export const prepChartElement = (
     elem: HTMLElement,
     title: string,
-    language: string
+    language: string,
+    addCleanupTask: (fn: () => void) => void
 ) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
         elem.setAttribute(
             "aria-label",
             translate(language, "description", { title })
         );
+        addCleanupTask(() => elem.removeAttribute("aria-label"));
     }
 
     if (!elem.hasAttribute("role")) {
         elem.setAttribute("role", "application");
+        addCleanupTask(() => elem.removeAttribute("role"));
     }
 };
 
