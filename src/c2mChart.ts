@@ -186,6 +186,7 @@ export class c2m {
     private _hierarchyRoot: string | null = null;
     private _hierarchyBreadcrumbs: HierarchyBreadcrumbType[] = [];
     private _language: string;
+    private _cleanUpTasks: Array<() => void> = [];
 
     /**
      * Constructor
@@ -203,7 +204,14 @@ export class c2m {
         this._chartElement = input.element;
         this._info = input.info ?? {};
         this._language = input.lang ?? DEFAULT_LANGUAGE;
-        prepChartElement(this._chartElement, this._title, this._language);
+        prepChartElement(
+            this._chartElement,
+            this._title,
+            this._language,
+            (fn: () => void) => {
+                this._cleanUpTasks.push(fn);
+            }
+        );
 
         this._ccElement = input.cc ?? this._chartElement;
 
@@ -258,6 +266,13 @@ export class c2m {
      */
     get _groupIndex() {
         return this._visible_group_indices[this._visibleGroupIndex];
+    }
+
+    /**
+     * Clean up event listeners, and put the elements and attributes back the way they were before initialization
+     */
+    public cleanUp() {
+        this._cleanUpTasks.forEach((fn) => fn());
     }
 
     /**
@@ -1341,6 +1356,10 @@ export class c2m {
                 }
             });
         });
+
+        this._cleanUpTasks.push(() => {
+            this._keyEventManager.cleanup();
+        });
     }
 
     /**
@@ -1409,7 +1428,7 @@ export class c2m {
      * Listen to various events, and drive interactions
      */
     private _startListening() {
-        this._chartElement.addEventListener("focus", () => {
+        const focusEvent = () => {
             this._sr.clear();
             if (this._options.live) {
                 this._generateSummary();
@@ -1428,9 +1447,15 @@ export class c2m {
                     window.__chart2music_options__._hertzClamps;
                 this._setHertzClamps(lower, upper);
             }
-        });
-        this._chartElement.addEventListener("blur", () => {
+        };
+        const blurEvent = () => {
             this._monitorMode = false;
+        };
+        this._chartElement.addEventListener("focus", focusEvent);
+        this._chartElement.addEventListener("blur", blurEvent);
+        this._cleanUpTasks.push(() => {
+            this._chartElement.removeEventListener("focus", focusEvent);
+            this._chartElement.removeEventListener("blur", blurEvent);
         });
     }
 
