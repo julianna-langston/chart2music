@@ -20,6 +20,9 @@ export class KeyboardEventManager {
     };
     private _target: HTMLElement;
     private _dialog: HTMLDialogElement | null;
+    private _handler = (event: KeyboardEvent) => {
+        this._handleKeyEvents(event);
+    };
 
     /**
      * Initialize keyboard event manager
@@ -28,13 +31,18 @@ export class KeyboardEventManager {
     constructor(target: HTMLElement) {
         this._keyMap = {};
         this._target = target;
-        this._target.addEventListener("keydown", (event) => {
-            this._handleKeyEvents(event);
-        });
+        this._target.addEventListener("keydown", this._handler);
         if (!this._target.hasAttribute("tabIndex")) {
             this._target.setAttribute("tabIndex", "0");
         }
         this._dialog = null;
+    }
+
+    /**
+     * Unregister keyboard events
+     */
+    cleanup() {
+        this._target.removeEventListener("keydown", this._handler);
     }
 
     /**
@@ -101,6 +109,8 @@ export class KeyboardEventManager {
      */
     generateHelpDialog(lang: string) {
         const dialog = document.createElement("dialog");
+        dialog.classList.add("chart2music-dialog");
+        dialog.classList.add("chart2music-help-dialog");
         dialog.setAttribute("lang", lang);
 
         const closeButton = document.createElement("button");
