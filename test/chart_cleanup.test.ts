@@ -55,3 +55,33 @@ test("Confirm cleanup removes the attributes and events listeners C2M added", ()
         "2, 3"
     );
 });
+
+test("Confirm cleanup removes dialogs", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
+    });
+    expect(err).toBe(null);
+
+    expect(document.querySelectorAll("dialog")).toHaveLength(0);
+
+    mockElement.dispatchEvent(new Event("focus"));
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "h"
+        })
+    );
+
+    expect(document.querySelectorAll("dialog")).toHaveLength(1);
+
+    chart?.cleanUp();
+
+    expect(document.querySelectorAll("dialog")).toHaveLength(0);
+});
