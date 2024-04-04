@@ -43,6 +43,9 @@ export class KeyboardEventManager {
      */
     cleanup() {
         this._target.removeEventListener("keydown", this._handler);
+        if (this._dialog !== null) {
+            document.body.removeChild(this._dialog);
+        }
     }
 
     /**
