@@ -1,7 +1,11 @@
 # Changelog
 
+## 1.16.1
+* When the .cleanUp method is called, the help dialog should be removed from the DOM.
+
 ## 1.16.0
 * Add a .cleanUp() method, which removes event listeners and attributes from the provided chart element
+* Add classnames to dialogs. All dialogs will have the classname `chart2music-dialog`. Each dialog also has its own specific classname: `chart2music-help-dialog`, `chart2music-info-dialog`, and `chart2music-option-dialog`.
 
 ## 1.15.0
 * Added French, German, and Italian translations (thank you [glow](https://github.com/Neo-Oli) and their team at the [Swiss Red ross](https://github.com/swissredcross))
