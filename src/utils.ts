@@ -70,7 +70,7 @@ export const calculateAxisMinimum = (
     let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
-        dataToProcess = data[filterGroupIndex];
+        dataToProcess = data.at(filterGroupIndex);
     }
 
     const values: number[] = dataToProcess
@@ -119,7 +119,7 @@ export const calculateAxisMaximum = (
     let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
-        dataToProcess = data[filterGroupIndex];
+        dataToProcess = data.at(filterGroupIndex);
     }
 
     const values: number[] = dataToProcess
@@ -186,7 +186,7 @@ export const generatePointDescription = (
     if (isBoxDataPoint(point) && outlierIndex !== null) {
         return translate(language, "point-outlier", {
             x: xFormat(point.x),
-            y: point.outlier[outlierIndex],
+            y: point.outlier.at(outlierIndex),
             index: outlierIndex + 1,
             count: point.outlier.length
         });
@@ -275,16 +275,16 @@ export const calculateMetadataByGroup = (
 
         let yValues: number[] = [];
         let availableStats = [];
-        if (isSimpleDataPoint(row[0])) {
+        if (isSimpleDataPoint(row.at(0))) {
             yValues = (row as SimpleDataPoint[]).map(({ y }) => y);
-        } else if (isAlternateAxisDataPoint(row[0])) {
+        } else if (isAlternateAxisDataPoint(row.at(0))) {
             yValues = (row as AlternateAxisDataPoint[]).map(({ y2 }) => y2);
-        } else if (isOHLCDataPoint(row[0])) {
+        } else if (isOHLCDataPoint(row.at(0))) {
             // Don't calculate min/max for high/low
             availableStats = ["open", "high", "low", "close"];
-        } else if (isBoxDataPoint(row[0])) {
+        } else if (isBoxDataPoint(row.at(0))) {
             availableStats = ["high", "q3", "median", "q1", "low", "outlier"];
-        } else if (isHighLowDataPoint(row[0])) {
+        } else if (isHighLowDataPoint(row.at(0))) {
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];
         }
@@ -310,7 +310,7 @@ export const calculateMetadataByGroup = (
             tenths,
             availableStats,
             statIndex: -1,
-            inputType: detectDataPointType(row[0]),
+            inputType: detectDataPointType(row.at(0)),
             size: row.length
         };
     });
@@ -545,7 +545,7 @@ export const checkForNumberInput = (
     data: SonifyTypes["data"]
 ) => {
     if (Array.isArray(data) && typeof data[0] === "number") {
-        metadataByGroup[0].inputType = "number";
+        metadataByGroup.at(0).inputType = "number";
     } else {
         let index = 0;
         for (const group in data) {
