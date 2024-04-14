@@ -6,8 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - run: npm run build
       
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
@@ -17,7 +15,7 @@ jobs:
       
       - run: npm ci
       
-      - run: npm build
+      - run: npm run build
       
       # - run: npm publish
       #   env:
