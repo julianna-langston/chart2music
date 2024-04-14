@@ -265,7 +265,7 @@ export class c2m {
      * Index for the current group
      */
     get _groupIndex() {
-        return this._visible_group_indices[this._visibleGroupIndex];
+        return this._visible_group_indices.at(this._visibleGroupIndex);
     }
 
     /**
@@ -281,7 +281,7 @@ export class c2m {
     private get _currentGroupType() {
         if (Array.isArray(this._type)) {
             // Example type: ["bar", "line"]
-            return this._type[this._visibleGroupIndex];
+            return this._type.at(this._visibleGroupIndex);
         } else {
             // Example type: "bar"
             return this._type;
@@ -292,7 +292,7 @@ export class c2m {
      * The current group's data
      */
     private get _currentDataRow() {
-        return this._data[this._groupIndex];
+        return this._data.at(this._groupIndex);
     }
 
     /**
@@ -313,14 +313,14 @@ export class c2m {
         if (this._currentDataRow === null) {
             return null;
         }
-        return this._currentDataRow[this._pointIndex];
+        return this._currentDataRow.at(this._pointIndex);
     }
 
     /**
      * Get the name of the current group
      */
     private get _currentGroupName() {
-        return this._groups[this._groupIndex];
+        return this._groups.at(this._groupIndex);
     }
 
     /**
@@ -403,7 +403,7 @@ export class c2m {
                         this._visibleGroupIndex++;
                         this._playCurrent();
                     }
-                }, SPEEDS[this._speedRateIndex]);
+                }, SPEEDS.at(this._speedRateIndex));
                 this._playCurrent();
             },
             play_backward_category: () => {
@@ -420,7 +420,7 @@ export class c2m {
                         this._visibleGroupIndex--;
                         this._playCurrent();
                     }
-                }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
+                }, SPEEDS.at(this._speedRateIndex)) as NodeJS.Timeout;
                 this._playCurrent();
             },
             stop_play: () => {
@@ -599,7 +599,7 @@ export class c2m {
                 }
                 this._sr.render(
                     translate(this._language, "kbr-speed", {
-                        rate_in_ms: SPEEDS[this._speedRateIndex]
+                        rate_in_ms: SPEEDS.at(this._speedRateIndex)
                     })
                 );
             },
@@ -610,7 +610,7 @@ export class c2m {
                 }
                 this._sr.render(
                     translate(this._language, "kbr-speed", {
-                        rate_in_ms: SPEEDS[this._speedRateIndex]
+                        rate_in_ms: SPEEDS.at(this._speedRateIndex)
                     })
                 );
             },
@@ -652,7 +652,7 @@ export class c2m {
                             this._speedRateIndex = speedIndex;
                             this._sr.render(
                                 translate(this._language, "kbr-speed", {
-                                    rate_in_ms: SPEEDS[this._speedRateIndex]
+                                    rate_in_ms: SPEEDS.at(this._speedRateIndex)
                                 })
                             );
                         }
@@ -664,7 +664,7 @@ export class c2m {
                     },
                     (hertzIndex: number) => {
                         this._audioEngine?.playDataPoint(
-                            this._options.hertzes[hertzIndex],
+                            this._options.hertzes.at(hertzIndex),
                             0,
                             NOTE_LENGTH
                         );
@@ -1711,7 +1711,7 @@ export class c2m {
                 this._outlierIndex--;
                 this._playCurrent();
             }
-        }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
+        }, SPEEDS.at(this._speedRateIndex)) as NodeJS.Timeout;
         this._playCurrent();
     }
 
@@ -1736,7 +1736,7 @@ export class c2m {
                 this._pointIndex--;
                 this._playCurrent();
             }
-        }, SPEEDS[this._speedRateIndex]) as NodeJS.Timeout;
+        }, SPEEDS.at(this._speedRateIndex)) as NodeJS.Timeout;
         this._playCurrent();
     }
 
@@ -1761,7 +1761,7 @@ export class c2m {
                 this._outlierIndex++;
                 this._playCurrent();
             }
-        }, SPEEDS[this._speedRateIndex]);
+        }, SPEEDS.at(this._speedRateIndex));
         this._playCurrent();
     }
 
@@ -1772,7 +1772,7 @@ export class c2m {
         const startIndex = this._pointIndex;
         const startX = this.getCurrent().point.x;
         const row = this._currentDataRow.slice(startIndex);
-        const totalTime = SPEEDS[this._speedRateIndex] * 10;
+        const totalTime = SPEEDS.at(this._speedRateIndex) * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
         const change =
@@ -1807,7 +1807,7 @@ export class c2m {
         const startIndex = this._pointIndex;
         const startX = this.getCurrent().point.x;
         const row = this._currentDataRow.slice(0, startIndex + 1);
-        const totalTime = SPEEDS[this._speedRateIndex] * 10;
+        const totalTime = SPEEDS.at(this._speedRateIndex) * 10;
         const xMin = this._xAxis.minimum;
         const range = this._xAxis.maximum - xMin;
         const change =
@@ -1857,7 +1857,7 @@ export class c2m {
                 this._pointIndex++;
                 this._playCurrent();
             }
-        }, SPEEDS[this._speedRateIndex]);
+        }, SPEEDS.at(this._speedRateIndex));
         this._playCurrent();
     }
 
@@ -2135,7 +2135,7 @@ export class c2m {
                             NOTE_LENGTH
                         );
                     },
-                    SPEEDS[this._speedRateIndex] * interval * index
+                    SPEEDS.at(this._speedRateIndex) * interval * index
                 );
             });
         }
@@ -2170,8 +2170,9 @@ export class c2m {
             return;
         }
 
-        const { statIndex, availableStats } =
-            this._metadataByGroup[this._groupIndex];
+        const { statIndex, availableStats } = this._metadataByGroup.at(
+            this._groupIndex
+        );
         if (this._flagNewStat && availableStats.length === 0) {
             this._flagNewStat = false;
         }
