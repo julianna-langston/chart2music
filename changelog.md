@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.16.0
+* Add a .cleanUp() method, which removes event listeners and attributes from the provided chart element
+
 ## 1.15.0
 * Added French, German, and Italian translations (thank you [glow](https://github.com/Neo-Oli) and their team at the [Swiss Red ross](https://github.com/swissredcross))
 
