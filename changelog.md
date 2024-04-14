@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.16.2
+* Use the `.at()` method when working with provided arrays. This is an early step to provide support for spoofed arrays.
+
 ## 1.16.1
 * When the .cleanUp method is called, the help dialog should be removed from the DOM.
 
