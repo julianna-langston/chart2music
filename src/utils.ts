@@ -64,6 +64,47 @@ export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
 const isNotNull = (tmp: unknown) => tmp !== null;
 
+/**
+ * calculateRowMinimum will return [index, value] for the lowest value in the data row (a row is like a graph line, or trace, or function).
+ * @param row - the row in question
+ * @param prop - the name of property used to calculate the minimum ('y', 'y2', etc)
+ * @returns [index, value] - the index and value of the minimum
+ */
+function calculateRowMinimum(
+    row: SupportedDataPointType[] | RowArrayAdapter<SupportedDataPointType>,
+    prop: string
+): [number, number] {
+    // [index, value]
+    if (!row) return [-1, NaN];
+    if (isRowArrayAdapter(row)) return row.minWithIndex(prop);
+    return row.reduce(
+        (
+            localMinimum: [number, number],
+            point: SupportedDataPointType,
+            currentIndex: number
+        ): [number, number] => {
+            let val: number = NaN;
+            if (prop in point) {
+                val = point[prop] as number;
+            } else if (isOHLCDataPoint(point) && prop === "y") {
+                val = Math.min(point.high, point.low, point.open, point.close);
+            } else if (isHighLowDataPoint(point) && prop === "y") {
+                val = Math.min(point.high, point.low);
+            } else {
+                return localMinimum;
+            }
+            if (isNaN(val) || val === null) {
+                return localMinimum;
+            }
+            if (isNaN(localMinimum[1])) {
+                return [currentIndex, val];
+            }
+            return val < localMinimum[1] ? [currentIndex, val] : localMinimum;
+        },
+        [-1, NaN] // Initial value of reduce()
+    );
+}
+
 // Question: Howcome the pre-adapter code didn't support Boxpoint for minimum/maximum?
 export const calculateAxisMinimum = (
     data: (
@@ -78,47 +119,51 @@ export const calculateAxisMinimum = (
     }
 
     const localMinimums: number[] = data
-        .map(
-            (
-                row:
-                    | SupportedDataPointType[]
-                    | RowArrayAdapter<SupportedDataPointType>
-            ): number => {
-                if (!row) return NaN;
-                if (isRowArrayAdapter(row)) return row.min(prop);
-                return row.reduce(
-                    (
-                        localMinimum: number,
-                        point: SupportedDataPointType
-                    ): number => {
-                        let val: number = NaN;
-                        if (prop in point) {
-                            val = point[prop] as number;
-                        } else if (isOHLCDataPoint(point) && prop === "y") {
-                            val = Math.min(
-                                point.high,
-                                point.low,
-                                point.open,
-                                point.close
-                            );
-                        } else if (isHighLowDataPoint(point) && prop === "y") {
-                            val = Math.min(point.high, point.low);
-                        } else return localMinimum;
-                        if (isNaN(localMinimum)) {
-                            return val;
-                        }
-                        return val < localMinimum ? val : localMinimum;
-                    },
-                    NaN // Initial value of reduce()
-                );
-            }
-        )
+        .map((row) => calculateRowMinimum(row, prop)[1])
         .filter((num) => !isNaN(num));
     if (localMinimums.length === 0) {
         return NaN;
     }
     return Math.min(...localMinimums);
 };
+
+/**
+ * calculateRowMaximum will return [index, value] for the highest value in the data row (a row is like a graph line, or trace, or function).
+ * @param row - the row in question
+ * @param prop - the name of property used to calculate the maximum ('y', 'y2', etc)
+ * @returns [index, value] - the index and value of the maximum
+ */
+function calculateRowMaximum(
+    row: SupportedDataPointType[] | RowArrayAdapter<SupportedDataPointType>,
+    prop: string
+): [number, number] {
+    if (!row) return [-1, NaN];
+    if (isRowArrayAdapter(row)) return row.maxWithIndex(prop);
+    return row.reduce(
+        (
+            localMaximum: [number, number],
+            point: SupportedDataPointType,
+            currentIndex: number
+        ): [number, number] => {
+            let val: number = NaN;
+            if (prop in point) {
+                val = point[prop] as number;
+            } else if (isOHLCDataPoint(point) && prop === "y") {
+                val = Math.max(point.high, point.low, point.open, point.close);
+            } else if (isHighLowDataPoint(point) && prop === "y") {
+                val = Math.max(point.high, point.low);
+            } else return localMaximum;
+            if (isNaN(val) || val === null) {
+                return localMaximum;
+            }
+            if (isNaN(localMaximum[1])) {
+                return [currentIndex, val];
+            }
+            return val > localMaximum[1] ? [currentIndex, val] : localMaximum;
+        },
+        [-1, NaN] // Initial value of reduce()
+    );
+}
 
 export const calculateAxisMaximum = (
     data: (
@@ -133,41 +178,7 @@ export const calculateAxisMaximum = (
     }
 
     const localMaximums: number[] = data
-        .map(
-            (
-                row:
-                    | SupportedDataPointType[]
-                    | RowArrayAdapter<SupportedDataPointType>
-            ): number => {
-                if (!row) return NaN;
-                if (isRowArrayAdapter(row)) return row.max(prop);
-                return row.reduce(
-                    (
-                        localMaximum: number,
-                        point: SupportedDataPointType
-                    ): number => {
-                        let val: number = NaN;
-                        if (prop in point) {
-                            val = point[prop] as number;
-                        } else if (isOHLCDataPoint(point) && prop === "y") {
-                            val = Math.max(
-                                point.high,
-                                point.low,
-                                point.open,
-                                point.close
-                            );
-                        } else if (isHighLowDataPoint(point) && prop === "y") {
-                            val = Math.max(point.high, point.low);
-                        } else return localMaximum;
-                        if (isNaN(localMaximum)) {
-                            return val;
-                        }
-                        return val > localMaximum ? val : localMaximum;
-                    },
-                    NaN // Initial value of reduce()
-                );
-            }
-        )
+        .map((row) => calculateRowMaximum(row, prop)[1])
         .filter((num) => !isNaN(num));
     if (localMaximums.length === 0) {
         return NaN;
