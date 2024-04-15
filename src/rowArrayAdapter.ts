@@ -108,6 +108,9 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
                 } else if (isHighLowDataPoint(point) && prop === "y") {
                     val = Math.min(point.high, point.low);
                 } else return localMinimum;
+                if (isNaN(val) || val === null) {
+                    return localMinimum;
+                }
                 if (isNaN(localMinimum[1])) {
                     return [currentIndex, val];
                 }
@@ -163,6 +166,9 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
                 } else if (isHighLowDataPoint(point) && prop === "y") {
                     val = Math.max(point.high, point.low);
                 } else return localMaximum;
+                if (isNaN(val) || val === null) {
+                    return localMaximum;
+                }
                 if (isNaN(localMaximum[1])) {
                     return [currentIndex, val];
                 }
