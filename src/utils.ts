@@ -1,9 +1,4 @@
-import type {
-    AlternateAxisDataPoint,
-    OHLCDataPoint,
-    SimpleDataPoint,
-    SupportedDataPointType
-} from "./dataPoint";
+import type { OHLCDataPoint, SupportedDataPointType } from "./dataPoint";
 import {
     isOHLCDataPoint,
     isAlternateAxisDataPoint,
@@ -280,7 +275,11 @@ export const usesAxis = (
  * @param data - the X/Y values
  */
 export const calculateMetadataByGroup = (
-    data: (SupportedDataPointType[] | null)[] // TODO
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+        | null
+    )[]
 ): groupedMetadata[] => {
     return data.map((row, index) => {
         if (row === null) {
@@ -298,44 +297,41 @@ export const calculateMetadataByGroup = (
             };
         }
 
-        let yValues: number[] = [];
+        let min = -1,
+            indexMin = -1,
+            max = -1,
+            indexMax = -1;
         let availableStats = [];
-        if (isSimpleDataPoint(row[0])) {
-            yValues = (row as SimpleDataPoint[]).map(({ y }) => y);
-        } else if (isAlternateAxisDataPoint(row[0])) {
-            yValues = (row as AlternateAxisDataPoint[]).map(({ y2 }) => y2);
-        } else if (isOHLCDataPoint(row[0])) {
+        const firstPoint = row.at(0);
+        if (isSimpleDataPoint(firstPoint)) {
+            [indexMin, min] = calculateRowMinimum(row, "y");
+            [indexMax, max] = calculateRowMaximum(row, "y");
+        } else if (isAlternateAxisDataPoint(firstPoint)) {
+            [indexMin, min] = calculateRowMinimum(row, "y2");
+            [indexMax, max] = calculateRowMaximum(row, "y2");
+        } else if (isOHLCDataPoint(firstPoint)) {
             // Don't calculate min/max for high/low
             availableStats = ["open", "high", "low", "close"];
-        } else if (isBoxDataPoint(row[0])) {
+        } else if (isBoxDataPoint(firstPoint)) {
             availableStats = ["high", "q3", "median", "q1", "low", "outlier"];
-        } else if (isHighLowDataPoint(row[0])) {
+        } else if (isHighLowDataPoint(firstPoint)) {
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];
         }
-
-        const filteredYValues = yValues.filter((num) => !isNaN(num));
-
-        // Calculate min/max
-        // (set to -1 if there are no values to calculate, such as in the case of OHLC data)
-        const [min, max] =
-            filteredYValues.length > 0
-                ? [Math.min(...filteredYValues), Math.max(...filteredYValues)]
-                : [-1, -1];
 
         // Calculate tenths
         const tenths = Math.round(row.length / 10);
 
         return {
             index,
-            minimumPointIndex: yValues.indexOf(min),
-            maximumPointIndex: yValues.indexOf(max),
+            minimumPointIndex: indexMin,
+            maximumPointIndex: indexMax,
             minimumValue: min,
             maximumValue: max,
             tenths,
             availableStats,
             statIndex: -1,
-            inputType: detectDataPointType(row[0]),
+            inputType: detectDataPointType(row.at(0)),
             size: row.length
         };
     });
