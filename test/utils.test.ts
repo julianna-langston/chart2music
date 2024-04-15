@@ -44,47 +44,55 @@ describe("utils", () => {
             )
         ];
         const multiRow = [
-            [1, 5, 2, 0, 3, 6].map((x) => {
-                return { x, y: 0 };
-            }),
-            [11, 15, 12, 10, 13, 16].map((x) => {
-                return { x, y: 0 };
-            })
+            maybeMakeAdapter.a(
+                [1, 5, 2, 0, 3, 6].map((x) => {
+                    return { x, y: 0 };
+                })
+            ),
+            maybeMakeAdapter.a(
+                [11, 15, 12, 10, 13, 16].map((x) => {
+                    return { x, y: 0 };
+                })
+            )
         ];
         const bundledRow = [
-            [
+            maybeMakeAdapter.a([
                 { x: 5, high: 50, low: 20 },
                 { x: 5, high: 51, low: 15 },
                 { x: 5, high: 52, low: 30 },
                 { x: 5, high: 53, low: 45 }
-            ]
+            ])
         ];
         const ohlcRow = [
-            [
+            maybeMakeAdapter.a([
                 { x: 5, open: 8, high: 50, low: 20, close: 20 },
                 { x: 5, open: 20, high: 51, low: 15, close: 20 },
                 { x: 5, open: 20, high: 52, low: 30, close: 20 },
                 { x: 5, open: 20, high: 53, low: 45, close: 55 }
-            ]
+            ])
         ];
         const mixMultiRow = [
-            [100, 101, 102, 103].map((y, x) => {
-                return { x, y };
-            }),
-            [200, 201, 202, 203].map((y2, x) => {
-                return { x, y2 };
-            })
+            maybeMakeAdapter.a(
+                [100, 101, 102, 103].map((y, x) => {
+                    return { x, y };
+                })
+            ),
+            maybeMakeAdapter.a(
+                [200, 201, 202, 203].map((y2, x) => {
+                    return { x, y2 };
+                })
+            )
         ];
         const hierarchyRows = [
-            [
+            maybeMakeAdapter.a([
                 { x: 0, y: 1 },
                 { x: 1, y: 2 },
                 { x: 2, y: 3 }
-            ],
-            [
+            ]),
+            maybeMakeAdapter.a([
                 { x: 3, y: 10 },
                 { x: 4, y: 11 }
-            ]
+            ])
         ];
         expect(calculateAxisMinimum(singleRow, "x")).toBe(0);
         expect(calculateAxisMinimum(multiRow, "x")).toBe(0);
@@ -388,15 +396,16 @@ describe("utils", () => {
         ).toBe("0, 23, 2 of 2");
     });
 
-    test("Calculate metadata by group", () => {
+    test.each(probabilities)("Calculate metadata by group", (p) => {
+        const maybeMakeAdapter = new AdapterTypeRandomizer(p);
         // Simple test
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 1, y: 1 },
                     { x: 2, y: 2 },
                     { x: 3, y: 3 }
-                ]
+                ])
             ])
         ).toEqual([
             {
@@ -416,16 +425,16 @@ describe("utils", () => {
         // Multiple groups
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 1, y: 1 },
                     { x: 2, y: 2 },
                     { x: 3, y: 3 }
-                ],
-                [
+                ]),
+                maybeMakeAdapter.a([
                     { x: 1, y: 8 },
                     { x: 2, y: 6 },
                     { x: 3, y: 7 }
-                ]
+                ])
             ])
         ).toEqual([
             {
@@ -457,11 +466,11 @@ describe("utils", () => {
         // Contains y2
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 1, y2: 1 },
                     { x: 2, y2: 2 },
                     { x: 3, y2: 3 }
-                ]
+                ])
             ])
         ).toEqual([
             {
@@ -481,11 +490,11 @@ describe("utils", () => {
         // Contains high/low
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 1, high: 1, low: 1 },
                     { x: 2, high: 2, low: 2 },
                     { x: 3, high: 3, low: 3 }
-                ]
+                ])
             ])
         ).toEqual([
             {
@@ -505,11 +514,11 @@ describe("utils", () => {
         // Contains OHLC
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 1, open: 1, high: 1, low: 1, close: 1 },
                     { x: 2, open: 2, high: 2, low: 2, close: 2 },
                     { x: 3, open: 3, high: 3, low: 3, close: 3 }
-                ]
+                ])
             ])
         ).toEqual([
             {
@@ -529,7 +538,7 @@ describe("utils", () => {
         // Contains Box plot
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     {
                         x: 0,
                         low: 5.03,
@@ -610,7 +619,7 @@ describe("utils", () => {
                         q3: 4.96,
                         high: 5.2
                     }
-                ]
+                ])
             ])
         ).toEqual([
             {
@@ -637,29 +646,29 @@ describe("utils", () => {
         // Minimum point when multiple values have the same minimum
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 1, y: 0 },
                     { x: 2, y: 0 },
                     { x: 3, y: 0 }
-                ]
+                ])
             ])[0].minimumPointIndex
         ).toBe(0);
 
         // Maximum point when multiple values have the same minimum
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 1, y: 0 },
                     { x: 2, y: 3 },
                     { x: 3, y: 3 }
-                ]
+                ])
             ])[0].maximumPointIndex
         ).toBe(1);
 
         // Can calculate minimum/maximum values even when there are NaNs
         expect(
             calculateMetadataByGroup([
-                [
+                maybeMakeAdapter.a([
                     { x: 0, y: 1 },
                     { x: 1, y: 2 },
                     { x: 2, y: 3 },
@@ -682,7 +691,7 @@ describe("utils", () => {
                     { x: 2, y: 4 },
                     { x: 2, y: 2 },
                     { x: 2, y: 0 }
-                ]
+                ])
             ])
         ).toEqual([
             {
