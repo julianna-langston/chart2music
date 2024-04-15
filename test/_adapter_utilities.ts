@@ -6,33 +6,38 @@ export const probabilities = [
 ];
 
 /**
+ * ValidAdapterType is a list of types we'll accept to be randomized into adapters
+ */
+type ValidAdapterType = number | SupportedDataPointType;
+
+/**
  * AdapterTypeRandomizer provides a way to fuzz test, switching
  * between regular arrays and adapters.
  */
-
-type ValidAdapterType = number | SupportedDataPointType;
-
 export class AdapterTypeRandomizer {
     proportion: number;
 
     /**
      * constructor to set relative proportions
-     * @param proportion - how often should the input be wrapped in a adapter
+     * @param proportion - how often should the input be wrapped in an adapter
+     * @returns void
      */
     constructor(proportion: number | undefined) {
-        this.proportion = proportion || 0.5;
+        if (typeof proportion === "undefined") proportion = 0.5;
+        this.proportion = proportion;
     }
 
     /**
      * a is the wrapper fucntion for arrays, it might return the equivalent adapter
-     * @param a - the array you want to wrap
+     * @param input - the array you want to wrap
      * @returns either a or a wrapped a
      */
-    a(input: ValidAdapterType[]): adapter.RowArrayAdapter<ValidAdapterType> | ValidAdapterType[] {
+    a(
+        input: ValidAdapterType[]
+    ): adapter.RowArrayAdapter<ValidAdapterType> | ValidAdapterType[] {
         const flip = Math.random();
-
-        if (flip < this.proportion) return new adapter.ArrayAsAdapter<ValidAdapterType>(input);
-
+        if (flip < this.proportion)
+            return new adapter.ArrayAsAdapter<ValidAdapterType>(input);
         return input;
     }
 }
