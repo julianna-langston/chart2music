@@ -12,13 +12,15 @@ import { isHighLowDataPoint, isOHLCDataPoint } from "./dataPoint";
 export interface RowArrayAdapter<T> {
     length: number;
     min: (prop: string) => number;
+    minWithIndex: (prop: string) => [number, number];
     max: (prop: string) => number;
+    maxWithIndex: (prop: string) => [number, number];
     at: (index: number) => T;
     findIndex(test: (T) => boolean): number;
 }
 
 /**
- * Check if an object implements the RowArrayAdapter interface.
+ * Check if an object implements the RowArrayAdapter interface. Used where we use Array.isArray().
  * @param obj - the object to check
  * @returns true if the object implements the interface
  */
@@ -68,12 +70,25 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
      * @returns the minimum value of the array
      */
     min(prop: string): number {
-        if (!this._array) return NaN;
+        return this.minWithIndex(prop)[1];
+    }
+
+    /**
+     * Implements a function like min() but returns an array of [index, value]
+     * @param prop - a string indicating the property that is assessed for min
+     * @returns [index, value] corresponding to the minimum of the row
+     */
+    minWithIndex(prop: string): [number, number] {
+        if (!this._array) return [-1, NaN];
         return this._array.reduce(
-            (localMinimum: number, point: T): number => {
+            (
+                localMinimum: [number, number],
+                point: T,
+                currentIndex: number
+            ): [number, number] => {
                 let val: number = NaN;
                 if (typeof point === "number") {
-                    if (prop) return NaN;
+                    if (prop) return [-1, NaN];
                     val = point;
                     // eslint and tsc disagree about whether or not the above condition
                     // is sufficient to guarantee type exclusion, tsc says no. the argument
@@ -93,12 +108,14 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
                 } else if (isHighLowDataPoint(point) && prop === "y") {
                     val = Math.min(point.high, point.low);
                 } else return localMinimum;
-                if (isNaN(localMinimum)) {
-                    return val;
+                if (isNaN(localMinimum[1])) {
+                    return [currentIndex, val];
                 }
-                return val < localMinimum ? val : localMinimum;
+                return val < localMinimum[1]
+                    ? [currentIndex, val]
+                    : localMinimum;
             },
-            NaN // Initial value of reduce()
+            [-1, NaN] // Initial value of reduce()
         );
     }
 
@@ -108,15 +125,33 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
      * @returns the maximum value of the array
      */
     max(prop: string): number {
-        if (!this._array) return NaN;
+        return this.maxWithIndex(prop)[1];
+    }
+
+    /**
+     * Implements a function like max(), but returns an array of [index, value]
+     * @param prop - a string indicating the property that is assessed for min
+     * @returns [index, value] coresponding to the maximum of the row
+     */
+    maxWithIndex(prop: string): [number, number] {
+        if (!this._array) return [-1, NaN];
         return this._array.reduce(
-            (localMaximum: number, point: T): number => {
+            (
+                localMaximum: [number, number],
+                point: T,
+                currentIndex: number
+            ): [number, number] => {
                 let val: number = NaN;
                 if (typeof point === "number") {
-                    if (prop) return NaN;
+                    if (prop) return [-1, NaN];
                     val = point;
+                    // eslint and tsc disagree about whether or not the above condition
+                    // is sufficient to guarantee type exclusion, tsc says no. the argument
+                    // gets rather abstract wrt `extends`, but this is just a test implementation
+                    // and real implementations should not support numbers anyway
                     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
                 } else if (prop in (point as SupportedDataPointType)) {
+                    // online linter wants me to specify [index: string]:number to use `in`
                     val = point[prop] as number;
                 } else if (isOHLCDataPoint(point) && prop === "y") {
                     val = Math.max(
@@ -128,12 +163,14 @@ export class ArrayAsAdapter<T extends number | SupportedDataPointType> {
                 } else if (isHighLowDataPoint(point) && prop === "y") {
                     val = Math.max(point.high, point.low);
                 } else return localMaximum;
-                if (isNaN(localMaximum)) {
-                    return val;
+                if (isNaN(localMaximum[1])) {
+                    return [currentIndex, val];
                 }
-                return val > localMaximum ? val : localMaximum;
+                return val > localMaximum[1]
+                    ? [currentIndex, val]
+                    : localMaximum;
             },
-            NaN // Initial value of reduce()
+            [-1, NaN] // Initial value of reduce()
         );
     }
 
