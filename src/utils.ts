@@ -356,7 +356,10 @@ export const calculateMetadataByGroup = (
  * @param filterGroupIndex -
  */
 export const initializeAxis = (
-    data: SupportedDataPointType[][], // TODO
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+    )[],
     axisName: validAxes,
     userAxis?: AxisData,
     filterGroupIndex?: number
@@ -413,12 +416,16 @@ export const detectDataPointType = (query: unknown): detectableDataPoint => {
 };
 
 export const convertDataRow = (
-    row: (SupportedDataPointType | number)[] | null // TODO
+    row:
+        | (SupportedDataPointType | number)[]
+        | RowArrayAdapter<SupportedDataPointType>
+        | null
 ) => {
     if (row === null) {
         return null;
     }
-
+    // If it's already a rowArrayAdapter we def don't need to do a conversion
+    if (isRowArrayAdapter(row)) return row;
     return row.map((point: number | SupportedDataPointType, index: number) => {
         if (typeof point === "number") {
             return {

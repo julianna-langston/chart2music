@@ -14,6 +14,7 @@ import {
     detectIfMobile
 } from "../src/utils";
 import { AdapterTypeRandomizer, probabilities } from "./_adapter_utilities";
+import { ArrayAsAdapter } from "../src/rowArrayAdapter";
 
 describe("utils", () => {
     test("interpolate bin - linear", () => {
@@ -899,8 +900,19 @@ describe("utils", () => {
         ).toBe(`Alternate Y is "Revenue" from $0 to $1,000,000.`);
     });
 
+    // Probabilistic type conversions don't make sense here as we're testing type conversions
     test("convertDataRow", () => {
+        const simplePoints = [
+            { x: 0, y: 1 },
+            { x: 1, y: 2 },
+            { x: 2, y: 3 }
+        ];
+        const adaptedSimplePoints = new ArrayAsAdapter<SimpleDataPoint>(
+            simplePoints
+        );
         expect(convertDataRow(null)).toBeNull();
+        expect(convertDataRow([1, 2, 3])).toEqual(simplePoints);
+        expect(convertDataRow(adaptedSimplePoints)).toBe(adaptedSimplePoints);
     });
 
     test("detectIfMobile", () => {
