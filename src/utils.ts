@@ -261,13 +261,23 @@ export const generatePointDescription = (
 };
 
 export const usesAxis = (
-    data: SupportedDataPointType[][], // TODO
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+    )[],
     axisName: "x" | "y" | "y2"
-) => {
+): boolean => {
     const firstUseOfAxis = data.filter(isNotNull).find((row) => {
-        return row.find((point) => axisName in point);
+        if (isRowArrayAdapter(row)) {
+            if (row.length === 0) return false;
+            // RowArrayAdapter doesn't support heterogenous data arrays,
+            // so its either 0 or not there
+            return axisName in row.at(0);
+        } else {
+            return row.find((point) => axisName in point);
+        }
     });
-    return typeof firstUseOfAxis !== "undefined";
+    return typeof firstUseOfAxis !== "undefined"; // firstUseOfAxis
 };
 
 /**

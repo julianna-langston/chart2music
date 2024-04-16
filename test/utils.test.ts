@@ -7,6 +7,7 @@ import {
     generatePointDescription,
     calculateMetadataByGroup,
     detectDataPointType,
+    usesAxis,
     generateChartSummary,
     generateAxisSummary,
     convertDataRow,
@@ -396,6 +397,43 @@ describe("utils", () => {
         ).toBe("0, 23, 2 of 2");
     });
 
+    // This test was mainly meant to get through coverage but it does not
+    // test a lot of possibilities
+    test.each(probabilities)("Test if uses axis", (p) => {
+        const maybeMakeAdapter = new AdapterTypeRandomizer(p);
+        const withoutRows: number[] = [];
+        const withoutPoints = [maybeMakeAdapter.a([]), maybeMakeAdapter.a([])];
+        const simplePoints = [
+            maybeMakeAdapter.a([
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ])
+        ];
+        const alternativePoints = [
+            maybeMakeAdapter.a([
+                { x: 1, y2: 1 },
+                { x: 2, y2: 2 },
+                { x: 3, y2: 3 }
+            ])
+        ];
+
+        expect(usesAxis(withoutRows, "x")).toEqual(false);
+        expect(usesAxis(withoutRows, "y")).toEqual(false);
+        expect(usesAxis(withoutRows, "y2")).toEqual(false);
+
+        expect(usesAxis(withoutPoints, "x")).toEqual(false);
+        expect(usesAxis(withoutPoints, "y")).toEqual(false);
+        expect(usesAxis(withoutPoints, "y2")).toEqual(false);
+
+        expect(usesAxis(simplePoints, "x")).toEqual(true);
+        expect(usesAxis(simplePoints, "y")).toEqual(true);
+        expect(usesAxis(simplePoints, "y2")).toEqual(false);
+
+        expect(usesAxis(alternativePoints, "x")).toEqual(true);
+        expect(usesAxis(alternativePoints, "y")).toEqual(false);
+        expect(usesAxis(alternativePoints, "y2")).toEqual(true);
+    });
     test.each(probabilities)("Calculate metadata by group", (p) => {
         const maybeMakeAdapter = new AdapterTypeRandomizer(p);
         // Simple test
