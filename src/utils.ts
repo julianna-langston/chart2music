@@ -206,7 +206,7 @@ export const generatePointDescription = (
     if (isBoxDataPoint(point) && outlierIndex !== null) {
         return translate(language, "point-outlier", {
             x: xFormat(point.x),
-            y: point.outlier[outlierIndex],
+            y: point.outlier.at(outlierIndex),
             index: outlierIndex + 1,
             count: point.outlier.length
         });
@@ -584,7 +584,7 @@ export const checkForNumberInput = (
     data: SonifyTypes["data"]
 ) => {
     if (Array.isArray(data) && typeof data[0] === "number") {
-        metadataByGroup[0].inputType = "number";
+        metadataByGroup.at(0).inputType = "number";
     } else {
         let index = 0;
         for (const group in data) {
