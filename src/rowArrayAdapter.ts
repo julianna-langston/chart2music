@@ -9,7 +9,7 @@ import { isHighLowDataPoint, isOHLCDataPoint } from "./dataPoint";
 /**
  * An interface that imitates an array to give c2m read-access to chart data stored elsewhere.
  */
-export interface RowArrayAdapter<T> {
+export interface RowArrayAdapter<T extends SupportedDataPointType> {
     length: number;
     min: (prop: string) => number;
     minWithIndex: (prop: string) => [number, number];
@@ -17,6 +17,10 @@ export interface RowArrayAdapter<T> {
     maxWithIndex: (prop: string) => [number, number];
     at: (index: number) => T;
     findIndex(test: (T) => boolean): number;
+    forEach(
+        callbackFn: (value: T, index: number, array: ArrayAsAdapter<T>) => void,
+        thisArg?: unknown
+    ): void;
 }
 
 /**
@@ -26,7 +30,7 @@ export interface RowArrayAdapter<T> {
  */
 export function isRowArrayAdapter(
     obj: unknown
-): obj is RowArrayAdapter<unknown> {
+): obj is RowArrayAdapter<SupportedDataPointType> {
     return (
         obj &&
         typeof obj === "object" &&
