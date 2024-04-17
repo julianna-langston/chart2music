@@ -545,13 +545,15 @@ export const checkForNumberInput = (
     data: SonifyTypes["data"]
 ) => {
     if (Array.isArray(data) && typeof data[0] === "number") {
-        metadataByGroup.at(0).inputType = "number";
+        metadataByGroup[0].inputType = "number";
     } else {
         let index = 0;
         for (const group in data) {
+            const row = (data as dataSet)[group];
             if (
-                data[group] !== null &&
-                detectDataPointType((data as dataSet)[group][0]) === "number"
+                row !== null &&
+                Array.isArray(row) &&
+                detectDataPointType(row.at(0)) === "number"
             ) {
                 metadataByGroup[index].inputType = "number";
             }
