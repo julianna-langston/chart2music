@@ -33,9 +33,6 @@
     "bugs": {
         "url": "https://github.com/julianna-langston/chart2music/issues"
     },
-    "engines": {
-        "node": ">16.14"
-    },
     "scripts": {
         "build": "rollup -c rollup.config.mjs --silent --bundleConfigAsCjs && npm run build-cjs",
         "build-cjs": "npx babel ./dist/index.mjs --out-file ./dist/index.cjs",
