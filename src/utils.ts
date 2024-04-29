@@ -100,7 +100,6 @@ function calculateRowMinimum(
     );
 }
 
-// Question: Howcome the pre-adapter code didn't support Boxpoint for minimum/maximum?
 export const calculateAxisMinimum = (
     data: (
         | SupportedDataPointType[]
@@ -114,7 +113,7 @@ export const calculateAxisMinimum = (
     }
 
     const localMinimums: number[] = data
-        .map((row) => calculateRowMinimum(row, prop)[1])
+        .map((row) => calculateRowMinimum(row, prop)[1]) // [0] is the index [1] is the value
         .filter((num) => !isNaN(num));
     if (localMinimums.length === 0) {
         return NaN;
@@ -579,22 +578,25 @@ export const prepChartElement = (
 };
 
 export const checkForNumberInput = (
-    // TODO What is this lol
     metadataByGroup: groupedMetadata[],
     data: SonifyTypes["data"]
 ) => {
-    if (Array.isArray(data) && typeof data[0] === "number") {
+    if (
+        (Array.isArray(data) || isRowArrayAdapter(data)) &&
+        typeof data.at(0) === "number"
+    ) {
         metadataByGroup[0].inputType = "number";
     } else {
         let index = 0;
         for (const group in data) {
             const row = (data as dataSet)[group];
-            if (
-                row !== null &&
-                Array.isArray(row) &&
-                detectDataPointType(row.at(0)) === "number"
-            ) {
-                metadataByGroup[index].inputType = "number";
+            if (row !== null) {
+                if (
+                    (Array.isArray(row) || isRowArrayAdapter(row)) &&
+                    detectDataPointType(row.at(0)) === "number"
+                ) {
+                    metadataByGroup[index].inputType = "number";
+                }
             }
             index++;
         }
