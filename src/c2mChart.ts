@@ -48,6 +48,16 @@ import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
 import { DEFAULT_LANGUAGE, translate, AVAILABLE_LANGUAGES } from "./translator";
+import type { RowArrayAdapter } from "./rowArrayAdapter";
+
+/**
+ * ValidUserInputRows are the types the user can submit as data rows.
+ * Note that number will be converted to SimpleDataPoint[],
+ * so the effective types we accept is more restrictive.
+ */
+type ValidUserInputRows =
+    | RowArrayAdapter<SupportedDataPointType>
+    | (number | SupportedDataPointType)[];
 
 /**
  * Metadata about previous levels. Used to quickly return to parents.
@@ -1385,14 +1395,14 @@ export class c2m {
                 (value, index) => index
             );
             this._data = Object.values(userData).map((row) =>
-                convertDataRow(row)
+                convertDataRow(row as ValidUserInputRows)
             );
             return;
         }
 
         this._groups = [""];
         this._visible_group_indices = [0];
-        this._data = [convertDataRow(userData)];
+        this._data = [convertDataRow(userData as ValidUserInputRows)];
     }
 
     /**

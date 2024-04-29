@@ -1,9 +1,4 @@
-import type {
-    AlternateAxisDataPoint,
-    OHLCDataPoint,
-    SimpleDataPoint,
-    SupportedDataPointType
-} from "./dataPoint";
+import type { OHLCDataPoint, SupportedDataPointType } from "./dataPoint";
 import {
     isOHLCDataPoint,
     isAlternateAxisDataPoint,
@@ -22,6 +17,8 @@ import type {
     dataSet,
     AxisScale
 } from "./types";
+import type { RowArrayAdapter } from "./rowArrayAdapter";
+import { isRowArrayAdapter } from "./rowArrayAdapter";
 
 export const interpolateBin = (
     point: number,
@@ -62,103 +59,125 @@ export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
 const isNotNull = (tmp: unknown) => tmp !== null;
 
+/**
+ * calculateRowMinimum will return [index, value] for the lowest value in the data row (a row is like a graph line, or trace, or function).
+ * @param row - the row in question
+ * @param prop - the name of property used to calculate the minimum ('y', 'y2', etc)
+ * @returns [index, value] - the index and value of the minimum
+ */
+function calculateRowMinimum(
+    row: SupportedDataPointType[] | RowArrayAdapter<SupportedDataPointType>,
+    prop: string
+): [number, number] {
+    // [index, value]
+    if (!row) return [-1, NaN];
+    if (isRowArrayAdapter(row)) return row.minWithIndex(prop);
+    return row.reduce(
+        (
+            localMinimum: [number, number],
+            point: SupportedDataPointType,
+            currentIndex: number
+        ): [number, number] => {
+            let val: number = NaN;
+            if (prop in point) {
+                val = point[prop] as number;
+            } else if (isOHLCDataPoint(point) && prop === "y") {
+                val = Math.min(point.high, point.low, point.open, point.close);
+            } else if (isHighLowDataPoint(point) && prop === "y") {
+                val = Math.min(point.high, point.low);
+            } else {
+                return localMinimum;
+            }
+            if (isNaN(val) || val === null) {
+                return localMinimum;
+            }
+            if (isNaN(localMinimum[1])) {
+                return [currentIndex, val];
+            }
+            return val < localMinimum[1] ? [currentIndex, val] : localMinimum;
+        },
+        [-1, NaN] // Initial value of reduce()
+    );
+}
+
 export const calculateAxisMinimum = (
-    data: SupportedDataPointType[][],
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+    )[],
     prop: "x" | "y" | "y2",
     filterGroupIndex?: number
 ) => {
-    let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
-
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
-        dataToProcess = data.at(filterGroupIndex);
+        data = [data[filterGroupIndex]];
     }
 
-    const values: number[] = dataToProcess
-        .map((point: SupportedDataPointType): number => {
-            if (isSimpleDataPoint(point)) {
-                if (prop === "x" || prop === "y") {
-                    return point[prop];
-                }
-            } else if (isAlternateAxisDataPoint(point)) {
-                if (prop === "x" || prop === "y2") {
-                    return point[prop];
-                }
-            } else if (isOHLCDataPoint(point)) {
-                if (prop === "x") {
-                    return point.x;
-                }
-                if (prop === "y") {
-                    return Math.min(
-                        point.high,
-                        point.low,
-                        point.open,
-                        point.close
-                    );
-                }
-            } else if (isHighLowDataPoint(point)) {
-                if (prop === "x") {
-                    return point.x;
-                }
-                if (prop === "y") {
-                    return Math.min(point.high, point.low);
-                }
-            }
-            return NaN;
-        })
+    const localMinimums: number[] = data
+        .map((row) => calculateRowMinimum(row, prop)[1]) // [0] is the index [1] is the value
         .filter((num) => !isNaN(num));
-    if (values.length === 0) {
+    if (localMinimums.length === 0) {
         return NaN;
     }
-    return Math.min(...values);
+    return Math.min(...localMinimums);
 };
+
+/**
+ * calculateRowMaximum will return [index, value] for the highest value in the data row (a row is like a graph line, or trace, or function).
+ * @param row - the row in question
+ * @param prop - the name of property used to calculate the maximum ('y', 'y2', etc)
+ * @returns [index, value] - the index and value of the maximum
+ */
+function calculateRowMaximum(
+    row: SupportedDataPointType[] | RowArrayAdapter<SupportedDataPointType>,
+    prop: string
+): [number, number] {
+    if (!row) return [-1, NaN];
+    if (isRowArrayAdapter(row)) return row.maxWithIndex(prop);
+    return row.reduce(
+        (
+            localMaximum: [number, number],
+            point: SupportedDataPointType,
+            currentIndex: number
+        ): [number, number] => {
+            let val: number = NaN;
+            if (prop in point) {
+                val = point[prop] as number;
+            } else if (isOHLCDataPoint(point) && prop === "y") {
+                val = Math.max(point.high, point.low, point.open, point.close);
+            } else if (isHighLowDataPoint(point) && prop === "y") {
+                val = Math.max(point.high, point.low);
+            } else return localMaximum;
+            if (isNaN(val) || val === null) {
+                return localMaximum;
+            }
+            if (isNaN(localMaximum[1])) {
+                return [currentIndex, val];
+            }
+            return val > localMaximum[1] ? [currentIndex, val] : localMaximum;
+        },
+        [-1, NaN] // Initial value of reduce()
+    );
+}
+
 export const calculateAxisMaximum = (
-    data: SupportedDataPointType[][],
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+    )[],
     prop: "x" | "y" | "y2",
     filterGroupIndex?: number
 ) => {
-    let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
-
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
-        dataToProcess = data.at(filterGroupIndex);
+        data = [data[filterGroupIndex]];
     }
 
-    const values: number[] = dataToProcess
-        .map((point: SupportedDataPointType): number => {
-            if (isSimpleDataPoint(point)) {
-                if (prop === "x" || prop === "y") {
-                    return point[prop];
-                }
-            } else if (isAlternateAxisDataPoint(point)) {
-                if (prop === "x" || prop === "y2") {
-                    return point[prop];
-                }
-            } else if (isOHLCDataPoint(point)) {
-                if (prop === "x") {
-                    return point.x;
-                }
-                if (prop === "y") {
-                    return Math.max(
-                        point.high,
-                        point.low,
-                        point.open,
-                        point.close
-                    );
-                }
-            } else if (isHighLowDataPoint(point)) {
-                if (prop === "x") {
-                    return point.x;
-                }
-                if (prop === "y") {
-                    return Math.max(point.high, point.low);
-                }
-            }
-            return NaN;
-        })
+    const localMaximums: number[] = data
+        .map((row) => calculateRowMaximum(row, prop)[1])
         .filter((num) => !isNaN(num));
-    if (values.length === 0) {
+    if (localMaximums.length === 0) {
         return NaN;
     }
-    return Math.max(...values);
+    return Math.max(...localMaximums);
 };
 
 export const defaultFormat = (value: number) => `${value}`;
@@ -241,13 +260,23 @@ export const generatePointDescription = (
 };
 
 export const usesAxis = (
-    data: SupportedDataPointType[][],
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+    )[],
     axisName: "x" | "y" | "y2"
-) => {
+): boolean => {
     const firstUseOfAxis = data.filter(isNotNull).find((row) => {
-        return row.find((point) => axisName in point);
+        if (isRowArrayAdapter(row)) {
+            if (row.length === 0) return false;
+            // RowArrayAdapter doesn't support heterogenous data arrays,
+            // so its either 0 or not there
+            return axisName in row.at(0);
+        } else {
+            return row.find((point) => axisName in point);
+        }
     });
-    return typeof firstUseOfAxis !== "undefined";
+    return typeof firstUseOfAxis !== "undefined"; // firstUseOfAxis
 };
 
 /**
@@ -255,7 +284,11 @@ export const usesAxis = (
  * @param data - the X/Y values
  */
 export const calculateMetadataByGroup = (
-    data: (SupportedDataPointType[] | null)[]
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+        | null
+    )[]
 ): groupedMetadata[] => {
     return data.map((row, index) => {
         if (row === null) {
@@ -273,38 +306,35 @@ export const calculateMetadataByGroup = (
             };
         }
 
-        let yValues: number[] = [];
+        let min = -1,
+            indexMin = -1,
+            max = -1,
+            indexMax = -1;
         let availableStats = [];
-        if (isSimpleDataPoint(row.at(0))) {
-            yValues = (row as SimpleDataPoint[]).map(({ y }) => y);
-        } else if (isAlternateAxisDataPoint(row.at(0))) {
-            yValues = (row as AlternateAxisDataPoint[]).map(({ y2 }) => y2);
-        } else if (isOHLCDataPoint(row.at(0))) {
+        const firstPoint = row.at(0);
+        if (isSimpleDataPoint(firstPoint)) {
+            [indexMin, min] = calculateRowMinimum(row, "y");
+            [indexMax, max] = calculateRowMaximum(row, "y");
+        } else if (isAlternateAxisDataPoint(firstPoint)) {
+            [indexMin, min] = calculateRowMinimum(row, "y2");
+            [indexMax, max] = calculateRowMaximum(row, "y2");
+        } else if (isOHLCDataPoint(firstPoint)) {
             // Don't calculate min/max for high/low
             availableStats = ["open", "high", "low", "close"];
-        } else if (isBoxDataPoint(row.at(0))) {
+        } else if (isBoxDataPoint(firstPoint)) {
             availableStats = ["high", "q3", "median", "q1", "low", "outlier"];
-        } else if (isHighLowDataPoint(row.at(0))) {
+        } else if (isHighLowDataPoint(firstPoint)) {
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];
         }
-
-        const filteredYValues = yValues.filter((num) => !isNaN(num));
-
-        // Calculate min/max
-        // (set to -1 if there are no values to calculate, such as in the case of OHLC data)
-        const [min, max] =
-            filteredYValues.length > 0
-                ? [Math.min(...filteredYValues), Math.max(...filteredYValues)]
-                : [-1, -1];
 
         // Calculate tenths
         const tenths = Math.round(row.length / 10);
 
         return {
             index,
-            minimumPointIndex: yValues.indexOf(min),
-            maximumPointIndex: yValues.indexOf(max),
+            minimumPointIndex: indexMin,
+            maximumPointIndex: indexMax,
             minimumValue: min,
             maximumValue: max,
             tenths,
@@ -325,7 +355,10 @@ export const calculateMetadataByGroup = (
  * @param filterGroupIndex -
  */
 export const initializeAxis = (
-    data: SupportedDataPointType[][],
+    data: (
+        | SupportedDataPointType[]
+        | RowArrayAdapter<SupportedDataPointType>
+    )[],
     axisName: validAxes,
     userAxis?: AxisData,
     filterGroupIndex?: number
@@ -382,12 +415,16 @@ export const detectDataPointType = (query: unknown): detectableDataPoint => {
 };
 
 export const convertDataRow = (
-    row: (SupportedDataPointType | number)[] | null
+    row:
+        | (SupportedDataPointType | number)[]
+        | RowArrayAdapter<SupportedDataPointType>
+        | null
 ) => {
     if (row === null) {
         return null;
     }
-
+    // If it's already a rowArrayAdapter we def don't need to do a conversion
+    if (isRowArrayAdapter(row)) return row;
     return row.map((point: number | SupportedDataPointType, index: number) => {
         if (typeof point === "number") {
             return {
@@ -544,18 +581,22 @@ export const checkForNumberInput = (
     metadataByGroup: groupedMetadata[],
     data: SonifyTypes["data"]
 ) => {
-    if (Array.isArray(data) && typeof data[0] === "number") {
+    if (
+        (Array.isArray(data) || isRowArrayAdapter(data)) &&
+        typeof data.at(0) === "number"
+    ) {
         metadataByGroup[0].inputType = "number";
     } else {
         let index = 0;
         for (const group in data) {
             const row = (data as dataSet)[group];
-            if (
-                row !== null &&
-                Array.isArray(row) &&
-                detectDataPointType(row.at(0)) === "number"
-            ) {
-                metadataByGroup[index].inputType = "number";
+            if (row !== null) {
+                if (
+                    (Array.isArray(row) || isRowArrayAdapter(row)) &&
+                    detectDataPointType(row.at(0)) === "number"
+                ) {
+                    metadataByGroup[index].inputType = "number";
+                }
             }
             index++;
         }
