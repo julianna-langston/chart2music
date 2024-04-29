@@ -1,6 +1,6 @@
 {
     "name": "chart2music",
-    "version": "1.16.2",
+    "version": "1.16.3",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "exports": {
@@ -33,9 +33,6 @@
     "bugs": {
         "url": "https://github.com/julianna-langston/chart2music/issues"
     },
-    "engines": {
-        "node": ">16.14"
-    },
     "scripts": {
         "build": "rollup -c rollup.config.mjs --silent --bundleConfigAsCjs && npm run build-cjs",
         "build-cjs": "npx babel ./dist/index.mjs --out-file ./dist/index.cjs",
@@ -58,8 +55,8 @@
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-typescript": "11.1.6",
         "@types/jest": "^29.2.1",
-        "@typescript-eslint/eslint-plugin": "7.6.0",
-        "@typescript-eslint/parser": "7.6.0",
+        "@typescript-eslint/eslint-plugin": "7.7.1",
+        "@typescript-eslint/parser": "7.7.0",
         "concurrently": "8.2.2",
         "depcheck": "1.4.7",
         "eslint": "8.57.0",
@@ -72,7 +69,7 @@
         "lint-staged": "15.2.2",
         "prettier": "3.2.5",
         "rimraf": "5.0.5",
-        "rollup": "4.14.2",
+        "rollup": "4.16.0",
         "rollup-plugin-delete": "2.0.0",
         "rollup-plugin-dts": "6.1.0",
         "ts-jest": "29.1.2",
