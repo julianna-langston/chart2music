@@ -20,7 +20,7 @@ test("Confirm that C2M modifies provided elements", () => {
     expect(mockElementCC.getAttribute("aria-live")).toBe("assertive");
 });
 
-test("Confirm that C2M treats the container as the CC element if no CC element is provided", () => {
+test("Confirm that C2M adds a CC element to the container if no CC element was provided", () => {
     const mockElement = document.createElement("div");
     const { err } = c2mChart({
         type: SUPPORTED_CHART_TYPES.LINE,
@@ -30,7 +30,10 @@ test("Confirm that C2M treats the container as the CC element if no CC element i
 
     expect(err).toBe(null);
     expect(mockElement.getAttribute("tabIndex")).toBe("0");
-    expect(mockElement.getAttribute("aria-live")).toBe("assertive");
+
+    const newChild = mockElement.querySelector("div");
+    expect(newChild).not.toBeNull();
+    expect(newChild?.getAttribute("aria-live")).toBe("assertive");
 });
 
 test("C2M setup handles partial axis info", () => {

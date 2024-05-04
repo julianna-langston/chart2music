@@ -1,5 +1,5 @@
 import { translate } from "./translator";
-import type { KeyDetails, KeyRegistration } from "./types";
+import type { ChartContainerType, KeyDetails, KeyRegistration } from "./types";
 
 /* eslint-disable @typescript-eslint/unbound-method */
 export const keyboardEventToString = (e: KeyboardEvent) => {
@@ -18,7 +18,7 @@ export class KeyboardEventManager {
     private _keyMap: {
         [keyEvent: string]: KeyDetails;
     };
-    private _target: HTMLElement;
+    private _target: ChartContainerType;
     private _dialog: HTMLDialogElement | null;
     private _handler = (event: KeyboardEvent) => {
         this._handleKeyEvents(event);
@@ -28,7 +28,7 @@ export class KeyboardEventManager {
      * Initialize keyboard event manager
      * @param target - target element
      */
-    constructor(target: HTMLElement) {
+    constructor(target: ChartContainerType) {
         this._keyMap = {};
         this._target = target;
         this._target.addEventListener("keydown", this._handler);

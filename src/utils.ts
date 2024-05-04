@@ -20,7 +20,8 @@ import type {
     groupedMetadata,
     SonifyTypes,
     dataSet,
-    AxisScale
+    AxisScale,
+    ChartContainerType
 } from "./types";
 
 export const interpolateBin = (
@@ -521,7 +522,7 @@ export const isUnplayable = (yValue: number, yAxis: AxisData) => {
 };
 
 export const prepChartElement = (
-    elem: HTMLElement,
+    elem: ChartContainerType,
     title: string,
     language: string,
     addCleanupTask: (fn: () => void) => void

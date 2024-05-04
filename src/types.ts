@@ -56,6 +56,11 @@ export type ExpandedKeyRegistration = {
 type SupportedInputType = SupportedDataPointType | number;
 
 /**
+ *
+ */
+export type ChartContainerType = HTMLElement | SVGElement;
+
+/**
  * The types of scales (linear, log) that are supported for an axis
  */
 export type AxisScale = "linear" | "log10";
@@ -73,11 +78,11 @@ export type SonifyTypes = {
      */
     data: dataSet | SupportedInputType[];
     /**
-     * The HTML element in the DOM that represents this chart.
+     * The HTML or SVG element in the DOM that represents this chart.
      * This will be used to handle keyboard events to enable the user to interact with the chart.
      * This key is required for all charts.
      */
-    element: HTMLElement;
+    element: ChartContainerType;
     /**
      * The language of the instructions and dialogs. Defaults to "en".
      */

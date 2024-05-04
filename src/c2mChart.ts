@@ -11,7 +11,8 @@ import type {
     c2mGolangReturn,
     c2mCallbackType,
     StatBundle,
-    c2mInfo
+    c2mInfo,
+    ChartContainerType
 } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
 import {
@@ -111,6 +112,19 @@ declare global {
 
 let context: null | AudioContext = null;
 
+const determineCC = (
+    containerElement: ChartContainerType,
+    providedCC?: HTMLElement
+): HTMLElement => {
+    if (providedCC) {
+        return providedCC;
+    }
+
+    const generatedCC = document.createElement("div");
+    containerElement.appendChild(generatedCC);
+    return generatedCC;
+};
+
 /**
  * Validates and initializes a single chart that should be sonified
  * @param {SonifyTypes} input - data, config, and options for the chart
@@ -132,7 +146,7 @@ export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
  * Represents a single chart that should be sonified.
  */
 export class c2m {
-    private _chartElement: HTMLElement;
+    private _chartElement: ChartContainerType;
     private _ccElement: HTMLElement;
     private _chartSummary: string;
     private _instructions: string;
@@ -213,7 +227,7 @@ export class c2m {
             }
         );
 
-        this._ccElement = input.cc ?? this._chartElement;
+        this._ccElement = determineCC(this._chartElement, input.cc);
 
         if (input?.options) {
             if (this._type === SUPPORTED_CHART_TYPES.SCATTER) {

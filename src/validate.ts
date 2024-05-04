@@ -8,7 +8,7 @@ import {
     isOHLCDataPoint,
     isBoxDataPoint
 } from "./dataPoint";
-import type { SonifyTypes } from "./types";
+import type { ChartContainerType, SonifyTypes } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
 
 export const validateInput = (input: SonifyTypes) => {
@@ -85,7 +85,7 @@ export const validateInputTypeCountsMatchData = (
     return `Error: Number of types (${type.length}) and number of data groups (${keys.length}) don't match.`;
 };
 
-export const validateInputElement = (element: HTMLElement | SVGSVGElement) => {
+export const validateInputElement = (element: ChartContainerType) => {
     if (typeof element === "undefined") {
         return "Required parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter.";
     }
