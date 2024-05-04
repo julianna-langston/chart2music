@@ -13,7 +13,6 @@ import type {
     StatBundle,
     c2mInfo
 } from "./types";
-import { SUPPORTED_CHART_TYPES } from "./types";
 import {
     calcPan,
     interpolateBin,
@@ -216,7 +215,7 @@ export class c2m {
         this._ccElement = input.cc ?? this._chartElement;
 
         if (input?.options) {
-            if (this._type === SUPPORTED_CHART_TYPES.SCATTER) {
+            if (this._type === "scatter") {
                 this._options.stack = true;
             }
             this._options = {
@@ -784,7 +783,7 @@ export class c2m {
         this._initializeData(data);
 
         if (this._options.stack && this._data.length > 1) {
-            if (this._type === SUPPORTED_CHART_TYPES.SCATTER) {
+            if (this._type === "scatter") {
                 this._buildStackScatter();
             } else {
                 this._buildStackBar();
@@ -812,7 +811,7 @@ export class c2m {
         }
 
         if (
-            this._type === SUPPORTED_CHART_TYPES.SCATTER &&
+            this._type === "scatter" &&
             !("continuous" in this._explicitAxes.x)
         ) {
             this._xAxis.continuous = true;
@@ -1172,7 +1171,7 @@ export class c2m {
                     keyDescription: "Control",
                     callback: this._availableActions.stop_play
                 },
-                this._type === SUPPORTED_CHART_TYPES.MATRIX
+                this._type === "matrix"
                     ? {
                           title: translate(this._language, "key-group-prev"),
                           key: "ArrowUp",
@@ -1183,7 +1182,7 @@ export class c2m {
                           key: "ArrowUp",
                           callback: this._availableActions.previous_stat
                       },
-                this._type === SUPPORTED_CHART_TYPES.MATRIX
+                this._type === "matrix"
                     ? {
                           title: translate(this._language, "key-group-next"),
                           key: "ArrowDown",
@@ -1399,7 +1398,7 @@ export class c2m {
      * Generate a context summary for the current group
      */
     private generateGroupSummary() {
-        if (this._currentGroupType === SUPPORTED_CHART_TYPES.UNSUPPORTED) {
+        if (this._currentGroupType === "unsupported") {
             return translate(this._language, "group-unknown", {
                 title: this._currentGroupName
             });

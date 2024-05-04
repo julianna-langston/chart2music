@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
@@ -77,7 +76,7 @@ test("Checking out the outliers", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.BOX,
+        type: "box",
         title,
         axes,
         data,
@@ -218,7 +217,7 @@ test("Large number of outliers", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.BOX,
+        type: "box",
         title: "Test",
         data: [
             { x: 0, low: 1, q1: 2, median: 3, q3: 4, high: 5 },

@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
@@ -10,7 +9,7 @@ test("setCategoryVisibility: toggle middle (non-current) category", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -112,7 +111,7 @@ test("setCategoryVisibility: error: try to set visibility on non-existant catego
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -146,7 +145,7 @@ test("setCategoryVisibility: Hide current category (first)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -192,7 +191,7 @@ test("setCategoryVisibility: Hide current category (last)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -256,7 +255,7 @@ test("setCategoryVisibility: Hide current category (middle)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -317,7 +316,7 @@ test("setCategoryVisibility: error: try to hide all categories", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -354,7 +353,7 @@ test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -417,7 +416,7 @@ test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },

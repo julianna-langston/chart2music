@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
@@ -29,7 +28,7 @@ test("Basic treemap example", () => {
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        type: SUPPORTED_CHART_TYPES.TREEMAP,
+        type: "treemap",
         title,
         data,
         axes: {
@@ -49,7 +48,9 @@ test("Basic treemap example", () => {
     mockElement.dispatchEvent(new Event("focus"));
 
     // Confirm that a summary was generated
-    expect(mockElementCC.textContent).toContain(`Sonified hierarchical chart with 4 groups titled "Example hierarchy". Treemap chart showing "root". X is "" from a to c. Y is "" from 0 to 3. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`);
+    expect(mockElementCC.textContent).toContain(
+        `Sonified hierarchical chart with 4 groups titled "Example hierarchy". Treemap chart showing "root". X is "" from a to c. Y is "" from 0 to 3. Use arrow keys to navigate. Use Alt + Up and Down to navigate between levels. Press H for more hotkeys.`
+    );
 
     [
         {

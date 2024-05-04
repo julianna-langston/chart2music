@@ -1,5 +1,4 @@
 import { c2m, c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
@@ -12,7 +11,7 @@ test("Spanish", () => {
     const { err, data: chart } = c2mChart({
         lang: "es",
         title: "EXEMPLE",
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -60,7 +59,7 @@ test("French", () => {
     const { err } = c2mChart({
         lang: "fr",
         title: "Exemple",
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -105,7 +104,7 @@ test("German", () => {
     const { err } = c2mChart({
         lang: "de",
         title: "Beuspiel",
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -150,7 +149,7 @@ test("Italian", () => {
     const { err } = c2mChart({
         lang: "it",
         title: "Esempio",
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },

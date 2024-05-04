@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
@@ -17,7 +16,7 @@ test("C2M: plays sound in monitoring mode (appended: numbers)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {
@@ -70,7 +69,7 @@ test("C2M provides details for live mixed charts", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: [SUPPORTED_CHART_TYPES.BAND, SUPPORTED_CHART_TYPES.LINE],
+        type: ["band", "line"],
         data: {
             a: [
                 { x: 1, high: 10, low: 8 },
@@ -141,7 +140,7 @@ test("Test axes min/max adjustment - numbers, no clamps", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC,
@@ -183,7 +182,7 @@ test("Test axes min/max adjustment - high/low, no clamps", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             {
                 x: 1,
@@ -221,7 +220,7 @@ test("Test axes min/max adjustment - OHLC, no clamps", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             {
                 x: 1,
@@ -265,7 +264,7 @@ test("Test appending data to a group that doesn't exist", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [1, 2, 3, 4],
             b: [1, 2, 3, 4]
@@ -306,7 +305,7 @@ test("Test appending mismatched data", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [1, 2],
             b: [
@@ -346,7 +345,7 @@ test("C2M: test maxWidth adjustment (type = number)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC,
@@ -383,7 +382,7 @@ test("C2M: test maxWidth adjustment (with y2)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             { x: 1, y2: 1 },
             { x: 2, y2: 2 },

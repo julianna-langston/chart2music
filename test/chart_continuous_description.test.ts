@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/entryPoint_mjs";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
@@ -9,7 +8,7 @@ test("Confirm that continuous x is described as continuous", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             x: {
@@ -32,7 +31,7 @@ test("Confirm that explicitly non-continuous x is not described as continuous", 
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             x: {
@@ -55,7 +54,7 @@ test("Confirm that implicitly non-continuous x is not described as continuous", 
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -73,7 +72,7 @@ test("Confirm that continuous y is not described as continuous", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {

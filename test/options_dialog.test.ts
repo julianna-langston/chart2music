@@ -1,6 +1,5 @@
 import type { AudioEngine } from "../src/audio";
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
@@ -38,7 +37,6 @@ class MockAudioEngine implements AudioEngine {
 
     /**
      * The instructions to play a data point. The details are being recorded for the test system.
-     *
      * @param frequency - hertz to play
      * @param panning - panning (-1 to 1) to play at
      * @param duration - how long to play
@@ -64,7 +62,7 @@ test("Open Options dialog and modify a value", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -115,7 +113,7 @@ test("Open Options dialog with custom hertz range and modify a value", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -169,7 +167,7 @@ test("Open Options dialog, modify a value, but esc", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -220,7 +218,7 @@ test("In the Options dialog, the ranges play sounds onChange", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -273,7 +271,7 @@ test("In the Options dialog, modifying one range changes the limits of the other
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -338,7 +336,7 @@ test("Modifying limits globally impacts other charts", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err: err1, data: chart1 } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -381,7 +379,7 @@ test("Modifying limits globally impacts other charts", () => {
 
     const mockElement2 = document.createElement("div");
     const { err: err2, data: chart2 } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement2,
         cc: mockElementCC,
@@ -397,7 +395,7 @@ test("Modifying speed rate from options dialog", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -457,7 +455,7 @@ test("Modifying continuous mode from options dialog", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             {
                 x: 0, // ms: 0
@@ -558,7 +556,7 @@ test("Pressing Enter while focused on a checkbox will cause the dialog to save",
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -594,7 +592,7 @@ test("Chart not in continuous mode should show continuous mode checked in option
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             { x: 0, y: 1 },
             { x: 1, y: 2 },
@@ -628,7 +626,7 @@ test("Chart in continuous mode should show continuous mode checked in option dia
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.SCATTER,
+        type: "scatter",
         data: [
             { x: 0, y: 1 },
             { x: 1, y: 2 },
@@ -662,7 +660,7 @@ test("Options dialog: Changing order for label should persist in dialog", () => 
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.SCATTER,
+        type: "scatter",
         data: [
             { x: 0, y: 1, label: "A" },
             { x: 1, y: 2, label: "B" },

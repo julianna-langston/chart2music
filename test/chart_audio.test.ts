@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { hertzes } from "./_constants";
 import { MockAudioEngine } from "./_mockAudioEngine";
 
@@ -20,7 +19,7 @@ test("Move around by single events - single line plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -68,7 +67,7 @@ test("Move around by single events - plot with stats", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, high: 10, low: 8 },
@@ -121,7 +120,7 @@ test("Move around by single events - single line plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -169,7 +168,7 @@ test("Move around by single events - plot with y and y2", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y2: 5 },
@@ -224,7 +223,7 @@ test("Move around by single events - candlestick", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             { x: 1, high: 10, open: 5, close: 5, low: 8 },
             { x: 2, high: 11, open: 5, close: 5, low: 9 },
@@ -255,7 +254,7 @@ test("Check play", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -340,7 +339,7 @@ test("Check play through categories", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -408,7 +407,7 @@ test("Out of bounds data", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [0, 1, 2, 3, 4, 5, 6, 7],
         element: mockElement,
         cc: mockElementCC,

@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 jest.spyOn(global, "setTimeout");
@@ -11,7 +10,7 @@ test("Move at boundaries - single line plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -91,7 +90,7 @@ test("Move at boundaries - grouped and stat'd", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, high: 10, low: 8 },
