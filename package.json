@@ -39,10 +39,9 @@
         "clean": "rimraf ./dist ./coverage",
         "depcheck": "depcheck",
         "start": "concurrently \"rollup -c rollup.config.mjs -w\" \"http-server .\"",
-        "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
         "lint-check": "eslint --quiet src/ --ext .ts && prettier --config .prettierrc.json src/**/*.ts --check",
-        "format": "prettier --config .prettierrc.json src/**/*.ts --write && prettier examples/**/*.js --write",
+        "format": "eslint src/ --ext .ts --fix && prettier --config .prettierrc.json src/**/*.ts --write && prettier examples/**/*.js --write",
         "prepare": "husky install",
         "test": "jest"
     },
