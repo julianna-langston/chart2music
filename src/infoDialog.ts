@@ -1,4 +1,4 @@
-import { translate } from "./translator";
+import type { translateEvaluators } from "./translations";
 import type { c2mInfo } from "./types";
 
 const toHtmlEntities = (str: string) => {
@@ -8,15 +8,18 @@ const toHtmlEntities = (str: string) => {
     });
 };
 
-export const launchInfoDialog = (info: c2mInfo, language: string) => {
+export const launchInfoDialog = (info: c2mInfo, translationCallback: (
+    code: string,
+    evaluators?: translateEvaluators
+) => string) => {
     const dialog = document.createElement("dialog");
     dialog.classList.add("chart2music-dialog");
     dialog.classList.add("chart2music-info-dialog");
-    dialog.setAttribute("aria-label", translate(language, "info-title"));
-    let content = `<h1 tabIndex='0'>${translate(language, "info-title")}</h1>`;
+    dialog.setAttribute("aria-label", translationCallback("info-title"));
+    let content = `<h1 tabIndex='0'>${translationCallback("info-title")}</h1>`;
 
     if ("notes" in info) {
-        content += `<h2>${translate(language, "info-notes")}</h2>
+        content += `<h2>${translationCallback("info-notes")}</h2>
 
         <ul>
             ${info.notes

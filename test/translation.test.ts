@@ -1,9 +1,28 @@
 import { c2m, c2mChart } from "../src/c2mChart";
+import { TranslationManager } from "../src/translator";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
+});
+
+describe("Manager", () => {
+    test("Generate strings", () => {
+        const mgr = new TranslationManager("en");
+        
+        expect(mgr.language).toBe("en");
+        expect(mgr.loadedLanguages).toEqual(["en"]);
+        expect(mgr.translate("missing")).toBe("missing");
+        expect(mgr.translate("description", {title: "Test"})).toBe("Test, Sonified chart");
+    });
+    test("Non-default language", () => {
+        const mgr = new TranslationManager("de");
+
+        expect(mgr.language).toBe("de");
+        expect(mgr.loadedLanguages).toEqual(["en", "de"]);
+        expect(mgr.translate("missing")).toBe("fehlt");
+    });
 });
 
 test("Spanish", () => {
