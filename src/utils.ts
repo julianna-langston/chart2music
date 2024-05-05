@@ -584,3 +584,20 @@ export const detectIfMobile = () => {
 
 export const filteredJoin = (arr: string[], joiner: string) =>
     arr.filter((item) => Boolean(item)).join(joiner);
+
+export const determineCC = (
+    containerElement: ChartContainerType,
+    cleanUpFnCallback: (fn: () => void) => void,
+    providedCC?: HTMLElement
+): HTMLElement => {
+    if (providedCC) {
+        return providedCC;
+    }
+
+    const generatedCC = document.createElement("div");
+    containerElement.appendChild(generatedCC);
+    cleanUpFnCallback(() => {
+        generatedCC.remove();
+    });
+    return generatedCC;
+};

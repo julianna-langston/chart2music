@@ -34,7 +34,8 @@ import {
     generateChartSummary,
     generateInstructions,
     generateAxisSummary,
-    detectIfMobile
+    detectIfMobile,
+    determineCC
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -111,19 +112,6 @@ declare global {
 }
 
 let context: null | AudioContext = null;
-
-const determineCC = (
-    containerElement: ChartContainerType,
-    providedCC?: HTMLElement
-): HTMLElement => {
-    if (providedCC) {
-        return providedCC;
-    }
-
-    const generatedCC = document.createElement("div");
-    containerElement.appendChild(generatedCC);
-    return generatedCC;
-};
 
 /**
  * Validates and initializes a single chart that should be sonified
@@ -227,7 +215,13 @@ export class c2m {
             }
         );
 
-        this._ccElement = determineCC(this._chartElement, input.cc);
+        this._ccElement = determineCC(
+            this._chartElement,
+            (fn) => {
+                this._cleanUpTasks.push(fn);
+            },
+            input.cc
+        );
 
         if (input?.options) {
             if (this._type === SUPPORTED_CHART_TYPES.SCATTER) {
