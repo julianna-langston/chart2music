@@ -211,17 +211,6 @@ export class c2m {
         this._language = input.lang ?? DEFAULT_LANGUAGE;
         this._translator = new TranslationManager(this._language);
 
-        prepChartElement({
-            elem: this._chartElement,
-            title: this._title,
-            translationCallback: (code, evaluators) => {
-                return this._translator.translate(code, evaluators);
-            },
-            addCleanupTask: (fn: () => void) => {
-                this._cleanUpTasks.push(fn);
-            }
-        });
-
         this._ccElement = input.cc ?? this._chartElement;
 
         if (input?.options) {
@@ -239,7 +228,23 @@ export class c2m {
                     lower: 0
                 };
             }
+
+            if (input.options.translations) {
+                this._translator.intercepterCallback =
+                    input.options.translations;
+            }
         }
+
+        prepChartElement({
+            elem: this._chartElement,
+            title: this._title,
+            translationCallback: (code, evaluators) => {
+                return this._translator.translate(code, evaluators);
+            },
+            addCleanupTask: (fn: () => void) => {
+                this._cleanUpTasks.push(fn);
+            }
+        });
 
         this._setData(input.data, input.axes);
 
