@@ -2,6 +2,7 @@ import type { translationDict } from ".";
 
 const dictionary: translationDict = {
     description: "{title}, grafico sonificato",
+    "description-untitled": "Grafico sonificato",
     updated: "{title} aggiornato",
     "updated-untitled": "Grafico aggiornato",
     missing: "mancante",
