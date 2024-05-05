@@ -590,10 +590,10 @@ export const prepChartElement = ({
     addCleanupTask: (fn: () => void) => void;
 }) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
-        elem.setAttribute(
-            "aria-label",
-            translate(language, "description", { title })
-        );
+        const label = title
+            ? translate(language, "description", { title })
+            : translate(language, "description-untitled");
+        elem.setAttribute("aria-label", label);
         addCleanupTask(() => elem.removeAttribute("aria-label"));
     }
 

@@ -17,6 +17,7 @@ test("Confirm that C2M modifies provided elements", () => {
 
     expect(err).toBe(null);
     expect(mockElement.getAttribute("tabIndex")).toBe("0");
+    expect(mockElement.getAttribute("aria-label")).toBe("Sonified chart");
     expect(mockElementCC.getAttribute("aria-live")).toBe("assertive");
 });
 
@@ -110,7 +111,7 @@ test("C2M sorts out-of-order scatter plot data", () => {
     );
 
     // Confirm
-    expect(chart?.currentPoint.x).toBe(823);
+    expect(chart?.currentPoint?.x).toBe(823);
     expect(chart?.currentPoint).toHaveProperty("y", 500);
 
     mockElement.dispatchEvent(
@@ -119,7 +120,7 @@ test("C2M sorts out-of-order scatter plot data", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(chart?.currentPoint.x).toBe(823);
+    expect(chart?.currentPoint?.x).toBe(823);
     expect(chart?.currentPoint).toHaveProperty("y", 113990);
 
     mockElement.dispatchEvent(
@@ -128,7 +129,7 @@ test("C2M sorts out-of-order scatter plot data", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(chart?.currentPoint.x).toBe(823);
+    expect(chart?.currentPoint?.x).toBe(823);
     expect(chart?.currentPoint).toHaveProperty("y", 200000);
 
     mockElement.dispatchEvent(
@@ -137,7 +138,7 @@ test("C2M sorts out-of-order scatter plot data", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(chart?.currentPoint.x).toBe(823);
+    expect(chart?.currentPoint?.x).toBe(823);
     expect(chart?.currentPoint).toHaveProperty("y", 200000);
 
     mockElement.dispatchEvent(
@@ -146,6 +147,6 @@ test("C2M sorts out-of-order scatter plot data", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(chart?.currentPoint.x).toBe(931);
+    expect(chart?.currentPoint?.x).toBe(931);
     expect(chart?.currentPoint).toHaveProperty("y", 53178);
 });
