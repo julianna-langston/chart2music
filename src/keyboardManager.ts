@@ -109,12 +109,15 @@ export class KeyboardEventManager {
     /**
      * Build a help dialog
      * @param lang Language of the dialog - used in attribute, and for i18n
-     * @param translationCallback
+     * @param translationCallback - get language-specific verbiage
      */
-    generateHelpDialog(lang: string, translationCallback: (
-        code: string,
-        evaluators?: translateEvaluators
-    ) => string) {
+    generateHelpDialog(
+        lang: string,
+        translationCallback: (
+            code: string,
+            evaluators?: translateEvaluators
+        ) => string
+    ) {
         const dialog = document.createElement("dialog");
         dialog.classList.add("chart2music-dialog");
         dialog.classList.add("chart2music-help-dialog");
@@ -165,12 +168,15 @@ export class KeyboardEventManager {
     /**
      * Launch help dialog
      * @param lang Language of the dialog - used in attribute, and for i18n
-     * @param translationCallback
+     * @param translationCallback - get language-specific verbiage
      */
-    launchHelpDialog(lang: string, translationCallback: (
-        code: string,
-        evaluators?: translateEvaluators
-    ) => string) {
+    launchHelpDialog(
+        lang: string,
+        translationCallback: (
+            code: string,
+            evaluators?: translateEvaluators
+        ) => string
+    ) {
         if (this._dialog === null) {
             this._dialog = this.generateHelpDialog(lang, translationCallback);
             document.body.appendChild(this._dialog);
