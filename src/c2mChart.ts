@@ -456,6 +456,7 @@ export class c2m {
 
                 this._announceCategoryChange();
                 this._cleanupAfterCategoryChange(currentX);
+                this._onFocus();
             },
             next_category: () => {
                 this._clearPlay();
@@ -470,6 +471,7 @@ export class c2m {
 
                 this._announceCategoryChange();
                 this._cleanupAfterCategoryChange(currentX);
+                this._onFocus();
             },
             first_category: () => {
                 this._clearPlay();
@@ -1477,6 +1479,7 @@ export class c2m {
                     window.__chart2music_options__._hertzClamps;
                 this._setHertzClamps(lower, upper);
             }
+            this._onFocus();
         };
         const blurEvent = () => {
             this._monitorMode = false;
@@ -2174,7 +2177,7 @@ export class c2m {
      * Perform actions when a new data point receives focus
      */
     private _onFocus() {
-        if (this.currentPoint.type === "annotation") {
+        if (this.currentPoint?.type === "annotation") {
             return;
         }
 

@@ -49,6 +49,7 @@ test("Move around by single events", () => {
     expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
+    expect(counter).toBe(1);
 
     // Move right
     mockElement.dispatchEvent(
@@ -58,7 +59,7 @@ test("Move around by single events", () => {
     );
     jest.advanceTimersByTime(250);
 
-    expect(counter).toBe(1);
+    expect(counter).toBe(2);
     expect(lastCategory).toBe("");
     expect(lastIndex).toBe(1);
     expect(lastPoint).toEqual({
@@ -94,6 +95,7 @@ test("Movement for a grouped chart", () => {
     expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
+    expect(counter).toBe(1);
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent?.length).toBeGreaterThan(10);
@@ -105,7 +107,7 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(counter).toBe(1);
+    expect(counter).toBe(2);
     expect(lastCategory).toBe("a");
     expect(lastIndex).toBe(1);
     expect(lastPoint).toEqual({
@@ -120,15 +122,15 @@ test("Movement for a grouped chart", () => {
         })
     );
     jest.advanceTimersByTime(250);
-    expect(counter).toBe(1);
-    
+    expect(counter).toBe(3);
+
     mockElement.dispatchEvent(
         new KeyboardEvent("keydown", {
             key: " "
         })
     );
     jest.advanceTimersByTime(250);
-    expect(counter).toBe(2);
+    expect(counter).toBe(4);
     expect(lastCategory).toBe("b");
     expect(lastIndex).toBe(1);
     expect(lastPoint).toEqual({
