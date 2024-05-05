@@ -49,7 +49,6 @@ import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
 import {
     DEFAULT_LANGUAGE,
-    translate,
     AVAILABLE_LANGUAGES,
     TranslationManager
 } from "./translator";
@@ -638,7 +637,7 @@ export class c2m {
             },
             help: () => {
                 this._clearPlay();
-                this._keyEventManager.launchHelpDialog(this._language);
+                this._keyEventManager.launchHelpDialog(this._language, (id, ev) => this._translator.translate(id, ev));
             },
             options: () => {
                 this._checkAudioEngine();
@@ -648,7 +647,8 @@ export class c2m {
                         speedIndex: this._speedRateIndex,
                         continuousMode: this._xAxis.continuous,
                         labelPosition: this._announcePointLabelFirst,
-                        language: this._language
+                        language: this._language,
+                        translationCallback: (id, ev) => this._translator.translate(id, ev)
                     },
                     (
                         lowerIndex: number,
@@ -682,7 +682,7 @@ export class c2m {
                 );
             },
             info: () => {
-                launchInfoDialog(this._info, this._language);
+                launchInfoDialog(this._info, (id, ev) => this._translator.translate(id, ev));
             }
         };
     }
@@ -1294,18 +1294,12 @@ export class c2m {
                     callback: this._availableActions.next_tenth
                 },
                 {
-                    title: translate(
-                        this._language,
-                        `key-${this._hierarchy ? "level" : "group"}-min`
-                    ),
+                    title: this._translator.translate(`key-${this._hierarchy ? "level" : "group"}-min`),
                     key: "[",
                     callback: this._availableActions.go_minimum
                 },
                 {
-                    title: translate(
-                        this._language,
-                        `key-${this._hierarchy ? "level" : "group"}-max`
-                    ),
+                    title: this._translator.translate(`key-${this._hierarchy ? "level" : "group"}-max`),
                     key: "]",
                     callback: this._availableActions.go_maximum
                 },
@@ -2254,10 +2248,7 @@ export class c2m {
             [
                 this._flagNewLevel && this._currentGroupName,
                 this._flagNewStat &&
-                    translate(
-                        this._language,
-                        `stat-${availableStats[statIndex] ?? "all"}`
-                    ),
+                    this._translator.translate(`stat-${availableStats[statIndex] ?? "all"}`),
                 point,
                 this._hierarchy &&
                     current.children &&

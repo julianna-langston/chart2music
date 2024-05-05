@@ -1,4 +1,4 @@
-import { translate } from "./translator";
+import type { translateEvaluators } from "./translations";
 import type { KeyDetails, KeyRegistration } from "./types";
 
 /* eslint-disable @typescript-eslint/unbound-method */
@@ -109,8 +109,12 @@ export class KeyboardEventManager {
     /**
      * Build a help dialog
      * @param lang Language of the dialog - used in attribute, and for i18n
+     * @param translationCallback
      */
-    generateHelpDialog(lang: string) {
+    generateHelpDialog(lang: string, translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string) {
         const dialog = document.createElement("dialog");
         dialog.classList.add("chart2music-dialog");
         dialog.classList.add("chart2music-help-dialog");
@@ -118,7 +122,7 @@ export class KeyboardEventManager {
 
         const closeButton = document.createElement("button");
         closeButton.textContent = "X";
-        closeButton.ariaLabel = translate(lang, "close");
+        closeButton.ariaLabel = translationCallback("close");
         closeButton.style.position = "absolute";
         closeButton.style.top = "10px";
         closeButton.style.right = "10px";
@@ -127,7 +131,7 @@ export class KeyboardEventManager {
         });
         dialog.appendChild(closeButton);
 
-        const heading = translate(lang, "kbmg-title");
+        const heading = translationCallback("kbmg-title");
         const h1 = document.createElement("h1");
         h1.textContent = heading;
         dialog.setAttribute("aria-live", heading);
@@ -161,10 +165,14 @@ export class KeyboardEventManager {
     /**
      * Launch help dialog
      * @param lang Language of the dialog - used in attribute, and for i18n
+     * @param translationCallback
      */
-    launchHelpDialog(lang: string) {
+    launchHelpDialog(lang: string, translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string) {
         if (this._dialog === null) {
-            this._dialog = this.generateHelpDialog(lang);
+            this._dialog = this.generateHelpDialog(lang, translationCallback);
             document.body.appendChild(this._dialog);
         }
         this._dialog.showModal();

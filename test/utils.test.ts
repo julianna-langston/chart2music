@@ -1,5 +1,5 @@
 import type { SimpleDataPoint } from "../src/dataPoint";
-import { translate } from "../src/translator";
+import { TranslationManager } from "../src/translator";
 import {
     calcPan,
     calculateAxisMaximum,
@@ -14,6 +14,9 @@ import {
     detectIfMobile,
     formatWrapper
 } from "../src/utils";
+
+const english = new TranslationManager("en");
+const german = new TranslationManager("de");
 
 describe("utils", () => {
     test("interpolate bin - linear", () => {
@@ -201,7 +204,8 @@ describe("utils", () => {
                 point: {
                     x: 0,
                     y: 1
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 1");
         expect(
@@ -210,7 +214,8 @@ describe("utils", () => {
                     x: 0,
                     y: 1,
                     label: "Test"
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 1, Test");
         expect(
@@ -220,7 +225,8 @@ describe("utils", () => {
                     y: 1,
                     label: "Test"
                 },
-                announcePointLabelFirst: true
+                announcePointLabelFirst: true,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("Test, 0, 1");
         expect(
@@ -228,7 +234,8 @@ describe("utils", () => {
                 point: {
                     x: 0,
                     y2: 1
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 1");
         expect(
@@ -237,7 +244,8 @@ describe("utils", () => {
                     x: 0,
                     high: 10,
                     low: 5
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 10 - 5");
         expect(
@@ -247,7 +255,8 @@ describe("utils", () => {
                     high: 10,
                     low: 5
                 },
-                stat: "high"
+                stat: "high",
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 10");
         expect(
@@ -257,7 +266,8 @@ describe("utils", () => {
                     high: 10,
                     low: 5
                 },
-                stat: "low"
+                stat: "low",
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 5");
         expect(
@@ -268,7 +278,8 @@ describe("utils", () => {
                     high: 10,
                     close: 7,
                     low: 5
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 8 - 10 - 5 - 7");
         expect(
@@ -280,7 +291,8 @@ describe("utils", () => {
                     close: 7,
                     low: 5
                 },
-                stat: "high"
+                stat: "high",
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 10");
         expect(
@@ -292,7 +304,8 @@ describe("utils", () => {
                     close: 7,
                     low: 5
                 },
-                stat: "open"
+                stat: "open",
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 8");
         expect(
@@ -301,7 +314,8 @@ describe("utils", () => {
                     x: 0,
                     y: 1
                 },
-                xFormat: (value) => `$${value}`
+                xFormat: (value) => `$${value}`,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("$0, 1");
         expect(
@@ -322,7 +336,8 @@ describe("utils", () => {
                     median: 8,
                     q3: 8.5,
                     high: 10
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 10 - 5");
         expect(
@@ -335,7 +350,8 @@ describe("utils", () => {
                     q3: 8.5,
                     high: 10
                 },
-                stat: "low"
+                stat: "low",
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 5");
         expect(
@@ -348,7 +364,8 @@ describe("utils", () => {
                     q3: 8.5,
                     high: 10,
                     outlier: [20]
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 10 - 5, with 1 outlier");
         expect(
@@ -361,7 +378,8 @@ describe("utils", () => {
                     q3: 8.5,
                     high: 10,
                     outlier: [20, 23]
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 10 - 5, with 2 outliers");
         expect(
@@ -375,7 +393,7 @@ describe("utils", () => {
                     high: 10,
                     outlier: [20, 23]
                 },
-                translationCallback: (id, ev) => translate("de", id, ev)
+                translationCallback: (id, ev) => german.translate(id, ev)
             })
         ).toBe("0, 10 - 5, mit 2 Ausreissern");
         expect(
@@ -389,7 +407,8 @@ describe("utils", () => {
                     high: 10,
                     outlier: [20, 23]
                 },
-                stat: "low"
+                stat: "low",
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 5");
         expect(
@@ -404,7 +423,8 @@ describe("utils", () => {
                     outlier: [20, 23]
                 },
                 stat: "outlier",
-                outlierIndex: 0
+                outlierIndex: 0,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 20, 1 of 2");
         expect(
@@ -419,7 +439,8 @@ describe("utils", () => {
                     outlier: [20, 23]
                 },
                 stat: "outlier",
-                outlierIndex: 1
+                outlierIndex: 1,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe("0, 23, 2 of 2");
     });
@@ -769,7 +790,8 @@ describe("utils", () => {
     });
 
     test("generateChartSummary", () => {
-        expect(generateChartSummary({ title: "", groupCount: 1 })).toBe(
+        expect(generateChartSummary({ title: "", groupCount: 1,
+        translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
             `Sonified chart.`
         );
         expect(
@@ -777,7 +799,8 @@ describe("utils", () => {
                 title: "Test",
                 groupCount: 1,
                 live: false,
-                hierarchy: false
+                hierarchy: false,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Sonified chart titled "Test".`);
         expect(
@@ -785,7 +808,8 @@ describe("utils", () => {
                 title: "Test",
                 groupCount: 2,
                 live: false,
-                hierarchy: false
+                hierarchy: false,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Sonified chart with 2 groups titled "Test".`);
         expect(
@@ -793,7 +817,8 @@ describe("utils", () => {
                 title: "",
                 groupCount: 2,
                 live: false,
-                hierarchy: false
+                hierarchy: false,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Sonified chart with 2 groups.`);
         expect(
@@ -801,7 +826,8 @@ describe("utils", () => {
                 title: "Test",
                 groupCount: 1,
                 live: true,
-                hierarchy: false
+                hierarchy: false,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Sonified live chart titled "Test".`);
         expect(
@@ -809,7 +835,8 @@ describe("utils", () => {
                 title: "Test",
                 groupCount: 2,
                 live: false,
-                hierarchy: true
+                hierarchy: true,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Sonified hierarchical chart with 2 groups titled "Test".`);
         expect(
@@ -817,7 +844,8 @@ describe("utils", () => {
                 title: "",
                 groupCount: 2,
                 live: true,
-                hierarchy: true
+                hierarchy: true,
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Sonified live hierarchical chart with 2 groups.`);
     });
@@ -831,13 +859,13 @@ describe("utils", () => {
         };
 
         // Standard axes
-        expect(generateAxisSummary({ axisLetter: "x", axis })).toBe(
+        expect(generateAxisSummary({ axisLetter: "x", axis, translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
             `X is "Revenue" from $0 to $1,000,000.`
         );
-        expect(generateAxisSummary({ axisLetter: "y", axis })).toBe(
+        expect(generateAxisSummary({ axisLetter: "y", axis, translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
             `Y is "Revenue" from $0 to $1,000,000.`
         );
-        expect(generateAxisSummary({ axisLetter: "y2", axis })).toBe(
+        expect(generateAxisSummary({ axisLetter: "y2", axis, translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
             `Alternate Y is "Revenue" from $0 to $1,000,000.`
         );
 
@@ -848,20 +876,20 @@ describe("utils", () => {
         };
         // Unlabelled axis
         expect(
-            generateAxisSummary({ axisLetter: "x", axis: unlablledAxis })
+            generateAxisSummary({ axisLetter: "x", axis: unlablledAxis, translationCallback: (id, ev) => english.translate(id, ev) })
         ).toBe(`X is "" from * to *.`);
         // Continuous
         expect(
             generateAxisSummary({
                 axisLetter: "x",
-                axis: { ...axis, continuous: true }
+                axis: { ...axis, continuous: true }, translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`X is "Revenue" from $0 to $1,000,000 continuously.`);
         // Logarithmic
         expect(
             generateAxisSummary({
                 axisLetter: "x",
-                axis: { ...axis, type: "log10" }
+                axis: { ...axis, type: "log10" }, translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`X is "Revenue" from $0 to $1,000,000 logarithmic.`);
         // Logarithmic + Continuous
@@ -872,7 +900,7 @@ describe("utils", () => {
                     ...axis,
                     continuous: true,
                     type: "log10"
-                }
+                }, translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(
             `X is "Revenue" from $0 to $1,000,000 logarithmic continuously.`
@@ -882,13 +910,13 @@ describe("utils", () => {
         expect(
             generateAxisSummary({
                 axisLetter: "y",
-                axis: { ...axis, continuous: true }
+                axis: { ...axis, continuous: true }, translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Y is "Revenue" from $0 to $1,000,000.`);
         expect(
             generateAxisSummary({
                 axisLetter: "y2",
-                axis: { ...axis, continuous: true }
+                axis: { ...axis, continuous: true }, translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Alternate Y is "Revenue" from $0 to $1,000,000.`);
     });
@@ -898,18 +926,18 @@ describe("utils", () => {
     });
 
     describe("formatWrapper", () => {
-        test("default language", () => {
+        test("no minimum", () => {
             const wrap = formatWrapper({
                 axis: {
-                    minimum: 0,
                     maximum: 10,
                     format: (n) => `$${n}`
-                }
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             });
 
             expect(wrap(NaN)).toBe("missing");
             expect(wrap(5)).toBe("$5");
-            expect(wrap(-1)).toBe("too low");
+            expect(wrap(-1)).toBe("$-1");
             expect(wrap(11)).toBe("too high");
         });
         test("german", () => {
@@ -919,27 +947,13 @@ describe("utils", () => {
                     maximum: 10,
                     format: (n) => `€${n}`
                 },
-                translationCallback: (id, evaluators) =>
-                    translate("de", id, evaluators)
+                translationCallback: (id, evaluators) => german.translate(id, evaluators)
             });
 
             expect(wrap(NaN)).toBe("fehlt");
             expect(wrap(5)).toBe("€5");
             expect(wrap(-1)).toBe("zu tief");
             expect(wrap(11)).toBe("zu hoch");
-        });
-        test("no minimum", () => {
-            const wrap = formatWrapper({
-                axis: {
-                    maximum: 10,
-                    format: (n) => `$${n}`
-                }
-            });
-
-            expect(wrap(NaN)).toBe("missing");
-            expect(wrap(5)).toBe("$5");
-            expect(wrap(-1)).toBe("$-1");
-            expect(wrap(11)).toBe("too high");
         });
     });
 

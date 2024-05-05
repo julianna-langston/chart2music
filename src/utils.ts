@@ -12,7 +12,6 @@ import {
     isBoxDataPoint
 } from "./dataPoint";
 import type { translateEvaluators } from "./translations";
-import { DEFAULT_LANGUAGE, translate } from "./translator";
 import type {
     AxisData,
     StatBundle,
@@ -192,12 +191,6 @@ export const calculateAxisMaximum = ({
 };
 
 export const defaultFormat = (value: number) => `${value}`;
-const defaultTranslationCallback = (
-    code: string,
-    evaluators?: translateEvaluators
-) => {
-    return translate(DEFAULT_LANGUAGE, code, evaluators);
-};
 
 export const generatePointDescription = ({
     point,
@@ -206,7 +199,7 @@ export const generatePointDescription = ({
     stat,
     outlierIndex = null,
     announcePointLabelFirst = false,
-    translationCallback = defaultTranslationCallback
+    translationCallback 
 }: {
     point: SupportedDataPointType;
     xFormat?: AxisData["format"];
@@ -214,7 +207,7 @@ export const generatePointDescription = ({
     stat?: keyof StatBundle;
     outlierIndex?: number | null;
     announcePointLabelFirst?: boolean;
-    translationCallback?: (
+    translationCallback: (
         code: string,
         evaluators?: translateEvaluators
     ) => string;
@@ -457,10 +450,10 @@ export const convertDataRow = (
 
 export const formatWrapper = ({
     axis,
-    translationCallback = defaultTranslationCallback
+    translationCallback 
 }: {
     axis: AxisData;
-    translationCallback?: (
+    translationCallback: (
         code: string,
         evaluators?: translateEvaluators
     ) => string;
@@ -489,7 +482,7 @@ type ChartSummaryType = {
     title: string;
     live?: boolean;
     hierarchy?: boolean;
-    translationCallback?: (
+    translationCallback: (
         code: string,
         evaluators?: translateEvaluators
     ) => string;
@@ -499,7 +492,7 @@ export const generateChartSummary = ({
     groupCount,
     live = false,
     hierarchy = false,
-    translationCallback = defaultTranslationCallback
+    translationCallback
 }: ChartSummaryType) => {
     const text = ["summ", "chart"];
 
@@ -533,11 +526,11 @@ const axisDescriptions = {
 export const generateAxisSummary = ({
     axisLetter,
     axis,
-    translationCallback = defaultTranslationCallback
+    translationCallback 
 }: {
     axisLetter: "x" | "y" | "y2";
     axis: AxisData;
-    translationCallback?: (
+    translationCallback: (
         code: string,
         evaluators?: translateEvaluators
     ) => string;
@@ -567,7 +560,7 @@ type InstructionsType = {
     hierarchy: boolean;
     live: boolean;
     hasNotes: boolean;
-    translationCallback?: (
+    translationCallback: (
         code: string,
         evaluators?: translateEvaluators
     ) => string;
@@ -608,7 +601,7 @@ export const prepChartElement = ({
 }: {
     elem: HTMLElement;
     title: string;
-    translationCallback?: (
+    translationCallback: (
         code: string,
         evaluators?: translateEvaluators
     ) => string;
