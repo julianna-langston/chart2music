@@ -204,14 +204,14 @@ export class c2m {
         this._chartElement = input.element;
         this._info = input.info ?? {};
         this._language = input.lang ?? DEFAULT_LANGUAGE;
-        prepChartElement(
-            this._chartElement,
-            this._title,
-            this._language,
-            (fn: () => void) => {
+        prepChartElement({
+            elem: this._chartElement,
+            title: this._title,
+            language: this._language,
+            addCleanupTask: (fn: () => void) => {
                 this._cleanUpTasks.push(fn);
             }
-        );
+        });
 
         this._ccElement = input.cc ?? this._chartElement;
 
@@ -791,24 +791,24 @@ export class c2m {
             }
         }
 
-        this._xAxis = initializeAxis(
-            this._data,
-            "x",
-            this._explicitAxes.x,
-            this._groups.indexOf(this._options.root)
-        );
-        this._yAxis = initializeAxis(
-            this._data,
-            "y",
-            this._explicitAxes.y,
-            this._groups.indexOf(this._options.root)
-        );
-        if (usesAxis(this._data, "y2")) {
-            this._y2Axis = initializeAxis(
-                this._data,
-                "y2",
-                this._explicitAxes.y2
-            );
+        this._xAxis = initializeAxis({
+            data: this._data,
+            axisName: "x",
+            userAxis: this._explicitAxes.x,
+            filterGroupIndex: this._groups.indexOf(this._options.root)
+        });
+        this._yAxis = initializeAxis({
+            data: this._data,
+            axisName: "y",
+            userAxis: this._explicitAxes.y,
+            filterGroupIndex: this._groups.indexOf(this._options.root)
+        });
+        if (usesAxis({ data: this._data, axisName: "y2" })) {
+            this._y2Axis = initializeAxis({
+                data: this._data,
+                axisName: "y2",
+                userAxis: this._explicitAxes.y2
+            });
         }
 
         if (
@@ -1038,16 +1038,34 @@ export class c2m {
         }
 
         if (recalculateX) {
-            this._xAxis.minimum = calculateAxisMinimum(this._data, "x");
-            this._xAxis.maximum = calculateAxisMaximum(this._data, "x");
+            this._xAxis.minimum = calculateAxisMinimum({
+                data: this._data,
+                prop: "x"
+            });
+            this._xAxis.maximum = calculateAxisMaximum({
+                data: this._data,
+                prop: "x"
+            });
         }
         if (recalculateY) {
-            this._yAxis.minimum = calculateAxisMinimum(this._data, "y");
-            this._yAxis.maximum = calculateAxisMaximum(this._data, "y");
+            this._yAxis.minimum = calculateAxisMinimum({
+                data: this._data,
+                prop: "y"
+            });
+            this._yAxis.maximum = calculateAxisMaximum({
+                data: this._data,
+                prop: "y"
+            });
         }
         if (recalculateY2) {
-            this._y2Axis.minimum = calculateAxisMinimum(this._data, "y2");
-            this._y2Axis.maximum = calculateAxisMaximum(this._data, "y2");
+            this._y2Axis.minimum = calculateAxisMinimum({
+                data: this._data,
+                prop: "y2"
+            });
+            this._y2Axis.maximum = calculateAxisMaximum({
+                data: this._data,
+                prop: "y2"
+            });
         }
 
         if (this._pointIndex < 0) {
@@ -1415,10 +1433,22 @@ export class c2m {
             translate(this._language, code.join("-"), {
                 label: this._currentGroupName
             }),
-            generateAxisSummary("x", this._xAxis, this._language),
+            generateAxisSummary({
+                axisLetter: "x",
+                axis: this._xAxis,
+                language: this._language
+            }),
             isAlternateAxisDataPoint(this.currentPoint)
-                ? generateAxisSummary("y2", this._y2Axis, this._language)
-                : generateAxisSummary("y", this._yAxis, this._language)
+                ? generateAxisSummary({
+                      axisLetter: "y2",
+                      axis: this._y2Axis,
+                      language: this._language
+                  })
+                : generateAxisSummary({
+                      axisLetter: "y",
+                      axis: this._yAxis,
+                      language: this._language
+                  })
         ];
 
         return text.join(" ");
@@ -1872,21 +1902,21 @@ export class c2m {
         this._flagNewLevel = true;
 
         // Update x range
-        this._xAxis = initializeAxis(
-            this._data,
-            "x",
-            this._explicitAxes.x,
-            this._visibleGroupIndex
-        );
-        this._yAxis = initializeAxis(
-            this._data,
-            "y",
-            {
+        this._xAxis = initializeAxis({
+            data: this._data,
+            axisName: "x",
+            userAxis: this._explicitAxes.x,
+            filterGroupIndex: this._visibleGroupIndex
+        });
+        this._yAxis = initializeAxis({
+            data: this._data,
+            axisName: "y",
+            userAxis: {
                 ...this._explicitAxes.y,
                 minimum: 0
             },
-            this._visibleGroupIndex
-        );
+            filterGroupIndex: this._visibleGroupIndex
+        });
         this._generateSummary();
     }
 
@@ -2036,13 +2066,13 @@ export class c2m {
                 return;
             }
 
-            const yBin = interpolateBin(
-                current.y,
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                hertzes.length - 1,
-                this._yAxis.type
-            );
+            const yBin = interpolateBin({
+                point: current.y,
+                min: this._yAxis.minimum,
+                max: this._yAxis.maximum,
+                bins: hertzes.length - 1,
+                scale: this._yAxis.type
+            });
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
 
@@ -2053,13 +2083,13 @@ export class c2m {
             if (isUnplayable(current.y2, this._y2Axis)) {
                 return;
             }
-            const yBin = interpolateBin(
-                current.y2,
-                this._y2Axis.minimum,
-                this._y2Axis.maximum,
-                hertzes.length - 1,
-                this._y2Axis.type
-            );
+            const yBin = interpolateBin({
+                point: current.y2,
+                min: this._y2Axis.minimum,
+                max: this._y2Axis.maximum,
+                bins: hertzes.length - 1,
+                scale: this._y2Axis.type
+            });
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
             return;
@@ -2070,14 +2100,13 @@ export class c2m {
             this._outlierMode &&
             "outlier" in current
         ) {
-            const yBin = interpolateBin(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                current.outlier[this._outlierIndex],
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                hertzes.length - 1,
-                this._yAxis.type
-            );
+            const yBin = interpolateBin({
+                point: current.outlier[this._outlierIndex],
+                min: this._yAxis.minimum,
+                max: this._yAxis.maximum,
+                bins: hertzes.length - 1,
+                scale: this._yAxis.type
+            });
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
             return;
@@ -2093,14 +2122,14 @@ export class c2m {
                     return;
                 }
 
-                const yBin = interpolateBin(
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    current[stat],
-                    this._yAxis.minimum,
-                    this._yAxis.maximum,
-                    hertzes.length - 1,
-                    this._yAxis.type
-                );
+                const yBin = interpolateBin({
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    point: current[stat],
+                    min: this._yAxis.minimum,
+                    max: this._yAxis.maximum,
+                    bins: hertzes.length - 1,
+                    scale: this._yAxis.type
+                });
 
                 this._audioEngine.playDataPoint(
                     hertzes[yBin],
@@ -2119,14 +2148,14 @@ export class c2m {
                 ) {
                     return;
                 }
-                const yBin = interpolateBin(
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    current[stat],
-                    this._yAxis.minimum,
-                    this._yAxis.maximum,
-                    hertzes.length - 1,
-                    this._yAxis.type
-                );
+                const yBin = interpolateBin({
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    point: current[stat],
+                    min: this._yAxis.minimum,
+                    max: this._yAxis.maximum,
+                    bins: hertzes.length - 1,
+                    scale: this._yAxis.type
+                });
                 setTimeout(
                     () => {
                         this._audioEngine.playDataPoint(
@@ -2177,18 +2206,24 @@ export class c2m {
             this._flagNewStat = false;
         }
 
-        const point = generatePointDescription(
-            this._language,
-            current,
-            formatWrapper(this._xAxis, this._language),
-            formatWrapper(
-                isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis,
-                this._language
-            ),
-            availableStats[statIndex],
-            this._outlierMode ? this._outlierIndex : null,
-            this._announcePointLabelFirst
-        );
+        const point = generatePointDescription({
+            language: this._language,
+            point: current,
+            xFormat: formatWrapper({
+                axis: this._xAxis,
+                language: this._language
+            }),
+            yFormat: formatWrapper({
+                axis: isAlternateAxisDataPoint(current)
+                    ? this._y2Axis
+                    : this._yAxis,
+                language: this._language
+            }),
+            stat: availableStats[statIndex],
+            outlierIndex: this._outlierMode ? this._outlierIndex : null,
+            announcePointLabelFirst: this._announcePointLabelFirst
+        });
+
         const text = filteredJoin(
             [
                 this._flagNewLevel && this._currentGroupName,

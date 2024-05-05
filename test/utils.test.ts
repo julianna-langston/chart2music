@@ -3,7 +3,6 @@ import {
     calcPan,
     calculateAxisMaximum,
     calculateAxisMinimum,
-    defaultFormat,
     interpolateBin,
     generatePointDescription,
     calculateMetadataByGroup,
@@ -11,20 +10,69 @@ import {
     generateChartSummary,
     generateAxisSummary,
     convertDataRow,
-    detectIfMobile
+    detectIfMobile,
+    formatWrapper
 } from "../src/utils";
 
 describe("utils", () => {
     test("interpolate bin - linear", () => {
-        expect(interpolateBin(5, 0, 100, 100, "linear")).toBe(5);
-        expect(interpolateBin(5, 5, 100, 10, "linear")).toBe(0);
-        expect(interpolateBin(15, 5, 100, 10, "linear")).toBe(1);
+        expect(
+            interpolateBin({
+                point: 5,
+                min: 0,
+                max: 100,
+                bins: 100,
+                scale: "linear"
+            })
+        ).toBe(5);
+        expect(
+            interpolateBin({
+                point: 5,
+                min: 5,
+                max: 100,
+                bins: 10,
+                scale: "linear"
+            })
+        ).toBe(0);
+        expect(
+            interpolateBin({
+                point: 15,
+                min: 5,
+                max: 100,
+                bins: 10,
+                scale: "linear"
+            })
+        ).toBe(1);
     });
 
     test("interpolate bin - log", () => {
-        expect(interpolateBin(5, 0.001, 100, 100, "log10")).toBe(73);
-        expect(interpolateBin(5, 5, 100, 10, "log10")).toBe(0);
-        expect(interpolateBin(15, 5, 100, 10, "log10")).toBe(3);
+        expect(
+            interpolateBin({
+                point: 5,
+                min: 0.001,
+                max: 100,
+                bins: 100,
+                scale: "log10"
+            })
+        ).toBe(73);
+        expect(
+            interpolateBin({
+                point: 5,
+                min: 5,
+                max: 100,
+                bins: 10,
+                scale: "log10"
+            })
+        ).toBe(0);
+        expect(
+            interpolateBin({
+                point: 15,
+                min: 5,
+                max: 100,
+                bins: 10,
+                scale: "log10"
+            })
+        ).toBe(3);
     });
 
     test("adjust percent for panning", () => {
@@ -83,209 +131,202 @@ describe("utils", () => {
                 { x: 4, y: 11 }
             ]
         ];
-        expect(calculateAxisMinimum(singleRow, "x")).toBe(0);
-        expect(calculateAxisMinimum(multiRow, "x")).toBe(0);
-        expect(calculateAxisMinimum(bundledRow, "x")).toBe(5);
-        expect(calculateAxisMinimum(bundledRow, "y")).toBe(15);
-        expect(calculateAxisMinimum(bundledRow, "y2")).toBe(NaN);
-        expect(calculateAxisMinimum(ohlcRow, "x")).toBe(5);
-        expect(calculateAxisMinimum(ohlcRow, "y")).toBe(8);
-        expect(calculateAxisMinimum(ohlcRow, "y2")).toBe(NaN);
-        expect(calculateAxisMinimum(mixMultiRow, "y")).toBe(100);
-        expect(calculateAxisMinimum(mixMultiRow, "y2")).toBe(200);
-        expect(calculateAxisMinimum(hierarchyRows, "x", 0)).toBe(0);
-        expect(calculateAxisMinimum(hierarchyRows, "x", 1)).toBe(3);
+        expect(calculateAxisMinimum({ data: singleRow, prop: "x" })).toBe(0);
+        expect(calculateAxisMinimum({ data: multiRow, prop: "x" })).toBe(0);
+        expect(calculateAxisMinimum({ data: bundledRow, prop: "x" })).toBe(5);
+        expect(calculateAxisMinimum({ data: bundledRow, prop: "y" })).toBe(15);
+        expect(calculateAxisMinimum({ data: bundledRow, prop: "y2" })).toBe(
+            NaN
+        );
+        expect(calculateAxisMinimum({ data: ohlcRow, prop: "x" })).toBe(5);
+        expect(calculateAxisMinimum({ data: ohlcRow, prop: "y" })).toBe(8);
+        expect(calculateAxisMinimum({ data: ohlcRow, prop: "y2" })).toBe(NaN);
+        expect(calculateAxisMinimum({ data: mixMultiRow, prop: "y" })).toBe(
+            100
+        );
+        expect(calculateAxisMinimum({ data: mixMultiRow, prop: "y2" })).toBe(
+            200
+        );
+        expect(
+            calculateAxisMinimum({
+                data: hierarchyRows,
+                prop: "x",
+                filterGroupIndex: 0
+            })
+        ).toBe(0);
+        expect(
+            calculateAxisMinimum({
+                data: hierarchyRows,
+                prop: "x",
+                filterGroupIndex: 1
+            })
+        ).toBe(3);
 
-        expect(calculateAxisMaximum(singleRow, "x")).toBe(6);
-        expect(calculateAxisMaximum(multiRow, "x")).toBe(16);
-        expect(calculateAxisMaximum(bundledRow, "x")).toBe(5);
-        expect(calculateAxisMaximum(bundledRow, "y")).toBe(53);
-        expect(calculateAxisMaximum(bundledRow, "y2")).toBe(NaN);
-        expect(calculateAxisMaximum(ohlcRow, "x")).toBe(5);
-        expect(calculateAxisMaximum(ohlcRow, "y")).toBe(55);
-        expect(calculateAxisMaximum(ohlcRow, "y2")).toBe(NaN);
-        expect(calculateAxisMaximum(mixMultiRow, "y")).toBe(103);
-        expect(calculateAxisMaximum(mixMultiRow, "y2")).toBe(203);
-        expect(calculateAxisMaximum(hierarchyRows, "x", 0)).toBe(2);
-        expect(calculateAxisMaximum(hierarchyRows, "x", 1)).toBe(4);
+        expect(calculateAxisMaximum({ data: singleRow, prop: "x" })).toBe(6);
+        expect(calculateAxisMaximum({ data: multiRow, prop: "x" })).toBe(16);
+        expect(calculateAxisMaximum({ data: bundledRow, prop: "x" })).toBe(5);
+        expect(calculateAxisMaximum({ data: bundledRow, prop: "y" })).toBe(53);
+        expect(calculateAxisMaximum({ data: bundledRow, prop: "y2" })).toBe(
+            NaN
+        );
+        expect(calculateAxisMaximum({ data: ohlcRow, prop: "x" })).toBe(5);
+        expect(calculateAxisMaximum({ data: ohlcRow, prop: "y" })).toBe(55);
+        expect(calculateAxisMaximum({ data: ohlcRow, prop: "y2" })).toBe(NaN);
+        expect(calculateAxisMaximum({ data: mixMultiRow, prop: "y" })).toBe(
+            103
+        );
+        expect(calculateAxisMaximum({ data: mixMultiRow, prop: "y2" })).toBe(
+            203
+        );
+        expect(
+            calculateAxisMaximum({
+                data: hierarchyRows,
+                prop: "x",
+                filterGroupIndex: 0
+            })
+        ).toBe(2);
+        expect(
+            calculateAxisMaximum({
+                data: hierarchyRows,
+                prop: "x",
+                filterGroupIndex: 1
+            })
+        ).toBe(4);
     });
 
     test("Generate point description", () => {
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     y: 1
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 1");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     y: 1,
                     label: "Test"
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 1, Test");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     y: 1,
                     label: "Test"
                 },
-                defaultFormat,
-                defaultFormat,
-                // eslint-disable-next-line no-undefined
-                undefined,
-                null,
-                true
-            )
+                announcePointLabelFirst: true
+            })
         ).toBe("Test, 0, 1");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     y2: 1
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 1");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     high: 10,
                     low: 5
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 10 - 5");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     high: 10,
                     low: 5
                 },
-                defaultFormat,
-                defaultFormat,
-                "high"
-            )
+                stat: "high"
+            })
         ).toBe("0, 10");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     high: 10,
                     low: 5
                 },
-                defaultFormat,
-                defaultFormat,
-                "low"
-            )
+                stat: "low"
+            })
         ).toBe("0, 5");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     open: 8,
                     high: 10,
                     close: 7,
                     low: 5
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 8 - 10 - 5 - 7");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     open: 8,
                     high: 10,
                     close: 7,
                     low: 5
                 },
-                defaultFormat,
-                defaultFormat,
-                "high"
-            )
+                stat: "high"
+            })
         ).toBe("0, 10");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     open: 8,
                     high: 10,
                     close: 7,
                     low: 5
                 },
-                defaultFormat,
-                defaultFormat,
-                "open"
-            )
+                stat: "open"
+            })
         ).toBe("0, 8");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     y: 1
                 },
-                (value) => `$${value}`,
-                defaultFormat
-            )
+                xFormat: (value) => `$${value}`
+            })
         ).toBe("$0, 1");
         expect(
-            generatePointDescription(
-                "en",
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - Deliberately using invalid values to test handling of invalid values
-                {
+            generatePointDescription({
+                // @ts-expect-error - Deliberately using invalid values to test handling of invalid values
+                point: {
                     x: 0,
                     high: 10
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     low: 5,
                     q1: 7,
                     median: 8,
                     q3: 8.5,
                     high: 10
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 10 - 5");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     low: 5,
                     q1: 7,
@@ -293,15 +334,12 @@ describe("utils", () => {
                     q3: 8.5,
                     high: 10
                 },
-                defaultFormat,
-                defaultFormat,
-                "low"
-            )
+                stat: "low"
+            })
         ).toBe("0, 5");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     low: 5,
                     q1: 7,
@@ -309,15 +347,12 @@ describe("utils", () => {
                     q3: 8.5,
                     high: 10,
                     outlier: [20]
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 10 - 5, with 1 outlier");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     low: 5,
                     q1: 7,
@@ -325,15 +360,12 @@ describe("utils", () => {
                     q3: 8.5,
                     high: 10,
                     outlier: [20, 23]
-                },
-                defaultFormat,
-                defaultFormat
-            )
+                }
+            })
         ).toBe("0, 10 - 5, with 2 outliers");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     low: 5,
                     q1: 7,
@@ -342,15 +374,26 @@ describe("utils", () => {
                     high: 10,
                     outlier: [20, 23]
                 },
-                defaultFormat,
-                defaultFormat,
-                "low"
-            )
+                language: "de"
+            })
+        ).toBe("0, 10 - 5, mit 2 Ausreissern");
+        expect(
+            generatePointDescription({
+                point: {
+                    x: 0,
+                    low: 5,
+                    q1: 7,
+                    median: 8,
+                    q3: 8.5,
+                    high: 10,
+                    outlier: [20, 23]
+                },
+                stat: "low"
+            })
         ).toBe("0, 5");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     low: 5,
                     q1: 7,
@@ -359,16 +402,13 @@ describe("utils", () => {
                     high: 10,
                     outlier: [20, 23]
                 },
-                defaultFormat,
-                defaultFormat,
-                "outlier",
-                0
-            )
+                stat: "outlier",
+                outlierIndex: 0
+            })
         ).toBe("0, 20, 1 of 2");
         expect(
-            generatePointDescription(
-                "en",
-                {
+            generatePointDescription({
+                point: {
                     x: 0,
                     low: 5,
                     q1: 7,
@@ -377,11 +417,9 @@ describe("utils", () => {
                     high: 10,
                     outlier: [20, 23]
                 },
-                defaultFormat,
-                defaultFormat,
-                "outlier",
-                1
-            )
+                stat: "outlier",
+                outlierIndex: 1
+            })
         ).toBe("0, 23, 2 of 2");
     });
 
@@ -798,13 +836,13 @@ describe("utils", () => {
         };
 
         // Standard axes
-        expect(generateAxisSummary("x", axis, "en")).toBe(
+        expect(generateAxisSummary({ axisLetter: "x", axis })).toBe(
             `X is "Revenue" from $0 to $1,000,000.`
         );
-        expect(generateAxisSummary("y", axis, "en")).toBe(
+        expect(generateAxisSummary({ axisLetter: "y", axis })).toBe(
             `Y is "Revenue" from $0 to $1,000,000.`
         );
-        expect(generateAxisSummary("y2", axis, "en")).toBe(
+        expect(generateAxisSummary({ axisLetter: "y2", axis })).toBe(
             `Alternate Y is "Revenue" from $0 to $1,000,000.`
         );
 
@@ -814,43 +852,99 @@ describe("utils", () => {
             maximum: 1000000
         };
         // Unlabelled axis
-        expect(generateAxisSummary("x", unlablledAxis, "en")).toBe(
-            `X is "" from * to *.`
-        );
+        expect(
+            generateAxisSummary({ axisLetter: "x", axis: unlablledAxis })
+        ).toBe(`X is "" from * to *.`);
         // Continuous
         expect(
-            generateAxisSummary("x", { ...axis, continuous: true }, "en")
+            generateAxisSummary({
+                axisLetter: "x",
+                axis: { ...axis, continuous: true }
+            })
         ).toBe(`X is "Revenue" from $0 to $1,000,000 continuously.`);
         // Logarithmic
-        expect(generateAxisSummary("x", { ...axis, type: "log10" }, "en")).toBe(
-            `X is "Revenue" from $0 to $1,000,000 logarithmic.`
-        );
+        expect(
+            generateAxisSummary({
+                axisLetter: "x",
+                axis: { ...axis, type: "log10" }
+            })
+        ).toBe(`X is "Revenue" from $0 to $1,000,000 logarithmic.`);
         // Logarithmic + Continuous
         expect(
-            generateAxisSummary(
-                "x",
-                {
+            generateAxisSummary({
+                axisLetter: "x",
+                axis: {
                     ...axis,
                     continuous: true,
                     type: "log10"
-                },
-                "en"
-            )
+                }
+            })
         ).toBe(
             `X is "Revenue" from $0 to $1,000,000 logarithmic continuously.`
         );
 
         // Special case: Y and Y2 axes should not be announced as "continuous"
         expect(
-            generateAxisSummary("y", { ...axis, continuous: true }, "en")
+            generateAxisSummary({
+                axisLetter: "y",
+                axis: { ...axis, continuous: true }
+            })
         ).toBe(`Y is "Revenue" from $0 to $1,000,000.`);
         expect(
-            generateAxisSummary("y2", { ...axis, continuous: true }, "en")
+            generateAxisSummary({
+                axisLetter: "y2",
+                axis: { ...axis, continuous: true }
+            })
         ).toBe(`Alternate Y is "Revenue" from $0 to $1,000,000.`);
     });
 
     test("convertDataRow", () => {
         expect(convertDataRow(null)).toBeNull();
+    });
+
+    describe("formatWrapper", () => {
+        test("default language", () => {
+            const wrap = formatWrapper({
+                axis: {
+                    minimum: 0,
+                    maximum: 10,
+                    format: (n) => `$${n}`
+                }
+            });
+
+            expect(wrap(NaN)).toBe("missing");
+            expect(wrap(5)).toBe("$5");
+            expect(wrap(-1)).toBe("too low");
+            expect(wrap(11)).toBe("too high");
+        });
+        test("german", () => {
+            const wrap = formatWrapper({
+                axis: {
+                    minimum: 0,
+                    maximum: 10,
+                    format: (n) => `€${n}`
+                },
+                language: "de"
+            });
+
+            expect(wrap(NaN)).toBe("fehlt");
+            expect(wrap(5)).toBe("€5");
+            expect(wrap(-1)).toBe("zu tief");
+            expect(wrap(11)).toBe("zu hoch");
+        });
+        test("no minimum", () => {
+            const wrap = formatWrapper({
+                axis: {
+                    maximum: 10,
+                    format: (n) => `$${n}`
+                }
+            });
+
+            expect(wrap(NaN)).toBe("missing");
+            expect(wrap(5)).toBe("$5");
+            expect(wrap(-1)).toBe("$-1");
+            expect(wrap(11)).toBe("too high");
+        });
     });
 
     test("detectIfMobile", () => {

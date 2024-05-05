@@ -23,34 +23,55 @@ import type {
     AxisScale
 } from "./types";
 
-export const interpolateBin = (
-    point: number,
-    min: number,
-    max: number,
-    bins: number,
-    scale: AxisScale
-) => {
+export const interpolateBin = ({
+    point,
+    min,
+    max,
+    bins,
+    scale
+}: {
+    point: number;
+    min: number;
+    max: number;
+    bins: number;
+    scale: AxisScale;
+}) => {
     return scale === "linear"
-        ? interpolateBinLinear(point, min, max, bins)
-        : interpolateBinLog(point, min, max, bins);
+        ? interpolateBinLinear({ point, min, max, bins })
+        : interpolateBinLog({
+              pointRaw: point,
+              minRaw: min,
+              maxRaw: max,
+              bins
+          });
 };
 
-const interpolateBinLinear = (
-    point: number,
-    min: number,
-    max: number,
-    bins: number
-) => {
+const interpolateBinLinear = ({
+    point,
+    min,
+    max,
+    bins
+}: {
+    point: number;
+    min: number;
+    max: number;
+    bins: number;
+}) => {
     const pct = (point - min) / (max - min);
     return Math.floor(bins * pct);
 };
 
-const interpolateBinLog = (
-    pointRaw: number,
-    minRaw: number,
-    maxRaw: number,
-    bins: number
-) => {
+const interpolateBinLog = ({
+    pointRaw,
+    minRaw,
+    maxRaw,
+    bins
+}: {
+    pointRaw: number;
+    minRaw: number;
+    maxRaw: number;
+    bins: number;
+}) => {
     const point = Math.log10(pointRaw);
     const min = Math.log10(minRaw);
     const max = Math.log10(maxRaw);
@@ -62,11 +83,15 @@ export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
 const isNotNull = (tmp: unknown) => tmp !== null;
 
-export const calculateAxisMinimum = (
-    data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2",
-    filterGroupIndex?: number
-) => {
+export const calculateAxisMinimum = ({
+    data,
+    prop,
+    filterGroupIndex
+}: {
+    data: SupportedDataPointType[][];
+    prop: "x" | "y" | "y2";
+    filterGroupIndex?: number;
+}) => {
     let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
@@ -111,11 +136,15 @@ export const calculateAxisMinimum = (
     }
     return Math.min(...values);
 };
-export const calculateAxisMaximum = (
-    data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2",
-    filterGroupIndex?: number
-) => {
+export const calculateAxisMaximum = ({
+    data,
+    prop,
+    filterGroupIndex
+}: {
+    data: SupportedDataPointType[][];
+    prop: "x" | "y" | "y2";
+    filterGroupIndex?: number;
+}) => {
     let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
@@ -163,15 +192,23 @@ export const calculateAxisMaximum = (
 
 export const defaultFormat = (value: number) => `${value}`;
 
-export const generatePointDescription = (
-    language: string,
-    point: SupportedDataPointType,
-    xFormat: AxisData["format"],
-    yFormat: AxisData["format"],
-    stat?: keyof StatBundle,
-    outlierIndex: number | null = null,
+export const generatePointDescription = ({
+    language = "en",
+    point,
+    xFormat = defaultFormat,
+    yFormat = defaultFormat,
+    stat,
+    outlierIndex = null,
     announcePointLabelFirst = false
-) => {
+}: {
+    language?: string;
+    point: SupportedDataPointType;
+    xFormat?: AxisData["format"];
+    yFormat?: AxisData["format"];
+    stat?: keyof StatBundle;
+    outlierIndex?: number | null;
+    announcePointLabelFirst?: boolean;
+}) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
             return translate(language, "point-xy", {
@@ -240,10 +277,13 @@ export const generatePointDescription = (
     return "";
 };
 
-export const usesAxis = (
-    data: SupportedDataPointType[][],
-    axisName: "x" | "y" | "y2"
-) => {
+export const usesAxis = ({
+    data,
+    axisName
+}: {
+    data: SupportedDataPointType[][];
+    axisName: "x" | "y" | "y2";
+}) => {
     const firstUseOfAxis = data.filter(isNotNull).find((row) => {
         return row.find((point) => axisName in point);
     });
@@ -319,17 +359,23 @@ export const calculateMetadataByGroup = (
 /**
  * Initialize internal representation of axis metadata. Providing metadata is optional, so we
  * need to generate metadata that hasn't been provided.
- * @param data - the X/Y values
- * @param axisName - which axis is this? "x" or "y"
- * @param userAxis - metadata provided by the invocation
- * @param filterGroupIndex -
+ * @param props -
+ * @param props.data - the X/Y values
+ * @param props.axisName - which axis is this? "x" or "y"
+ * @param props.userAxis - metadata provided by the invocation
+ * @param props.filterGroupIndex -
  */
-export const initializeAxis = (
-    data: SupportedDataPointType[][],
-    axisName: validAxes,
-    userAxis?: AxisData,
-    filterGroupIndex?: number
-): AxisData => {
+export const initializeAxis = ({
+    data,
+    axisName,
+    userAxis,
+    filterGroupIndex
+}: {
+    data: SupportedDataPointType[][];
+    axisName: validAxes;
+    userAxis?: AxisData;
+    filterGroupIndex?: number;
+}): AxisData => {
     const format =
         userAxis?.format ??
         ("valueLabels" in userAxis
@@ -339,10 +385,10 @@ export const initializeAxis = (
     return {
         minimum:
             userAxis?.minimum ??
-            calculateAxisMinimum(data, axisName, filterGroupIndex),
+            calculateAxisMinimum({ data, prop: axisName, filterGroupIndex }),
         maximum:
             userAxis?.maximum ??
-            calculateAxisMaximum(data, axisName, filterGroupIndex),
+            calculateAxisMaximum({ data, prop: axisName, filterGroupIndex }),
         label: userAxis?.label ?? "",
         type: userAxis?.type ?? "linear",
         format,
@@ -399,15 +445,21 @@ export const convertDataRow = (
     });
 };
 
-export const formatWrapper = (axis: AxisData, language: string) => {
+export const formatWrapper = ({
+    axis,
+    language = "en"
+}: {
+    axis: AxisData;
+    language?: string;
+}) => {
     const format = (num: number) => {
         if (isNaN(num)) {
             return translate(language, "missing");
         }
-        if (axis.minimum && num < axis.minimum) {
+        if (typeof axis.minimum === "number" && num < axis.minimum) {
             return translate(language, "tooLow");
         }
-        if (axis.maximum && num > axis.maximum) {
+        if (typeof axis.maximum === "number" && num > axis.maximum) {
             return translate(language, "tooHigh");
         }
         return axis.format(num);
@@ -462,15 +514,21 @@ const axisDescriptions = {
     y: "Y",
     y2: "Alternate Y"
 };
-export const generateAxisSummary = (
-    axisLetter: "x" | "y" | "y2",
-    axis: AxisData,
-    language: string
-) => {
+export const generateAxisSummary = ({
+    axisLetter,
+    axis,
+    language = "en"
+}: {
+    axisLetter: "x" | "y" | "y2";
+    axis: AxisData;
+    language?: string;
+}) => {
     const code = ["axis", "desc"];
+
     if (axis.type === "log10") {
         code.push("log");
     }
+
     if (axisLetter === "x" && axis.continuous) {
         code.push("con");
     }
@@ -520,12 +578,17 @@ export const isUnplayable = (yValue: number, yAxis: AxisData) => {
     return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
 };
 
-export const prepChartElement = (
-    elem: HTMLElement,
-    title: string,
-    language: string,
-    addCleanupTask: (fn: () => void) => void
-) => {
+export const prepChartElement = ({
+    elem,
+    title,
+    language,
+    addCleanupTask
+}: {
+    elem: HTMLElement;
+    title: string;
+    language: string;
+    addCleanupTask: (fn: () => void) => void;
+}) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
         elem.setAttribute(
             "aria-label",
