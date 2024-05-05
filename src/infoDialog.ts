@@ -8,10 +8,13 @@ const toHtmlEntities = (str: string) => {
     });
 };
 
-export const launchInfoDialog = (info: c2mInfo, translationCallback: (
-    code: string,
-    evaluators?: translateEvaluators
-) => string) => {
+export const launchInfoDialog = (
+    info: c2mInfo,
+    translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string
+) => {
     const dialog = document.createElement("dialog");
     dialog.classList.add("chart2music-dialog");
     dialog.classList.add("chart2music-info-dialog");

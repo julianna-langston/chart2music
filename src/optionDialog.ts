@@ -20,7 +20,7 @@ export const launchOptionDialog = (
         translationCallback: (
             code: string,
             evaluators?: translateEvaluators
-        ) => string
+        ) => string;
     },
     cb: (
         lower: number,
