@@ -1,4 +1,5 @@
 import type { SimpleDataPoint } from "../src/dataPoint";
+import { translate } from "../src/translator";
 import {
     calcPan,
     calculateAxisMaximum,
@@ -374,7 +375,7 @@ describe("utils", () => {
                     high: 10,
                     outlier: [20, 23]
                 },
-                language: "de"
+                translationCallback: (id, ev) => translate("de", id, ev)
             })
         ).toBe("0, 10 - 5, mit 2 Ausreissern");
         expect(
@@ -768,12 +769,11 @@ describe("utils", () => {
     });
 
     test("generateChartSummary", () => {
-        expect(
-            generateChartSummary({ language: "en", title: "", groupCount: 1 })
-        ).toBe(`Sonified chart.`);
+        expect(generateChartSummary({ title: "", groupCount: 1 })).toBe(
+            `Sonified chart.`
+        );
         expect(
             generateChartSummary({
-                language: "en",
                 title: "Test",
                 groupCount: 1,
                 live: false,
@@ -782,7 +782,6 @@ describe("utils", () => {
         ).toBe(`Sonified chart titled "Test".`);
         expect(
             generateChartSummary({
-                language: "en",
                 title: "Test",
                 groupCount: 2,
                 live: false,
@@ -791,7 +790,6 @@ describe("utils", () => {
         ).toBe(`Sonified chart with 2 groups titled "Test".`);
         expect(
             generateChartSummary({
-                language: "en",
                 title: "",
                 groupCount: 2,
                 live: false,
@@ -800,7 +798,6 @@ describe("utils", () => {
         ).toBe(`Sonified chart with 2 groups.`);
         expect(
             generateChartSummary({
-                language: "en",
                 title: "Test",
                 groupCount: 1,
                 live: true,
@@ -809,7 +806,6 @@ describe("utils", () => {
         ).toBe(`Sonified live chart titled "Test".`);
         expect(
             generateChartSummary({
-                language: "en",
                 title: "Test",
                 groupCount: 2,
                 live: false,
@@ -818,7 +814,6 @@ describe("utils", () => {
         ).toBe(`Sonified hierarchical chart with 2 groups titled "Test".`);
         expect(
             generateChartSummary({
-                language: "en",
                 title: "",
                 groupCount: 2,
                 live: true,
@@ -924,7 +919,8 @@ describe("utils", () => {
                     maximum: 10,
                     format: (n) => `€${n}`
                 },
-                language: "de"
+                translationCallback: (id, evaluators) =>
+                    translate("de", id, evaluators)
             });
 
             expect(wrap(NaN)).toBe("fehlt");
