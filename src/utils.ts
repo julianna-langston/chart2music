@@ -199,7 +199,7 @@ export const generatePointDescription = ({
     stat,
     outlierIndex = null,
     announcePointLabelFirst = false,
-    translationCallback 
+    translationCallback
 }: {
     point: SupportedDataPointType;
     xFormat?: AxisData["format"];
@@ -450,7 +450,7 @@ export const convertDataRow = (
 
 export const formatWrapper = ({
     axis,
-    translationCallback 
+    translationCallback
 }: {
     axis: AxisData;
     translationCallback: (
@@ -526,7 +526,7 @@ const axisDescriptions = {
 export const generateAxisSummary = ({
     axisLetter,
     axis,
-    translationCallback 
+    translationCallback
 }: {
     axisLetter: "x" | "y" | "y2";
     axis: AxisData;
@@ -608,10 +608,10 @@ export const prepChartElement = ({
     addCleanupTask: (fn: () => void) => void;
 }) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
-        elem.setAttribute(
-            "aria-label",
-            translationCallback("description", { title })
-        );
+        const label = title
+            ? translationCallback("description", { title })
+            : translationCallback("description-untitled");
+        elem.setAttribute("aria-label", label);
         addCleanupTask(() => elem.removeAttribute("aria-label"));
     }
 
