@@ -2,6 +2,7 @@
 import type { AudioEngine } from "./audio/";
 import type { c2m } from "./c2mChart";
 import type { SupportedDataPointType } from "./dataPoint";
+import type { translateEvaluators } from "./translations";
 
 /**
  * Details for a given hotkey
@@ -195,6 +196,15 @@ export type c2mCallbackType = {
 };
 
 /**
+ *
+ */
+export type translationCallbackOptions = {
+    language: string;
+    id: string;
+    evaluators: translateEvaluators;
+};
+
+/**
  * Options available for C2M chart
  */
 export type c2mOptions = {
@@ -210,6 +220,11 @@ export type c2mOptions = {
     hertzes?: number[];
     stack?: boolean;
     root?: null | string;
+    translations?: ({
+        language,
+        id,
+        evaluators
+    }: translationCallbackOptions) => string | false;
 };
 
 /**

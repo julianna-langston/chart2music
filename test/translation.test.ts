@@ -1,9 +1,30 @@
 import { c2m, c2mChart } from "../src/c2mChart";
+import { TranslationManager } from "../src/translator";
 import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
+});
+
+describe("Manager", () => {
+    test("Generate strings", () => {
+        const mgr = new TranslationManager("en");
+
+        expect(mgr.language).toBe("en");
+        expect(mgr.loadedLanguages).toEqual(["en"]);
+        expect(mgr.translate("missing")).toBe("missing");
+        expect(mgr.translate("description", { title: "Test" })).toBe(
+            "Test, Sonified chart"
+        );
+    });
+    test("Non-default language", () => {
+        const mgr = new TranslationManager("de");
+
+        expect(mgr.language).toBe("de");
+        expect(mgr.loadedLanguages).toEqual(["en", "de"]);
+        expect(mgr.translate("missing")).toBe("fehlt");
+    });
 });
 
 test("Spanish", () => {
@@ -187,4 +208,57 @@ test("Italian", () => {
     );
     jest.advanceTimersByTime(250);
     expect(mockElementCC.textContent).toContain(`2, 2`);
+});
+
+describe("Provided translations", () => {
+    test("Provide custom text for the element's aria-label", () => {
+        const mockElement = document.createElement("div");
+        const mockElementCC = document.createElement("div");
+        const { err } = c2mChart({
+            lang: "en",
+            title: "EXAMPLE",
+            type: SUPPORTED_CHART_TYPES.LINE,
+            data: {
+                a: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 2 },
+                    { x: 3, y: 3 }
+                ],
+                b: [
+                    { x: 1, y: 11 },
+                    { x: 2, y: 12 },
+                    { x: 3, y: 13 }
+                ],
+                c: [
+                    { x: 1, y: 7 },
+                    { x: 2, y: 8 },
+                    { x: 3, y: 9 }
+                ]
+            },
+            element: mockElement,
+            cc: mockElementCC,
+            options: {
+                enableSound: false,
+                translations: ({ language, id, evaluators }) => {
+                    if (language !== "en") {
+                        return false;
+                    }
+
+                    switch (id) {
+                        case "description": {
+                            return `Sonified chart, ${evaluators.title ?? ""}`;
+                        }
+                        default: {
+                            return false;
+                        }
+                    }
+                }
+            }
+        });
+        expect(err).toBe(null);
+
+        expect(mockElement.getAttribute("aria-label")).toBe(
+            "Sonified chart, EXAMPLE"
+        );
+    });
 });

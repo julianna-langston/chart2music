@@ -1,17 +1,17 @@
 /** @type {import('jest').Config} */
 module.exports = {
     moduleFileExtensions: ["js", "ts"],
-    globals: {
-        "ts-jest": {
-            isolatedModules: true
-        }
-    },
     fakeTimers: {
         enableGlobally: true
     },
     setupFiles: ["<rootDir>/test/_setup.ts"],
     transform: {
-        "^.+\\.ts?$": "ts-jest"
+        "^.+\\.ts?$": [
+            "ts-jest",
+            {
+                isolatedModules: true
+            }
+        ]
     },
     testRegex: ".+\\.test\\.ts?$",
     testEnvironment: "jsdom",

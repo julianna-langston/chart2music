@@ -17,6 +17,7 @@ test("Confirm that C2M modifies provided elements", () => {
 
     expect(err).toBe(null);
     expect(mockElement.getAttribute("tabIndex")).toBe("0");
+    expect(mockElement.getAttribute("aria-label")).toBe("Sonified chart");
     expect(mockElementCC.getAttribute("aria-live")).toBe("assertive");
 });
 
