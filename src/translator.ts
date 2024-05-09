@@ -2,6 +2,7 @@ import type { IntlShape } from "@formatjs/intl";
 import { createIntl } from "@formatjs/intl";
 import * as translations from "./translations";
 import type { translateEvaluators } from "./translations";
+import type { c2mOptions } from "./types";
 
 export const DEFAULT_LANGUAGE = "en";
 export const AVAILABLE_LANGUAGES = Object.keys(translations);
@@ -13,6 +14,7 @@ export class TranslationManager {
     private _availableLanguageCodes: string[] = [];
     private _loadedLanguages: Map<string, IntlShape<string>> = new Map();
     private _language: string;
+    private _intercepterCallback: c2mOptions["translations"] = () => false;
 
     /**
      * Create a TranslationManager
@@ -39,6 +41,13 @@ export class TranslationManager {
         if (!this._loadedLanguages.has(newValue)) {
             this.loadLanguage(newValue);
         }
+    }
+
+    /**
+     * Set a translation interceptor
+     */
+    set intercepterCallback(newValue: c2mOptions["translations"]) {
+        this._intercepterCallback = newValue;
     }
 
     /**
@@ -82,6 +91,16 @@ export class TranslationManager {
      * @param evaluators - options to evalaute to generate the translated string
      */
     public translate(id: string, evaluators: translateEvaluators = {}): string {
+        const intercepted = this._intercepterCallback({
+            language: this._language,
+            id,
+            evaluators
+        });
+
+        if (intercepted !== false) {
+            return intercepted;
+        }
+
         if (id in translations[this._language]) {
             return this._loadedLanguages
                 .get(this._language)

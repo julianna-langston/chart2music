@@ -76,6 +76,30 @@ export const multiLinePlot = (canvas, cc) => {
                     { datasetIndex: slices.indexOf(slice), index }
                 ]);
                 myChart.update();
+            },
+            translations: ({ language, id, evaluators }) => {
+                console.log("translation", language, id, evaluators);
+                if (language !== "en") {
+                    return false;
+                }
+
+                switch (id) {
+                    case "chart-line-labeled": {
+                        if (evaluators.label === "highs") {
+                            return `Line chart showing 'Highs'. Starts at 70 degrees in January, rises to 90 degrees in July, and drops to 80 degrees in November.`;
+                        }
+                        if (evaluators.label === "lows") {
+                            return `Line chart showing 'Lows'. Starts at 25 degrees in January, drops to 23 in February, rises to 65 degrees in July, and drops to 30 degrees in November.`;
+                        }
+                        return false;
+                    }
+                    case "axis-desc": {
+                        return "";
+                    }
+                    default: {
+                        return false;
+                    }
+                }
             }
         }
     });
