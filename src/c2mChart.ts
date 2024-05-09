@@ -33,7 +33,8 @@ import {
     generateChartSummary,
     generateInstructions,
     generateAxisSummary,
-    detectIfMobile
+    detectIfMobile,
+    determineCC
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -211,7 +212,13 @@ export class c2m {
         this._language = input.lang ?? DEFAULT_LANGUAGE;
         this._translator = new TranslationManager(this._language);
 
-        this._ccElement = input.cc ?? this._chartElement;
+        this._ccElement = determineCC(
+            this._chartElement,
+            (fn) => {
+                this._cleanUpTasks.push(fn);
+            },
+            input.cc
+        );
 
         if (input?.options) {
             if (this._type === SUPPORTED_CHART_TYPES.SCATTER) {

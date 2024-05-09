@@ -37,6 +37,7 @@ test("Confirm cleanup removes the attributes and events listeners C2M added", ()
     expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 2");
 
     chart?.cleanUp();
+
     expect(mockElement.hasAttribute("aria-label")).toBeFalsy();
     expect(mockElement.hasAttribute("role")).toBeFalsy();
 
@@ -84,4 +85,26 @@ test("Confirm cleanup removes dialogs", () => {
     chart?.cleanUp();
 
     expect(document.querySelectorAll("dialog")).toHaveLength(0);
+});
+
+test("Confirm cleanup removes generated CC, if no CC was provided", () => {
+    const mockElement = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: SUPPORTED_CHART_TYPES.LINE,
+        data: [1, 2, 3, 0, 4, 5, 4, 3],
+        element: mockElement,
+        options: {
+            enableSound: false
+        }
+    });
+
+    expect(err).toBeNull();
+
+    // Confirm that a CC element was generated and appended to the chart element
+    expect(mockElement.querySelector("div")).not.toBeNull();
+
+    chart?.cleanUp();
+
+    // Confirm that the CC element was removed
+    expect(mockElement.querySelector("div")).toBeNull();
 });
