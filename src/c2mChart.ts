@@ -11,7 +11,8 @@ import type {
     c2mGolangReturn,
     c2mCallbackType,
     StatBundle,
-    c2mInfo
+    c2mInfo,
+    ChartContainerType
 } from "./types";
 import { SUPPORTED_CHART_TYPES } from "./types";
 import {
@@ -137,7 +138,7 @@ export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
  * Represents a single chart that should be sonified.
  */
 export class c2m {
-    private _chartElement: HTMLElement;
+    private _chartElement: ChartContainerType;
     private _ccElement: HTMLElement;
     private _chartSummary: string;
     private _instructions: string;

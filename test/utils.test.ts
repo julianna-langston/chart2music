@@ -790,10 +790,13 @@ describe("utils", () => {
     });
 
     test("generateChartSummary", () => {
-        expect(generateChartSummary({ title: "", groupCount: 1,
-        translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
-            `Sonified chart.`
-        );
+        expect(
+            generateChartSummary({
+                title: "",
+                groupCount: 1,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
+        ).toBe(`Sonified chart.`);
         expect(
             generateChartSummary({
                 title: "Test",
@@ -859,15 +862,27 @@ describe("utils", () => {
         };
 
         // Standard axes
-        expect(generateAxisSummary({ axisLetter: "x", axis, translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
-            `X is "Revenue" from $0 to $1,000,000.`
-        );
-        expect(generateAxisSummary({ axisLetter: "y", axis, translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
-            `Y is "Revenue" from $0 to $1,000,000.`
-        );
-        expect(generateAxisSummary({ axisLetter: "y2", axis, translationCallback: (id, ev) => english.translate(id, ev) })).toBe(
-            `Alternate Y is "Revenue" from $0 to $1,000,000.`
-        );
+        expect(
+            generateAxisSummary({
+                axisLetter: "x",
+                axis,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
+        ).toBe(`X is "Revenue" from $0 to $1,000,000.`);
+        expect(
+            generateAxisSummary({
+                axisLetter: "y",
+                axis,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
+        ).toBe(`Y is "Revenue" from $0 to $1,000,000.`);
+        expect(
+            generateAxisSummary({
+                axisLetter: "y2",
+                axis,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
+        ).toBe(`Alternate Y is "Revenue" from $0 to $1,000,000.`);
 
         const unlablledAxis = {
             format: () => "*",
@@ -876,20 +891,26 @@ describe("utils", () => {
         };
         // Unlabelled axis
         expect(
-            generateAxisSummary({ axisLetter: "x", axis: unlablledAxis, translationCallback: (id, ev) => english.translate(id, ev) })
+            generateAxisSummary({
+                axisLetter: "x",
+                axis: unlablledAxis,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
         ).toBe(`X is "" from * to *.`);
         // Continuous
         expect(
             generateAxisSummary({
                 axisLetter: "x",
-                axis: { ...axis, continuous: true }, translationCallback: (id, ev) => english.translate(id, ev)
+                axis: { ...axis, continuous: true },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`X is "Revenue" from $0 to $1,000,000 continuously.`);
         // Logarithmic
         expect(
             generateAxisSummary({
                 axisLetter: "x",
-                axis: { ...axis, type: "log10" }, translationCallback: (id, ev) => english.translate(id, ev)
+                axis: { ...axis, type: "log10" },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`X is "Revenue" from $0 to $1,000,000 logarithmic.`);
         // Logarithmic + Continuous
@@ -900,7 +921,8 @@ describe("utils", () => {
                     ...axis,
                     continuous: true,
                     type: "log10"
-                }, translationCallback: (id, ev) => english.translate(id, ev)
+                },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(
             `X is "Revenue" from $0 to $1,000,000 logarithmic continuously.`
@@ -910,13 +932,15 @@ describe("utils", () => {
         expect(
             generateAxisSummary({
                 axisLetter: "y",
-                axis: { ...axis, continuous: true }, translationCallback: (id, ev) => english.translate(id, ev)
+                axis: { ...axis, continuous: true },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Y is "Revenue" from $0 to $1,000,000.`);
         expect(
             generateAxisSummary({
                 axisLetter: "y2",
-                axis: { ...axis, continuous: true }, translationCallback: (id, ev) => english.translate(id, ev)
+                axis: { ...axis, continuous: true },
+                translationCallback: (id, ev) => english.translate(id, ev)
             })
         ).toBe(`Alternate Y is "Revenue" from $0 to $1,000,000.`);
     });
@@ -947,7 +971,8 @@ describe("utils", () => {
                     maximum: 10,
                     format: (n) => `€${n}`
                 },
-                translationCallback: (id, evaluators) => german.translate(id, evaluators)
+                translationCallback: (id, evaluators) =>
+                    german.translate(id, evaluators)
             });
 
             expect(wrap(NaN)).toBe("fehlt");

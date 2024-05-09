@@ -20,7 +20,8 @@ import type {
     groupedMetadata,
     SonifyTypes,
     dataSet,
-    AxisScale
+    AxisScale,
+    ChartContainerType
 } from "./types";
 
 export const interpolateBin = ({
@@ -666,7 +667,7 @@ export const filteredJoin = (arr: string[], joiner: string) =>
     arr.filter((item) => Boolean(item)).join(joiner);
 
 export const determineCC = (
-    containerElement: HTMLElement,
+    containerElement: ChartContainerType,
     cleanUpFnCallback: (fn: () => void) => void,
     providedCC?: HTMLElement
 ): HTMLElement => {
