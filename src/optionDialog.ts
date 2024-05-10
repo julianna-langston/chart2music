@@ -1,5 +1,5 @@
 import { HERTZ } from "./constants";
-import { translate } from "./translator";
+import type { translateEvaluators } from "./translations";
 
 export const launchOptionDialog = (
     {
@@ -8,7 +8,8 @@ export const launchOptionDialog = (
         lower,
         speedIndex,
         continuousMode,
-        labelPosition
+        labelPosition,
+        translationCallback
     }: {
         language: string;
         upper: number;
@@ -16,6 +17,10 @@ export const launchOptionDialog = (
         speedIndex: number;
         continuousMode: boolean;
         labelPosition: boolean;
+        translationCallback: (
+            code: string,
+            evaluators?: translateEvaluators
+        ) => string;
     },
     cb: (
         lower: number,
@@ -30,15 +35,15 @@ export const launchOptionDialog = (
     dialog.classList.add("chart2music-dialog");
     dialog.classList.add("chart2music-option-dialog");
     dialog.setAttribute("lang", language);
-    dialog.setAttribute("aria-label", translate(language, "options-title"));
-    dialog.innerHTML = `<h1>${translate(language, "options-title")}</h1>
+    dialog.setAttribute("aria-label", translationCallback("options-title"));
+    dialog.innerHTML = `<h1>${translationCallback("options-title")}</h1>
 
-    <p tabIndex="0">${translate(language, "options-frontmatter")}</p>
+    <p tabIndex="0">${translationCallback("options-frontmatter")}</p>
 
     <form id="optionForm">
         <div>
             <label>
-                ${translate(language, "options-hertz-lower")}:
+                ${translationCallback("options-hertz-lower")}:
                 <input type="range" min="0" max="${
                     upper - 1
                 }" step="1" id="lowerRange" value="${lower}" />
@@ -47,7 +52,7 @@ export const launchOptionDialog = (
 
         <div>
             <label>
-            ${translate(language, "options-hertz-upper")}:
+            ${translationCallback("options-hertz-upper")}:
                 <input type="range" min="${lower + 1}" max="${
                     HERTZ.length - 1
                 }" step="1" id="upperRange" value="${upper}" />
@@ -56,7 +61,7 @@ export const launchOptionDialog = (
 
         <div>
             <label>
-            ${translate(language, "options-speed-label")}:
+            ${translationCallback("options-speed-label")}:
                 <input type="range" min="0" max="4" id="speedRange" value="${speedIndex}" />
             </label>
         </div>
@@ -64,7 +69,7 @@ export const launchOptionDialog = (
         <div>
             <label>
                 <input type="checkbox" id="global" checked />
-                ${translate(language, "options-set-global")}
+                ${translationCallback("options-set-global")}
             </label>
         </div>
 
@@ -73,21 +78,21 @@ export const launchOptionDialog = (
                 <input type="checkbox" id="continuous" ${
                     continuousMode ? "checked" : ""
                 } />
-                ${translate(language, "options-use-continuous")}
+                ${translationCallback("options-use-continuous")}
             </label>
             <br/>
-            ${translate(language, "options-continuous-descr")}
+            ${translationCallback("options-continuous-descr")}
         </div>
 
         <div>
             <fieldset>
-                <legend>${translate(language, "options-point-labels")}</legend>
+                <legend>${translationCallback("options-point-labels")}</legend>
 
                 <label>
                     <input type="radio" name="point-labels" value="before" ${
                         labelPosition ? "checked" : ""
                     } />
-                    ${translate(language, "options-point-labels-before")}
+                    ${translationCallback("options-point-labels-before")}
                 </label>
                 
                 <br/>
@@ -96,12 +101,12 @@ export const launchOptionDialog = (
                     <input type="radio" name="point-labels" value="after" ${
                         labelPosition ? "" : "checked"
                     } />
-                    ${translate(language, "options-point-labels-after")}
+                    ${translationCallback("options-point-labels-after")}
                 </label>
             </fieldset>
         </div>
 
-        <input id="save" type="submit" value="${translate(language, "save")}" />
+        <input id="save" type="submit" value="${translationCallback("save")}" />
     </form>
     `;
 

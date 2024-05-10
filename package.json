@@ -39,22 +39,21 @@
         "clean": "rimraf ./dist ./coverage",
         "depcheck": "depcheck",
         "start": "concurrently \"rollup -c rollup.config.mjs -w\" \"http-server .\"",
-        "lint": "eslint src/ --ext .ts --fix",
         "lint-staged": "lint-staged",
         "lint-check": "eslint --quiet src/ --ext .ts && prettier --config .prettierrc.json src/**/*.ts --check",
-        "format": "prettier --config .prettierrc.json src/**/*.ts --write && prettier examples/**/*.js --write",
+        "format": "eslint src/ --ext .ts --fix && prettier --config .prettierrc.json src/**/*.ts --write && prettier examples/**/*.js --write",
         "prepare": "husky install",
         "test": "jest"
     },
     "license": "MIT",
     "devDependencies": {
-        "@babel/cli": "^7.23.4",
-        "@babel/core": "^7.23.7",
-        "@babel/plugin-transform-modules-commonjs": "^7.23.3",
-        "@babel/preset-env": "^7.23.8",
-        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@babel/cli": "7.23.4",
+        "@babel/core": "7.23.7",
+        "@babel/plugin-transform-modules-commonjs": "7.23.3",
+        "@babel/preset-env": "7.23.8",
+        "@rollup/plugin-node-resolve": "15.2.3",
         "@rollup/plugin-typescript": "11.1.6",
-        "@types/jest": "^29.2.1",
+        "@types/jest": "29.2.1",
         "@typescript-eslint/eslint-plugin": "7.7.1",
         "@typescript-eslint/parser": "7.7.1",
         "concurrently": "8.2.2",
@@ -69,7 +68,7 @@
         "lint-staged": "15.2.2",
         "prettier": "3.2.5",
         "rimraf": "5.0.5",
-        "rollup": "4.17.0",
+        "rollup": "4.17.2",
         "rollup-plugin-delete": "2.0.0",
         "rollup-plugin-dts": "6.1.0",
         "ts-jest": "29.1.2",
@@ -77,6 +76,6 @@
         "typescript": "5.4.5"
     },
     "dependencies": {
-        "@formatjs/intl": "^2.9.11"
+        "@formatjs/intl": "2.9.11"
     }
 }

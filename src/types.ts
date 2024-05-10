@@ -2,6 +2,7 @@
 import type { AudioEngine } from "./audio/";
 import type { c2m } from "./c2mChart";
 import type { SupportedDataPointType } from "./dataPoint";
+import type { translateEvaluators } from "./translations";
 
 /**
  * Details for a given hotkey
@@ -56,6 +57,11 @@ export type ExpandedKeyRegistration = {
 type SupportedInputType = SupportedDataPointType | number;
 
 /**
+ *
+ */
+export type ChartContainerType = HTMLElement | SVGElement;
+
+/**
  * The types of scales (linear, log) that are supported for an axis
  */
 export type AxisScale = "linear" | "log10";
@@ -73,11 +79,11 @@ export type SonifyTypes = {
      */
     data: dataSet | SupportedInputType[];
     /**
-     * The HTML element in the DOM that represents this chart.
+     * The HTML or SVG element in the DOM that represents this chart.
      * This will be used to handle keyboard events to enable the user to interact with the chart.
      * This key is required for all charts.
      */
-    element: HTMLElement;
+    element: ChartContainerType;
     /**
      * The language of the instructions and dialogs. Defaults to "en".
      */
@@ -203,6 +209,15 @@ export type c2mCallbackType = {
 };
 
 /**
+ *
+ */
+export type translationCallbackOptions = {
+    language: string;
+    id: string;
+    evaluators: translateEvaluators;
+};
+
+/**
  * Options available for C2M chart
  */
 export type c2mOptions = {
@@ -218,6 +233,11 @@ export type c2mOptions = {
     hertzes?: number[];
     stack?: boolean;
     root?: null | string;
+    translations?: ({
+        language,
+        id,
+        evaluators
+    }: translationCallbackOptions) => string | false;
 };
 
 /**

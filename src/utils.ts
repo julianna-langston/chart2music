@@ -11,7 +11,7 @@ import {
     isSimpleDataPoint,
     isBoxDataPoint
 } from "./dataPoint";
-import { translate } from "./translator";
+import type { translateEvaluators } from "./translations";
 import type {
     AxisData,
     StatBundle,
@@ -20,37 +20,59 @@ import type {
     groupedMetadata,
     SonifyTypes,
     dataSet,
-    AxisScale
+    AxisScale,
+    ChartContainerType
 } from "./types";
 
-export const interpolateBin = (
-    point: number,
-    min: number,
-    max: number,
-    bins: number,
-    scale: AxisScale
-) => {
+export const interpolateBin = ({
+    point,
+    min,
+    max,
+    bins,
+    scale
+}: {
+    point: number;
+    min: number;
+    max: number;
+    bins: number;
+    scale: AxisScale;
+}) => {
     return scale === "linear"
-        ? interpolateBinLinear(point, min, max, bins)
-        : interpolateBinLog(point, min, max, bins);
+        ? interpolateBinLinear({ point, min, max, bins })
+        : interpolateBinLog({
+              pointRaw: point,
+              minRaw: min,
+              maxRaw: max,
+              bins
+          });
 };
 
-const interpolateBinLinear = (
-    point: number,
-    min: number,
-    max: number,
-    bins: number
-) => {
+const interpolateBinLinear = ({
+    point,
+    min,
+    max,
+    bins
+}: {
+    point: number;
+    min: number;
+    max: number;
+    bins: number;
+}) => {
     const pct = (point - min) / (max - min);
     return Math.floor(bins * pct);
 };
 
-const interpolateBinLog = (
-    pointRaw: number,
-    minRaw: number,
-    maxRaw: number,
-    bins: number
-) => {
+const interpolateBinLog = ({
+    pointRaw,
+    minRaw,
+    maxRaw,
+    bins
+}: {
+    pointRaw: number;
+    minRaw: number;
+    maxRaw: number;
+    bins: number;
+}) => {
     const point = Math.log10(pointRaw);
     const min = Math.log10(minRaw);
     const max = Math.log10(maxRaw);
@@ -62,11 +84,15 @@ export const calcPan = (pct: number) => (isNaN(pct) ? 0 : (pct * 2 - 1) * 0.98);
 
 const isNotNull = (tmp: unknown) => tmp !== null;
 
-export const calculateAxisMinimum = (
-    data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2",
-    filterGroupIndex?: number
-) => {
+export const calculateAxisMinimum = ({
+    data,
+    prop,
+    filterGroupIndex
+}: {
+    data: SupportedDataPointType[][];
+    prop: "x" | "y" | "y2";
+    filterGroupIndex?: number;
+}) => {
     let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
@@ -111,11 +137,15 @@ export const calculateAxisMinimum = (
     }
     return Math.min(...values);
 };
-export const calculateAxisMaximum = (
-    data: SupportedDataPointType[][],
-    prop: "x" | "y" | "y2",
-    filterGroupIndex?: number
-) => {
+export const calculateAxisMaximum = ({
+    data,
+    prop,
+    filterGroupIndex
+}: {
+    data: SupportedDataPointType[][];
+    prop: "x" | "y" | "y2";
+    filterGroupIndex?: number;
+}) => {
     let dataToProcess: SupportedDataPointType[] = data.flat().filter(isNotNull);
 
     if (filterGroupIndex >= 0 && filterGroupIndex < data.length) {
@@ -163,28 +193,39 @@ export const calculateAxisMaximum = (
 
 export const defaultFormat = (value: number) => `${value}`;
 
-export const generatePointDescription = (
-    language: string,
-    point: SupportedDataPointType,
-    xFormat: AxisData["format"],
-    yFormat: AxisData["format"],
-    stat?: keyof StatBundle,
-    outlierIndex: number | null = null,
-    announcePointLabelFirst = false
-) => {
+export const generatePointDescription = ({
+    point,
+    xFormat = defaultFormat,
+    yFormat = defaultFormat,
+    stat,
+    outlierIndex = null,
+    announcePointLabelFirst = false,
+    translationCallback
+}: {
+    point: SupportedDataPointType;
+    xFormat?: AxisData["format"];
+    yFormat?: AxisData["format"];
+    stat?: keyof StatBundle;
+    outlierIndex?: number | null;
+    announcePointLabelFirst?: boolean;
+    translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string;
+}) => {
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translate(language, "point-xy", {
+            return translationCallback("point-xy", {
                 x: xFormat(point.x),
                 y: yFormat(point[stat as keyof OHLCDataPoint] as number)
             });
         }
         // @ts-expect-error: ts weirdness. It doesn't think "open"/"high"/"low"/"close"/"x" are strings.
-        return translate(language, "point-xohlc", point);
+        return translationCallback("point-xohlc", point);
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return translate(language, "point-outlier", {
+        return translationCallback("point-outlier", {
             x: xFormat(point.x),
             y: point.outlier.at(outlierIndex),
             index: outlierIndex + 1,
@@ -194,7 +235,7 @@ export const generatePointDescription = (
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translate(language, "point-xy", {
+            return translationCallback("point-xy", {
                 x: xFormat(point.x),
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 y: yFormat(point[stat])
@@ -209,13 +250,13 @@ export const generatePointDescription = (
         };
 
         if ("outlier" in point && point.outlier?.length > 0) {
-            return translate(language, "point-xhl-outlier", {
+            return translationCallback("point-xhl-outlier", {
                 ...formattedPoint,
                 count: point.outlier.length
             });
         }
 
-        return translate(language, "point-xhl", formattedPoint);
+        return translationCallback("point-xhl", formattedPoint);
     }
 
     if (isSimpleDataPoint(point)) {
@@ -231,7 +272,7 @@ export const generatePointDescription = (
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return translate(language, "point-xy", {
+        return translationCallback("point-xy", {
             x: xFormat(point.x),
             y: yFormat(point.y2)
         });
@@ -240,10 +281,13 @@ export const generatePointDescription = (
     return "";
 };
 
-export const usesAxis = (
-    data: SupportedDataPointType[][],
-    axisName: "x" | "y" | "y2"
-) => {
+export const usesAxis = ({
+    data,
+    axisName
+}: {
+    data: SupportedDataPointType[][];
+    axisName: "x" | "y" | "y2";
+}) => {
     const firstUseOfAxis = data.filter(isNotNull).find((row) => {
         return row.find((point) => axisName in point);
     });
@@ -319,17 +363,23 @@ export const calculateMetadataByGroup = (
 /**
  * Initialize internal representation of axis metadata. Providing metadata is optional, so we
  * need to generate metadata that hasn't been provided.
- * @param data - the X/Y values
- * @param axisName - which axis is this? "x" or "y"
- * @param userAxis - metadata provided by the invocation
- * @param filterGroupIndex -
+ * @param props -
+ * @param props.data - the X/Y values
+ * @param props.axisName - which axis is this? "x" or "y"
+ * @param props.userAxis - metadata provided by the invocation
+ * @param props.filterGroupIndex -
  */
-export const initializeAxis = (
-    data: SupportedDataPointType[][],
-    axisName: validAxes,
-    userAxis?: AxisData,
-    filterGroupIndex?: number
-): AxisData => {
+export const initializeAxis = ({
+    data,
+    axisName,
+    userAxis,
+    filterGroupIndex
+}: {
+    data: SupportedDataPointType[][];
+    axisName: validAxes;
+    userAxis?: AxisData;
+    filterGroupIndex?: number;
+}): AxisData => {
     const format =
         userAxis?.format ??
         ("valueLabels" in userAxis
@@ -339,10 +389,10 @@ export const initializeAxis = (
     return {
         minimum:
             userAxis?.minimum ??
-            calculateAxisMinimum(data, axisName, filterGroupIndex),
+            calculateAxisMinimum({ data, prop: axisName, filterGroupIndex }),
         maximum:
             userAxis?.maximum ??
-            calculateAxisMaximum(data, axisName, filterGroupIndex),
+            calculateAxisMaximum({ data, prop: axisName, filterGroupIndex }),
         label: userAxis?.label ?? "",
         type: userAxis?.type ?? "linear",
         format,
@@ -399,16 +449,25 @@ export const convertDataRow = (
     });
 };
 
-export const formatWrapper = (axis: AxisData, language: string) => {
+export const formatWrapper = ({
+    axis,
+    translationCallback
+}: {
+    axis: AxisData;
+    translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string;
+}) => {
     const format = (num: number) => {
         if (isNaN(num)) {
-            return translate(language, "missing");
+            return translationCallback("missing");
         }
-        if (axis.minimum && num < axis.minimum) {
-            return translate(language, "tooLow");
+        if (typeof axis.minimum === "number" && num < axis.minimum) {
+            return translationCallback("tooLow");
         }
-        if (axis.maximum && num > axis.maximum) {
-            return translate(language, "tooHigh");
+        if (typeof axis.maximum === "number" && num > axis.maximum) {
+            return translationCallback("tooHigh");
         }
         return axis.format(num);
     };
@@ -420,18 +479,21 @@ export const formatWrapper = (axis: AxisData, language: string) => {
  *
  */
 type ChartSummaryType = {
-    language: string;
     groupCount: number;
     title: string;
     live?: boolean;
     hierarchy?: boolean;
+    translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string;
 };
 export const generateChartSummary = ({
-    language,
     title,
     groupCount,
     live = false,
-    hierarchy = false
+    hierarchy = false,
+    translationCallback
 }: ChartSummaryType) => {
     const text = ["summ", "chart"];
 
@@ -451,7 +513,7 @@ export const generateChartSummary = ({
         text.push("title");
     }
 
-    return translate(language, text.join("-"), {
+    return translationCallback(text.join("-"), {
         groupCount,
         title
     });
@@ -462,20 +524,29 @@ const axisDescriptions = {
     y: "Y",
     y2: "Alternate Y"
 };
-export const generateAxisSummary = (
-    axisLetter: "x" | "y" | "y2",
-    axis: AxisData,
-    language: string
-) => {
+export const generateAxisSummary = ({
+    axisLetter,
+    axis,
+    translationCallback
+}: {
+    axisLetter: "x" | "y" | "y2";
+    axis: AxisData;
+    translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string;
+}) => {
     const code = ["axis", "desc"];
+
     if (axis.type === "log10") {
         code.push("log");
     }
+
     if (axisLetter === "x" && axis.continuous) {
         code.push("con");
     }
 
-    return translate(language, code.join("-"), {
+    return translationCallback(code.join("-"), {
         letter: axisDescriptions[axisLetter],
         label: axis.label ?? "",
         min: axis.format(axis.minimum),
@@ -490,20 +561,23 @@ type InstructionsType = {
     hierarchy: boolean;
     live: boolean;
     hasNotes: boolean;
-    language: string;
+    translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string;
 };
 export const generateInstructions = ({
     hierarchy,
     live,
     hasNotes,
-    language
+    translationCallback
 }: InstructionsType) => {
     const keyboardMessage = filteredJoin(
         [
-            translate(language, "instructionArrows"),
-            hierarchy && translate(language, "instructionHierarchy"),
-            live && translate(language, "instructionLive"),
-            translate(language, "instructionHotkeys")
+            translationCallback("instructionArrows"),
+            hierarchy && translationCallback("instructionHierarchy"),
+            live && translationCallback("instructionLive"),
+            translationCallback("instructionHotkeys")
         ],
         " "
     );
@@ -520,17 +594,25 @@ export const isUnplayable = (yValue: number, yAxis: AxisData) => {
     return isNaN(yValue) || yValue < yAxis.minimum || yValue > yAxis.maximum;
 };
 
-export const prepChartElement = (
-    elem: HTMLElement,
-    title: string,
-    language: string,
-    addCleanupTask: (fn: () => void) => void
-) => {
+export const prepChartElement = ({
+    elem,
+    title,
+    translationCallback,
+    addCleanupTask
+}: {
+    elem: HTMLElement;
+    title: string;
+    translationCallback: (
+        code: string,
+        evaluators?: translateEvaluators
+    ) => string;
+    addCleanupTask: (fn: () => void) => void;
+}) => {
     if (!elem.hasAttribute("alt") && !elem.hasAttribute("aria-label")) {
-        elem.setAttribute(
-            "aria-label",
-            translate(language, "description", { title })
-        );
+        const label = title
+            ? translationCallback("description", { title })
+            : translationCallback("description-untitled");
+        elem.setAttribute("aria-label", label);
         addCleanupTask(() => elem.removeAttribute("aria-label"));
     }
 
@@ -583,3 +665,20 @@ export const detectIfMobile = () => {
 
 export const filteredJoin = (arr: string[], joiner: string) =>
     arr.filter((item) => Boolean(item)).join(joiner);
+
+export const determineCC = (
+    containerElement: ChartContainerType,
+    cleanUpFnCallback: (fn: () => void) => void,
+    providedCC?: HTMLElement
+): HTMLElement => {
+    if (providedCC) {
+        return providedCC;
+    }
+
+    const generatedCC = document.createElement("div");
+    containerElement.appendChild(generatedCC);
+    cleanUpFnCallback(() => {
+        generatedCC.remove();
+    });
+    return generatedCC;
+};

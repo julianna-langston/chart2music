@@ -11,7 +11,8 @@ import type {
     c2mGolangReturn,
     c2mCallbackType,
     StatBundle,
-    c2mInfo
+    c2mInfo,
+    ChartContainerType
 } from "./types";
 import {
     calcPan,
@@ -32,7 +33,8 @@ import {
     generateChartSummary,
     generateInstructions,
     generateAxisSummary,
-    detectIfMobile
+    detectIfMobile,
+    determineCC
 } from "./utils";
 import { validateInput } from "./validate";
 import {
@@ -46,7 +48,11 @@ import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
-import { DEFAULT_LANGUAGE, translate, AVAILABLE_LANGUAGES } from "./translator";
+import {
+    DEFAULT_LANGUAGE,
+    AVAILABLE_LANGUAGES,
+    TranslationManager
+} from "./translator";
 
 /**
  * Metadata about previous levels. Used to quickly return to parents.
@@ -131,7 +137,7 @@ export const c2mChart = (input: SonifyTypes): c2mGolangReturn => {
  * Represents a single chart that should be sonified.
  */
 export class c2m {
-    private _chartElement: HTMLElement;
+    private _chartElement: ChartContainerType;
     private _ccElement: HTMLElement;
     private _chartSummary: string;
     private _instructions: string;
@@ -186,6 +192,7 @@ export class c2m {
     private _hierarchyBreadcrumbs: HierarchyBreadcrumbType[] = [];
     private _language: string;
     private _cleanUpTasks: Array<() => void> = [];
+    private _translator: TranslationManager;
 
     /**
      * Constructor
@@ -203,16 +210,15 @@ export class c2m {
         this._chartElement = input.element;
         this._info = input.info ?? {};
         this._language = input.lang ?? DEFAULT_LANGUAGE;
-        prepChartElement(
-            this._chartElement,
-            this._title,
-            this._language,
-            (fn: () => void) => {
-                this._cleanUpTasks.push(fn);
-            }
-        );
+        this._translator = new TranslationManager(this._language);
 
-        this._ccElement = input.cc ?? this._chartElement;
+        this._ccElement = determineCC(
+            this._chartElement,
+            (fn) => {
+                this._cleanUpTasks.push(fn);
+            },
+            input.cc
+        );
 
         if (input?.options) {
             if (this._type === "scatter") {
@@ -229,7 +235,23 @@ export class c2m {
                     lower: 0
                 };
             }
+
+            if (input.options.translations) {
+                this._translator.intercepterCallback =
+                    input.options.translations;
+            }
         }
+
+        prepChartElement({
+            elem: this._chartElement,
+            title: this._title,
+            translationCallback: (code, evaluators) => {
+                return this._translator.translate(code, evaluators);
+            },
+            addCleanupTask: (fn: () => void) => {
+                this._cleanUpTasks.push(fn);
+            }
+        });
 
         this._setData(input.data, input.axes);
 
@@ -455,6 +477,7 @@ export class c2m {
 
                 this._announceCategoryChange();
                 this._cleanupAfterCategoryChange(currentX);
+                this._onFocus();
             },
             next_category: () => {
                 this._clearPlay();
@@ -469,6 +492,7 @@ export class c2m {
 
                 this._announceCategoryChange();
                 this._cleanupAfterCategoryChange(currentX);
+                this._onFocus();
             },
             first_category: () => {
                 this._clearPlay();
@@ -597,7 +621,7 @@ export class c2m {
                     this._speedRateIndex++;
                 }
                 this._sr.render(
-                    translate(this._language, "kbr-speed", {
+                    this._translator.translate("kbr-speed", {
                         rate_in_ms: SPEEDS.at(this._speedRateIndex)
                     })
                 );
@@ -608,26 +632,29 @@ export class c2m {
                     this._speedRateIndex--;
                 }
                 this._sr.render(
-                    translate(this._language, "kbr-speed", {
+                    this._translator.translate("kbr-speed", {
                         rate_in_ms: SPEEDS.at(this._speedRateIndex)
                     })
                 );
             },
             monitor: () => {
                 if (!this._options.live) {
-                    this._sr.render(translate(this._language, "kbr-not-live"));
+                    this._sr.render(this._translator.translate("kbr-not-live"));
                     return;
                 }
                 this._monitorMode = !this._monitorMode;
                 this._sr.render(
-                    translate(this._language, "monitoring", {
+                    this._translator.translate("monitoring", {
                         switch: this._monitorMode
                     })
                 );
             },
             help: () => {
                 this._clearPlay();
-                this._keyEventManager.launchHelpDialog(this._language);
+                this._keyEventManager.launchHelpDialog(
+                    this._language,
+                    (id, ev) => this._translator.translate(id, ev)
+                );
             },
             options: () => {
                 this._checkAudioEngine();
@@ -637,7 +664,9 @@ export class c2m {
                         speedIndex: this._speedRateIndex,
                         continuousMode: this._xAxis.continuous,
                         labelPosition: this._announcePointLabelFirst,
-                        language: this._language
+                        language: this._language,
+                        translationCallback: (id, ev) =>
+                            this._translator.translate(id, ev)
                     },
                     (
                         lowerIndex: number,
@@ -650,7 +679,7 @@ export class c2m {
                         if (this._speedRateIndex !== speedIndex) {
                             this._speedRateIndex = speedIndex;
                             this._sr.render(
-                                translate(this._language, "kbr-speed", {
+                                this._translator.translate("kbr-speed", {
                                     rate_in_ms: SPEEDS.at(this._speedRateIndex)
                                 })
                             );
@@ -671,7 +700,9 @@ export class c2m {
                 );
             },
             info: () => {
-                launchInfoDialog(this._info, this._language);
+                launchInfoDialog(this._info, (id, ev) =>
+                    this._translator.translate(id, ev)
+                );
             }
         };
     }
@@ -708,17 +739,21 @@ export class c2m {
      */
     private _generateSummary() {
         this._chartSummary = generateChartSummary({
-            language: this._language,
             title: this._title,
             groupCount: this._visible_group_indices.length,
             live: this._options.live,
-            hierarchy: this._hierarchy
+            hierarchy: this._hierarchy,
+            translationCallback: (code, evaluators) => {
+                return this._translator.translate(code, evaluators);
+            }
         });
         this._instructions = generateInstructions({
-            language: this._language,
             live: this._options.live,
             hierarchy: this._hierarchy,
-            hasNotes: this._info?.notes?.length > 0
+            hasNotes: this._info?.notes?.length > 0,
+            translationCallback: (code, evaluators) => {
+                return this._translator.translate(code, evaluators);
+            }
         });
     }
 
@@ -790,24 +825,24 @@ export class c2m {
             }
         }
 
-        this._xAxis = initializeAxis(
-            this._data,
-            "x",
-            this._explicitAxes.x,
-            this._groups.indexOf(this._options.root)
-        );
-        this._yAxis = initializeAxis(
-            this._data,
-            "y",
-            this._explicitAxes.y,
-            this._groups.indexOf(this._options.root)
-        );
-        if (usesAxis(this._data, "y2")) {
-            this._y2Axis = initializeAxis(
-                this._data,
-                "y2",
-                this._explicitAxes.y2
-            );
+        this._xAxis = initializeAxis({
+            data: this._data,
+            axisName: "x",
+            userAxis: this._explicitAxes.x,
+            filterGroupIndex: this._groups.indexOf(this._options.root)
+        });
+        this._yAxis = initializeAxis({
+            data: this._data,
+            axisName: "y",
+            userAxis: this._explicitAxes.y,
+            filterGroupIndex: this._groups.indexOf(this._options.root)
+        });
+        if (usesAxis({ data: this._data, axisName: "y2" })) {
+            this._y2Axis = initializeAxis({
+                data: this._data,
+                axisName: "y2",
+                userAxis: this._explicitAxes.y2
+            });
         }
 
         if (
@@ -916,10 +951,10 @@ export class c2m {
 
         if (this._title) {
             this._sr.render(
-                translate(this._language, "updated", { title: this._title })
+                this._translator.translate("updated", { title: this._title })
             );
         } else {
-            this._sr.render(translate(this._language, "updated-untitled"));
+            this._sr.render(this._translator.translate("updated-untitled"));
         }
     }
 
@@ -945,7 +980,7 @@ export class c2m {
                 this._visible_group_indices.push(groupIndex);
                 this._visible_group_indices.sort();
                 this._sr.render(
-                    translate(this._language, "updated", {
+                    this._translator.translate("updated", {
                         title: this._title || "Chart"
                     })
                 );
@@ -961,7 +996,7 @@ export class c2m {
                     1
                 );
                 this._sr.render(
-                    translate(this._language, "updated", {
+                    this._translator.translate("updated", {
                         title: this._title || "Chart"
                     })
                 );
@@ -1037,16 +1072,34 @@ export class c2m {
         }
 
         if (recalculateX) {
-            this._xAxis.minimum = calculateAxisMinimum(this._data, "x");
-            this._xAxis.maximum = calculateAxisMaximum(this._data, "x");
+            this._xAxis.minimum = calculateAxisMinimum({
+                data: this._data,
+                prop: "x"
+            });
+            this._xAxis.maximum = calculateAxisMaximum({
+                data: this._data,
+                prop: "x"
+            });
         }
         if (recalculateY) {
-            this._yAxis.minimum = calculateAxisMinimum(this._data, "y");
-            this._yAxis.maximum = calculateAxisMaximum(this._data, "y");
+            this._yAxis.minimum = calculateAxisMinimum({
+                data: this._data,
+                prop: "y"
+            });
+            this._yAxis.maximum = calculateAxisMaximum({
+                data: this._data,
+                prop: "y"
+            });
         }
         if (recalculateY2) {
-            this._y2Axis.minimum = calculateAxisMinimum(this._data, "y2");
-            this._y2Axis.maximum = calculateAxisMaximum(this._data, "y2");
+            this._y2Axis.minimum = calculateAxisMinimum({
+                data: this._data,
+                prop: "y2"
+            });
+            this._y2Axis.maximum = calculateAxisMaximum({
+                data: this._data,
+                prop: "y2"
+            });
         }
 
         if (this._pointIndex < 0) {
@@ -1146,182 +1199,180 @@ export class c2m {
         this._keyEventManager.registerKeyEvents(
             [
                 {
-                    title: translate(this._language, "key-point-next"),
+                    title: this._translator.translate("key-point-next"),
                     key: "ArrowRight",
                     callback: this._availableActions.next_point
                 },
                 {
-                    title: translate(this._language, "key-point-prev"),
+                    title: this._translator.translate("key-point-prev"),
                     key: "ArrowLeft",
                     callback: this._availableActions.previous_point
                 },
                 {
-                    title: translate(this._language, "key-play-fwd"),
+                    title: this._translator.translate("key-play-fwd"),
                     key: "Shift+End",
                     callback: this._availableActions.play_right
                 },
                 {
-                    title: translate(this._language, "key-play-back"),
+                    title: this._translator.translate("key-play-back"),
                     key: "Shift+Home",
                     callback: this._availableActions.play_left
                 },
                 {
-                    title: translate(this._language, "key-play-cancel"),
+                    title: this._translator.translate("key-play-cancel"),
                     key: "Ctrl+Control",
                     keyDescription: "Control",
                     callback: this._availableActions.stop_play
                 },
                 this._type === "matrix"
                     ? {
-                          title: translate(this._language, "key-group-prev"),
+                          title: this._translator.translate("key-group-prev"),
                           key: "ArrowUp",
                           callback: this._availableActions.previous_category
                       }
                     : {
-                          title: translate(this._language, "key-stat-prev"),
+                          title: this._translator.translate("key-stat-prev"),
                           key: "ArrowUp",
                           callback: this._availableActions.previous_stat
                       },
                 this._type === "matrix"
                     ? {
-                          title: translate(this._language, "key-group-next"),
+                          title: this._translator.translate("key-group-next"),
                           key: "ArrowDown",
                           callback: this._availableActions.next_category
                       }
                     : {
-                          title: translate(this._language, "key-stat-next"),
+                          title: this._translator.translate("key-stat-next"),
                           key: "ArrowDown",
                           callback: this._availableActions.next_stat
                       },
                 !this._hierarchy && {
-                    title: translate(this._language, "key-group-prev"),
+                    title: this._translator.translate("key-group-prev"),
                     key: "PageUp",
                     callback: this._availableActions.previous_category
                 },
                 !this._hierarchy && {
-                    title: translate(this._language, "key-group-next"),
+                    title: this._translator.translate("key-group-next"),
                     key: "PageDown",
                     callback: this._availableActions.next_category
                 },
                 !this._hierarchy && {
-                    title: translate(this._language, "key-group-first"),
+                    title: this._translator.translate("key-group-first"),
                     key: "Alt+PageUp",
                     callback: this._availableActions.first_category
                 },
                 this._hierarchy
                     ? {
-                          title: translate(this._language, "key-hier-root"),
+                          title: this._translator.translate("key-hier-root"),
                           key: "Alt+PageUp",
                           callback: this._availableActions.go_to_root
                       }
                     : {
-                          title: translate(this._language, "key-group-last"),
+                          title: this._translator.translate("key-group-last"),
                           key: "Alt+PageDown",
                           callback: this._availableActions.last_category
                       },
                 !this._hierarchy && {
-                    title: translate(this._language, "key-play-fwd-group"),
+                    title: this._translator.translate("key-play-fwd-group"),
                     key: "Shift+PageDown",
                     callback: this._availableActions.play_forward_category
                 },
                 !this._hierarchy && {
-                    title: translate(this._language, "key-play-back-group"),
+                    title: this._translator.translate("key-play-back-group"),
                     key: "Shift+PageUp",
                     callback: this._availableActions.play_backward_category
                 },
                 {
-                    title: translate(this._language, "key-point-first"),
+                    title: this._translator.translate("key-point-first"),
                     key: "Home",
                     callback: this._availableActions.first_point
                 },
                 {
-                    title: translate(this._language, "key-point-last"),
+                    title: this._translator.translate("key-point-last"),
                     key: "End",
                     callback: this._availableActions.last_point
                 },
                 {
-                    title: translate(this._language, "key-replay"),
+                    title: this._translator.translate("key-replay"),
                     key: " ",
                     keyDescription: "Spacebar",
                     callback: this._availableActions.replay
                 },
                 {
-                    title: translate(this._language, "key-select"),
+                    title: this._translator.translate("key-select"),
                     key: "Enter",
                     callback: this._availableActions.select
                 },
                 {
-                    title: translate(this._language, "key-tenth-prev"),
+                    title: this._translator.translate("key-tenth-prev"),
                     key: "Ctrl+ArrowLeft",
                     callback: this._availableActions.previous_tenth
                 },
                 {
-                    title: translate(this._language, "key-tenth-next"),
+                    title: this._translator.translate("key-tenth-next"),
                     key: "Ctrl+ArrowRight",
                     callback: this._availableActions.next_tenth
                 },
                 {
-                    title: translate(
-                        this._language,
+                    title: this._translator.translate(
                         `key-${this._hierarchy ? "level" : "group"}-min`
                     ),
                     key: "[",
                     callback: this._availableActions.go_minimum
                 },
                 {
-                    title: translate(
-                        this._language,
+                    title: this._translator.translate(
                         `key-${this._hierarchy ? "level" : "group"}-max`
                     ),
                     key: "]",
                     callback: this._availableActions.go_maximum
                 },
                 !this._hierarchy && {
-                    title: translate(this._language, "key-chart-min"),
+                    title: this._translator.translate("key-chart-min"),
                     key: "Ctrl+[",
                     callback: this._availableActions.go_total_minimum
                 },
                 !this._hierarchy && {
-                    title: translate(this._language, "key-chart-max"),
+                    title: this._translator.translate("key-chart-max"),
                     key: "Ctrl+]",
                     callback: this._availableActions.go_total_maximum
                 },
                 this._hierarchy && {
-                    title: translate(this._language, "key-level-decr"),
+                    title: this._translator.translate("key-level-decr"),
                     key: "Alt+ArrowDown",
                     callback: this._availableActions.drill_down
                 },
                 this._hierarchy && {
-                    title: translate(this._language, "key-level-incr"),
+                    title: this._translator.translate("key-level-incr"),
                     key: "Alt+ArrowUp",
                     callback: this._availableActions.drill_up
                 },
                 {
-                    title: translate(this._language, "key-speed-incr"),
+                    title: this._translator.translate("key-speed-incr"),
                     caseSensitive: false,
                     key: "q",
                     callback: this._availableActions.speed_up
                 },
                 {
-                    title: translate(this._language, "key-speed-decr"),
+                    title: this._translator.translate("key-speed-decr"),
                     caseSensitive: false,
                     key: "e",
                     callback: this._availableActions.slow_down
                 },
                 {
-                    title: translate(this._language, "key-monitor-toggle"),
+                    title: this._translator.translate("key-monitor-toggle"),
                     caseSensitive: false,
                     key: "m",
                     callback: this._availableActions.monitor
                 },
                 {
-                    title: translate(this._language, "key-dialog-help"),
+                    title: this._translator.translate("key-dialog-help"),
                     caseSensitive: false,
                     key: "h",
                     callback: this._availableActions.help
                 },
                 {
-                    title: translate(this._language, "key-dialog-options"),
+                    title: this._translator.translate("key-dialog-options"),
                     caseSensitive: false,
                     key: "o",
                     callback: this._availableActions.options
@@ -1331,7 +1382,7 @@ export class c2m {
 
         if (this._info.notes?.length > 0) {
             this._keyEventManager.registerKeyEvent({
-                title: translate(this._language, "info-open"),
+                title: this._translator.translate("info-open"),
                 caseSensitive: false,
                 key: "i",
                 callback: this._availableActions.info
@@ -1399,7 +1450,7 @@ export class c2m {
      */
     private generateGroupSummary() {
         if (this._currentGroupType === "unsupported") {
-            return translate(this._language, "group-unknown", {
+            return this._translator.translate("group-unknown", {
                 title: this._currentGroupName
             });
         }
@@ -1411,13 +1462,31 @@ export class c2m {
         }
 
         const text = [
-            translate(this._language, code.join("-"), {
+            this._translator.translate(code.join("-"), {
                 label: this._currentGroupName
             }),
-            generateAxisSummary("x", this._xAxis, this._language),
+            generateAxisSummary({
+                axisLetter: "x",
+                axis: this._xAxis,
+                translationCallback: (code, evaluators) => {
+                    return this._translator.translate(code, evaluators);
+                }
+            }),
             isAlternateAxisDataPoint(this.currentPoint)
-                ? generateAxisSummary("y2", this._y2Axis, this._language)
-                : generateAxisSummary("y", this._yAxis, this._language)
+                ? generateAxisSummary({
+                      axisLetter: "y2",
+                      axis: this._y2Axis,
+                      translationCallback: (code, evaluators) => {
+                          return this._translator.translate(code, evaluators);
+                      }
+                  })
+                : generateAxisSummary({
+                      axisLetter: "y",
+                      axis: this._yAxis,
+                      translationCallback: (code, evaluators) => {
+                          return this._translator.translate(code, evaluators);
+                      }
+                  })
         ];
 
         return text.join(" ");
@@ -1446,6 +1515,7 @@ export class c2m {
                     window.__chart2music_options__._hertzClamps;
                 this._setHertzClamps(lower, upper);
             }
+            this._onFocus();
         };
         const blurEvent = () => {
             this._monitorMode = false;
@@ -1871,21 +1941,21 @@ export class c2m {
         this._flagNewLevel = true;
 
         // Update x range
-        this._xAxis = initializeAxis(
-            this._data,
-            "x",
-            this._explicitAxes.x,
-            this._visibleGroupIndex
-        );
-        this._yAxis = initializeAxis(
-            this._data,
-            "y",
-            {
+        this._xAxis = initializeAxis({
+            data: this._data,
+            axisName: "x",
+            userAxis: this._explicitAxes.x,
+            filterGroupIndex: this._visibleGroupIndex
+        });
+        this._yAxis = initializeAxis({
+            data: this._data,
+            axisName: "y",
+            userAxis: {
                 ...this._explicitAxes.y,
                 minimum: 0
             },
-            this._visibleGroupIndex
-        );
+            filterGroupIndex: this._visibleGroupIndex
+        });
         this._generateSummary();
     }
 
@@ -2035,13 +2105,13 @@ export class c2m {
                 return;
             }
 
-            const yBin = interpolateBin(
-                current.y,
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                hertzes.length - 1,
-                this._yAxis.type
-            );
+            const yBin = interpolateBin({
+                point: current.y,
+                min: this._yAxis.minimum,
+                max: this._yAxis.maximum,
+                bins: hertzes.length - 1,
+                scale: this._yAxis.type
+            });
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
 
@@ -2052,13 +2122,13 @@ export class c2m {
             if (isUnplayable(current.y2, this._y2Axis)) {
                 return;
             }
-            const yBin = interpolateBin(
-                current.y2,
-                this._y2Axis.minimum,
-                this._y2Axis.maximum,
-                hertzes.length - 1,
-                this._y2Axis.type
-            );
+            const yBin = interpolateBin({
+                point: current.y2,
+                min: this._y2Axis.minimum,
+                max: this._y2Axis.maximum,
+                bins: hertzes.length - 1,
+                scale: this._y2Axis.type
+            });
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
             return;
@@ -2069,14 +2139,13 @@ export class c2m {
             this._outlierMode &&
             "outlier" in current
         ) {
-            const yBin = interpolateBin(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                current.outlier[this._outlierIndex],
-                this._yAxis.minimum,
-                this._yAxis.maximum,
-                hertzes.length - 1,
-                this._yAxis.type
-            );
+            const yBin = interpolateBin({
+                point: current.outlier[this._outlierIndex],
+                min: this._yAxis.minimum,
+                max: this._yAxis.maximum,
+                bins: hertzes.length - 1,
+                scale: this._yAxis.type
+            });
 
             this._audioEngine.playDataPoint(hertzes[yBin], xPan, NOTE_LENGTH);
             return;
@@ -2092,14 +2161,14 @@ export class c2m {
                     return;
                 }
 
-                const yBin = interpolateBin(
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    current[stat],
-                    this._yAxis.minimum,
-                    this._yAxis.maximum,
-                    hertzes.length - 1,
-                    this._yAxis.type
-                );
+                const yBin = interpolateBin({
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    point: current[stat],
+                    min: this._yAxis.minimum,
+                    max: this._yAxis.maximum,
+                    bins: hertzes.length - 1,
+                    scale: this._yAxis.type
+                });
 
                 this._audioEngine.playDataPoint(
                     hertzes[yBin],
@@ -2118,14 +2187,14 @@ export class c2m {
                 ) {
                     return;
                 }
-                const yBin = interpolateBin(
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    current[stat],
-                    this._yAxis.minimum,
-                    this._yAxis.maximum,
-                    hertzes.length - 1,
-                    this._yAxis.type
-                );
+                const yBin = interpolateBin({
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    point: current[stat],
+                    min: this._yAxis.minimum,
+                    max: this._yAxis.maximum,
+                    bins: hertzes.length - 1,
+                    scale: this._yAxis.type
+                });
                 setTimeout(
                     () => {
                         this._audioEngine.playDataPoint(
@@ -2144,7 +2213,7 @@ export class c2m {
      * Perform actions when a new data point receives focus
      */
     private _onFocus() {
-        if (this.currentPoint.type === "annotation") {
+        if (this.currentPoint?.type === "annotation") {
             return;
         }
 
@@ -2176,30 +2245,41 @@ export class c2m {
             this._flagNewStat = false;
         }
 
-        const point = generatePointDescription(
-            this._language,
-            current,
-            formatWrapper(this._xAxis, this._language),
-            formatWrapper(
-                isAlternateAxisDataPoint(current) ? this._y2Axis : this._yAxis,
-                this._language
-            ),
-            availableStats[statIndex],
-            this._outlierMode ? this._outlierIndex : null,
-            this._announcePointLabelFirst
-        );
+        const point = generatePointDescription({
+            translationCallback: (code, evaluators) => {
+                return this._translator.translate(code, evaluators);
+            },
+            point: current,
+            xFormat: formatWrapper({
+                axis: this._xAxis,
+                translationCallback: (code, evaluators) => {
+                    return this._translator.translate(code, evaluators);
+                }
+            }),
+            yFormat: formatWrapper({
+                translationCallback: (code, evaluators) => {
+                    return this._translator.translate(code, evaluators);
+                },
+                axis: isAlternateAxisDataPoint(current)
+                    ? this._y2Axis
+                    : this._yAxis
+            }),
+            stat: availableStats[statIndex],
+            outlierIndex: this._outlierMode ? this._outlierIndex : null,
+            announcePointLabelFirst: this._announcePointLabelFirst
+        });
+
         const text = filteredJoin(
             [
                 this._flagNewLevel && this._currentGroupName,
                 this._flagNewStat &&
-                    translate(
-                        this._language,
+                    this._translator.translate(
                         `stat-${availableStats[statIndex] ?? "all"}`
                     ),
                 point,
                 this._hierarchy &&
                     current.children &&
-                    translate(this._language, "nodeHasChildren")
+                    this._translator.translate("nodeHasChildren")
             ],
             ", "
         );

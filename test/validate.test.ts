@@ -48,11 +48,11 @@ test("validateInputLang", () => {
 });
 
 test("validateInputElement", () => {
-    // @ts-ignore - deliberately generating error condition
+    // @ts-expect-error - deliberately generating error condition
     expect(validateInputElement()).toBe(
         "Required parameter 'element' was left undefined. An HTMLElement or SVGElement must be provided for this parameter."
     );
-    // @ts-ignore - deliberately generating error condition
+    // @ts-expect-error - deliberately generating error condition
     expect(validateInputElement(3)).toBe(
         "Provided value for 'element' must be an instance of HTMLElement or SVGElement."
     );
