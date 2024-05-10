@@ -77,8 +77,7 @@ export const multiLinePlot = (canvas, cc) => {
                 ]);
                 myChart.update();
             },
-            translations: ({ language, id, evaluators }) => {
-                console.log("translation", language, id, evaluators);
+            translationCallback: ({ language, id, evaluators }) => {
                 if (language !== "en") {
                     return false;
                 }

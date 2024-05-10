@@ -233,7 +233,7 @@ export type c2mOptions = {
     hertzes?: number[];
     stack?: boolean;
     root?: null | string;
-    translations?: ({
+    translationCallback?: ({
         language,
         id,
         evaluators

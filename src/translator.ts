@@ -14,7 +14,8 @@ export class TranslationManager {
     private _availableLanguageCodes: string[] = [];
     private _loadedLanguages: Map<string, IntlShape<string>> = new Map();
     private _language: string;
-    private _intercepterCallback: c2mOptions["translations"] = () => false;
+    private _intercepterCallback: c2mOptions["translationCallback"] = () =>
+        false;
 
     /**
      * Create a TranslationManager
@@ -46,7 +47,7 @@ export class TranslationManager {
     /**
      * Set a translation interceptor
      */
-    set intercepterCallback(newValue: c2mOptions["translations"]) {
+    set intercepterCallback(newValue: c2mOptions["translationCallback"]) {
         this._intercepterCallback = newValue;
     }
 

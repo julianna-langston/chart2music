@@ -238,7 +238,7 @@ describe("Provided translations", () => {
             cc: mockElementCC,
             options: {
                 enableSound: false,
-                translations: ({ language, id, evaluators }) => {
+                translationCallback: ({ language, id, evaluators }) => {
                     if (language !== "en") {
                         return false;
                     }

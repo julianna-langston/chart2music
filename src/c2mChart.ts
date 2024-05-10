@@ -236,9 +236,9 @@ export class c2m {
                 };
             }
 
-            if (input.options.translations) {
+            if (input.options.translationCallback) {
                 this._translator.intercepterCallback =
-                    input.options.translations;
+                    input.options.translationCallback;
             }
         }
 
