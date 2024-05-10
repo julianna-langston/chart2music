@@ -600,7 +600,7 @@ export const prepChartElement = ({
     translationCallback,
     addCleanupTask
 }: {
-    elem: HTMLElement;
+    elem: ChartContainerType;
     title: string;
     translationCallback: (
         code: string,
