@@ -137,19 +137,32 @@ export type AxisData = {
 /**
  * The chart types available
  */
-export enum SUPPORTED_CHART_TYPES {
-    LINE = "line",
-    BAR = "bar",
-    BAND = "band",
-    PIE = "pie",
-    CANDLESTICK = "candlestick",
-    HISTOGRAM = "histogram",
-    BOX = "box",
-    MATRIX = "matrix",
-    SCATTER = "scatter",
-    TREEMAP = "treemap",
-    UNSUPPORTED = "unsupported"
-}
+export type SUPPORTED_CHART_TYPES =
+    | "band"
+    | "bar"
+    | "box"
+    | "candlestick"
+    | "histogram"
+    | "line"
+    | "matrix"
+    | "pie"
+    | "scatter"
+    | "treemap"
+    | "unsupported";
+
+export const SUPPORTED_TYPES_LIST: SUPPORTED_CHART_TYPES[] = [
+    "band",
+    "bar",
+    "box",
+    "candlestick",
+    "histogram",
+    "line",
+    "matrix",
+    "pie",
+    "scatter",
+    "treemap",
+    "unsupported"
+];
 
 /**
  * Bundle of possible statistics

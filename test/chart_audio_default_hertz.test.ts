@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { MockAudioEngine } from "./_mockAudioEngine";
 
 jest.useFakeTimers();
@@ -13,7 +12,7 @@ test("Move around by single events - single line plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,

@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { hertzes } from "./_constants";
 import { MockAudioEngine } from "./_mockAudioEngine";
 
@@ -25,7 +24,7 @@ describe("Check panning/frequency/timing", () => {
             const mockElement = document.createElement("div");
             const mockElementCC = document.createElement("div");
             const { err, data: chart } = c2mChart({
-                type: SUPPORTED_CHART_TYPES.LINE,
+                type: "line",
                 data,
                 element: mockElement,
                 cc: mockElementCC,
@@ -93,7 +92,7 @@ describe("Check panning/frequency/timing", () => {
             const mockElement = document.createElement("div");
             const mockElementCC = document.createElement("div");
             const { err, data: chart } = c2mChart({
-                type: SUPPORTED_CHART_TYPES.LINE,
+                type: "line",
                 data,
                 axes: {
                     y: {
@@ -168,7 +167,7 @@ describe("Check panning/frequency/timing", () => {
             const mockElement = document.createElement("div");
             const mockElementCC = document.createElement("div");
             const { err, data: chart } = c2mChart({
-                type: SUPPORTED_CHART_TYPES.LINE,
+                type: "line",
                 data,
                 element: mockElement,
                 cc: mockElementCC,
@@ -235,7 +234,7 @@ describe("Check panning/frequency/timing", () => {
             const mockElement = document.createElement("div");
             const mockElementCC = document.createElement("div");
             const { err, data: chart } = c2mChart({
-                type: SUPPORTED_CHART_TYPES.LINE,
+                type: "line",
                 data,
                 axes: {
                     x: {
@@ -415,7 +414,7 @@ describe("Check panning/frequency/timing", () => {
             const mockElement = document.createElement("div");
             const mockElementCC = document.createElement("div");
             const { err, data: chart } = c2mChart({
-                type: SUPPORTED_CHART_TYPES.LINE,
+                type: "line",
                 data,
                 axes: {
                     x: {
@@ -487,7 +486,7 @@ describe("Check panning/frequency/timing", () => {
             const mockElement = document.createElement("div");
             const mockElementCC = document.createElement("div");
             const { err, data: chart } = c2mChart({
-                type: SUPPORTED_CHART_TYPES.LINE,
+                type: "line",
                 data,
                 axes: {
                     x: {

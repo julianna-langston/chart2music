@@ -1,6 +1,5 @@
 import { c2mChart } from "../src/c2mChart";
 import type { SimpleDataPoint } from "../src/dataPoint";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { StarTrekEpisodeRatings, StartTrekEpisodeRatingsX } from "./_test_data";
 
 jest.useFakeTimers();
@@ -12,7 +11,7 @@ test("Move around by single events", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -95,7 +94,7 @@ test("Move around by single events", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             1, 2, 3, 0, 4, 5, 4, 3, 1, 2, 3, 0, 4, 5, 4, 3, 1, 2, 3, 0, 4, 5, 4,
             3, 1, 2, 3, 0, 4, 5, 4, 3
@@ -187,7 +186,7 @@ test("Movement for a grouped chart", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -403,7 +402,7 @@ test("Movement for a chart with stats", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: [SUPPORTED_CHART_TYPES.BAND, SUPPORTED_CHART_TYPES.LINE],
+        type: ["band", "line"],
         data: {
             a: [
                 { x: 1, high: 10, low: 8 },
@@ -514,7 +513,7 @@ test("Movement for a chart with a y2 axis and formatting", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 1 },
@@ -653,7 +652,7 @@ test("Movement for a matrix", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.MATRIX,
+        type: "matrix",
         element: mockElement,
         cc: mockElementCC,
         data: StarTrekEpisodeRatings,
@@ -807,7 +806,7 @@ test("Test onSelectCallback", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         element: mockElement,
         cc: mockElementCC,
@@ -856,7 +855,7 @@ test("Move with tickLabels option", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 0, 4, 5, 4, 3],
         axes: {
             x: {
@@ -908,7 +907,7 @@ test("Changing groups with continuous mode: 1-1", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 {
@@ -1082,7 +1081,7 @@ test("Stacked bar chart", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             A: [1, 2, 3, 4, 5],
             B: [10, 11, 12, 13, 14]
@@ -1157,7 +1156,7 @@ test("Don't stack a bar chart if it only has 1 group", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC,
@@ -1251,7 +1250,7 @@ test("Grouped scatter plot", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.SCATTER,
+        type: "scatter",
         data: {
             Blue: blueState,
             Red: redState

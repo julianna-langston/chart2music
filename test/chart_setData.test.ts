@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
@@ -10,7 +9,7 @@ test("setData: setting new data (no starting explicit axis) (no axes)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -34,7 +33,7 @@ test("setData: setting new data (starting explicit axis) (no axes)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {
@@ -63,7 +62,7 @@ test("setData: setting new data (starting explicit format) (no overwrite)", () =
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {
@@ -92,7 +91,7 @@ test("setData: setting new data (starting explicit format) (overwrite)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {
@@ -133,7 +132,7 @@ test("setData: setting new data (no starting explicit format) (add format)", () 
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -169,7 +168,7 @@ test("setData: setting new data (starting explicit minimum) (no overwrite)", () 
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {
@@ -198,7 +197,7 @@ test("setData: setting new data (starting explicit minimum) (overwrite)", () => 
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {
@@ -239,7 +238,7 @@ test("setData: setting new data (no starting explicit minimum) (add minimum)", (
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -275,7 +274,7 @@ test("setData: setting new data with starting pointIndex", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -299,7 +298,7 @@ test("setData: setting new data with starting group and pointIndex", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [1, 2, 3, 4, 5],
             b: [8, 7, 6, 5, 4]
@@ -323,7 +322,7 @@ test("setData: setting new data with invalid starting group", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [1, 2, 3, 4, 5],
             b: [8, 7, 6, 5, 4]
@@ -347,7 +346,7 @@ test("setData: setting new data with invalid pointIndex (less than 0)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -368,7 +367,7 @@ test("setData: setting new data with invalid pointIndex (too high)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -389,7 +388,7 @@ test("setData: retain stat value", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [
             { x: 1, high: 8, low: 7 },
             { x: 2, high: 9, low: 6 },

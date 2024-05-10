@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import { MockAudioEngine } from "./_mockAudioEngine";
 import { hertzes } from "./_constants";
 
@@ -22,7 +21,7 @@ test("Play notification and respond to announce commands", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5, 6, 7, 8],
         element: mockElement,
         cc: mockElementCC,
@@ -70,7 +69,7 @@ test("Play All plays notifications (continuous mode)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.SCATTER,
+        type: "scatter",
         data: [1, 2, 3, 4, 5, 6, 7, 8],
         element: mockElement,
         cc: mockElementCC,
@@ -125,7 +124,7 @@ test("Play All plays notifications (non-continuous mode)", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5, 6, 7, 8],
         element: mockElement,
         cc: mockElementCC,

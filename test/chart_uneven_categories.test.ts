@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 jest.useFakeTimers();
 jest.spyOn(global, "setTimeout");
@@ -11,7 +10,7 @@ test("Move at boundaries - uneven groups", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: {
             a: [
                 { x: 1, y: 10 },

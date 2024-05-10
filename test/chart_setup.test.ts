@@ -1,5 +1,4 @@
 import { c2mChart } from "../src/entryPoint_mjs";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 
 window.AudioContext = jest.fn().mockImplementation(() => {
     return {};
@@ -9,7 +8,7 @@ test("Confirm that C2M modifies provided elements", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement,
         cc: mockElementCC
@@ -24,7 +23,7 @@ test("Confirm that C2M modifies provided elements", () => {
 test("Confirm that C2M adds a CC element to the container if no CC element is provided", () => {
     const mockElement = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         element: mockElement
     });
@@ -41,7 +40,7 @@ test("C2M setup handles partial axis info", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.LINE,
+        type: "line",
         data: [1, 2, 3, 4, 5],
         axes: {
             y: {
@@ -67,7 +66,7 @@ test("C2M sorts out-of-order scatter plot data", () => {
     const mockElement = document.createElement("div");
     const mockElementCC = document.createElement("div");
     const { err, data: chart } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.SCATTER,
+        type: "scatter",
         data: [
             {
                 x: 1030,

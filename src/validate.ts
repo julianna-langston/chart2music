@@ -8,8 +8,12 @@ import {
     isOHLCDataPoint,
     isBoxDataPoint
 } from "./dataPoint";
-import type { ChartContainerType, SonifyTypes } from "./types";
-import { SUPPORTED_CHART_TYPES } from "./types";
+import type {
+    ChartContainerType,
+    SonifyTypes,
+    SUPPORTED_CHART_TYPES
+} from "./types";
+import { SUPPORTED_TYPES_LIST } from "./types";
 
 export const validateInput = (input: SonifyTypes) => {
     const errors = [];
@@ -29,31 +33,29 @@ export const validateInput = (input: SonifyTypes) => {
 export const validateInputType = (
     type?: SUPPORTED_CHART_TYPES | SUPPORTED_CHART_TYPES[]
 ): string => {
-    const SUPPORTED_TYPES_LIST = Object.values(SUPPORTED_CHART_TYPES).join(
-        ", "
-    );
+    const supported_types_string = SUPPORTED_TYPES_LIST.join(", ");
 
     if (typeof type === "undefined") {
-        return `Required parameter 'type' was left undefined. Supported types are: ${SUPPORTED_TYPES_LIST}`;
+        return `Required parameter 'type' was left undefined. Supported types are: ${supported_types_string}`;
     }
 
     if (Array.isArray(type)) {
         const unsupported_types = type.filter(
-            (str) => !Object.values(SUPPORTED_CHART_TYPES).includes(str)
+            (str) => !SUPPORTED_TYPES_LIST.includes(str)
         );
         if (unsupported_types.length === 0) {
             return "";
         }
         return `Invalid input types: ${unsupported_types.join(
             ", "
-        )}. Valid types are: ${SUPPORTED_TYPES_LIST}`;
+        )}. Valid types are: ${supported_types_string}`;
     }
 
-    if (Object.values(SUPPORTED_CHART_TYPES).includes(type)) {
+    if (SUPPORTED_TYPES_LIST.includes(type)) {
         return "";
     }
 
-    return `Invalid input type: ${type}. Valid types are: ${SUPPORTED_TYPES_LIST}`;
+    return `Invalid input type: ${type}. Valid types are: ${supported_types_string}`;
 };
 
 export const validateInputLang = (lang?: string) => {

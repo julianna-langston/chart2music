@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // Enabling an error condition to test error handling
 import { c2mChart } from "../src/c2mChart";
-import { SUPPORTED_CHART_TYPES } from "../src/types";
 import {
     validateHierarchyReferences,
     validateInput,
@@ -15,7 +14,7 @@ import {
 } from "../src/validate";
 
 const validTypes =
-    "line, bar, band, pie, candlestick, histogram, box, matrix, scatter, treemap, unsupported";
+    "band, bar, box, candlestick, histogram, line, matrix, pie, scatter, treemap, unsupported";
 const validLanguages = "en, de, es, fr, it";
 
 test("validateInputType", () => {
@@ -28,7 +27,7 @@ test("validateInputType", () => {
     ).toBe(`Invalid input type: invalid. Valid types are: ${validTypes}`);
     expect(
         // @ts-ignore - deliberately generating error condition
-        validateInputType([SUPPORTED_CHART_TYPES.LINE, "invalid"])
+        validateInputType(["line", "invalid"])
     ).toBe(`Invalid input types: invalid. Valid types are: ${validTypes}`);
     expect(
         // @ts-ignore - deliberately generating error condition
@@ -36,13 +35,8 @@ test("validateInputType", () => {
     ).toBe(
         `Invalid input types: invalid1, invalid2. Valid types are: ${validTypes}`
     );
-    expect(validateInputType(SUPPORTED_CHART_TYPES.LINE)).toBe("");
-    expect(
-        validateInputType([
-            SUPPORTED_CHART_TYPES.BAR,
-            SUPPORTED_CHART_TYPES.LINE
-        ])
-    ).toBe("");
+    expect(validateInputType("line")).toBe("");
+    expect(validateInputType(["bar", "line"])).toBe("");
 });
 
 test("validateInputLang", () => {
@@ -391,7 +385,7 @@ test("c2mChart validation", () => {
 
 test("validate img tag without cc property", () => {
     const { err } = c2mChart({
-        type: SUPPORTED_CHART_TYPES.BAR,
+        type: "bar",
         element: document.createElement("img"),
         data: [1, 2, 3]
     });
@@ -549,25 +543,12 @@ test("validateInputTypeCountsMatchData", () => {
         B: [4, 5, 6]
     };
 
+    expect(validateInputTypeCountsMatchData("line", dataWith2Rows)).toBe("");
     expect(
-        validateInputTypeCountsMatchData(
-            SUPPORTED_CHART_TYPES.LINE,
-            dataWith2Rows
-        )
-    ).toBe("");
-    expect(
-        validateInputTypeCountsMatchData(
-            [SUPPORTED_CHART_TYPES.LINE, SUPPORTED_CHART_TYPES.BAR],
-            dataWith2Rows
-        )
+        validateInputTypeCountsMatchData(["line", "bar"], dataWith2Rows)
     ).toBe("");
 
-    expect(
-        validateInputTypeCountsMatchData(
-            [SUPPORTED_CHART_TYPES.LINE],
-            dataWith2Rows
-        )
-    ).toBe(
+    expect(validateInputTypeCountsMatchData(["line"], dataWith2Rows)).toBe(
         "Error: Number of types (1) and number of data groups (2) don't match."
     );
 });
