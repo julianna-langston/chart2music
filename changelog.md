@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.17.0
+* Support a `translations` option, which allows for developers to replace Chart2Music's verbiage with their own.
+* Now fires the onFocusCallback when a user first focuses on a chart, and when users switch groups within a chart. This allows for a focus indicator to be present at all times. Note that sound is still not played at those times.
+* Generated CC elements are now always *children* of the provided `element`, rather than the element itself. CC elements are only generated if no `cc` is provided.
+* Fixed a bug where typescript would throw an error if an `SVGElement` type was provided to the `element` parameter.
+* Fixed a bug where typescript would throw an error on any string provided to the `type` parameter.
+* Provide a cleaner description for untitled charts
+
 ## 1.16.3
 * Internal development changes
 
