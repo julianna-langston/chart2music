@@ -73,7 +73,7 @@
         "rollup-plugin-dts": "6.1.1",
         "ts-jest": "29.1.4",
         "tslib": "2.6.3",
-        "typescript": "5.4.5"
+        "typescript": "5.5.2"
     },
     "dependencies": {
         "@formatjs/intl": "2.10.4"
