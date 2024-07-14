@@ -49,7 +49,7 @@
     "devDependencies": {
         "@babel/cli": "7.24.7",
         "@babel/core": "7.24.7",
-        "@babel/plugin-transform-modules-commonjs": "7.24.7",
+        "@babel/plugin-transform-modules-commonjs": "7.24.8",
         "@babel/preset-env": "7.24.7",
         "@rollup/plugin-node-resolve": "15.2.3",
         "@rollup/plugin-typescript": "11.1.6",
