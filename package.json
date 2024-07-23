@@ -67,7 +67,7 @@
         "jest-environment-jsdom": "29.7.0",
         "lint-staged": "15.2.7",
         "prettier": "3.3.2",
-        "rimraf": "5.0.7",
+        "rimraf": "6.0.1",
         "rollup": "4.19.0",
         "rollup-plugin-delete": "2.0.0",
         "rollup-plugin-dts": "6.1.1",
