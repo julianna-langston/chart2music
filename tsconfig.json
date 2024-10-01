@@ -2,7 +2,7 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "declaration": true,
-        "declarationDir": "./types",
+        "declarationDir": "./dist/types",
         "outDir": "./dist/",
         "removeComments": true,
         "target": "ES2020",
