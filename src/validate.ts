@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { c2m } from "./c2mChart";
 import type { BoxDataPoint, SupportedDataPointType } from "./dataPoint";
 import {
     isAlternateAxisDataPoint,
@@ -8,6 +6,7 @@ import {
     isOHLCDataPoint,
     isBoxDataPoint
 } from "./dataPoint";
+import { AVAILABLE_LANGUAGES } from "./translator";
 import type {
     ChartContainerType,
     SonifyTypes,
@@ -63,11 +62,11 @@ export const validateInputLang = (lang?: string) => {
         return "";
     }
 
-    if (c2m.languages.includes(lang)) {
+    if (AVAILABLE_LANGUAGES.includes(lang)) {
         return "";
     }
 
-    return `Error: Unrecognized language "${lang}". Available languages: ${c2m.languages.join(", ")}.`;
+    return `Error: Unrecognized language "${lang}". Available languages: ${AVAILABLE_LANGUAGES.join(", ")}.`;
 };
 
 export const validateInputTypeCountsMatchData = (
