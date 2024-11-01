@@ -28,7 +28,7 @@ export default [
         plugins: [typescript({ tsconfig: "./tsconfig.json" }), nodeResolve()]
     },
     {
-        input: "dist/types/entryPoint_mjs.d.ts",
+        input: "dist/entryPoint_mjs.d.ts",
         output: [
             {
                 file: "dist/index.d.ts",
@@ -36,6 +36,6 @@ export default [
                 plugins: []
             }
         ],
-        plugins: [dts(), del({ targets: "dist/types", hook: "buildEnd" })]
+        plugins: [dts(), del({ targets: "dist/*.d.ts", hook: "buildEnd" })]
     }
 ];
