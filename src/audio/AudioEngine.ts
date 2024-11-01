@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 /**
  * The types of notifications that an engine can support.
  * These represent other information than data points, such as annotations, footnotes, etc.

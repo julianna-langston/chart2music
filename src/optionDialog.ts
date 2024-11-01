@@ -122,7 +122,7 @@ export const launchOptionDialog = (
         const speedIndex = Number(speedRange.value);
         const saveGlobal = global.checked;
         const continuousChecked = continuous.checked;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         const labelRadioButton: HTMLInputElement = dialog.querySelector(
             "input[name='point-labels']:checked"
         );

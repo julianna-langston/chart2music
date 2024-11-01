@@ -1,7 +1,6 @@
 import type { translateEvaluators } from "./translations";
 import type { ChartContainerType, KeyDetails, KeyRegistration } from "./types";
 
-/* eslint-disable @typescript-eslint/unbound-method */
 export const keyboardEventToString = (e: KeyboardEvent) => {
     return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${
         e.shiftKey ? "Shift+" : ""
