@@ -4,6 +4,10 @@ ignores: [
     "rollup",
     "rimraf",
 
+    # ESLint plugins, which are expected to be installed, even if never specifically referenced
+    "eslint-config-prettier",
+    "eslint-plugin-jsdoc",
+
     # Configured with the jest.config.js
     "jest-environment-jsdom",
 
