@@ -1821,7 +1821,7 @@ export class c2m {
         ) {
             return;
         }
-        const max = this.currentPoint.outlier?.length - 1 ?? 0;
+        const max = this.currentPoint.outlier?.length - 1;
         this._playListInterval = setInterval(() => {
             if (this._outlierIndex >= max) {
                 this._outlierIndex = max;
