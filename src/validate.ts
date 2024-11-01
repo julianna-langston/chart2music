@@ -224,7 +224,6 @@ export const validateInputDataRowHomogeneity = (
         const nonArrayNumber = row.findIndex(
             (cell: BoxDataPoint) =>
                 "outlier" in cell &&
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 cell.outlier.findIndex((o) => typeof o !== "number") >= 0
         );
         if (nonArrayNumber >= 0) {
