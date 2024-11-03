@@ -31,8 +31,8 @@ export class KeyboardEventManager {
     /**
      * Initialize keyboard event manager
      * @param target - target element
-     * @param modifyHelpDialogText
-     * @param modifyHelpDialogKeyboardListing
+     * @param modifyHelpDialogText - callback function for modifying help dialog frontmatter
+     * @param modifyHelpDialogKeyboardListing - callback function for modify help dialog keyboard shortcut table
      */
     constructor(
         target: ChartContainerType,
@@ -83,7 +83,7 @@ export class KeyboardEventManager {
      * @param details.keyDescription - the description of the key (eg, "Spacebar")
      * @param details.caseSensitive - should the keypress be case sensitive?
      * @param [details.force] - if the key event already exists, overwrite? (True if yes)
-     * @param details.order
+     * @param [details.order] - the order the shortcut should appear in the shortcut table
      */
     registerKeyEvent({
         key,
@@ -123,8 +123,8 @@ export class KeyboardEventManager {
      * Build a help dialog
      * @param lang Language of the dialog - used in attribute, and for i18n
      * @param translationCallback - get language-specific verbiage
-     * @param helpDialogText
-     * @param keyboardListing
+     * @param helpDialogText - frontmatter in the dialog
+     * @param keyboardListing - array of keyboard shortcut table contents
      */
     generateHelpDialog(
         lang: string,
