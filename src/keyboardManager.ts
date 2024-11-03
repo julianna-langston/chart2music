@@ -1,5 +1,10 @@
 import type { translateEvaluators } from "./translations";
-import type { ChartContainerType, KeyDetails, KeyRegistration } from "./types";
+import type {
+    c2mOptions,
+    ChartContainerType,
+    KeyDetails,
+    KeyRegistration
+} from "./types";
 
 export const keyboardEventToString = (e: KeyboardEvent) => {
     return `${e.altKey ? "Alt+" : ""}${e.ctrlKey ? "Ctrl+" : ""}${
@@ -26,8 +31,14 @@ export class KeyboardEventManager {
     /**
      * Initialize keyboard event manager
      * @param target - target element
+     * @param modifyHelpDialogText
+     * @param modifyHelpDialogKeyboardListing
      */
-    constructor(target: ChartContainerType) {
+    constructor(
+        target: ChartContainerType,
+        private modifyHelpDialogText: c2mOptions["modifyHelpDialogText"],
+        private modifyHelpDialogKeyboardListing: c2mOptions["modifyHelpDialogKeyboardListing"]
+    ) {
         this._keyMap = {};
         this._target = target;
         this._target.addEventListener("keydown", this._handler);
@@ -72,6 +83,7 @@ export class KeyboardEventManager {
      * @param details.keyDescription - the description of the key (eg, "Spacebar")
      * @param details.caseSensitive - should the keypress be case sensitive?
      * @param [details.force] - if the key event already exists, overwrite? (True if yes)
+     * @param details.order
      */
     registerKeyEvent({
         key,
@@ -80,7 +92,8 @@ export class KeyboardEventManager {
         description = "",
         force = false,
         keyDescription,
-        caseSensitive = true
+        caseSensitive = true,
+        order = 100
     }: KeyRegistration) {
         const checkKey = caseSensitive ? key : key.toUpperCase();
         if (!force && checkKey in this._keyMap) {
@@ -90,7 +103,8 @@ export class KeyboardEventManager {
             title,
             description,
             callback,
-            keyDescription
+            keyDescription,
+            order
         };
     }
 
@@ -100,8 +114,8 @@ export class KeyboardEventManager {
      * @param keyRegistrationList - list of key events to register
      */
     registerKeyEvents(keyRegistrationList: KeyRegistration[]) {
-        keyRegistrationList.forEach((kr) => {
-            this.registerKeyEvent(kr);
+        keyRegistrationList.forEach((kr, order) => {
+            this.registerKeyEvent({ order, ...kr });
         });
     }
 
@@ -109,13 +123,17 @@ export class KeyboardEventManager {
      * Build a help dialog
      * @param lang Language of the dialog - used in attribute, and for i18n
      * @param translationCallback - get language-specific verbiage
+     * @param helpDialogText
+     * @param keyboardListing
      */
     generateHelpDialog(
         lang: string,
         translationCallback: (
             code: string,
             evaluators?: translateEvaluators
-        ) => string
+        ) => string,
+        helpDialogText: string,
+        keyboardListing: string[][]
     ) {
         const dialog = document.createElement("dialog");
         dialog.classList.add("chart2music-dialog");
@@ -139,28 +157,48 @@ export class KeyboardEventManager {
         dialog.setAttribute("aria-live", heading);
         dialog.appendChild(h1);
 
+        const frontMatter = document.createElement("p");
+        frontMatter.textContent = helpDialogText;
+        dialog.appendChild(frontMatter);
+
         const table = document.createElement("table");
-        const tbody = document.createElement("tbody");
-        Object.entries(this._keyMap).forEach(([keystroke, details]) => {
-            const tr = document.createElement("tr");
+        const thead = document.createElement("thead");
+        const tr1 = document.createElement("tr");
+        (keyboardListing.at(0) ?? []).forEach((txt) => {
             const th = document.createElement("th");
-            th.scope = "row";
-            th.textContent = details.title;
-            tr.appendChild(th);
+            th.setAttribute("scope", "col");
+            th.textContent = txt;
+            tr1.appendChild(th);
+        });
+        thead.appendChild(tr1);
+        table.appendChild(thead);
 
-            const td1 = document.createElement("td");
-            td1.textContent = details.keyDescription ?? keystroke;
-            tr.appendChild(td1);
-
-            const td2 = document.createElement("td");
-            td2.textContent = details.description;
-            tr.appendChild(td2);
-
+        const tbody = document.createElement("tbody");
+        keyboardListing.slice(1).forEach((row) => {
+            const tr = document.createElement("tr");
+            row.forEach((cell) => {
+                const td = document.createElement("td");
+                td.textContent = cell;
+                tr.appendChild(td);
+            });
             tbody.appendChild(tr);
         });
         table.appendChild(tbody);
-
         dialog.appendChild(table);
+
+        const footer = document.createElement("p");
+        footer.appendChild(
+            document.createTextNode(
+                "For information on making charts accessible and additional help, please visit "
+            )
+        );
+        const a = document.createElement("a");
+        a.setAttribute("href", "https://www.chart2music.com/");
+        a.textContent = "www.chart2music.com";
+        footer.appendChild(a);
+        footer.appendChild(document.createTextNode("."));
+        dialog.appendChild(footer);
+
         return dialog;
     }
 
@@ -176,8 +214,37 @@ export class KeyboardEventManager {
             evaluators?: translateEvaluators
         ) => string
     ) {
+        const headings = [
+            "Keyboard Shortcut",
+            "Description",
+            "Common Alternate Keyboard Shortcut"
+        ];
+        const listing = Object.entries(this._keyMap)
+            .sort((left, right) => {
+                if (left[1].order < right[1].order) {
+                    return -1;
+                }
+                if (left[1].order > right[1].order) {
+                    return 1;
+                }
+                return 0;
+            })
+            .map(([key, { title, keyDescription, description }]) => [
+                title,
+                keyDescription ?? key,
+                description
+            ]);
+
         if (this._dialog === null) {
-            this._dialog = this.generateHelpDialog(lang, translationCallback);
+            this._dialog = this.generateHelpDialog(
+                lang,
+                translationCallback,
+                this.modifyHelpDialogText(
+                    lang,
+                    "You can use the below keyboard shortcuts to navigate this chart more quickly. Please note, on some computers, the keys that you need to press may be called something else than what is listed below or may be emulated by a combination of keys. For example, on Apple keyboards without a physical home key, you can press the function key and the left arrow key at the same time to perform the same action. When possible, common alternate keyboard shortcuts will be provided in the below table."
+                ),
+                this.modifyHelpDialogKeyboardListing(lang, headings, listing)
+            );
             document.body.appendChild(this._dialog);
         }
         this._dialog.showModal();

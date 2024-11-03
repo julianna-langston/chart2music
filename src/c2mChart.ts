@@ -165,7 +165,10 @@ export class c2m {
         live: false,
         hertzes: HERTZ,
         stack: false,
-        root: null
+        root: null,
+        modifyHelpDialogText: (lang, text) => text,
+        modifyHelpDialogKeyboardListing: (lang, headers, shortcuts) =>
+            [headers].concat(shortcuts)
     };
     private _providedAudioEngine?: AudioEngine;
     private _monitorMode = false;
@@ -1195,27 +1198,49 @@ export class c2m {
      * Wire up the hotkey action event listeners
      */
     private _initializeKeyActionMap() {
-        this._keyEventManager = new KeyboardEventManager(this._chartElement);
+        this._keyEventManager = new KeyboardEventManager(
+            this._chartElement,
+            this._options.modifyHelpDialogText,
+            this._options.modifyHelpDialogKeyboardListing
+        );
         this._keyEventManager.registerKeyEvents(
             [
                 {
                     title: this._translator.translate("key-point-next"),
                     key: "ArrowRight",
+                    keyDescription: "Right arrow",
                     callback: this._availableActions.next_point
                 },
                 {
                     title: this._translator.translate("key-point-prev"),
                     key: "ArrowLeft",
+                    keyDescription: "Left arrow",
                     callback: this._availableActions.previous_point
+                },
+                {
+                    title: this._translator.translate("key-point-first"),
+                    key: "Home",
+                    description: "Function + Left arrow",
+                    callback: this._availableActions.first_point
+                },
+                {
+                    title: this._translator.translate("key-point-last"),
+                    key: "End",
+                    description: "Function + Right arrow",
+                    callback: this._availableActions.last_point
                 },
                 {
                     title: this._translator.translate("key-play-fwd"),
                     key: "Shift+End",
+                    keyDescription: "Shift + End",
+                    description: "Shift + Function + Right arrow",
                     callback: this._availableActions.play_right
                 },
                 {
                     title: this._translator.translate("key-play-back"),
                     key: "Shift+Home",
+                    keyDescription: "Shift + Home",
+                    description: "Shift + Function + Left arrow",
                     callback: this._availableActions.play_left
                 },
                 {
@@ -1224,73 +1249,19 @@ export class c2m {
                     keyDescription: "Control",
                     callback: this._availableActions.stop_play
                 },
-                this._type === "matrix"
-                    ? {
-                          title: this._translator.translate("key-group-prev"),
-                          key: "ArrowUp",
-                          callback: this._availableActions.previous_category
-                      }
-                    : {
-                          title: this._translator.translate("key-stat-prev"),
-                          key: "ArrowUp",
-                          callback: this._availableActions.previous_stat
-                      },
-                this._type === "matrix"
-                    ? {
-                          title: this._translator.translate("key-group-next"),
-                          key: "ArrowDown",
-                          callback: this._availableActions.next_category
-                      }
-                    : {
-                          title: this._translator.translate("key-stat-next"),
-                          key: "ArrowDown",
-                          callback: this._availableActions.next_stat
-                      },
-                !this._hierarchy && {
-                    title: this._translator.translate("key-group-prev"),
-                    key: "PageUp",
-                    callback: this._availableActions.previous_category
-                },
-                !this._hierarchy && {
-                    title: this._translator.translate("key-group-next"),
-                    key: "PageDown",
-                    callback: this._availableActions.next_category
-                },
-                !this._hierarchy && {
-                    title: this._translator.translate("key-group-first"),
-                    key: "Alt+PageUp",
-                    callback: this._availableActions.first_category
-                },
-                this._hierarchy
-                    ? {
-                          title: this._translator.translate("key-hier-root"),
-                          key: "Alt+PageUp",
-                          callback: this._availableActions.go_to_root
-                      }
-                    : {
-                          title: this._translator.translate("key-group-last"),
-                          key: "Alt+PageDown",
-                          callback: this._availableActions.last_category
-                      },
-                !this._hierarchy && {
-                    title: this._translator.translate("key-play-fwd-group"),
-                    key: "Shift+PageDown",
-                    callback: this._availableActions.play_forward_category
-                },
-                !this._hierarchy && {
-                    title: this._translator.translate("key-play-back-group"),
-                    key: "Shift+PageUp",
-                    callback: this._availableActions.play_backward_category
+                {
+                    title: this._translator.translate("key-speed-incr"),
+                    caseSensitive: false,
+                    key: "q",
+                    keyDescription: "Q",
+                    callback: this._availableActions.speed_up
                 },
                 {
-                    title: this._translator.translate("key-point-first"),
-                    key: "Home",
-                    callback: this._availableActions.first_point
-                },
-                {
-                    title: this._translator.translate("key-point-last"),
-                    key: "End",
-                    callback: this._availableActions.last_point
+                    title: this._translator.translate("key-speed-decr"),
+                    caseSensitive: false,
+                    key: "e",
+                    keyDescription: "E",
+                    callback: this._availableActions.slow_down
                 },
                 {
                     title: this._translator.translate("key-replay"),
@@ -1304,14 +1275,91 @@ export class c2m {
                     callback: this._availableActions.select
                 },
                 {
-                    title: this._translator.translate("key-tenth-prev"),
-                    key: "Ctrl+ArrowLeft",
-                    callback: this._availableActions.previous_tenth
-                },
-                {
                     title: this._translator.translate("key-tenth-next"),
                     key: "Ctrl+ArrowRight",
+                    keyDescription: "Control + Right arrow",
                     callback: this._availableActions.next_tenth
+                },
+                {
+                    title: this._translator.translate("key-tenth-prev"),
+                    key: "Ctrl+ArrowLeft",
+                    keyDescription: "Control + Left arrow",
+                    callback: this._availableActions.previous_tenth
+                },
+                this._type === "matrix"
+                    ? {
+                          title: this._translator.translate("key-group-next"),
+                          key: "ArrowDown",
+                          keyDescription: "Down arrow",
+                          callback: this._availableActions.next_category
+                      }
+                    : {
+                          title: this._translator.translate("key-stat-next"),
+                          key: "ArrowDown",
+                          keyDescription: "Down arrow",
+                          callback: this._availableActions.next_stat
+                      },
+                this._type === "matrix"
+                    ? {
+                          title: this._translator.translate("key-group-prev"),
+                          key: "ArrowUp",
+                          keyDescription: "Up arrow",
+                          callback: this._availableActions.previous_category
+                      }
+                    : {
+                          title: this._translator.translate("key-stat-prev"),
+                          key: "ArrowUp",
+                          keyDescription: "Up arrow",
+                          callback: this._availableActions.previous_stat
+                      },
+                !this._hierarchy && {
+                    title: this._translator.translate("key-group-next"),
+                    key: "PageDown",
+                    keyDescription: "Page down",
+                    description: "Function + Down arrow",
+                    callback: this._availableActions.next_category
+                },
+                !this._hierarchy && {
+                    title: this._translator.translate("key-group-prev"),
+                    key: "PageUp",
+                    keyDescription: "Page up",
+                    description: "Function + Up arrow",
+                    callback: this._availableActions.previous_category
+                },
+                this._hierarchy
+                    ? {
+                          title: this._translator.translate("key-hier-root"),
+                          key: "Alt+PageUp",
+                          keyDescription: "Alt + Page up",
+                          description: "Option + Function + Up arrow",
+                          callback: this._availableActions.go_to_root
+                      }
+                    : {
+                          title: this._translator.translate("key-group-first"),
+                          key: "Alt+PageUp",
+                          keyDescription: "Alt + Page up",
+                          description: "Option + Function + Up arrow",
+                          callback: this._availableActions.first_category
+                      },
+                !this._hierarchy && {
+                    title: this._translator.translate("key-group-last"),
+                    key: "Alt+PageDown",
+                    description: "Option + Function + Down arrow",
+                    callback: this._availableActions.last_category
+                },
+                !this._hierarchy && {
+                    title: this._translator.translate("key-play-fwd-group"),
+                    key: "Shift+PageDown",
+                    keyDescription: "Shift + Page down",
+                    description: "Shift + Function + Down arrow",
+                    callback: this._availableActions.play_forward_category
+                },
+                !this._hierarchy && {
+                    title: this._translator.translate("key-play-back-group"),
+                    key: "Shift+PageUp",
+                    keyDescription: "Shift + Page up",
+                    description: "Shift + Function + Up arrow",
+                    callback: this._availableActions.play_backward_category
                 },
                 {
                     title: this._translator.translate(
@@ -1330,51 +1378,46 @@ export class c2m {
                 !this._hierarchy && {
                     title: this._translator.translate("key-chart-min"),
                     key: "Ctrl+[",
+                    keyDescription: "Control + [",
                     callback: this._availableActions.go_total_minimum
                 },
                 !this._hierarchy && {
                     title: this._translator.translate("key-chart-max"),
                     key: "Ctrl+]",
+                    keyDescription: "Control + ]",
                     callback: this._availableActions.go_total_maximum
                 },
                 this._hierarchy && {
                     title: this._translator.translate("key-level-decr"),
                     key: "Alt+ArrowDown",
+                    keyDescription: "Alt + Down arrow",
                     callback: this._availableActions.drill_down
                 },
                 this._hierarchy && {
                     title: this._translator.translate("key-level-incr"),
                     key: "Alt+ArrowUp",
+                    keyDescription: "Alt + Up arrow",
                     callback: this._availableActions.drill_up
-                },
-                {
-                    title: this._translator.translate("key-speed-incr"),
-                    caseSensitive: false,
-                    key: "q",
-                    callback: this._availableActions.speed_up
-                },
-                {
-                    title: this._translator.translate("key-speed-decr"),
-                    caseSensitive: false,
-                    key: "e",
-                    callback: this._availableActions.slow_down
                 },
                 {
                     title: this._translator.translate("key-monitor-toggle"),
                     caseSensitive: false,
                     key: "m",
+                    keyDescription: "M",
                     callback: this._availableActions.monitor
                 },
                 {
                     title: this._translator.translate("key-dialog-help"),
                     caseSensitive: false,
                     key: "h",
+                    keyDescription: "H",
                     callback: this._availableActions.help
                 },
                 {
                     title: this._translator.translate("key-dialog-options"),
                     caseSensitive: false,
                     key: "o",
+                    keyDescription: "O",
                     callback: this._availableActions.options
                 }
             ].filter((item) => Boolean(item))

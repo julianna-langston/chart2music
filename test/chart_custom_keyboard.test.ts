@@ -28,6 +28,7 @@ test("Use a custom hotkey", () => {
                     key: {
                         key: "p"
                     },
+                    order: 8,
                     callback: ({ slice, index }) => {
                         lastIndex = index;
                         lastSlice = slice;
@@ -70,10 +71,10 @@ test("Use a custom hotkey", () => {
         })
     );
     const helpDialog = document.querySelector("dialog");
-    expect(helpDialog?.querySelector("tr:last-child th")?.textContent).toBe(
+    expect(helpDialog?.querySelector("tbody tr:last-child td:nth-child(1)")?.textContent).toBe(
         "Extra info"
     );
-    expect(helpDialog?.querySelector("tr:last-child td")?.textContent).toBe(
+    expect(helpDialog?.querySelector("tbody tr:last-child td:nth-child(2)")?.textContent).toBe(
         "Alt+m"
     );
 
