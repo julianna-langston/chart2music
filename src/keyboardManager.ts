@@ -123,7 +123,6 @@ export class KeyboardEventManager {
      * Build a help dialog
      * @param lang Language of the dialog - used in attribute, and for i18n
      * @param translationCallback - get language-specific verbiage
-     * @param helpDialogText - frontmatter in the dialog
      * @param keyboardListing - array of keyboard shortcut table contents
      */
     generateHelpDialog(
@@ -132,7 +131,6 @@ export class KeyboardEventManager {
             code: string,
             evaluators?: translateEvaluators
         ) => string,
-        helpDialogText: string,
         keyboardListing: string[][]
     ) {
         const dialog = document.createElement("dialog");
@@ -158,7 +156,10 @@ export class KeyboardEventManager {
         dialog.appendChild(h1);
 
         const frontMatter = document.createElement("p");
-        frontMatter.textContent = helpDialogText;
+        frontMatter.textContent = this.modifyHelpDialogText(
+            lang,
+            translationCallback("help-dialog-front-matter")
+        );
         dialog.appendChild(frontMatter);
 
         const table = document.createElement("table");
@@ -188,9 +189,7 @@ export class KeyboardEventManager {
 
         const footer = document.createElement("p");
         footer.appendChild(
-            document.createTextNode(
-                "For information on making charts accessible and additional help, please visit "
-            )
+            document.createTextNode(translationCallback("help_dialog_footer"))
         );
         const a = document.createElement("a");
         a.setAttribute("href", "https://www.chart2music.com/");
@@ -239,10 +238,6 @@ export class KeyboardEventManager {
             this._dialog = this.generateHelpDialog(
                 lang,
                 translationCallback,
-                this.modifyHelpDialogText(
-                    lang,
-                    "You can use the below keyboard shortcuts to navigate this chart more quickly. Please note, on some computers, the keys that you need to press may be called something else than what is listed below or may be emulated by a combination of keys. For example, on Apple keyboards without a physical home key, you can press the function key and the left arrow key at the same time to perform the same action. When possible, common alternate keyboard shortcuts will be provided in the below table."
-                ),
                 this.modifyHelpDialogKeyboardListing(lang, headings, listing)
             );
             document.body.appendChild(this._dialog);

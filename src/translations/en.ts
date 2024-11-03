@@ -193,6 +193,11 @@ const dictionary: translationDict = {
     "key-descr-Alt+ArrowDown": "Alt + Down arrow",
     "key-descr-Alt+ArrowUp": "Alt + Up arrow",
 
+    "help-dialog-front-matter":
+        "You can use the below keyboard shortcuts to navigate this chart more quickly. Please note, on some computers, the keys that you need to press may be called something else than what is listed below or may be emulated by a combination of keys. For example, on Apple keyboards without a physical home key, you can press the function key and the left arrow key at the same time to perform the same action. When possible, common alternate keyboard shortcuts will be provided in the below table.",
+    "help-dialog-footer":
+        "For information on making charts accessible and additional help, please visit ",
+
     "options-title": "Options",
     "options-frontmatter":
         "While navigating this chart, you may find some sounds too low or too high to hear. Alternatively, you may want to expand the range of the sounds available. Use these sliders to adjust the range of sound:",
