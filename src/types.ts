@@ -18,6 +18,8 @@ export type KeyDetails = {
     force?: boolean;
     /* If the hotkey should be case sensitive. Default true */
     caseSensitive?: boolean;
+    /* The order the key event should be displayed in the help dialog */
+    order?: number;
 };
 
 /**
@@ -237,6 +239,12 @@ export type c2mOptions = {
         id,
         evaluators
     }: translationCallbackOptions) => string | false;
+    modifyHelpDialogText?: (lang: string, text: string) => string;
+    modifyHelpDialogKeyboardListing?: (
+        lang: string,
+        headers: string[],
+        shortcuts: string[][]
+    ) => string[][];
 };
 
 /**
