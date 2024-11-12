@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.18.0
+* Added a callback function to modify the contents of the Help dialog.
+
 ## 1.17.0
 * Support a `translations` option, which allows for developers to replace Chart2Music's verbiage with their own.
 * Now fires the onFocusCallback when a user first focuses on a chart, and when users switch groups within a chart. This allows for a focus indicator to be present at all times. Note that sound is still not played at those times.
