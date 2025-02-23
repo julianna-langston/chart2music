@@ -68,7 +68,7 @@
         "lint-staged": "15.2.10",
         "prettier": "3.4.2",
         "rimraf": "6.0.1",
-        "rollup": "4.32.0",
+        "rollup": "4.34.8",
         "rollup-plugin-delete": "2.1.0",
         "rollup-plugin-dts": "6.1.1",
         "ts-jest": "29.2.5",
