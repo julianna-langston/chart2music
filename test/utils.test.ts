@@ -291,6 +291,35 @@ describe("utils", () => {
                     close: 7,
                     low: 5
                 },
+                xFormat: (num) => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")[num],
+                yFormat: (num) => `${num}%`,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
+        ).toBe("A, 8% - 10% - 5% - 7%");
+        expect(
+            generatePointDescription({
+                point: {
+                    x: 0,
+                    open: 8,
+                    high: 10,
+                    close: 7,
+                    low: 5
+                },
+                stat: "high",
+                xFormat: (num) => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")[num],
+                yFormat: (num) => `${num}%`,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
+        ).toBe("A, 10%");
+        expect(
+            generatePointDescription({
+                point: {
+                    x: 0,
+                    open: 8,
+                    high: 10,
+                    close: 7,
+                    low: 5
+                },
                 stat: "high",
                 translationCallback: (id, ev) => english.translate(id, ev)
             })

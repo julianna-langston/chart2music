@@ -220,8 +220,13 @@ export const generatePointDescription = ({
                 y: yFormat(point[stat as keyof OHLCDataPoint] as number)
             });
         }
-        // @ts-expect-error: ts weirdness. It doesn't think "open"/"high"/"low"/"close"/"x" are strings.
-        return translationCallback("point-xohlc", point);
+        return translationCallback("point-xohlc", {
+            x: xFormat(point.x),
+            open: yFormat(point.open),
+            high: yFormat(point.high),
+            low: yFormat(point.low),
+            close: yFormat(point.close)
+        });
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
