@@ -24,7 +24,7 @@ export const launchInfoDialog = (
         const ul = dialog.appendChild(document.createElement("ul"));
         info.notes.forEach((str) => {
             const li = ul.appendChild(document.createElement("li"));
-	         li.textContent = str;
+            li.textContent = str;
         });
     }
 
