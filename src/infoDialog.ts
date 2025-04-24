@@ -1,13 +1,6 @@
 import type { translateEvaluators } from "./translations";
 import type { c2mInfo } from "./types";
 
-const toHtmlEntities = (str: string) => {
-    return str.replace(/./gm, function (s) {
-        // return "&#" + s.charCodeAt(0) + ";";
-        return s.match(/[a-z0-9\s]+/i) ? s : `&#${s.charCodeAt(0)};`;
-    });
-};
-
 export const launchInfoDialog = (
     info: c2mInfo,
     translationCallback: (
@@ -18,20 +11,22 @@ export const launchInfoDialog = (
     const dialog = document.createElement("dialog");
     dialog.classList.add("chart2music-dialog");
     dialog.classList.add("chart2music-info-dialog");
-    dialog.setAttribute("aria-label", translationCallback("info-title"));
-    let content = `<h1 tabIndex='0'>${translationCallback("info-title")}</h1>`;
+	const translatedInfoTitle = translationCallback("info-title");
+    dialog.setAttribute("aria-label", translatedInfoTitle);
+	const h1 = dialog.appendChild(document.createElement("h1"));
+	h1.tabIndex = 0;
+	h1.textContent = translatedInfoTitle;
 
     if ("notes" in info) {
-        content += `<h2>${translationCallback("info-notes")}</h2>
+		const h2 = dialog.appendChild(document.createElement("h2"));
+		h2.textContent = translationCallback("info-notes");
 
-        <ul>
-            ${info.notes
-                .map((str) => `<li>${toHtmlEntities(str)}</li>`)
-                .join("")}
-        </ul>`;
+		const ul = dialog.appendChild(document.createElement("ul"));
+        info.notes.forEach((str) => {
+			const li = ul.appendChild(document.createElement("li"));
+			li.textContent = str;
+		});
     }
-
-    dialog.innerHTML = content;
 
     document.body.appendChild(dialog);
     dialog.showModal();
