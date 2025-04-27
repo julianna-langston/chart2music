@@ -35,80 +35,95 @@ export const launchOptionDialog = (
     dialog.classList.add("chart2music-dialog");
     dialog.classList.add("chart2music-option-dialog");
     dialog.setAttribute("lang", language);
-    dialog.setAttribute("aria-label", translationCallback("options-title"));
-    dialog.innerHTML = `<h1>${translationCallback("options-title")}</h1>
+    const translatedOptionsTitle = translationCallback("options-title");
+    dialog.setAttribute("aria-label", translatedOptionsTitle);
 
-    <p tabIndex="0">${translationCallback("options-frontmatter")}</p>
+    const h1 = dialog.appendChild(document.createElement("h1"));
+    h1.textContent = translatedOptionsTitle;
 
-    <form id="optionForm">
-        <div>
-            <label>
-                ${translationCallback("options-hertz-lower")}:
-                <input type="range" min="0" max="${
-                    upper - 1
-                }" step="1" id="lowerRange" value="${lower}" />
-            </label>
-        </div>
+    const p = dialog.appendChild(document.createElement("p"));
+    p.textContent = translationCallback("options-frontmatter");
+    p.tabIndex = 0;
 
-        <div>
-            <label>
-            ${translationCallback("options-hertz-upper")}:
-                <input type="range" min="${lower + 1}" max="${
-                    HERTZ.length - 1
-                }" step="1" id="upperRange" value="${upper}" />
-            </label>
-        </div>
+    const form = dialog.appendChild(document.createElement("form"));
+    form.id = "optionForm";
 
-        <div>
-            <label>
-            ${translationCallback("options-speed-label")}:
-                <input type="range" min="0" max="4" id="speedRange" value="${speedIndex}" />
-            </label>
-        </div>
+    let div: HTMLDivElement, label: HTMLLabelElement, input: HTMLInputElement;
 
-        <div>
-            <label>
-                <input type="checkbox" id="global" checked />
-                ${translationCallback("options-set-global")}
-            </label>
-        </div>
+    div = form.appendChild(document.createElement("div"));
+    label = div.appendChild(document.createElement("label"));
+    label.appendChild(document.createTextNode(translationCallback("options-hertz-lower") + ":"));
+    input = label.appendChild(document.createElement("input"));
+    input.type = "range";
+    input.min = "0";
+    input.max = (upper - 1).toString();
+    input.step = "1";
+    input.id = "lowerRange";
+    input.value = lower.toString();
 
-        <div>
-            <label>
-                <input type="checkbox" id="continuous" ${
-                    continuousMode ? "checked" : ""
-                } />
-                ${translationCallback("options-use-continuous")}
-            </label>
-            <br/>
-            ${translationCallback("options-continuous-descr")}
-        </div>
+    div = form.appendChild(document.createElement("div"));
+    label = div.appendChild(document.createElement("label"));
+    label.appendChild(document.createTextNode(translationCallback("options-hertz-upper") + ":"));
+    input = label.appendChild(document.createElement("input"));
+    input.type = "range";
+    input.min = (lower + 1).toString();
+    input.max = (HERTZ.length - 1).toString();
+    input.step = "1";
+    input.id = "upperRange";
+    input.value = upper.toString();
 
-        <div>
-            <fieldset>
-                <legend>${translationCallback("options-point-labels")}</legend>
+    div = form.appendChild(document.createElement("div"));
+    label = div.appendChild(document.createElement("label"));
+    label.appendChild(document.createTextNode(translationCallback("options-speed-label") + ":"));
+    input = label.appendChild(document.createElement("input"));
+    input.type = "range";
+    input.min = "0";
+    input.max = "4";
+    input.id = "speedRange";
+    input.value = speedIndex.toString();
 
-                <label>
-                    <input type="radio" name="point-labels" value="before" ${
-                        labelPosition ? "checked" : ""
-                    } />
-                    ${translationCallback("options-point-labels-before")}
-                </label>
-                
-                <br/>
+    div = form.appendChild(document.createElement("div"));
+    label = div.appendChild(document.createElement("label"));
+    input = label.appendChild(document.createElement("input"));
+    input.type = "checkbox";
+    input.id = "global";
+    input.defaultChecked = true;
+    label.appendChild(document.createTextNode(translationCallback("options-set-global")));
 
-                <label>
-                    <input type="radio" name="point-labels" value="after" ${
-                        labelPosition ? "" : "checked"
-                    } />
-                    ${translationCallback("options-point-labels-after")}
-                </label>
-            </fieldset>
-        </div>
+    div = form.appendChild(document.createElement("div"));
+    label = div.appendChild(document.createElement("label"));
+    input = label.appendChild(document.createElement("input"));
+    input.type = "checkbox";
+    input.id = "continuous";
+    input.defaultChecked = continuousMode;
+    label.appendChild(document.createTextNode(translationCallback("options-use-continuous")));
+    div.appendChild(document.createElement("br"));
+    div.appendChild(document.createTextNode(translationCallback("options-continuous-descr")));
 
-        <input id="save" type="submit" value="${translationCallback("save")}" />
-    </form>
-    `;
+    div = form.appendChild(document.createElement("div"));
+    const fieldset = div.appendChild(document.createElement("fieldset"));
+    const legend = fieldset.appendChild(document.createElement("label"));
+    legend.appendChild(document.createTextNode(translationCallback("options-point-labels")));
+    label = fieldset.appendChild(document.createElement("label"));
+    input = label.appendChild(document.createElement("input"));
+    input.type = "radio";
+    input.name = "point-labels";
+    input.value = "before";
+    input.defaultChecked = labelPosition;
+    label.appendChild(document.createTextNode(translationCallback("options-point-labels-before")));
+    fieldset.appendChild(document.createElement("br"));
+    label = fieldset.appendChild(document.createElement("label"));
+    input = label.appendChild(document.createElement("input"));
+    input.type = "radio";
+    input.name = "point-labels";
+    input.value = "after";
+    input.defaultChecked = !labelPosition;
+    label.appendChild(document.createTextNode(translationCallback("options-point-labels-after")));
+ 
+    input = form.appendChild(document.createElement("input"));
+    input.type = "submit";
+    input.id = "save";
+    input.value = translationCallback("save");
 
     const lowerRange: HTMLInputElement = dialog.querySelector("#lowerRange");
     const upperRange: HTMLInputElement = dialog.querySelector("#upperRange");
