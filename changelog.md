@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.0
+* Replace uses of `.innerHTML` with safer methods. (Thanks to [rbruckheimer](https://github.com/rbruckheimer) for contributing [#665](https://github.com/julianna-langston/chart2music/pull/665))
+
+## 1.18.1
+* Fixed formatting for X-values for OHLC charts
+
 ## 1.18.0
 * Added a callback function to modify the contents of the Help dialog.
 
@@ -25,7 +31,7 @@
 * Add classnames to dialogs. All dialogs will have the classname `chart2music-dialog`. Each dialog also has its own specific classname: `chart2music-help-dialog`, `chart2music-info-dialog`, and `chart2music-option-dialog`.
 
 ## 1.15.0
-* Added French, German, and Italian translations (thank you [glow](https://github.com/Neo-Oli) and their team at the [Swiss Red ross](https://github.com/swissredcross))
+* Added French, German, and Italian translations (thank you [glow](https://github.com/Neo-Oli) and their team at the [Swiss Red Cross](https://github.com/swissredcross))
 
 ## 1.14.0
 * Added internationalization support
