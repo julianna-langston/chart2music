@@ -1,4 +1,5 @@
 import { c2mChart } from "../src/c2mChart";
+import type { SimpleDataPoint } from "../src/dataPoint";
 
 jest.useFakeTimers();
 window.AudioContext = jest.fn().mockImplementation(() => {
@@ -488,3 +489,46 @@ test("setCategoryVisibility: of 2, focus on 2nd, turn off first", () => {
 // set last group to hidden, then page down to boundary
 // set first group to hidden, then page up to boundary
 // done: test error messages
+
+test("setCategoryVisibility: stacked chart hides correct dataset", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err, data: chart } = c2mChart({
+        type: "bar",
+        data: {
+            "Dataset 1": [{ x: 1, y: 10 }],
+            "Dataset 2": [{ x: 1, y: 100 }],
+            "Dataset 3": [{ x: 1, y: 1000 }]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false,
+            stack: true
+        }
+    });
+    expect(err).toBe(null);
+
+    // Get initial "All" value (should be 10 + 100 + 1000 = 1110)
+    expect(chart?.getCurrent().group).toBe("All");
+    expect((chart?.getCurrent().point as SimpleDataPoint).y).toBe(1110);
+
+    chart?.setCategoryVisibility("Dataset 2", false);
+
+    // after update, group should still be all, but value is Chart updated until you press space key
+    expect(chart?.getCurrent().group).toBe("All");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "Chart updated"
+    );
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: " "
+        })
+    );
+    jest.advanceTimersByTime(250);
+
+    // after pressing space, value should be 10 + 1000 = 1010
+    expect(chart?.getCurrent().group).toBe("All");
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 1010");
+});
