@@ -515,20 +515,14 @@ test("setCategoryVisibility: stacked chart hides correct dataset", () => {
 
     chart?.setCategoryVisibility("Dataset 2", false);
 
-    // after update, group should still be all, but value is Chart updated until you press space key
-    expect(chart?.getCurrent().group).toBe("All");
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
-        "Chart updated"
-    );
+    expect((chart?.getCurrent().point as SimpleDataPoint).y).toBe(1010);
 
-    mockElement.dispatchEvent(
-        new KeyboardEvent("keydown", {
-            key: " "
-        })
-    );
-    jest.advanceTimersByTime(250);
+    chart?.setCategoryVisibility("Dataset 2", true);
 
-    // after pressing space, value should be 10 + 1000 = 1010
-    expect(chart?.getCurrent().group).toBe("All");
-    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe("1, 1010");
+    expect((chart?.getCurrent().point as SimpleDataPoint).y).toBe(1110);
+
+    chart?.setCategoryVisibility("Dataset 1", false);
+    chart?.setCategoryVisibility("Dataset 3", false);
+
+    expect((chart?.getCurrent().point as SimpleDataPoint).y).toBe(100);
 });
