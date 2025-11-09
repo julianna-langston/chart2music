@@ -15,7 +15,7 @@ import {
 
 const validTypes =
     "band, bar, box, candlestick, histogram, line, matrix, pie, scatter, treemap, unsupported";
-const validLanguages = "en, de, es, fr, it";
+const validLanguages = "en, de, es, fr, it, hmn";
 
 test("validateInputType", () => {
     expect(validateInputType()).toBe(
