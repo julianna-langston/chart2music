@@ -6,6 +6,7 @@ import de from "./de";
 import es from "./es";
 import fr from "./fr";
 import it from "./it";
+import hmn from "./hmn";
 
 /**
  * A dictionary of messages, which will be used by the i18n formatter
@@ -16,4 +17,4 @@ export type translationDict = Record<string, string>;
  */
 export type translateEvaluators = Record<string, string | number | boolean>;
 
-export { en, de, es, fr, it };
+export { en, de, es, fr, it, hmn };
