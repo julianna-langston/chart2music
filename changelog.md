@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.20.0
+* Account for filtering on the "All" section of stacked bar charts. (Thanks to [cmcnulty](https://github.com/cmcnulty) for contributing [#709](https://github.com/julianna-langston/chart2music/pull/709))
+* Added Hmong translation. (Thanks to [cmcnulty](https://github.com/cmcnulty) for contributing [#710](https://github.com/julianna-langston/chart2music/pull/710))
+
 ## 1.19.0
 * Replace uses of `.innerHTML` with safer methods. (Thanks to [rbruckheimer](https://github.com/rbruckheimer) for contributing [#665](https://github.com/julianna-langston/chart2music/pull/665))
 
