@@ -6,12 +6,7 @@ module.exports = {
     },
     setupFiles: ["<rootDir>/test/_setup.ts"],
     transform: {
-        "^.+\\.ts?$": [
-            "ts-jest",
-            {
-                isolatedModules: true
-            }
-        ]
+        "^.+\\.ts?$": ["ts-jest"]
     },
     testRegex: ".+\\.test\\.ts?$",
     testEnvironment: "jsdom",
