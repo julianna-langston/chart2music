@@ -761,26 +761,38 @@ export class c2m {
     }
 
     /**
-     * Build a new group to represent the stack, or sum, of all other groups
+     * Create a frequency table from selected rows, summing y values for each x coordinate
+     * @param rowFilter - Optional function to filter which rows to include
+     * @returns Array of SimpleDataPoint with summed values
      */
-    private _buildStackBar() {
+    private _createFrequencyTable(
+        rowFilter?: (row: SupportedDataPointType[], rowIndex: number) => boolean
+    ): SimpleDataPoint[] {
         const freqTable = {};
-        this._data.forEach((row) => {
+        this._data.forEach((row, rowIndex) => {
+            if (rowFilter && !rowFilter(row, rowIndex)) {
+                return;
+            }
             row.forEach((cell) => {
                 if (!isSimpleDataPoint(cell)) {
                     return;
                 }
-
                 if (!(cell.x in freqTable)) {
                     freqTable[cell.x] = 0;
                 }
                 freqTable[cell.x] += cell.y;
             });
         });
-        const newRow = Object.entries(freqTable).map(([x, y]) => {
+        return Object.entries(freqTable).map(([x, y]) => {
             return { x: Number(x), y } as SimpleDataPoint;
         });
+    }
 
+    /**
+     * Build a new group to represent the stack, or sum, of all other groups
+     */
+    private _buildStackBar() {
+        const newRow = this._createFrequencyTable();
         this._data.unshift(newRow);
         this._groups.unshift("All");
         this._visible_group_indices.push(this._groups.length - 1);
@@ -1004,6 +1016,18 @@ export class c2m {
                     })
                 );
             }
+        }
+
+        // If this is a stacked chart with an "All" group, rebuild it to reflect new visibility
+        if (this._options.stack && this._groups[0] === "All") {
+            // Rebuild the "All" group by summing only visible datasets (excluding "All" itself)
+            this._data[0] = this._createFrequencyTable((row, rowIndex) => {
+                // Skip the "All" group itself (index 0) and hidden groups
+                return (
+                    rowIndex !== 0 &&
+                    this._visible_group_indices.includes(rowIndex)
+                );
+            });
         }
 
         if (this._visibleGroupIndex >= this._visible_group_indices.length) {
