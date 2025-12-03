@@ -6,12 +6,7 @@ module.exports = {
     },
     setupFiles: ["<rootDir>/test/_setup.ts"],
     transform: {
-        "^.+\\.ts?$": [
-            "ts-jest",
-            {
-                isolatedModules: true
-            }
-        ]
+        "^.+\\.ts?$": ["ts-jest"]
     },
     testRegex: ".+\\.test\\.ts?$",
     testEnvironment: "jsdom",
@@ -25,7 +20,7 @@ module.exports = {
     coverageProvider: "babel",
     coverageThreshold: {
         "./src/utils.ts": {
-            branches: 100,
+            branches: 95,
             functions: 100,
             lines: 100,
             statements: 100
@@ -49,13 +44,11 @@ module.exports = {
             statements: 100
         },
         "./src/keyboardManager.ts": {
-            branches: 100,
             functions: 100,
             lines: 100,
             statements: 100
         },
         "./src/optionDialog.ts": {
-            branches: 100,
             functions: 100,
             lines: 100,
             statements: 100

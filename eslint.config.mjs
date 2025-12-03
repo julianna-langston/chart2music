@@ -41,6 +41,7 @@ export default [{
         "no-console": "warn",
         "no-alert": "warn",
         "@typescript-eslint/consistent-type-imports": "error",
+        "@typescript-eslint/no-for-in-array": "off",
         "no-duplicate-imports": "off",
         "consistent-return": "error",
         eqeqeq: "error",
