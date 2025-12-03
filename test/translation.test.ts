@@ -66,12 +66,13 @@ test("Spanish", () => {
 });
 
 test("Get list of available languages", () => {
-    expect(c2m.languages).toHaveLength(5);
+    expect(c2m.languages).toHaveLength(6);
     expect(c2m.languages).toContain("en");
     expect(c2m.languages).toContain("es");
     expect(c2m.languages).toContain("de");
     expect(c2m.languages).toContain("fr");
     expect(c2m.languages).toContain("it");
+    expect(c2m.languages).toContain("hmn");
 });
 
 test("French", () => {
@@ -198,6 +199,51 @@ test("Italian", () => {
     mockElement.dispatchEvent(new Event("focus"));
     expect(mockElementCC.textContent).toContain(
         `Grafico sonificato con 3 gruppi intitolato "Esempio".`
+    );
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "ArrowRight"
+        })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.textContent).toContain(`2, 2`);
+});
+
+test("Hmong", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        lang: "hmn",
+        title: "Piv txwv",
+        type: "line",
+        data: {
+            a: [
+                { x: 1, y: 1 },
+                { x: 2, y: 2 },
+                { x: 3, y: 3 }
+            ],
+            b: [
+                { x: 1, y: 11 },
+                { x: 2, y: 12 },
+                { x: 3, y: 13 }
+            ],
+            c: [
+                { x: 1, y: 7 },
+                { x: 2, y: 8 },
+                { x: 3, y: 9 }
+            ]
+        },
+        element: mockElement,
+        cc: mockElementCC,
+        options: {
+            enableSound: false
+        }
+    });
+    expect(err).toBe(null);
+    mockElement.dispatchEvent(new Event("focus"));
+    expect(mockElementCC.textContent).toContain(
+        `Daim kab kos siv suab muaj 3 pab hu ua "Piv txwv".`
     );
 
     mockElement.dispatchEvent(
