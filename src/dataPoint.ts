@@ -1,4 +1,14 @@
 /**
+ * Breakdown of a stacked bar/data point showing which groups contributed to the total
+ */
+export interface StackBreakdownItem {
+    /** The name of the group */
+    group: string;
+    /** The value contributed by this group */
+    value: number;
+}
+
+/**
  * The base of all data points.
  * This only contains the x-axis, see the rest of the DataPoint interfaces to actually create data points.
  */
@@ -12,6 +22,8 @@ interface DataPoint {
     /** Reference to the slice that should be drilled down to */
     children?: string;
     type?: "annotation";
+    /** Breakdown of stacked data, populated automatically for stacked bar "All" group */
+    _stackBreakdown?: StackBreakdownItem[];
 }
 
 /**

@@ -265,15 +265,27 @@ export const generatePointDescription = ({
     }
 
     if (isSimpleDataPoint(point)) {
-        const details = [xFormat(point.x), yFormat(point.y)];
-        if (point.label) {
-            if (announcePointLabelFirst) {
-                details.unshift(point.label);
-            } else {
-                details.push(point.label);
-            }
+        // Fast path: simple point without a label
+        if (!point.label) {
+            return translationCallback("point-xy", {
+                x: xFormat(point.x),
+                y: yFormat(point.y),
+                ...(point._stackBreakdown && {
+                    stackBreakdown: point._stackBreakdown
+                })
+            });
         }
-        return details.join(", ");
+
+        // Point with label: use point-xy-label template
+        return translationCallback("point-xy-label", {
+            x: xFormat(point.x),
+            y: yFormat(point.y),
+            label: point.label,
+            announcePointLabelFirst,
+            ...(point._stackBreakdown && {
+                stackBreakdown: point._stackBreakdown
+            })
+        });
     }
 
     if (isAlternateAxisDataPoint(point)) {

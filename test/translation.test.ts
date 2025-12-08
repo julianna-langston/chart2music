@@ -306,4 +306,338 @@ describe("Provided translations", () => {
             "Sonified chart, EXAMPLE"
         );
     });
+
+    test("Custom point-xy-label formatting with labels for stacked bars", () => {
+        const mockElement = document.createElement("div");
+        const mockElementCC = document.createElement("div");
+        const { err } = c2mChart({
+            lang: "en",
+            title: "Stacked Bar Revenue",
+            type: "line",
+            data: {
+                "Q1 2023": [
+                    {
+                        x: 1,
+                        y: 100,
+                        label: "Product A: 30, Product B: 40, Product C: 30"
+                    },
+                    {
+                        x: 2,
+                        y: 120,
+                        label: "Product A: 35, Product B: 45, Product C: 40"
+                    }
+                ],
+                "Q2 2023": [
+                    {
+                        x: 1,
+                        y: 150,
+                        label: "Product A: 50, Product B: 60, Product C: 40"
+                    }
+                ]
+            },
+            element: mockElement,
+            cc: mockElementCC,
+            options: {
+                enableSound: false,
+                translationCallback: ({ id, evaluators }) => {
+                    if (id === "point-xy-label") {
+                        return `${evaluators.x}, total ${evaluators.y} (${evaluators.label})`;
+                    }
+                    return false;
+                }
+            }
+        });
+        expect(err).toBe(null);
+
+        mockElement.dispatchEvent(new Event("focus"));
+
+        // Navigate to first point - use Home to ensure we're at index 0
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Home"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify custom format is used with label
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "1, total 100 (Product A: 30, Product B: 40, Product C: 30)"
+        );
+
+        // Navigate to next point
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "ArrowRight"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "2, total 120 (Product A: 35, Product B: 45, Product C: 40)"
+        );
+
+        // Navigate to next group
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "PageDown"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // After PageDown, navigate to first point of new group
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Home"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify custom format works for second group
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "1, total 150 (Product A: 50, Product B: 60, Product C: 40)"
+        );
+    });
+
+    test("Backwards compatibility: simple points with labels use default format", () => {
+        const mockElement = document.createElement("div");
+        const mockElementCC = document.createElement("div");
+        const { err } = c2mChart({
+            lang: "en",
+            title: "Test Chart",
+            type: "line",
+            data: {
+                series: [
+                    { x: 1, y: 10, label: "Point A" },
+                    { x: 2, y: 20, label: "Point B" }
+                ]
+            },
+            element: mockElement,
+            cc: mockElementCC,
+            options: {
+                enableSound: false
+            }
+        });
+        expect(err).toBe(null);
+
+        mockElement.dispatchEvent(new Event("focus"));
+
+        // Navigate to first point using Home
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Home"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify default format appends label with comma
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "1, 10, Point A"
+        );
+
+        // Navigate to second point
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "ArrowRight"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify default format works for second point too
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "2, 20, Point B"
+        );
+    });
+
+    test("StackBreakdown in translationCallback for stacked bars", () => {
+        const mockElement = document.createElement("div");
+        const mockElementCC = document.createElement("div");
+        const { err } = c2mChart({
+            lang: "en",
+            title: "Revenue by Product",
+            type: "bar",
+            data: {
+                "Product A": [
+                    { x: 1, y: 30 },
+                    { x: 2, y: 50 }
+                ],
+                "Product B": [
+                    { x: 1, y: 40 },
+                    { x: 2, y: 60 }
+                ],
+                "Product C": [
+                    { x: 1, y: 30 },
+                    { x: 2, y: 40 }
+                ]
+            },
+            element: mockElement,
+            cc: mockElementCC,
+            options: {
+                enableSound: false,
+                stack: true,
+                translationCallback: ({ id, evaluators }) => {
+                    if (id === "point-xy" && evaluators.stackBreakdown) {
+                        const breakdown = evaluators.stackBreakdown as Array<{
+                            group: string;
+                            value: number;
+                        }>;
+                        const details = breakdown
+                            .map((item) => `${item.group}: ${item.value}`)
+                            .join(", ");
+                        return `${evaluators.x}, total ${evaluators.y} (${details})`;
+                    }
+                    return false;
+                }
+            }
+        });
+        expect(err).toBe(null);
+
+        mockElement.dispatchEvent(new Event("focus"));
+
+        // Navigate to "All" group which has stackBreakdown
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Home"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify stackBreakdown is used in custom format
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "1, total 100 (Product A: 30, Product B: 40, Product C: 30)"
+        );
+
+        // Navigate to next point in All group
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "ArrowRight"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "2, total 150 (Product A: 50, Product B: 60, Product C: 40)"
+        );
+
+        // Navigate to individual group (no stackBreakdown)
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "PageDown"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Home"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Individual groups should use default format (no stackBreakdown)
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "1, 30"
+        );
+    });
+
+    test("announcePointLabelFirst puts label at the beginning", () => {
+        const mockElement = document.createElement("div");
+        const mockElementCC = document.createElement("div");
+        const { err } = c2mChart({
+            lang: "en",
+            title: "Test Chart",
+            type: "line",
+            data: {
+                series: [
+                    { x: 1, y: 10, label: "Point A" },
+                    { x: 2, y: 20, label: "Point B" }
+                ]
+            },
+            element: mockElement,
+            cc: mockElementCC,
+            options: {
+                enableSound: false,
+                announcePointLabelFirst: true
+            }
+        });
+        expect(err).toBe(null);
+
+        mockElement.dispatchEvent(new Event("focus"));
+
+        // Navigate to first point
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Home"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify label comes first: "Point A, 1, 10"
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "Point A, 1, 10"
+        );
+
+        // Navigate to second point
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "ArrowRight"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify label comes first: "Point B, 2, 20"
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "Point B, 2, 20"
+        );
+    });
+
+    test("Default behavior puts label at the end", () => {
+        const mockElement = document.createElement("div");
+        const mockElementCC = document.createElement("div");
+        const { err } = c2mChart({
+            lang: "en",
+            title: "Test Chart",
+            type: "line",
+            data: {
+                series: [
+                    { x: 1, y: 10, label: "Point A" },
+                    { x: 2, y: 20, label: "Point B" }
+                ]
+            },
+            element: mockElement,
+            cc: mockElementCC,
+            options: {
+                enableSound: false,
+                announcePointLabelFirst: false
+            }
+        });
+        expect(err).toBe(null);
+
+        mockElement.dispatchEvent(new Event("focus"));
+
+        // Navigate to first point
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Home"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify label comes last: "1, 10, Point A"
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "1, 10, Point A"
+        );
+
+        // Navigate to second point
+        mockElement.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "ArrowRight"
+            })
+        );
+        jest.advanceTimersByTime(250);
+
+        // Verify label comes last: "2, 20, Point B"
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+            "2, 20, Point B"
+        );
+    });
 });

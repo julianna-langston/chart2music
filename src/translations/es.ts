@@ -116,12 +116,13 @@ const dictionary: translationDict = {
     "stat-outlier": "Valor Atípico",
 
     "point-xy": "{x}, {y}",
+    "point-xy-label": "{announcePointLabelFirst, select, true {{label}, {x}, {y}} other {{x}, {y}, {label}}}",
     "point-xohlc": "{x}, {open} - {high} - {low} - {close}",
     "point-outlier": "{x}, {y}, {index} de {count}",
     "point-xhl": "{x}, {high} - {low}",
-    "point-xhl-outlier": `{x}, {high} - {low}, con {count, plural, 
-        =0 {Sin valores atípicos} 
-        one {{count} valor atípico} 
+    "point-xhl-outlier": `{x}, {high} - {low}, con {count, plural,
+        =0 {Sin valores atípicos}
+        one {{count} valor atípico}
         other {{count} valores atípicos}
     }`,
 
