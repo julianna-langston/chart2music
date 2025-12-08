@@ -200,7 +200,9 @@ export const generatePointDescription = ({
     stat,
     outlierIndex = null,
     announcePointLabelFirst = false,
-    translationCallback
+    translationCallback,
+    pointIndex,
+    groupIndex
 }: {
     point: SupportedDataPointType;
     xFormat?: AxisData["format"];
@@ -212,39 +214,64 @@ export const generatePointDescription = ({
         code: string,
         evaluators?: translateEvaluators
     ) => string;
+    pointIndex?: number;
+    groupIndex?: number;
 }) => {
+    // Helper to add indices to evaluators
+    const withIndices = (
+        evaluators: translateEvaluators
+    ): translateEvaluators => {
+        return {
+            ...evaluators,
+            ...(typeof pointIndex === "number" && { pointIndex }),
+            ...(typeof groupIndex === "number" && { groupIndex })
+        };
+    };
+
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translationCallback("point-xy", {
-                x: xFormat(point.x),
-                y: yFormat(point[stat as keyof OHLCDataPoint] as number)
-            });
+            return translationCallback(
+                "point-xy",
+                withIndices({
+                    x: xFormat(point.x),
+                    y: yFormat(point[stat as keyof OHLCDataPoint] as number)
+                })
+            );
         }
-        return translationCallback("point-xohlc", {
-            x: xFormat(point.x),
-            open: yFormat(point.open),
-            high: yFormat(point.high),
-            low: yFormat(point.low),
-            close: yFormat(point.close)
-        });
+        return translationCallback(
+            "point-xohlc",
+            withIndices({
+                x: xFormat(point.x),
+                open: yFormat(point.open),
+                high: yFormat(point.high),
+                low: yFormat(point.low),
+                close: yFormat(point.close)
+            })
+        );
     }
 
     if (isBoxDataPoint(point) && outlierIndex !== null) {
-        return translationCallback("point-outlier", {
-            x: xFormat(point.x),
-            y: point.outlier.at(outlierIndex),
-            index: outlierIndex + 1,
-            count: point.outlier.length
-        });
+        return translationCallback(
+            "point-outlier",
+            withIndices({
+                x: xFormat(point.x),
+                y: point.outlier.at(outlierIndex),
+                index: outlierIndex + 1,
+                count: point.outlier.length
+            })
+        );
     }
 
     if (isBoxDataPoint(point) || isHighLowDataPoint(point)) {
         if (typeof stat !== "undefined") {
-            return translationCallback("point-xy", {
-                x: xFormat(point.x),
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                y: yFormat(point[stat])
-            });
+            return translationCallback(
+                "point-xy",
+                withIndices({
+                    x: xFormat(point.x),
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                    y: yFormat(point[stat])
+                })
+            );
         }
 
         const { x, high, low } = point;
@@ -255,32 +282,50 @@ export const generatePointDescription = ({
         };
 
         if ("outlier" in point && point.outlier?.length > 0) {
-            return translationCallback("point-xhl-outlier", {
-                ...formattedPoint,
-                count: point.outlier.length
-            });
+            return translationCallback(
+                "point-xhl-outlier",
+                withIndices({
+                    ...formattedPoint,
+                    count: point.outlier.length
+                })
+            );
         }
 
-        return translationCallback("point-xhl", formattedPoint);
+        return translationCallback("point-xhl", withIndices(formattedPoint));
     }
 
     if (isSimpleDataPoint(point)) {
-        const details = [xFormat(point.x), yFormat(point.y)];
-        if (point.label) {
-            if (announcePointLabelFirst) {
-                details.unshift(point.label);
-            } else {
-                details.push(point.label);
-            }
+        // Fast path: simple point without a label
+        if (!point.label) {
+            return translationCallback(
+                "point-xy",
+                withIndices({
+                    x: xFormat(point.x),
+                    y: yFormat(point.y)
+                })
+            );
         }
-        return details.join(", ");
+
+        // Point with label: use point-xy-label template
+        return translationCallback(
+            "point-xy-label",
+            withIndices({
+                x: xFormat(point.x),
+                y: yFormat(point.y),
+                label: point.label,
+                announcePointLabelFirst
+            })
+        );
     }
 
     if (isAlternateAxisDataPoint(point)) {
-        return translationCallback("point-xy", {
-            x: xFormat(point.x),
-            y: yFormat(point.y2)
-        });
+        return translationCallback(
+            "point-xy",
+            withIndices({
+                x: xFormat(point.x),
+                y: yFormat(point.y2)
+            })
+        );
     }
 
     return "";

@@ -112,6 +112,8 @@ const dictionary: translationDict = {
     "stat-outlier": "Tawm txawv",
 
     "point-xy": "{x}, {y}",
+    "point-xy-label":
+        "{announcePointLabelFirst, select, true {{label}, {x}, {y}} other {{x}, {y}, {label}}}",
     "point-xohlc": "{x}, {open} - {high} - {low} - {close}",
     "point-outlier": "{x}, {y}, {index} ntawm {count}",
     "point-xhl": "{x}, {high} - {low}",

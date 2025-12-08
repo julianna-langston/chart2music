@@ -78,6 +78,12 @@ export class TranslationManager {
             code,
             createIntl({
                 locale: code,
+                onError: (...args) => {
+                    // Suppress missing translation errors
+                    if ((args[0].code as string) === "MISSING_DATA") {
+                        return;
+                    }
+                },
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 messages: translations[code]
             })
