@@ -248,7 +248,7 @@ export class c2m {
                     input.options.translationCallback;
             }
 
-            if (input.options.announcePointLabelFirst !== undefined) {
+            if (input.options.announcePointLabelFirst) {
                 this._announcePointLabelFirst =
                     input.options.announcePointLabelFirst;
             }
