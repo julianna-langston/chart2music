@@ -14,11 +14,7 @@ import hmn from "./hmn";
 export type translationDict = Record<string, string>;
 /**
  * Entities to be interpolated into translations. For example, in the ICU message "hello {world}", the entity is "world".
- * Note: While formatjs typically interpolates primitives, custom translation callbacks may use additional properties.
  */
-export type translateEvaluators = Record<
-    string,
-    string | number | boolean | unknown
->;
+export type translateEvaluators = Record<string, string | number | boolean>;
 
 export { en, de, es, fr, it, hmn };
