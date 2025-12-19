@@ -44,7 +44,11 @@ import {
     isOHLCDataPoint,
     isSimpleDataPoint
 } from "./dataPoint";
-import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
+import type {
+    SupportedDataPointType,
+    SimpleDataPoint,
+    StackBreakdownItem
+} from "./dataPoint";
 import { launchOptionDialog } from "./optionDialog";
 import { launchInfoDialog } from "./infoDialog";
 import { AudioNotificationType } from "./audio/AudioEngine";
@@ -242,6 +246,11 @@ export class c2m {
             if (input.options.translationCallback) {
                 this._translator.intercepterCallback =
                     input.options.translationCallback;
+            }
+
+            if (input.options.announcePointLabelFirst) {
+                this._announcePointLabelFirst =
+                    input.options.announcePointLabelFirst;
             }
         }
 
@@ -768,23 +777,35 @@ export class c2m {
     private _createFrequencyTable(
         rowFilter?: (row: SupportedDataPointType[], rowIndex: number) => boolean
     ): SimpleDataPoint[] {
-        const freqTable = {};
+        const freqTable: Record<
+            number,
+            { total: number; breakdown: StackBreakdownItem[] }
+        > = {};
         this._data.forEach((row, rowIndex) => {
             if (rowFilter && !rowFilter(row, rowIndex)) {
                 return;
             }
+            const groupName = this._groups[rowIndex];
             row.forEach((cell) => {
                 if (!isSimpleDataPoint(cell)) {
                     return;
                 }
                 if (!(cell.x in freqTable)) {
-                    freqTable[cell.x] = 0;
+                    freqTable[cell.x] = { total: 0, breakdown: [] };
                 }
-                freqTable[cell.x] += cell.y;
+                freqTable[cell.x].total += cell.y;
+                freqTable[cell.x].breakdown.push({
+                    group: groupName,
+                    value: cell.y
+                });
             });
         });
-        return Object.entries(freqTable).map(([x, y]) => {
-            return { x: Number(x), y } as SimpleDataPoint;
+        return Object.entries(freqTable).map(([x, data]) => {
+            return {
+                x: Number(x),
+                y: data.total,
+                _stackBreakdown: data.breakdown
+            } as SimpleDataPoint;
         });
     }
 
