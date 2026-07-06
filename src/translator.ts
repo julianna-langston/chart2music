@@ -8,6 +8,24 @@ export const DEFAULT_LANGUAGE = "en";
 export const AVAILABLE_LANGUAGES = Object.keys(translations);
 
 /**
+ * Fallback locales for languages not supported by Intl.NumberFormat
+ */
+const FALLBACK_LOCALES: Record<string, string> = {
+    hmn: "en" // Hmong uses English numeric notation
+};
+
+/**
+ * Resolve locale to one supported by Intl.NumberFormat
+ * @param locale - the desired locale
+ * @returns a supported locale code
+ */
+function resolveLocale(locale: string): string {
+    return Intl.NumberFormat.supportedLocalesOf(locale).length
+        ? locale
+        : (FALLBACK_LOCALES[locale] ?? DEFAULT_LANGUAGE);
+}
+
+/**
  * Manages translations, including importing content, switching languages, and returning translated strings
  */
 export class TranslationManager {
@@ -77,7 +95,7 @@ export class TranslationManager {
         this._loadedLanguages.set(
             code,
             createIntl({
-                locale: code,
+                locale: resolveLocale(code),
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 messages: translations[code]
             })
