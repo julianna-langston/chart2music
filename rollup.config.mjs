@@ -1,7 +1,9 @@
 import typescript from "@rollup/plugin-typescript";
 import { dts } from "rollup-plugin-dts";
-import del from "rollup-plugin-delete";
+import delPlugin from "rollup-plugin-delete";
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+
+const del = delPlugin.default ?? delPlugin;
 
 // Modified from: https://gist.github.com/rikkit/b636076740dfaa864ce9ee8ae389b81c#file-tsconfig-json
 
@@ -36,6 +38,9 @@ export default [
                 plugins: []
             }
         ],
-        plugins: [dts(), del({ targets: "dist/*.d.ts", hook: "buildEnd" })]
+        plugins: [
+            dts(),
+            del({ targets: "dist/*.d.ts", hook: "buildEnd" })
+        ]
     }
 ];
