@@ -52,7 +52,11 @@ export const launchOptionDialog = (
 
     div = form.appendChild(document.createElement("div"));
     label = div.appendChild(document.createElement("label"));
-    label.appendChild(document.createTextNode(translationCallback("options-hertz-lower") + ":"));
+    label.appendChild(
+        document.createTextNode(
+            translationCallback("options-hertz-lower") + ":"
+        )
+    );
     input = label.appendChild(document.createElement("input"));
     input.type = "range";
     input.min = "0";
@@ -63,7 +67,11 @@ export const launchOptionDialog = (
 
     div = form.appendChild(document.createElement("div"));
     label = div.appendChild(document.createElement("label"));
-    label.appendChild(document.createTextNode(translationCallback("options-hertz-upper") + ":"));
+    label.appendChild(
+        document.createTextNode(
+            translationCallback("options-hertz-upper") + ":"
+        )
+    );
     input = label.appendChild(document.createElement("input"));
     input.type = "range";
     input.min = (lower + 1).toString();
@@ -74,7 +82,11 @@ export const launchOptionDialog = (
 
     div = form.appendChild(document.createElement("div"));
     label = div.appendChild(document.createElement("label"));
-    label.appendChild(document.createTextNode(translationCallback("options-speed-label") + ":"));
+    label.appendChild(
+        document.createTextNode(
+            translationCallback("options-speed-label") + ":"
+        )
+    );
     input = label.appendChild(document.createElement("input"));
     input.type = "range";
     input.min = "0";
@@ -88,7 +100,9 @@ export const launchOptionDialog = (
     input.type = "checkbox";
     input.id = "global";
     input.defaultChecked = true;
-    label.appendChild(document.createTextNode(translationCallback("options-set-global")));
+    label.appendChild(
+        document.createTextNode(translationCallback("options-set-global"))
+    );
 
     div = form.appendChild(document.createElement("div"));
     label = div.appendChild(document.createElement("label"));
@@ -96,21 +110,31 @@ export const launchOptionDialog = (
     input.type = "checkbox";
     input.id = "continuous";
     input.defaultChecked = continuousMode;
-    label.appendChild(document.createTextNode(translationCallback("options-use-continuous")));
+    label.appendChild(
+        document.createTextNode(translationCallback("options-use-continuous"))
+    );
     div.appendChild(document.createElement("br"));
-    div.appendChild(document.createTextNode(translationCallback("options-continuous-descr")));
+    div.appendChild(
+        document.createTextNode(translationCallback("options-continuous-descr"))
+    );
 
     div = form.appendChild(document.createElement("div"));
     const fieldset = div.appendChild(document.createElement("fieldset"));
     const legend = fieldset.appendChild(document.createElement("label"));
-    legend.appendChild(document.createTextNode(translationCallback("options-point-labels")));
+    legend.appendChild(
+        document.createTextNode(translationCallback("options-point-labels"))
+    );
     label = fieldset.appendChild(document.createElement("label"));
     input = label.appendChild(document.createElement("input"));
     input.type = "radio";
     input.name = "point-labels";
     input.value = "before";
     input.defaultChecked = labelPosition;
-    label.appendChild(document.createTextNode(translationCallback("options-point-labels-before")));
+    label.appendChild(
+        document.createTextNode(
+            translationCallback("options-point-labels-before")
+        )
+    );
     fieldset.appendChild(document.createElement("br"));
     label = fieldset.appendChild(document.createElement("label"));
     input = label.appendChild(document.createElement("input"));
@@ -118,8 +142,12 @@ export const launchOptionDialog = (
     input.name = "point-labels";
     input.value = "after";
     input.defaultChecked = !labelPosition;
-    label.appendChild(document.createTextNode(translationCallback("options-point-labels-after")));
- 
+    label.appendChild(
+        document.createTextNode(
+            translationCallback("options-point-labels-after")
+        )
+    );
+
     input = form.appendChild(document.createElement("input"));
     input.type = "submit";
     input.id = "save";
