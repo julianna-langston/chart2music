@@ -6,8 +6,15 @@ module.exports = {
     },
     setupFiles: ["<rootDir>/test/_setup.ts"],
     transform: {
-        "^.+\\.ts?$": ["ts-jest"]
+        "^.+\\.ts$": ["ts-jest"],
+        "^.+\\.js$": [
+            "babel-jest",
+            { plugins: ["@babel/plugin-transform-modules-commonjs"] }
+        ]
     },
+    transformIgnorePatterns: [
+        "[/\\\\]node_modules[/\\\\](?!(?:@formatjs|intl-messageformat)[/\\\\])"
+    ],
     testRegex: ".+\\.test\\.ts?$",
     testEnvironment: "jsdom",
     collectCoverageFrom: [
