@@ -444,7 +444,7 @@ export class c2m {
                         this._visibleGroupIndex--;
                         this._playCurrent();
                     }
-                }, SPEEDS.at(this._speedRateIndex)) as NodeJS.Timeout;
+                }, SPEEDS.at(this._speedRateIndex));
                 this._playCurrent();
             },
             stop_play: () => {
@@ -900,7 +900,7 @@ export class c2m {
                         datasetIndex: 0,
                         index: 0
                     }
-                } as SupportedDataPointType;
+                };
             });
             this._data.forEach((group, i) => {
                 annos.forEach((a) => {
@@ -1906,7 +1906,7 @@ export class c2m {
                 this._outlierIndex--;
                 this._playCurrent();
             }
-        }, SPEEDS.at(this._speedRateIndex)) as NodeJS.Timeout;
+        }, SPEEDS.at(this._speedRateIndex));
         this._playCurrent();
     }
 
@@ -1931,7 +1931,7 @@ export class c2m {
                 this._pointIndex--;
                 this._playCurrent();
             }
-        }, SPEEDS.at(this._speedRateIndex)) as NodeJS.Timeout;
+        }, SPEEDS.at(this._speedRateIndex));
         this._playCurrent();
     }
 
@@ -1939,12 +1939,9 @@ export class c2m {
      * Play all outliers to the right, if there are any
      */
     private _playRightOutlier() {
-        if (
-            !(
-                isBoxDataPoint(this.currentPoint) &&
-                "outlier" in this.currentPoint
-            )
-        ) {
+        if (!(
+            isBoxDataPoint(this.currentPoint) && "outlier" in this.currentPoint
+        )) {
             return;
         }
         const max = this.currentPoint.outlier?.length - 1;
