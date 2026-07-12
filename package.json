@@ -76,6 +76,6 @@
         "typescript": "5.9.3"
     },
     "dependencies": {
-        "@formatjs/intl": "4.0.8"
+        "@formatjs/intl": "4.1.16"
     }
 }
