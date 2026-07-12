@@ -1939,12 +1939,9 @@ export class c2m {
      * Play all outliers to the right, if there are any
      */
     private _playRightOutlier() {
-        if (
-            !(
-                isBoxDataPoint(this.currentPoint) &&
-                "outlier" in this.currentPoint
-            )
-        ) {
+        if (!(
+            isBoxDataPoint(this.currentPoint) && "outlier" in this.currentPoint
+        )) {
             return;
         }
         const max = this.currentPoint.outlier?.length - 1;
