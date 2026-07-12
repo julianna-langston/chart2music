@@ -448,7 +448,7 @@ export const convertDataRow = (
             return {
                 x: index,
                 y: point
-            } as SupportedDataPointType;
+            };
         }
         return point;
     });
