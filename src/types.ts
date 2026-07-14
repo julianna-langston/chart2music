@@ -234,6 +234,7 @@ export type c2mOptions = {
     hertzes?: number[];
     stack?: boolean;
     root?: null | string;
+    announcePointLabelFirst?: boolean;
     translationCallback?: ({
         language,
         id,
