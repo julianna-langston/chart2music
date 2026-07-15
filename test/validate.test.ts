@@ -383,6 +383,20 @@ test("c2mChart validation", () => {
     );
 });
 
+test("Bar charts accept points with y, high, and low values", () => {
+    const { err } = c2mChart({
+        type: "bar",
+        element: document.createElement("div"),
+        data: [
+            { x: 0, y: 12, high: 15, low: 9 },
+            { x: 1, y: 18, high: 21, low: 14 },
+            { x: 2, y: 10, high: 13, low: 7 }
+        ]
+    });
+
+    expect(err).toBe(null);
+});
+
 test("validate img tag without cc property", () => {
     const { err } = c2mChart({
         type: "bar",
