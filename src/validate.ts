@@ -4,6 +4,7 @@ import {
     isHighLowDataPoint,
     isSimpleDataPoint,
     isOHLCDataPoint,
+    isWaterfallDataPoint,
     isBoxDataPoint
 } from "./dataPoint";
 import { AVAILABLE_LANGUAGES } from "./translator";
@@ -193,6 +194,15 @@ export const validateInputDataRowHomogeneity = (
             row[failure]
         )}). All items should be of the same type.`;
     }
+    if (isWaterfallDataPoint(first)) {
+        const failure = row.findIndex((cell) => !isWaterfallDataPoint(cell));
+        if (failure === -1) {
+            return "";
+        }
+        return `The first item is a waterfall data point (x/open/close), but item index ${failure} is not (value: ${JSON.stringify(
+            row[failure]
+        )}). All items should be of the same type.`;
+    }
     if (isOHLCDataPoint(first)) {
         const failure = row.findIndex((cell) => !isOHLCDataPoint(cell));
         if (failure === -1) {
@@ -245,7 +255,7 @@ export const validateInputDataRowHomogeneity = (
 
     return `The first item is of an unrecognized type (value: ${JSON.stringify(
         first
-    )}). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`;
+    )}). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), waterfall data point (x/open/close), and high low data point (x/high/low).`;
 };
 
 export const validateCornerCases = (input: SonifyTypes) => {

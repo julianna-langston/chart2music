@@ -160,6 +160,22 @@ test("validateInputDataRowHomogeneity", () => {
             { x: 3, y: 3 }
         ])
     ).toBe("");
+
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, open: 0, close: 120, custom: { label: "Revenue" } },
+            { x: 1, open: 120, close: 85 },
+            { x: 2, open: 85, close: 100 }
+        ])
+    ).toBe("");
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, open: 0, close: 120 },
+            { x: 1, y: 85 }
+        ])
+    ).toBe(
+        `The first item is a waterfall data point (x/open/close), but item index 1 is not (value: {"x":1,"y":85}). All items should be of the same type.`
+    );
     // Confirm simple data point homogeneity
     expect(
         validateInputDataRowHomogeneity([{ x: 1, y: 1 }, { x: 2, y: 2 }, 3])
@@ -306,7 +322,7 @@ test("validateInputDataRowHomogeneity", () => {
     // @ts-ignore - deliberately generating error condition
     // Confirm number homogeneity
     expect(validateInputDataRowHomogeneity(["1", 2, 3, 4, 5])).toBe(
-        `The first item is of an unrecognized type (value: "1"). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), and high low data point (x/high/low).`
+        `The first item is of an unrecognized type (value: "1"). Supported types are: number, simple data point (x/y), alternative axis data point (x/y2), waterfall data point (x/open/close), and high low data point (x/high/low).`
     );
 
     expect(

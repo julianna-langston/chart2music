@@ -280,5 +280,6 @@ export type detectableDataPoint =
     | "SimpleDataPoint"
     | "HighLowDataPoint"
     | "OHLCDataPoint"
+    | "WaterfallDataPoint"
     | "BoxDataPoint"
     | "AlternativeAxisDataPoint";
