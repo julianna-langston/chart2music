@@ -2,7 +2,7 @@ import { OscillatorAudioEngine } from "./audio/index";
 import type { AudioEngine } from "./audio/index";
 import { HERTZ, NOTE_LENGTH, SPEEDS } from "./constants";
 import { KeyboardEventManager, keyboardEventToString } from "./keyboardManager";
-import { ScreenReaderBridge } from "./ScreenReaderBridge";
+import { ScreenReaderBridge } from "screen-reader-bridge";
 import type {
     AxisData,
     groupedMetadata,
