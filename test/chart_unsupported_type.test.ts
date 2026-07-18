@@ -145,7 +145,7 @@ test("Unsupported", () => {
     ].forEach(({ press, point, sr }) => {
         mockElement.dispatchEvent(new KeyboardEvent("keydown", press));
         jest.advanceTimersByTime(250);
-        expect(mockElementCC.textContent?.trim()).toBe(sr);
+        expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(sr);
         expect(chart?.getCurrent()).toStrictEqual(point);
     });
 });
