@@ -53,7 +53,6 @@ window.addEventListener("load", () => {
         const canvas = document.createElement("canvas");
         cell.appendChild(canvas);
         grid.appendChild(cell);
-
         fn(canvas, cc);
     });
 });

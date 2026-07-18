@@ -15,7 +15,7 @@ export const waterfall = (canvas, cc) => {
             datasets: [{ data: data.map(({ open, close }) => [open, close]) }]
         },
         options: {
-            plugins: { title: { display: true, text: "Waterfall chart" } }
+            plugins: { title: { display: false, text: "Waterfall chart" } }
         }
     });
 

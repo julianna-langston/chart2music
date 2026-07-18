@@ -56,7 +56,7 @@ export const stackedBar = (canvas, cc) => {
 
     const myChart = new Chart(canvas, config);
 
-    const { err, data: ref } = c2mChart({
+    const { err, data } = c2mChart({
         type: "bar",
         title,
         element: canvas,
@@ -90,6 +90,8 @@ export const stackedBar = (canvas, cc) => {
             stack: true
         }
     });
+    ref = data;
+
     if (err) {
         console.error(err);
     }
