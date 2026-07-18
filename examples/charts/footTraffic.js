@@ -2027,7 +2027,9 @@ export const footTraffic = (canvas, cc) => {
         }
     };
 
-    const { err, data: ref } = c2mChart(c2mConfig);
+    const { err, data: chart2musicData } = c2mChart(c2mConfig);
+    ref = chart2musicData;
+
     if (err) {
         console.error(err);
     }

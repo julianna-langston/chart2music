@@ -18,6 +18,7 @@ import { groupedScatter } from "./charts/groupedScatter.js";
 import { hypeCycle } from "./charts/hypeCycle.js";
 import { footTraffic } from "./charts/footTraffic.js";
 import { treemap } from "./charts/treemap.js";
+import { waterfall } from "./charts/waterfall.js";
 
 window.addEventListener("load", () => {
     const grid = document.getElementById("examples");
@@ -43,7 +44,8 @@ window.addEventListener("load", () => {
         groupedScatter,
         stackedBar,
         hypeCycle,
-        footTraffic
+        footTraffic,
+        waterfall
     ];
 
     chartFn.forEach((fn) => {
@@ -51,7 +53,6 @@ window.addEventListener("load", () => {
         const canvas = document.createElement("canvas");
         cell.appendChild(canvas);
         grid.appendChild(cell);
-
         fn(canvas, cc);
     });
 });

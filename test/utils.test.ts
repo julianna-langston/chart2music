@@ -252,6 +252,18 @@ describe("utils", () => {
             generatePointDescription({
                 point: {
                     x: 0,
+                    open: 0,
+                    close: 120
+                },
+                xFormat: () => "Revenue",
+                yFormat: (num) => `$${num}`,
+                translationCallback: (id, ev) => english.translate(id, ev)
+            })
+        ).toBe("Revenue, $0 - $120");
+        expect(
+            generatePointDescription({
+                point: {
+                    x: 0,
                     high: 10,
                     low: 5
                 },
@@ -814,6 +826,9 @@ describe("utils", () => {
         expect(
             detectDataPointType({ x: 1, open: 5, close: 5, high: 5, low: 5 })
         ).toBe("OHLCDataPoint");
+        expect(detectDataPointType({ x: 1, open: 0, close: 5 })).toBe(
+            "WaterfallDataPoint"
+        );
         expect(detectDataPointType({})).toBe("unknown");
         expect(detectDataPointType("{}")).toBe("unknown");
     });

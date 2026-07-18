@@ -42,6 +42,7 @@ import {
     isBoxDataPoint,
     isHighLowDataPoint,
     isOHLCDataPoint,
+    isWaterfallDataPoint,
     isSimpleDataPoint
 } from "./dataPoint";
 import type { SupportedDataPointType, SimpleDataPoint } from "./dataPoint";
@@ -1177,6 +1178,17 @@ export class c2m {
         if (isSimpleDataPoint(newDataPoint)) {
             this._yAxis.maximum = Math.max(this._yAxis.maximum, newDataPoint.y);
             this._yAxis.minimum = Math.min(this._yAxis.minimum, newDataPoint.y);
+        } else if (isWaterfallDataPoint(newDataPoint)) {
+            this._yAxis.maximum = Math.max(
+                this._yAxis.maximum,
+                newDataPoint.open,
+                newDataPoint.close
+            );
+            this._yAxis.minimum = Math.min(
+                this._yAxis.minimum,
+                newDataPoint.open,
+                newDataPoint.close
+            );
         } else if (isOHLCDataPoint(newDataPoint)) {
             this._yAxis.maximum = Math.max(
                 this._yAxis.maximum,
@@ -1939,9 +1951,12 @@ export class c2m {
      * Play all outliers to the right, if there are any
      */
     private _playRightOutlier() {
-        if (!(
-            isBoxDataPoint(this.currentPoint) && "outlier" in this.currentPoint
-        )) {
+        if (
+            !(
+                isBoxDataPoint(this.currentPoint) &&
+                "outlier" in this.currentPoint
+            )
+        ) {
             return;
         }
         const max = this.currentPoint.outlier?.length - 1;
@@ -2274,7 +2289,11 @@ export class c2m {
             return;
         }
 
-        if (isOHLCDataPoint(current) || isHighLowDataPoint(current)) {
+        if (
+            isWaterfallDataPoint(current) ||
+            isOHLCDataPoint(current) ||
+            isHighLowDataPoint(current)
+        ) {
             // Only play a single note, because we've drilled into stats
             if (statIndex >= 0) {
                 const stat = availableStats[statIndex];

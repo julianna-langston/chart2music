@@ -2,6 +2,7 @@ import {
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
     isOHLCDataPoint,
+    isWaterfallDataPoint,
     isSimpleDataPoint
 } from "../src/dataPoint";
 
@@ -10,6 +11,7 @@ test("test if functions return the correct value", () => {
     expect(isSimpleDataPoint({ x: 5, y: 5 })).toBeTruthy();
     expect(isAlternateAxisDataPoint({ x: 5, y2: 5 })).toBeTruthy();
     expect(isHighLowDataPoint({ x: 5, high: 5, low: 5 })).toBeTruthy();
+    expect(isWaterfallDataPoint({ x: 5, open: 5, close: 7 })).toBeTruthy();
     expect(
         isOHLCDataPoint({ x: 5, open: 5, high: 5, low: 5, close: 5 })
     ).toBeTruthy();
@@ -17,12 +19,14 @@ test("test if functions return the correct value", () => {
     expect(isSimpleDataPoint({ y: 5 })).toBeFalsy();
     expect(isAlternateAxisDataPoint({ y2: 5 })).toBeFalsy();
     expect(isHighLowDataPoint({ high: 5, low: 5 })).toBeFalsy();
+    expect(isWaterfallDataPoint({ open: 5, close: 7 })).toBeFalsy();
     expect(isOHLCDataPoint({ high: 5, low: 5 })).toBeFalsy();
     // All should be false since we're missing a key property.
     expect(isSimpleDataPoint({ x: 5, foo: 5 })).toBeFalsy();
     expect(isAlternateAxisDataPoint({ x: 5, bar: 5 })).toBeFalsy();
     expect(isHighLowDataPoint({ x: 5, bas: 5, low: 5 })).toBeFalsy();
     expect(isHighLowDataPoint({ x: 5, high: 5, bas: 5 })).toBeFalsy();
+    expect(isWaterfallDataPoint({ x: 5, open: 5, bas: 7 })).toBeFalsy();
     expect(
         isOHLCDataPoint({ x: 5, open: 5, high: 5, bas: 5, close: 5 })
     ).toBeFalsy();

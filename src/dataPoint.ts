@@ -89,6 +89,30 @@ export interface OHLCDataPoint extends HighLowDataPoint {
 }
 
 /**
+ * A floating bar with a start and end value, as used by waterfall charts.
+ */
+export interface WaterfallDataPoint extends DataPoint {
+    /** The value at the start of the bar */
+    open: number;
+    /** The value at the end of the bar */
+    close: number;
+}
+
+/**
+ * Check if an object implements the WaterfallDataPoint interface.
+ * @param obj - the object to check
+ * @returns true if the object implements the interface
+ */
+export function isWaterfallDataPoint(obj: unknown): obj is WaterfallDataPoint {
+    return (
+        isDataPoint(obj) &&
+        "open" in obj &&
+        "close" in obj &&
+        !isHighLowDataPoint(obj)
+    );
+}
+
+/**
  * Check if an object implements the HighLowDataPoint interface.
  * @param obj - the object to check
  * @returns true if the object implements the interface
@@ -129,4 +153,5 @@ export type SupportedDataPointType =
     | AlternateAxisDataPoint
     | HighLowDataPoint
     | OHLCDataPoint
+    | WaterfallDataPoint
     | BoxDataPoint;

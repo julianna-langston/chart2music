@@ -6,6 +6,7 @@ import type {
 } from "./dataPoint";
 import {
     isOHLCDataPoint,
+    isWaterfallDataPoint,
     isAlternateAxisDataPoint,
     isHighLowDataPoint,
     isSimpleDataPoint,
@@ -121,6 +122,13 @@ export const calculateAxisMinimum = ({
                         point.close
                     );
                 }
+            } else if (isWaterfallDataPoint(point)) {
+                if (prop === "x") {
+                    return point.x;
+                }
+                if (prop === "y") {
+                    return Math.min(point.open, point.close);
+                }
             } else if (isHighLowDataPoint(point)) {
                 if (prop === "x") {
                     return point.x;
@@ -174,6 +182,13 @@ export const calculateAxisMaximum = ({
                         point.close
                     );
                 }
+            } else if (isWaterfallDataPoint(point)) {
+                if (prop === "x") {
+                    return point.x;
+                }
+                if (prop === "y") {
+                    return Math.max(point.open, point.close);
+                }
             } else if (isHighLowDataPoint(point)) {
                 if (prop === "x") {
                     return point.x;
@@ -213,6 +228,20 @@ export const generatePointDescription = ({
         evaluators?: translateEvaluators
     ) => string;
 }) => {
+    if (isWaterfallDataPoint(point)) {
+        if (typeof stat !== "undefined") {
+            return translationCallback("point-xy", {
+                x: xFormat(point.x),
+                y: yFormat(point[stat as "open" | "close"])
+            });
+        }
+        return translationCallback("point-xhl", {
+            x: xFormat(point.x),
+            high: yFormat(point.open),
+            low: yFormat(point.close)
+        });
+    }
+
     if (isOHLCDataPoint(point)) {
         if (typeof stat !== "undefined") {
             return translationCallback("point-xy", {
@@ -328,6 +357,8 @@ export const calculateMetadataByGroup = (
             yValues = (row as SimpleDataPoint[]).map(({ y }) => y);
         } else if (isAlternateAxisDataPoint(row.at(0))) {
             yValues = (row as AlternateAxisDataPoint[]).map(({ y2 }) => y2);
+        } else if (isWaterfallDataPoint(row.at(0))) {
+            availableStats = ["open", "close"];
         } else if (isOHLCDataPoint(row.at(0))) {
             // Don't calculate min/max for high/low
             availableStats = ["open", "high", "low", "close"];
@@ -419,6 +450,10 @@ export const detectDataPointType = (query: unknown): detectableDataPoint => {
 
     if (isAlternateAxisDataPoint(query)) {
         return "AlternativeAxisDataPoint";
+    }
+
+    if (isWaterfallDataPoint(query)) {
+        return "WaterfallDataPoint";
     }
 
     if (isOHLCDataPoint(query)) {
