@@ -117,6 +117,7 @@ const dictionary: translationDict = {
     // For box plots
     "stat-q1": "Q1", // Quartile 1
     "stat-median": "Médiane",
+    "stat-mean": "Moyenne",
     "stat-q3": "Q3",
     "stat-outlier": "Valeur aberrante",
 

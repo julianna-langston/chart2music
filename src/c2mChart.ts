@@ -1890,11 +1890,15 @@ export class c2m {
             availableStats[this._metadataByGroup[this._groupIndex].statIndex];
         const current = this._data[this._groupIndex][this._pointIndex];
         if (
-            newStat === "outlier" &&
+            ["mean", "outlier"].includes(newStat) &&
             !(
-                "outlier" in current &&
-                Array.isArray(current.outlier) &&
-                current.outlier.length > 0
+                (newStat === "mean" &&
+                    "mean" in current &&
+                    typeof current.mean === "number") ||
+                (newStat === "outlier" &&
+                    "outlier" in current &&
+                    Array.isArray(current.outlier) &&
+                    current.outlier.length > 0)
             )
         ) {
             this._metadataByGroup[this._groupIndex].statIndex--;
@@ -1951,12 +1955,9 @@ export class c2m {
      * Play all outliers to the right, if there are any
      */
     private _playRightOutlier() {
-        if (
-            !(
-                isBoxDataPoint(this.currentPoint) &&
-                "outlier" in this.currentPoint
-            )
-        ) {
+        if (!(
+            isBoxDataPoint(this.currentPoint) && "outlier" in this.currentPoint
+        )) {
             return;
         }
         const max = this.currentPoint.outlier?.length - 1;
@@ -2294,6 +2295,12 @@ export class c2m {
             isOHLCDataPoint(current) ||
             isHighLowDataPoint(current)
         ) {
+            if (
+                availableStats[statIndex] === "mean" &&
+                (!isBoxDataPoint(current) || typeof current.mean !== "number")
+            ) {
+                statIndex = -1;
+            }
             // Only play a single note, because we've drilled into stats
             if (statIndex >= 0) {
                 const stat = availableStats[statIndex];
@@ -2325,7 +2332,10 @@ export class c2m {
                 if (
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     isUnplayable(current[stat], this._yAxis) ||
-                    stat === "outlier"
+                    stat === "outlier" ||
+                    (stat === "mean" &&
+                        (!isBoxDataPoint(current) ||
+                            typeof current.mean !== "number"))
                 ) {
                     return;
                 }
@@ -2387,6 +2397,11 @@ export class c2m {
             this._flagNewStat = false;
         }
 
+        const currentStat = availableStats[statIndex];
+        const meanIsUnavailable =
+            currentStat === "mean" &&
+            (!isBoxDataPoint(current) || typeof current.mean !== "number");
+
         const point = generatePointDescription({
             translationCallback: (code, evaluators) => {
                 return this._translator.translate(code, evaluators);
@@ -2406,7 +2421,7 @@ export class c2m {
                     ? this._y2Axis
                     : this._yAxis
             }),
-            stat: availableStats[statIndex],
+            ...(meanIsUnavailable ? {} : { stat: currentStat }),
             outlierIndex: this._outlierMode ? this._outlierIndex : null,
             announcePointLabelFirst: this._announcePointLabelFirst
         });

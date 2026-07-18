@@ -633,6 +633,7 @@ describe("utils", () => {
                         low: 5.03,
                         q1: 6.36,
                         median: 6.91,
+                        mean: 6.89,
                         q3: 7.34,
                         high: 7.53
                     },
@@ -722,6 +723,7 @@ describe("utils", () => {
                     "high",
                     "q3",
                     "median",
+                    "mean",
                     "q1",
                     "low",
                     "outlier"

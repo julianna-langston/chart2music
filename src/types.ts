@@ -176,6 +176,7 @@ export type StatBundle = {
     q1?: number;
     q3?: number;
     median?: number;
+    mean?: number;
     outlier?: number[];
 };
 
