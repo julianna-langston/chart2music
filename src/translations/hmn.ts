@@ -108,6 +108,7 @@ const dictionary: translationDict = {
 
     "stat-q1": "Q1",
     "stat-median": "Nruab nrab",
+    "stat-mean": "Qhov nruab nrab",
     "stat-q3": "Q3",
     "stat-outlier": "Tawm txawv",
 

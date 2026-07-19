@@ -38,6 +38,7 @@ const data = [
         low: 4.87,
         q1: 5.8,
         median: 6.13,
+        mean: 6.22,
         q3: 6.66,
         high: 7.09,
         outlier: [4.03]
@@ -87,6 +88,7 @@ test("Checking out the outliers", () => {
     expect(err).toBe(null);
 
     mockElement.dispatchEvent(new Event("focus"));
+    audioEngine.reset();
 
     // Confirm that a summary was generated
     expect(mockElementCC.textContent).toEqual(
@@ -102,7 +104,7 @@ test("Checking out the outliers", () => {
         {
             press: { key: "ArrowRight" },
             text: "Latin America and Caribbean, 7.09 - 4.87, with 1 outlier",
-            count: 5
+            count: 6
         },
         {
             press: { key: "ArrowDown" },
@@ -117,6 +119,11 @@ test("Checking out the outliers", () => {
         {
             press: { key: "ArrowDown" },
             text: "Median, Latin America and Caribbean, 6.13",
+            count: 1
+        },
+        {
+            press: { key: "ArrowDown" },
+            text: "Mean, Latin America and Caribbean, 6.22",
             count: 1
         },
         {
@@ -211,6 +218,42 @@ test("Checking out the outliers", () => {
         expect(audioEngine.playCount).toBe(count);
         audioEngine.reset();
     });
+});
+
+test("Mean is skipped for boxes that do not provide it", () => {
+    const mockElement = document.createElement("div");
+    const mockElementCC = document.createElement("div");
+    const { err } = c2mChart({
+        type: "box",
+        data: [data[0], data[1]],
+        element: mockElement,
+        cc: mockElementCC,
+        audioEngine
+    });
+    expect(err).toBe(null);
+
+    mockElement.dispatchEvent(new Event("focus"));
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight" })
+    );
+    jest.advanceTimersByTime(250);
+    audioEngine.reset();
+
+    ["ArrowDown", "ArrowDown", "ArrowDown", "ArrowDown"].forEach((key) => {
+        mockElement.dispatchEvent(new KeyboardEvent("keydown", { key }));
+        jest.advanceTimersByTime(250);
+        audioEngine.reset();
+    });
+
+    mockElement.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowLeft" })
+    );
+    jest.advanceTimersByTime(250);
+    expect(mockElementCC.lastElementChild?.textContent?.trim()).toBe(
+        "0, 7.53 - 5.03"
+    );
+    expect(audioEngine.playCount).toBe(5);
+    audioEngine.reset();
 });
 
 test("Large number of outliers", () => {

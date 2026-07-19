@@ -131,6 +131,8 @@ export interface BoxDataPoint extends HighLowDataPoint {
     q3: number;
     /** The median */
     median: number;
+    /** The arithmetic mean */
+    mean?: number;
     outlier?: number[];
 }
 

@@ -241,6 +241,16 @@ export const validateInputDataRowHomogeneity = (
                 row[nonArrayNumber]
             )}`;
         }
+
+        const nonNumericMean = row.findIndex(
+            (cell: BoxDataPoint) =>
+                "mean" in cell && typeof cell.mean !== "number"
+        );
+        if (nonNumericMean >= 0) {
+            return `At least one box has a non-numeric mean. Box means must be numbers. The box in question is: ${JSON.stringify(
+                row[nonNumericMean]
+            )}`;
+        }
         return "";
     }
     if (isHighLowDataPoint(first)) {

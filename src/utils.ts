@@ -363,7 +363,20 @@ export const calculateMetadataByGroup = (
             // Don't calculate min/max for high/low
             availableStats = ["open", "high", "low", "close"];
         } else if (isBoxDataPoint(row.at(0))) {
-            availableStats = ["high", "q3", "median", "q1", "low", "outlier"];
+            availableStats = [
+                "high",
+                "q3",
+                "median",
+                ...(row.some(
+                    (point) =>
+                        isBoxDataPoint(point) && typeof point.mean === "number"
+                )
+                    ? ["mean"]
+                    : []),
+                "q1",
+                "low",
+                "outlier"
+            ];
         } else if (isHighLowDataPoint(row.at(0))) {
             // Don't calculate min/max for high/low
             availableStats = ["high", "low"];

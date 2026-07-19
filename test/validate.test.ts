@@ -318,6 +318,23 @@ test("validateInputDataRowHomogeneity", () => {
     ).toBe(
         `At least one box has a non-numeric outlier. Box outliers must be an array of numbers. The box in question is: {"x":2,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"outlier":[5,null]}`
     );
+    expect(
+        validateInputDataRowHomogeneity([
+            { x: 0, low: 5.03, q1: 6.36, median: 6.91, q3: 7.34, high: 7.53 },
+            {
+                x: 1,
+                low: 5.03,
+                q1: 6.36,
+                median: 6.91,
+                q3: 7.34,
+                high: 7.53,
+                // @ts-ignore: Deliberately using invalid data in order to test error handling
+                mean: "6.91"
+            }
+        ])
+    ).toBe(
+        `At least one box has a non-numeric mean. Box means must be numbers. The box in question is: {"x":1,"low":5.03,"q1":6.36,"median":6.91,"q3":7.34,"high":7.53,"mean":"6.91"}`
+    );
 
     // @ts-ignore - deliberately generating error condition
     // Confirm number homogeneity
