@@ -60,7 +60,7 @@
         "@typescript-eslint/parser": "8.63.0",
         "concurrently": "10.0.4",
         "depcheck": "1.4.7",
-        "eslint": "10.7.0",
+        "eslint": "10.8.0",
         "eslint-config-prettier": "10.1.8",
         "eslint-plugin-jsdoc": "63.3.0",
         "http-server": "14.1.1",
