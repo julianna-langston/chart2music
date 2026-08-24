@@ -6,7 +6,7 @@ module.exports = {
     },
     setupFiles: ["<rootDir>/test/_setup.ts"],
     transform: {
-        "^.+\\.ts$": ["ts-jest"],
+        "^.+\\.ts$": ["ts-jest", {tsconfig: "tsconfig.test.json"}],
         "^.+\\.js$": [
             "babel-jest",
             { plugins: ["@babel/plugin-transform-modules-commonjs"] }

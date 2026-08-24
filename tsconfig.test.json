@@ -3,9 +3,14 @@
         "esModuleInterop": true,
         "removeComments": true,
         "target": "ES2020",
+        "strict": false,
+        "module": "CommonJS",
+        "rootDir": ".",
         "preserveConstEnums": true,
-        "moduleResolution": "Node",
-        "typeRoots": ["node_modules/@types"]
+        "isolatedModules": true,
+        "moduleResolution": "Bundler",
+        "typeRoots": ["node_modules/@types"],
+        "types": ["jest", "node"]
     },
     "include": ["test/**/*"]
 }

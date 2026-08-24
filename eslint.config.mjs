@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import jsdoc from "eslint-plugin-jsdoc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,9 +21,8 @@ export default [{
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:jsdoc/recommended",
     "prettier",
-), {
+), jsdoc.configs["flat/recommended-typescript"], {
     plugins: {
         "@typescript-eslint": typescriptEslint,
     },
