@@ -891,18 +891,20 @@ export class c2m {
         }
 
         if (this._info.annotations?.length > 0) {
-            const annos = this._info.annotations.map(({ x, label }) => {
-                return {
-                    x,
-                    label,
-                    y: NaN,
-                    type: "annotation",
-                    custom: {
-                        datasetIndex: 0,
-                        index: 0
-                    }
-                };
-            });
+            const annos: SimpleDataPoint[] = this._info.annotations.map(
+                ({ x, label }) => {
+                    return {
+                        x,
+                        label,
+                        y: NaN,
+                        type: "annotation",
+                        custom: {
+                            datasetIndex: 0,
+                            index: 0
+                        }
+                    };
+                }
+            );
             this._data.forEach((group, i) => {
                 annos.forEach((a) => {
                     const index = group.findIndex((g) => g.x >= a.x);
