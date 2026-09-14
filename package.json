@@ -78,7 +78,7 @@
         "typescript": "6.0.3"
     },
     "dependencies": {
-        "@formatjs/intl": "4.1.19",
+        "@formatjs/intl": "4.1.20",
         "screen-reader-bridge": "^2.0.0"
     }
 }
